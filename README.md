@@ -1,4 +1,4 @@
 admin-srb
 =========
 
-Radioautomation and Administration of Public Radiostations
+Administration and radioautomation of public radiostations
