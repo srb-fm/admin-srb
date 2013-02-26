@@ -348,35 +348,42 @@ def check_files_in_protokoll_completely( n_days_back ):
     lib_cm.message_write_to_console( ac, u"check_files_in_protokoll_completely" )
     
     # Pfade
-    path_sendung_source = db.ac_config_1[1] 
-    path_sendung_dest = db.ac_config_1[2] 
+    #path_sendung_source = db.ac_config_1[1] 
+    #path_sendung_dest = db.ac_config_1[2] 
     
     # Tage zurück
     date_proto = datetime.datetime.now() + datetime.timedelta(days= - n_days_back ) 
     log_message = u"Vollstaendigkeit der Protokolle pruefen fuer: " + str(date_proto)
     lib_cm.message_write_to_console( ac, log_message )
     db.write_log_to_db( ac, log_message, "t" )
-        
-    if ac.app_windows == "yes":
+    
+    # Pfad slashes anpassen
+    path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+    path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+    path_sendung_dest += date_proto.strftime("%Y_%m_%d") 
+    path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
+
+
+    #if ac.app_windows == "yes":
         # pfad anpassen, win-backslash hinten dran:
-        if path_sendung_source[-1] != "\\":
-            path_sendung_source += "\\"
+     #   if path_sendung_source[-1] != "\\":
+     #       path_sendung_source += "\\"
         
         #Pfad mit Datum ergaenzen
-        if path_sendung_dest[-1] != "\\":
-            path_sendung_dest += "\\" 
-            path_sendung_dest += date_proto.strftime("%Y_%m_%d") 
-            path_sendung_dest += "\\"
+     #   if path_sendung_dest[-1] != "\\":
+     #       path_sendung_dest += "\\" 
+     #       path_sendung_dest += date_proto.strftime("%Y_%m_%d") 
+     #       path_sendung_dest += "\\"
         
-    else:
-        if path_sendung_source[-1] != "/":
-            path_sendung_source += "/" 
+    #else:
+     #   if path_sendung_source[-1] != "/":
+     #       path_sendung_source += "/" 
     
         #Pfad mit Datum ergaenzen
-        if path_sendung_dest[-1] != "/":
-            path_sendung_dest += "/" 
-            path_sendung_dest += date_proto.strftime("%Y_%m_%d") 
-            path_sendung_dest += "/"
+     #   if path_sendung_dest[-1] != "/":
+     #       path_sendung_dest += "/" 
+     #       path_sendung_dest += date_proto.strftime("%Y_%m_%d") 
+     #       path_sendung_dest += "/"
     
     lib_cm.message_write_to_console( ac, path_sendung_source )
     lib_cm.message_write_to_console( ac, path_sendung_dest )
