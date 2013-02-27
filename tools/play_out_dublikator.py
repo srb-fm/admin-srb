@@ -11,7 +11,9 @@ Distributed under the terms of GNU GPL version 2 or later
 Copyright (C) Joerg Sorge joergsorge at gooogell
 2011-09-30
 
-Dieses Script dupliziert perjodische Erst-Sendungen (Buchungen in Sendabwicklung) 
+Dieses Script dupliziert perjodische Erst-Sendungen (Buchungen in Sendabwicklung)
+die woechentlich gesendet werden.
+
 
 Dateiname Script: play_out_dublikator.py
 Schluesselwort fuer Einstellungen: PO_DB_Config
