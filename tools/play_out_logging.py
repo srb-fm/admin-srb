@@ -56,6 +56,11 @@ Param 8: mAirList Logdatei der Studio-Rechner, aktueller Titel (Erweiterung um N
 Hinweis: Autor und Titel (param 3 und 4)
 wird eingesetzt wenn tatsaechlicher nicht ermittelbar
 
+Erweiterte Parameter werden bezogen von:
+PO_Switch_Broadcast_Config_3
+PO_Time_Config_1
+
+
 Das Script laeuft mit graphischer Oberflaeche staendig.
 
 Hinweis:
