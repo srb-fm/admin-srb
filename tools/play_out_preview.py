@@ -75,7 +75,6 @@ class app_config( object ):
         # zeit fuer sendungensuche: ab jetzt
         #self.time_target = datetime.datetime.now() + datetime.timedelta( )
         self.time_target = datetime.datetime.now()
-        self.action_summary = ""
 
 
 def load_prev_sendungen(ac ):
