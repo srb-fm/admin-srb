@@ -249,6 +249,9 @@ def lets_rock():
             if counter_pos != -1 and date_pos != -1:
                 # durch sendung[0][16][date_pos+10:] wird alles was in stichwort sonst noch eingetragen hinten wieder dran gesetzt
                 sg_stichwort = item[1][0:counter_pos] + counter_new + "_" + dt_sg_new_date.strftime("%Y_%m_%d") + sendung[0][16][date_pos+10:]
+            # counter aber kein date vorhanden
+            if counter_pos != -1 and date_pos == -1:
+                sg_stichwort = item[1][0:counter_pos] + counter_new
             # counter nicht, aber date vorhanden 
             if counter_pos == -1 and date_pos != -1:
                 sg_stichwort = item[1][0:date_pos] + dt_sg_new_date.strftime("%Y_%m_%d") + sendung[0][16][date_pos+10:]
