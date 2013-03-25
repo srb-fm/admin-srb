@@ -109,7 +109,7 @@ def log_off_air_sendungen(list_off_air_sendungen ):
 def log_studio_sendungen(list_studio_sendungen ):
     """ Studio Sendungen in Log registrieren """
     for item in list_studio_sendungen:            
-        db.write_log_to_db( ac, u"Achtung, Sendung aus Studio vorgesehen: " + str(item[2]) + u" - " + item[15] + u" - " + item[11] , "n" )
+        db.write_log_to_db( ac, u"Achtung, Sendung aus Studio/ von ISDN o.a. vorgesehen: " + str(item[2]) + u" - " + item[15] + u" - " + item[11] , "n" )
 
 
 def lets_rock():
