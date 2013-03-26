@@ -15,6 +15,7 @@ Dieses Script stellt vorproduzierte Audio-Dateien
 fuer Sendungen (mp3-Dateien) 
 im Play-Out-Server zur Verfuegung.
 Dabei werden sie durch diverse Tools bearbeitet (z.B. mp3Gain)
+Festgelegt sind die Sendungen in der Tabelle SG_HF_ROBOT.
 
 Dateiname Script: play_out_load_vp_extern.py
 Schluesselwort fuer Einstellungen: PO_VP_Config_1
