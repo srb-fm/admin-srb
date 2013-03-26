@@ -507,12 +507,12 @@ def lets_rock():
                 db.write_log_to_db_1(ac,  ac.app_errorslist[4] , "x", "write_also_to_console" )
     
     # Veraltete Log-Eintraege in DB loeschen
-    delete_ok = delete_log_in_db( )
-    if delete_ok is None:
+    #delete_ok = delete_log_in_db( )
+    #if delete_ok is None:
         # Error 005 Fehler beim Loeschen veralteter Logeintraege
-        db.write_log_to_db_1(ac,  ac.app_errorslist[5] , "x", "write_also_to_console" )
+        #db.write_log_to_db_1(ac,  ac.app_errorslist[5] , "x", "write_also_to_console" )
 
-    # Veraltete Log-Eintraege in DB loeschen
+    # Veraltete Log-Eintraege in DB-log loeschen
     delete_ok = delete_log_in_db_log( )
     if delete_ok is None:
         # Error 005 Fehler beim Loeschen veralteter Logeintraege
