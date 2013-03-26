@@ -35,8 +35,6 @@ Param 1: Pfad vom Server zu Dropbox-Hauptordner
 Param 2: Pfad vom Server zu Playout-Sendung
 Param 3: Pfad/Programm mp3-validator
 Param 4: Pfad/Programm mp3-gain
-Ab Param 5: Sendungen die bearbeitet werden sollen in dieser Syntax:
-Titel-_-Jahr_Monat_Tag_Titel.mp3 (Zwischen titel und Datum muessen diese Trennzeichen sein:-_-)
 
 Ausfuehrung: jede Stunde zur Minute 45
 
@@ -76,7 +74,7 @@ class app_config( object ):
         self.app_config = u"PO_VP_extern_Config_3"
         self.app_config_develop = u"PO_VP_extern_Config_3_e"
         # anzahl parameter
-        self.app_config_params_range = 7
+        self.app_config_params_range = 5
         self.app_errorfile = "error_play_out_load_vp_extern.log"
         # errorlist
         self.app_errorslist = []
@@ -88,9 +86,6 @@ class app_config( object ):
         self.app_errorslist.append(u"Error 005 Fehler beim Generieren des Dateinamens: ")
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -121,7 +116,6 @@ def load_roboting_sgs(ac):
         return sendungen_data
     
     return sendungen_data
-
 
 def load_sg(ac, sg_titel ):
     """Erstsendung suchen"""
