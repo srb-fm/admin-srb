@@ -94,9 +94,9 @@ def search_sg(ac, sg_titel,  t_sg_time ):
     sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_1(ac, db, db_tbl_condition)
 
     if sendung_data is None:
-        log_message = u"Noch keine Sendung mit diesem Titel zu dieser Zeit gefunden: " + sg_titel + " " + str( t_sg_time )
+        log_message = u"Noch keine Sendung mit diesem Titel zu dieser Zeit gefunden: " + sg_titel.encode('ascii', 'ignore') + " " + str( t_sg_time )
     else:
-        log_message = u"Sendung bereits gebucht mit diesem Titel zu dieser Zeit: " + sg_titel + " " + str( t_sg_time )
+        log_message = u"Sendung bereits gebucht mit diesem Titel zu dieser Zeit: " + sg_titel.encode('ascii', 'ignore') + " " + str( t_sg_time )
     db.write_log_to_db_1(ac,  log_message, "p", "write_also_to_console" )
     return sendung_data
 
