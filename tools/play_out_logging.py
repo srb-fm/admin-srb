@@ -57,7 +57,6 @@ Hinweis: Autor und Titel (param 3 und 4)
 wird eingesetzt wenn tatsaechlicher nicht ermittelbar
 
 Erweiterte Parameter werden bezogen von:
-PO_Switch_Broadcast_Config_3
 PO_Time_Config_1
 
 
@@ -376,15 +375,18 @@ class my_form( Frame ):
         
         # 2. Quelle der aktuellen Sendezeit zuordnen
         #if time_now.minute < 5:
-        if time_now.minute < int(ac.config_extended[15]):
+        #if time_now.minute < int(ac.config_extended[15]):
+        if time_now.minute < int(ac.config_extended[13]):
             source_id = source_params[0 : 2] 
         
         #if time_now.minute >=5 <30:
-        if time_now.minute >= int(ac.config_extended[15]) < int(ac.config_extended[16]):
+        #if time_now.minute >= int(ac.config_extended[15]) < int(ac.config_extended[16]):
+        if time_now.minute >= int(ac.config_extended[13]) < int(ac.config_extended[14]):
             source_id = source_params[2 : 4] 
         
         #if time_now.minute >=30:
-        if time_now.minute >= int(ac.config_extended[16]):
+        #if time_now.minute >= int(ac.config_extended[16]):
+        if time_now.minute >= int(ac.config_extended[14]):
             source_id = source_params[4 :6] 
         
         lib_cm.message_write_to_console(ac, source_id)
@@ -504,23 +506,10 @@ if __name__ == "__main__":
             # Haupt-Params ok: weiter
             param_check_counter += 1
             #print "ok"
-    
-    # Erweiterte Params laden
-    db.ac_config_2 = db.params_load_2(ac,  db,  "PO_Switch_Broadcast_Config_3")
-    if db.ac_config_2 is not None:
-        # Erweiterte Paramsliste anlegen
-        app_params_type_list_1 = []
-        # Erweiterte Params-Type-List, Typ entsprechend der Params-Liste in der Config
-        app_params_type_list_1.append("p_string")
-        # Erweiterte Params pruefen
-        param_check_2 = lib_cm.params_check_2(ac, db, 1, app_params_type_list_1, db.ac_config_2 ) 
-        if param_check_2 is not None: 
-           # Erweiterte Params ok: weiter
-           param_check_counter += 1
 
     # Erweiterte Params laden
-    db.ac_config_3 = db.params_load_2(ac,  db,  "PO_Time_Config_1")
-    if db.ac_config_3 is not None:
+    db.ac_config_2 = db.params_load_2(ac,  db,  "PO_Time_Config_1")
+    if db.ac_config_2 is not None:
         # Erweiterte Paramsliste anlegen
         app_params_type_list_2 = []
         # Erweiterte Params-Type-List, Typ entsprechend der Params-Liste in der Config
@@ -532,18 +521,19 @@ if __name__ == "__main__":
         app_params_type_list_2.append("p_int")
         app_params_type_list_2.append("p_int")
         # Erweiterte Params pruefen
-        param_check_3 = lib_cm.params_check_2(ac, db, 7, app_params_type_list_2, db.ac_config_3 ) 
+        param_check_3 = lib_cm.params_check_a(ac, db, 7, app_params_type_list_2, db.ac_config_2 ) 
         if param_check_3 is not None: 
            # Erweiterte Params ok: weiter
             param_check_counter += 1
 
-    if param_check_counter == 3:
+    if param_check_counter == 2:
         # Params aus Param-Tuples (Haupt und erweitert) zu einer neuen Parameterliste zusammenbauen
-        ac.config_extended = list(db.ac_config_1[:ac.app_config_params_range]) + list(db.ac_config_2[:2]) + list(db.ac_config_3[:7])
+        #ac.config_extended = list(db.ac_config_1[:ac.app_config_params_range]) + list(db.ac_config_2[:2]) + list(db.ac_config_3[:7])
+        ac.config_extended = list(db.ac_config_1[:ac.app_config_params_range]) + list(db.ac_config_2[:7])
         print ac.config_extended
         #print ac.config_extended[2]
         mything = my_form()
-        mything.master.title ( "Play-Out-Logging und Play-Out-Load-Web" )
+        mything.master.title( "Play-Out-Logging und Play-Out-Load-Web" )
         mything.mainloop()
 
     # fertsch
