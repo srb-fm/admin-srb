@@ -47,7 +47,7 @@ import types
 import shutil
 import subprocess
 import socket
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -95,7 +95,7 @@ def audio_mp3gain(ac, path_file):
         p = subprocess.Popen([c_mp3gain, u"-r", c_source_file],  stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(  )
     except Exception, e:
         log_message = ac.app_errorslist[1] + u": %s" % str(e)
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
         return 
 
     lib_cm.message_write_to_console( ac, u"returncode 0" )
@@ -114,7 +114,7 @@ def audio_mp3gain(ac, path_file):
         db.write_log_to_db( ac, log_message, "k" )
         lib_cm.message_write_to_console( ac, "ok" )
     else:
-        db.write_log_to_db_1(ac,  u"mp3gain offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  u"mp3gain offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
 
 def lets_rock():
     """Hauptfunktion """
@@ -151,7 +151,7 @@ def lets_rock():
         try:
             shutil.move( path_file_source, path_file_dest )
         except Exception, e:
-            db.write_log_to_db_1(ac,  ac.app_errorslist[2], "x", "write_also_to_console" )
+            db.write_log_to_db_a(ac,  ac.app_errorslist[2], "x", "write_also_to_console" )
             log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
             lib_cm.message_write_to_console( ac, log_message )
             db.write_log_to_db(ac, log_message, "x" )
@@ -163,8 +163,8 @@ def lets_rock():
         else:
             filename = path_file_dest[string.rfind(path_file_dest,  "\\")+1:]
             
-        #db.write_log_to_db_1(ac, u"Audio mit mp3gain bearbeitet und kopiert: " + filename, "c", "write_also_to_console" )
-        db.write_log_to_db_1(ac, u"Audio mit mp3gain bearbeitet und kopiert: " + filename, "i", "write_also_to_console" )
+        #db.write_log_to_db_a(ac, u"Audio mit mp3gain bearbeitet und kopiert: " + filename, "c", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Audio mit mp3gain bearbeitet und kopiert: " + filename, "i", "write_also_to_console" )
     #if z == 0:
         #lib_cm.message_write_to_console(ac, u"Keine Audios zum Bearbeiten vorhanden")
 
@@ -178,7 +178,10 @@ if __name__ == "__main__":
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac,  db)
     if db.ac_config_1 is not None:
-        lets_rock()
+        param_check = lib_cm.params_check_1(ac, db) 
+        # alles ok: weiter
+        if param_check is not None: 
+            lets_rock()
 
     # fertsch
     #db.write_log_to_db(ac,  ac.app_desc + u" gestoppt", "s")
