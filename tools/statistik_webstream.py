@@ -24,22 +24,30 @@ Ablauf:
 1. Parameter aus der Config holen (url, suchstring)
 2. Webseite aufrufen
 3. Uptime und Peaklisteners extrahieren
-4. Peaklisteners registireren (wenn sich uptime geaendert, neuer datensatz, sonst alten aktualisieren)
+4. Peaklisteners registireren 
+   (wenn sich uptime geaendert, neuer datensatz, sonst alten aktualisieren)
 
 Details:
-Die Icecast-Statusseite listet die aktiven Mountpoints mit den jeweiligen Daten auf.
-Man muss also innerhalb der Seite zunaechst den Abschnitt des betreffenden Mountpouints finden 
+Die Icecast-Statusseite listet die aktiven Mountpoints 
+mit den jeweiligen Daten auf. Man muss also innerhalb der Seite zunaechst 
+den Abschnitt des betreffenden Mountpouints finden 
 und dann daraus die Werte fuer Mont Uptime und Peak Listeners.
-Um die entsprechenden Stellen in der Webseite zu finden, wird ein Suchstring (hinterlegt in der config) benoetigt.
-Dieser Suchstring wird von der Webseite aus den Oddcast-Einstellungen uebernommen. Werden also die Einstellungen 
-des upstream in oddcast geaendert, muss auch unser suchstring in der config angepasst werden.
+Um die entsprechenden Stellen in der Webseite zu finden, 
+wird ein Suchstring (hinterlegt in der config) benoetigt.
+Dieser Suchstring wird von der Webseite aus den 
+Oddcast-Einstellungen uebernommen. Werden also die Einstellungen 
+des upstream in oddcast geaendert, 
+muss auch unser suchstring in der config angepasst werden.
 
 Liste der moeglichen Haupt-Fehlermeldungen:
 000 Parameter-Typ oder Inhalt stimmt nich
 001 Webseite Icecast-Streamstatus kann nicht heruntergeladen werden
-002 Haupt-Abschnitt kann aus Webseite nicht extrahiert werden. Schluesselwort(e) nicht gefunden:
-003 Abschnitt Peaklisteners kann aus Webseite nicht extrahiert werden. Schluesselwort(e) nicht gefunden:
-004 Abschnitt Uptime kann aus Webseite nicht extrahiert werden. Schluesselwort(e) nicht gefunden:
+002 Haupt-Abschnitt kann aus Webseite nicht extrahiert werden. 
+Schluesselwort(e) nicht gefunden:
+003 Abschnitt Peaklisteners kann aus Webseite nicht extrahiert werden. 
+Schluesselwort(e) nicht gefunden:
+004 Abschnitt Uptime kann aus Webseite nicht extrahiert werden. 
+Schluesselwort(e) nicht gefunden:
 005 Zeitformatumwandlung fuer Webstream-Statistik fehlgeschlagen
 006 Fehler beim Registireren der Webstream-Hoerer in der Datenbank
 
@@ -49,20 +57,23 @@ Param 2: Zeichen die gesucht werden: Anfangszeichen
 Param 3: Zeichen die gesucht werden: Endzeichen 
 Param 4: Zeichen die gesucht werden um Anzahl Hoerer zu finden
 Param 5: Anzahl Zeichen die vorgezaelt werden muessen.
-Wichtig. Sollte auf der Webseite der Eintrag: [Stream Genre: various] geaendert werden, 
+Wichtig. Sollte auf der Webseite der Eintrag: 
+[Stream Genre: various] geaendert werden, 
 so muss die Zahl in Param 5 angepasst werden
 Param 6: Zeichen die gesucht werden um Verbindungszeit zu finden 
 Param 7: Zeichen die vorgezaehlt werden muessen
 
 Erklaerung:
 Es werden zwei Werte benoetigt. 
-Diese sind innerhalb eines Abschnitts zu finden, die eindeutig dem Sender zugeordnet werden koennen:
+Diese sind innerhalb eines Abschnitts zu finden, 
+die eindeutig dem Sender zugeordnet werden koennen:
  - Stationskennung (z.B. SRB-Radio)
  - Stations-Webseite (z.B. srb.fm)
 Zwischen diesen beiden Zeichenketten liegen die beiden Werte, die wir suchen:
  - Peak Listeners
  - Mount Uptime
-Von ersterem (z.B. Peak Listeners) muessen wir eine bestimmte Anzahl Zeichen (Quelltext der html-Seite) 
+Von ersterem (z.B. Peak Listeners) muessen wir 
+eine bestimmte Anzahl Zeichen (Quelltext der html-Seite) 
 vorzaehlen um an den Wert zu kommen. Genauso von Zweitem.
 
 Das Script wird alle 2 Stunden ausgefuehrt.
@@ -101,13 +112,23 @@ class app_config( object ):
         self.app_debug_mod = "yes"
         self.app_windows = "yes"
         # errorlist
-        self.app_errorslist.append(u"000 Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"001 Webseite Icecast-Streamstatus kann nicht heruntergeladen werden")
-        self.app_errorslist.append(u"002 Haupt-Abschnitt kann aus Icecast-Webseite nicht extrahiert werden. Schluesselwort(e) nicht gefunden:")
-        self.app_errorslist.append(u"003 Abschnitt Peaklisteners kann aus Icecast-Webseite nicht extrahiert werden. Schluesselwort(e) nicht gefunden:")
-        self.app_errorslist.append(u"004 Abschnitt Uptime kann aus Icecast-Webseite nicht extrahiert werden. Schluesselwort(e) nicht gefunden:")
-        self.app_errorslist.append(u"005 Zeitformatumwandlung fuer Webstream-Statistik fehlgeschlagen")        
-        self.app_errorslist.append(u"006 Fehler beim Registireren der Webstream-Hoerer in der Datenbank")
+        self.app_errorslist.append(u"000 Parameter-Typ oder "
+            "Inhalt stimmt nicht ")
+        self.app_errorslist.append(u"001 Webseite Icecast-Streamstatus "
+            "kann nicht heruntergeladen werden")
+        self.app_errorslist.append(u"002 Haupt-Abschnitt kann aus "
+            "Icecast-Webseite nicht extrahiert werden. "
+            "Schluesselwort(e) nicht gefunden:")
+        self.app_errorslist.append(u"003 Abschnitt Peaklisteners kann aus "
+            "Icecast-Webseite nicht extrahiert werden. "
+            "Schluesselwort(e) nicht gefunden:")
+        self.app_errorslist.append(u"004 Abschnitt Uptime kann aus "
+            "Icecast-Webseite nicht extrahiert werden. "
+            "Schluesselwort(e) nicht gefunden:")
+        self.app_errorslist.append(u"005 Zeitformatumwandlung "
+            "fuer Webstream-Statistik fehlgeschlagen")        
+        self.app_errorslist.append(u"006 Fehler beim Registireren "
+            "der Webstream-Hoerer in der Datenbank")
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_url")
@@ -120,58 +141,58 @@ class app_config( object ):
         self.action_summary = ""
 
 
-def extract_cut_off( website,  match_string_1, match_string_2  ):    
+def extract_cut_off(website, match_string_1, match_string_2):    
     """ Aus Website wichtigsten Abschnitt extrahieren """ 
-    index_begin = string.find( website, match_string_1 )
+    index_begin = string.find(website, match_string_1)
     if index_begin == -1:
         cut_off = None
         #log_message = u"Webstreamhoerer: Ausschnitt Beginn nicht gefunden. "
         #db.write_log_to_db( ac,  log_message , "x"  )
-        lib_cm.message_write_to_console( ac, "cut_off_error_1" )
+        lib_cm.message_write_to_console(ac, "cut_off_error_1")
         return cut_off
 
-    index_end = string.find( website, match_string_2 )
+    index_end = string.find(website, match_string_2)
     if index_end == -1:
         cut_off = None
         #log_message = u"Webstreamhoerer: Ausschnitt Ende nicht gefunden. "
         #db.write_log_to_db( ac,  log_message , "x"  )
-        lib_cm.message_write_to_console( ac, "cut_off_error_2" )
+        lib_cm.message_write_to_console(ac, "cut_off_error_2")
         return  cut_off
 
     cut_off = website [index_begin : index_end]
-    lib_cm.message_write_to_console( ac, cut_off )
+    lib_cm.message_write_to_console(ac, cut_off)
     return cut_off
 
 
-def extract_peaklisteners( website, match_string, charackters_forwards ):    
+def extract_peaklisteners(website, match_string, charackters_forwards):
     """Aus Abschnitt der Website peaklisteners ermitteln """
-    # index_b_ident = string.find(website, "srb.fm")
     index_b_ident = string.find(website, match_string)
     if index_b_ident == -1:
         peaklisteners = None
         return peaklisteners
     
     # index_b_begin = index_b_ident - 156
-    index_b_begin = index_b_ident + len( match_string ) + int(charackters_forwards )
+    index_b_begin = (index_b_ident + len(match_string) 
+                     + int(charackters_forwards))
     index_b_end   = index_b_begin + 4
     extract = website [index_b_begin : index_b_end]
     print "extract:" + extract
     
     # Zahlen extrahieren
-    peaklisteners = re.search(r'[0-9\.]+',extract).group(0)
-    print peaklisteners
+    peaklisteners = re.search(r'[0-9\.]+', extract).group(0)
+    #print peaklisteners
     
-    if re.match("\d{1,}",peaklisteners) is None:
+    if re.match("\d{1,}", peaklisteners) is None:
         # erstes zeichen ist keine zahl
         peaklisteners = None
     
     return peaklisteners
 
 
-def extract_time( website, match_string_2, charackters_forwards ):    
+def extract_time(website, match_string_2, charackters_forwards):
     """ Aus Abschnitt der Website uptime ermitteln """
 
-    index_a_ident = string.find( website, match_string_2 )
+    index_a_ident = string.find(website, match_string_2)
     if index_a_ident == -1:
         t_uptime_current = None
         return  t_uptime_current
@@ -182,7 +203,7 @@ def extract_time( website, match_string_2, charackters_forwards ):
     # website_uptime ermitteln fuer dateiname oder db_satz_id
     c_uptime_current = website [index_a_begin : index_a_end]
     lib_cm.message_write_to_console(ac, c_uptime_current)
-    t_uptime_current = time.strptime( c_uptime_current, "%d %b %Y %H:%M:%S")
+    t_uptime_current = time.strptime(c_uptime_current, "%d %b %Y %H:%M:%S")
     return t_uptime_current
 
 
@@ -195,22 +216,26 @@ def write_listeners_to_db(peaklisteners, sql_time):
     
     if c_time is None:
         # nix da, neuen satz einfuegen
-        sql_command = ("INSERT INTO ST_WEB_STREAM_LISTENERS(ST_WEB_STREAM_LIS_DAY, ST_WEB_STREAM_LIS_NUMBER)"
+        sql_command = ("INSERT INTO ST_WEB_STREAM_LISTENERS"
+            "(ST_WEB_STREAM_LIS_DAY, ST_WEB_STREAM_LIS_NUMBER)"
             " values ('" + sql_time + "', '" + peaklisteners + "')")
         lib_cm.message_write_to_console(ac, "Datensatz neu: " + peaklisteners)
-        log_message = u"Statistik Webstream-Hoerer nach neuer Verbindung aktualisiert. Anzahl: " + peaklisteners
-        #db.write_log_to_db(ac,  u"Statistik Webstream-Hoerer nach neuer Verbindung aktualisiert. Anzahl: " + peaklisteners, "k"  )
+        log_message = ( u"Statistik Webstream-Hoerer "
+            "nach neuer Verbindung aktualisiert. Anzahl: " + peaklisteners )
     else:
         # schon da, updaten
-        sql_command = ("UPDATE ST_WEB_STREAM_LISTENERS SET ST_WEB_STREAM_LIS_NUMBER ='"
-            + peaklisteners + "' where ST_WEB_STREAM_LIS_DAY='" + sql_time + "'")
-        lib_cm.message_write_to_console(ac, "Datensatz aktualisiert: " + peaklisteners)
-        log_message = u"Statistik Webstream-Hoerer bei bestehender Verbindung aktualisiert. Anzahl: " + peaklisteners
-        #db.write_log_to_db(ac,  u"Statistik Webstream-Hoerer bei bestehender Verbindung aktualisiert. Anzahl: " + peaklisteners, "k"  )
-    
+        sql_command = ("UPDATE ST_WEB_STREAM_LISTENERS "
+            "SET ST_WEB_STREAM_LIS_NUMBER ='" +
+            peaklisteners + "' where ST_WEB_STREAM_LIS_DAY='" + sql_time + "'")
+        lib_cm.message_write_to_console(ac, "Datensatz aktualisiert: " 
+                                        + peaklisteners)
+        log_message = (u"Statistik Webstream-Hoerer "
+            "bei bestehender Verbindung aktualisiert. Anzahl: " + peaklisteners)
+        
     db_op_success = db.exec_sql(ac, db, sql_command)
     if db_op_success is None:
-        # Error 005 Fehler beim Registireren der Webstream-Hoerer in der Datenbank
+        # Error 005 Fehler beim Registireren 
+        # der Webstream-Hoerer in der Datenbank
         err_message = ac.app_errorslist[6] + " " + peaklisteners
         db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
     else:
@@ -227,47 +252,58 @@ def lets_rock():
     website = lib_cm.download_website(ac, db, db.ac_config_1[1] ) 
     if website is None:
         # Error 001 fehler beim download der seite
-        db.write_log_to_db_a(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x", 
+            "write_also_to_console")
         return
     #print website
     
     # abschnitt aus webseite extrahieren
     cut_off = extract_cut_off(website, db.ac_config_1[2], db.ac_config_1[3])
     if cut_off is None:
-        # Error 002 fehler beim extrahieren des hauptabschnitts aus webseite (schluesselwoerter nicht vorhanden)
-        err_message = ac.app_errorslist[2] +" " + db.ac_config_1[2] +" " + db.ac_config_1[3]
-        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
+        # Error 002 fehler beim extrahieren des hauptabschnitts 
+        # aus webseite (schluesselwoerter nicht vorhanden)
+        err_message = (ac.app_errorslist[2] + " " 
+                       + db.ac_config_1[2] +" " + db.ac_config_1[3])
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
         return
     
     # peaklisteners extrahieren
-    peaklisteners = extract_peaklisteners(cut_off,  db.ac_config_1[4], db.ac_config_1[5] )
+    peaklisteners = extract_peaklisteners(cut_off, 
+                                          db.ac_config_1[4], db.ac_config_1[5])
     if peaklisteners is None:
-        # Error 003 Abschnitt Peaklisteners kann aus Webseite nicht extrahiert werden. Schluesselwort nicht gefunden:
-        err_message = ac.app_errorslist[3] +" " + db.ac_config_1[4] +" " + db.ac_config_1[5]
-        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
+        # Error 003 Abschnitt Peaklisteners kann aus 
+        # Webseite nicht extrahiert werden. Schluesselwort nicht gefunden:
+        err_message = (ac.app_errorslist[3] +" " + db.ac_config_1[4] 
+                       + " " + db.ac_config_1[5])
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
         return
     
     # uptime extrahieren
-    t_uptime = extract_time(cut_off, db.ac_config_1[6], db.ac_config_1[7]  )
+    t_uptime = extract_time(cut_off, db.ac_config_1[6], db.ac_config_1[7])
     if t_uptime is None:
-        # Error 004 Abschnitt Uptime kann aus Webseite nicht extrahiert werden. Schluesselwort nicht gefunden:
-        err_message = ac.app_errorslist[4] +" " + db.ac_config_1[6] +" " + db.ac_config_1[7]
-        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
+        # Error 004 Abschnitt Uptime kann aus Webseite 
+        # nicht extrahiert werden. Schluesselwort nicht gefunden:
+        err_message = (ac.app_errorslist[4] +" " + db.ac_config_1[6] 
+                       + " " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
         return
     
     # Zeit für datensatz
     try:
-        sql_time = (str(t_uptime.tm_year) + "-" + str(t_uptime.tm_mon).zfill(2) + "-" 
-            + str(t_uptime.tm_mday).zfill(2) + " " + str(t_uptime.tm_hour).zfill(2) + ":" 
-            + str(t_uptime.tm_min).zfill(2) + ":" + str(t_uptime.tm_sec).zfill(2))
+        sql_time = (str(t_uptime.tm_year) + "-" 
+            + str(t_uptime.tm_mon).zfill(2) + "-" 
+            + str(t_uptime.tm_mday).zfill(2) + " " 
+            + str(t_uptime.tm_hour).zfill(2) + ":"
+            + str(t_uptime.tm_min).zfill(2) + ":" 
+            + str(t_uptime.tm_sec).zfill(2))
         lib_cm.message_write_to_console(ac, sql_time)
     except Exception, e:
         err_message = ac.app_errorslist[5] 
-        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
         return
     
     # registrieren
-    db_ok = write_listeners_to_db(peaklisteners, sql_time) 
+    write_listeners_to_db(peaklisteners, sql_time) 
 
 if __name__ == '__main__':
     db = lib_cm.dbase()
