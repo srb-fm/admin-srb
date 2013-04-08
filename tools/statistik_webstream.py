@@ -78,7 +78,7 @@ import sys
 import string
 import time
 import re
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 class app_config( object ):
     """Application-Config"""
@@ -212,7 +212,7 @@ def write_listeners_to_db(peaklisteners, sql_time):
     if db_op_success is None:
         # Error 005 Fehler beim Registireren der Webstream-Hoerer in der Datenbank
         err_message = ac.app_errorslist[6] + " " + peaklisteners
-        db.write_log_to_db_1(ac, err_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
     else:
         db.write_log_to_db(ac, log_message, "i" )
     return 
@@ -227,7 +227,7 @@ def lets_rock():
     website = lib_cm.download_website(ac, db, db.ac_config_1[1] ) 
     if website is None:
         # Error 001 fehler beim download der seite
-        db.write_log_to_db_1(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
         return
     #print website
     
@@ -236,7 +236,7 @@ def lets_rock():
     if cut_off is None:
         # Error 002 fehler beim extrahieren des hauptabschnitts aus webseite (schluesselwoerter nicht vorhanden)
         err_message = ac.app_errorslist[2] +" " + db.ac_config_1[2] +" " + db.ac_config_1[3]
-        db.write_log_to_db_1(ac, err_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
         return
     
     # peaklisteners extrahieren
@@ -244,7 +244,7 @@ def lets_rock():
     if peaklisteners is None:
         # Error 003 Abschnitt Peaklisteners kann aus Webseite nicht extrahiert werden. Schluesselwort nicht gefunden:
         err_message = ac.app_errorslist[3] +" " + db.ac_config_1[4] +" " + db.ac_config_1[5]
-        db.write_log_to_db_1(ac, err_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
         return
     
     # uptime extrahieren
@@ -252,7 +252,7 @@ def lets_rock():
     if t_uptime is None:
         # Error 004 Abschnitt Uptime kann aus Webseite nicht extrahiert werden. Schluesselwort nicht gefunden:
         err_message = ac.app_errorslist[4] +" " + db.ac_config_1[6] +" " + db.ac_config_1[7]
-        db.write_log_to_db_1(ac, err_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
         return
     
     # Zeit für datensatz
@@ -263,7 +263,7 @@ def lets_rock():
         lib_cm.message_write_to_console(ac, sql_time)
     except Exception, e:
         err_message = ac.app_errorslist[5] 
-        db.write_log_to_db_1(ac, err_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console" )
         return
     
     # registrieren
