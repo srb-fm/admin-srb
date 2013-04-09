@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable-msg=C0103
 
 """
 Statistik aktiver User (Macher)
@@ -46,7 +47,7 @@ Edouard Herriot (1872-1957)
 """
 
 import sys
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -69,41 +70,49 @@ class app_config( object ):
         self.app_debug_mod = "yes"
         self.app_windows = "yes"
         # errorlist
-        self.app_errorslist.append(u"000 Fehler beim Ermitteln der aktiven Macher ")
-        self.app_errorslist.append(u"001 Fehler beim Registrieren der Aktiven Macher in der Datenbank: ")
-        self.app_errorslist.append(u"002 Fehler beim Zuruecksetzen der Aktiven Macher in der Datenbank")
+        self.app_errorslist.append(u"000 Fehler "
+            "beim Ermitteln der aktiven Macher ")
+        self.app_errorslist.append(u"001 Fehler "
+            "beim Registrieren der Aktiven Macher in der Datenbank: ")
+        self.app_errorslist.append(u"002 Fehler "
+            "beim Zuruecksetzen der Aktiven Macher in der Datenbank")
 
 
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock " 
     # Aktive User in Adress-Tabelle lesen
-    user_active_number = db.count_rows(ac, db,"AD_MAIN", "AD_USER_OK_AKTIV='T'")
+    user_active_number = db.count_rows(ac, db, 
+        "AD_MAIN", "AD_USER_OK_AKTIV='T'")
     if user_active_number is None:
         # Error 000 Fehler beim Ermitteln der aktiven Macher
-        db.write_log_to_db_1(ac, ac.app_errorslist[0] , "x", "write_also_to_console"  )
+        db.write_log_to_db_a(ac, ac.app_errorslist[0], "x", 
+            "write_also_to_console")
         return
     
-    log_message = "Aktive Macher: " + str( user_active_number )
-    db.write_log_to_db( ac,  log_message, "t"  )
-    lib_cm.message_write_to_console( ac, log_message )
+    log_message = "Aktive Macher: " + str(user_active_number)
+    db.write_log_to_db(ac, log_message, "t")
+    lib_cm.message_write_to_console(ac, log_message)
 
     # Anzahl speichern
     sql_command = ("INSERT INTO ST_USER_OK_ACTIVE ( ST_USER_OK_ACTIVE_NUMBER ) "
-        "VALUES ( '"  + str( user_active_number ) + "')")
-    db_ok = db.exec_sql( ac, db, sql_command )
+        "VALUES ( '"  + str(user_active_number) + "')")
+    db_ok = db.exec_sql(ac, db, sql_command)
     if db_ok is None:
         # Error 001 Fehler beim Registireren der Aktiven Macher in der Datenbank
-        err_message = ac.app_desc + " " + ac.app_errorslist[1] + " " + user_active_number
-        db.write_log_to_db_1(ac, err_message, "x", "write_also_to_console" )
+        err_message = (ac.app_desc + " " + ac.app_errorslist[1] 
+                       + " " + user_active_number)
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
         return
     
     # user_active zuruecksetzen
     sql_command = "UPDATE AD_MAIN SET AD_USER_OK_AKTIV='F' "
-    db_ok_1 = db.exec_sql( ac, db, sql_command )
+    db_ok_1 = db.exec_sql(ac, db, sql_command)
     if db_ok_1 is None:
-        # Error 002 Fehler beim Zuruecksetzen der Aktiven Macher in der Datenbank
-        db.write_log_to_db_1(ac,  ac.app_errorslist[2], "x", "write_also_to_console"  )
+        # Error 002 Fehler beim Zuruecksetzen 
+        # der Aktiven Macher in der Datenbank
+        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x", 
+            "write_also_to_console")
         return
     
     return
@@ -112,12 +121,12 @@ def lets_rock():
 if __name__ == "__main__":
     db = lib_cm.dbase()
     ac = app_config()
-    print  "lets_work: " + ac.app_desc 
+    print "lets_work: " + ac.app_desc 
     # losgehts
-    db.write_log_to_db( ac,  ac.app_desc + " gestartet", "a"  )
+    db.write_log_to_db(ac, ac.app_desc + " gestartet", "a")
     lets_rock()
     # fertsch
-    db.write_log_to_db( ac,  ac.app_desc + " gestoppt", "s"  )
+    db.write_log_to_db(ac,  ac.app_desc + " gestoppt", "s")
     print "lets_lay_down" 
     sys.exit()
  
