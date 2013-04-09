@@ -67,7 +67,7 @@ import shutil
 import subprocess
 import ftplib
 import socket
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -122,8 +122,8 @@ def load_podcast(ac):
 
     db_tbl_condition = "A.SG_HF_ON_AIR = 'T' AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '" + str( ac.time_target.date() )+ "' " 
     db_tbl_condition += "AND A.SG_HF_PODCAST='T' "
-    # ORDER BY A.SG_HF_TIME kommt dazu in read_tbl_rows_sg_cont_ad_with_cond_1
-    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_1(ac,  db, db_tbl_condition)
+    # ORDER BY A.SG_HF_TIME kommt dazu in read_tbl_rows_sg_cont_ad_with_cond_a
+    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_a(ac,  db, db_tbl_condition)
     
     if sendung_data is None:
         log_message = u"Keine Podcast-Sendungen für: " + str(ac.time_target.date()) 
@@ -213,8 +213,8 @@ def encode_file(podcast_sendung):
     lib_cm.message_write_to_console( ac, p[1] )
     
     # erfolgsmeldung suchen, wenn nicht gefunden: -1
-    n_encode_percent = string.find( p[1],  "(100%)" )
-    n_encode_percent_1 = string.find( p[1],  "(99%)" )
+    n_encode_percent = string.find( p[1], "(100%)" )
+    n_encode_percent_1 = string.find( p[1], "(99%)" )
     lib_cm.message_write_to_console( ac, n_encode_percent )
     c_complete = "no"
     
@@ -320,7 +320,7 @@ def upload_file(podcast_sendung):
         c_ftp_cmd = "STOR " + podcast_sendung[0]
         ftp.storbinary( c_ftp_cmd,  f)
         f.close()
-        db.write_log_to_db_1(ac, u"Podcast hochgeladen: " + podcast_sendung[0], "i", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Podcast hochgeladen: " + podcast_sendung[0], "i", "write_also_to_console" )
         
     else:
         msg = u"temporaere Datei nicht vorhanden"
@@ -405,7 +405,7 @@ def delete_files_online ( ):
         #log_message = u"Keine Podcasts auf dem Server zu loeschen.." 
         #lib_cm.message_write_to_console( ac, log_message )
         #db.write_log_to_db_log( ac,  log_message, "c" )
-        db.write_log_to_db_1(ac, u"Keine Podcasts auf dem Server zu loeschen..", "c", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Keine Podcasts auf dem Server zu loeschen..", "c", "write_also_to_console" )
 
     ftp.quit()
     return n_anzahl_files_to_delete
@@ -425,11 +425,11 @@ def lets_rock():
     podcast_offline = check_files_online(podcast_sendungen)
     if podcast_offline is None:
         # Error 001 Fehler beim Verbinden zum ftp-Server
-        db.write_log_to_db_1(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
         return
     
     if podcast_offline == "No files offline":
-        db.write_log_to_db_1(ac, u"Alle Podcasts bereits online", "k", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Alle Podcasts bereits online", "k", "write_also_to_console" )
         return
     
     # eine sendung aus offline-sendungen rausholen
@@ -437,7 +437,7 @@ def lets_rock():
     for item in podcast_sendungen:
         if item[12] == podcast_offline :
             # filename, titel, vorname, name, infotime, magazin
-            podcast_sendung = ( item[12], item[11], item[14], item[15], item[4], item[5] )
+            podcast_sendung = ( item[12], item[11], item[14], item[15], item[4].strip(), item[5].strip() )
 
     lib_cm.message_write_to_console( ac, podcast_sendung )
     
@@ -445,7 +445,7 @@ def lets_rock():
     podcast_temp = encode_file( podcast_sendung )
     if podcast_temp is None:
         # Error 002 Fehler beim Recodieren der mp3-Datei
-        db.write_log_to_db_1(ac, ac.app_errorslist[2], "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x", "write_also_to_console" )
         #return
         
         # mit naechstem file versuchen
@@ -456,7 +456,7 @@ def lets_rock():
                 # nicht das vorige file nochmal
                 if item[12] != podcast_sendung[0]:
                     # filename, titel, vorname, name, infotime, magazin
-                    podcast_sendung = ( item[12], item[11], item[14], item[15], item[4], item[5] )
+                    podcast_sendung = ( item[12], item[11], item[14], item[15], item[4].strip(), item[5].strip() )
 
         lib_cm.message_write_to_console( ac, podcast_sendung )
         
@@ -464,32 +464,32 @@ def lets_rock():
     podcast_temp_1 = encode_file( podcast_sendung )
     if podcast_temp_1 is None:
         # Error 002 Fehler beim Recodieren der mp3-Datei
-        db.write_log_to_db_1(ac, ac.app_errorslist[2], "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x", "write_also_to_console" )
         return
         
     # uploaden was noch nicht oben ist
     upload_ok = upload_file(podcast_sendung)
     if upload_ok is None:
         # Error 001 Fehler beim Verbinden zum ftp-Server
-        db.write_log_to_db_1(ac, ac.app_errorslist[1], "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x", "write_also_to_console" )
         return
     
     if upload_ok =="temporaere Datei nicht vorhanden":
         # Error 003 recodierte mp3-Datei nicht gefunden
-        db.write_log_to_db_1(ac, ac.app_errorslist[3], "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, ac.app_errorslist[3], "x", "write_also_to_console" )
         return
     
     # temp_file fuer encoder wieder loeschen
-    delete_temp_ok = lib_cm.erase_file_1(ac, db, podcast_temp,  u"Temp-Podcast-Datei geloescht " )    
+    delete_temp_ok = lib_cm.erase_file_a(ac, db, podcast_temp,  u"Temp-Podcast-Datei geloescht " )    
     if delete_temp_ok is None:
         # Error 004 Fehler beim Loeschen der Temp-Podcast-Datei
-        db.write_log_to_db_1(ac, ac.app_errorslist[4], "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, ac.app_errorslist[4], "x", "write_also_to_console")
     
     # alte files auf ftp loeschen
     delete_ok = delete_files_online()
     if delete_ok is None:
         # Error 001 Fehler beim Verbinden zum ftp-Server
-        db.write_log_to_db_1(ac, ac.app_errorslist[1], "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x", "write_also_to_console")
 
     
 if __name__ == "__main__":
@@ -507,7 +507,7 @@ if __name__ == "__main__":
             if db.ac_config_1[1] == "on":
                 lets_rock()
             else:
-                db.write_log_to_db_1(ac, "Podcast-Beamer ausgeschaltet", "e", "write_also_to_console" )
+                db.write_log_to_db_a(ac, "Podcast-Beamer ausgeschaltet", "e", "write_also_to_console" )
 
     # fertsch
     db.write_log_to_db(ac,  ac.app_desc + u" gestoppt", "s")
