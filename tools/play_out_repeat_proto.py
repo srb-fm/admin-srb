@@ -59,7 +59,7 @@ import re
 import datetime
 import shutil
 import subprocess
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -113,7 +113,7 @@ def load_sg_repeat(ac):
 
     db_tbl_condition = "SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '" + str( ac.time_target.date() )+ "' " 
     db_tbl_condition += "AND A.SG_HF_REPEAT_PROTO='T' "
-    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_2(ac,  db, db_tbl_condition)
+    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_b(ac,  db, db_tbl_condition)
     
     if sendung_data is None:
         log_message = u"Keine Wiederholungssendungen aus Protokoll für: " + str(ac.time_target.date()) 
@@ -130,7 +130,7 @@ def load_sg_first(ac, sg_cont_nr ):
     lib_cm.message_write_to_console( ac, u"Erstsednung zur WH suchen" )
 
     db_tbl_condition = "A.SG_HF_FIRST_SG = 'T' AND A.SG_HF_CONTENT_ID='"+ str(sg_cont_nr) +"' "
-    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_1(ac, db, db_tbl_condition)
+    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_a(ac, db, db_tbl_condition)
     
     if sendung_data is None:
         log_message = u"Keine Erstsendung zu Wiederholungssendung gefunden " 
@@ -151,7 +151,7 @@ def audio_validate(ac, file_dest):
         p = subprocess.Popen([c_validator, u"-f", c_source_file],  stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(  )
     except Exception, e:
         log_message = ac.app_errorslist[2] + u" %s" % str(e)
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
         return
     lib_cm.message_write_to_console( ac, u"returncode 0" )
     lib_cm.message_write_to_console( ac, p[0] )
@@ -159,7 +159,7 @@ def audio_validate(ac, file_dest):
     lib_cm.message_write_to_console( ac, p[1] )
     
     # erfolgsmeldung suchen, wenn nicht gefunden: -1
-    validate_output = string.find( p[0],  "FIXED" )
+    validate_output = string.find( p[0], "FIXED" )
     
     # wenn gefunden, position, sonst -1
     if validate_output != -1:
@@ -168,12 +168,12 @@ def audio_validate(ac, file_dest):
         lib_cm.message_write_to_console( ac, "ok" )
         #bak-Datei löschen
         c_source_file = c_source_file + ".bak"
-        delete_bak_ok = lib_cm.erase_file_1(ac, db, c_source_file,  u"mp3validator-bak-Datei geloescht " )    
+        delete_bak_ok = lib_cm.erase_file_a(ac, db, c_source_file,  u"mp3validator-bak-Datei geloescht " )    
         if delete_bak_ok is None:
             # Error 004 Fehler beim Loeschen der mp3validator-bak-Datei
-            db.write_log_to_db_1(ac,  ac.app_errorslist[4], "x", "write_also_to_console")
+            db.write_log_to_db_a(ac,  ac.app_errorslist[4], "x", "write_also_to_console")
     else:
-        db.write_log_to_db_1(ac,  u"mp3-Validator fix offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  u"mp3-Validator fix offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
 
 def audio_mp3gain(ac, file_dest):
     """mp3-File Gainanpassung"""
@@ -187,7 +187,7 @@ def audio_mp3gain(ac, file_dest):
         p = subprocess.Popen([c_mp3gain, u"-r", c_source_file],  stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(  )
     except Exception, e:
         log_message = ac.app_errorslist[3] + u" %s" % str(e)
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
         return
     lib_cm.message_write_to_console( ac, u"returncode 0" )
     lib_cm.message_write_to_console( ac, p[0] )
@@ -205,7 +205,7 @@ def audio_mp3gain(ac, file_dest):
         db.write_log_to_db( ac, log_message, "k" )
         lib_cm.message_write_to_console( ac, "ok" )
     else:
-        db.write_log_to_db_1(ac,  u"mp3gain offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  u"mp3gain offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
 
 def audio_id3tag(ac, file_dest,  id3_author,  id3_title):
     """mp3-id3Tag schreiben"""
@@ -222,7 +222,7 @@ def audio_id3tag(ac, file_dest,  id3_author,  id3_title):
         p = subprocess.Popen([c_id3tag, u"-2", u"-a", c_id3_author, u"-s", c_id3_title, c_source_file],  stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(  )
     except Exception, e:
         log_message = ac.app_errorslist[5] + str(e)
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
         return
     lib_cm.message_write_to_console( ac, u"returncode 0" )
     lib_cm.message_write_to_console( ac, p[0] )
@@ -240,13 +240,13 @@ def audio_id3tag(ac, file_dest,  id3_author,  id3_title):
         db.write_log_to_db( ac, log_message, "k" )
         lib_cm.message_write_to_console( ac, "ok" )
     else:
-        db.write_log_to_db_1(ac,  u"id3tag offenbar nicht noetig oder fehlgeschlagen: " + c_source_file, "p", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  u"id3tag offenbar nicht noetig oder fehlgeschlagen: " + c_source_file, "p", "write_also_to_console" )
 
 def check_and_work_on_files(repeat_sendung):
     """ Dateien bearbeiten """
     lib_cm.message_write_to_console(ac, u"check_and_work_on_files" )
     
-    #Filename splitten um zu pruefen ob Filename nach SRB-Muster vorhanden
+    # Filename splitten um zu pruefen ob Filename nach SRB-Muster vorhanden
     lib_cm.message_write_to_console( ac, type(repeat_sendung[12].split("_")[0]) )
     lib_cm.message_write_to_console( ac, repeat_sendung[8] )
     lib_cm.message_write_to_console( ac, type(repeat_sendung[8]) )
@@ -268,7 +268,7 @@ def check_and_work_on_files(repeat_sendung):
     if filename_nr == repeat_sendung[8] and filename_name == repeat_sendung[16]:
         # Play-Out-Dateiname beginnt mit SG-Cont_Nr und Nachname
         lib_cm.message_write_to_console( ac, u"Filename aus db: "+ repeat_sendung[12] )
-        if repeat_sendung[4] == "T" or repeat_sendung[5] == "T":
+        if repeat_sendung[4].strip() == "T" or repeat_sendung[5].strip() == "T":
             # InfoTime
             path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])   
         else:
@@ -279,7 +279,7 @@ def check_and_work_on_files(repeat_sendung):
     else:
         # kein Filename nach SRB-Muster vorhanden, Muster zusammenbauen:
         lib_cm.message_write_to_console( ac, u"SRB-Muster-Filename nicht in db, zusammenbauen" )
-        if repeat_sendung[4] == "T" or repeat_sendung[5] == "T":
+        if repeat_sendung[4].strip() == "T" or repeat_sendung[5].strip() == "T":
             # InfoTime
             path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])   
         else:
@@ -293,7 +293,7 @@ def check_and_work_on_files(repeat_sendung):
     # Suchen ob vorhanden    
     if os.path.isfile( file_dest ):
         lib_cm.message_write_to_console( ac, u"vorhanden: "+ file_dest )
-        db.write_log_to_db_1(ac, u"Audiodatei fuer Wiederholung bereits vorhanden: "+ file_dest, "k", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Audiodatei fuer Wiederholung bereits vorhanden: "+ file_dest, "k", "write_also_to_console" )
         return
     
     lib_cm.message_write_to_console( ac, u"nicht vorhanden: "+ file_dest )
@@ -315,11 +315,11 @@ def check_and_work_on_files(repeat_sendung):
     lib_cm.message_write_to_console( ac, first_sg_date_time.minute )
     lib_cm.message_write_to_console( ac, datetime.datetime.now() )
     if first_sg_date_time > datetime.datetime.now():
-        db.write_log_to_db_1(ac, u"Erstsendung noch nicht gelaufen, Verarbeitung abgebrochen: "+ first_sg_date_time.strftime('%Y_%m_%d_%H'), "t", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Erstsendung noch nicht gelaufen, Verarbeitung abgebrochen: "+ first_sg_date_time.strftime('%Y_%m_%d_%H'), "t", "write_also_to_console" )
         return
         
     if first_sg_date_time.minute != 0:
-        db.write_log_to_db_1(ac, u"Nur WH-Sendungen, die zur vollen Stunde beginnen, koennen verarbeitet werden: "+ first_sg_date_time.strftime('%Y_%m_%d_%H_%M'), "t", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Nur WH-Sendungen, die zur vollen Stunde beginnen, koennen verarbeitet werden: "+ first_sg_date_time.strftime('%Y_%m_%d_%H_%M'), "t", "write_also_to_console" )
         return
     # Nur Sendungen die zur vollen Stunde beginnen bearbeiten
     lib_cm.message_write_to_console( ac, first_sg_date_time.minute )
@@ -334,10 +334,10 @@ def check_and_work_on_files(repeat_sendung):
     # In Play-Out kopieren
     try:
         shutil.copy( file_source, file_dest )
-        db.write_log_to_db_1(ac, u"Protokoll fuer Wiederholung: "+ file_source, "k", "write_also_to_console" )
-        db.write_log_to_db_1(ac, u"Protokoll kopiert nach: "+ file_dest, "c", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Protokoll fuer Wiederholung: "+ file_source, "k", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Protokoll kopiert nach: "+ file_dest, "c", "write_also_to_console" )
     except Exception, e:
-        db.write_log_to_db_1(ac,  ac.app_errorslist[1], "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[1], "x", "write_also_to_console" )
         log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
         lib_cm.message_write_to_console( ac, log_message )
         db.write_log_to_db(ac, log_message, "x" )
@@ -365,7 +365,7 @@ def check_and_work_on_files(repeat_sendung):
     
     #db.write_log_to_db(ac, u"Bearbeitet: " + filename, "p" )
     db.write_log_to_db(ac, u"Bearbeitet: " + filename, "i" )
-    db.write_log_to_db_1(ac, u"Bearbeitet: " + filename, "n", "write_also_to_console" )
+    db.write_log_to_db_a(ac, u"Bearbeitet: " + filename, "n", "write_also_to_console" )
 
 
 def lets_rock():
@@ -381,10 +381,20 @@ def lets_rock():
     # Erstsendung suchen und pruefen ob sie schon gelaufen sind
     first_sg_vorhanden = None
     for item in repeat_sendungen:
+        # item:  ASG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, "
+        # "A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
+        # "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, "
+        # "B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, B.SG_HF_CONT_STICHWORTE, "
+        # "C.AD_ID, C.AD_VORNAME, C.AD_NAME 
         first_sendung = load_sg_first(ac, item[8])
         lib_cm.message_write_to_console( ac, first_sendung )
         
         if first_sendung is not None:
+            # first_sendung: A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, "
+            # "A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
+            # "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, "
+            # "B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
+            # "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
             # Erstsendung gefunden
             lib_cm.message_write_to_console( ac, first_sendung[0] )
             if first_sendung[0][2]+ datetime.timedelta(hours=+1 ) <= datetime.datetime.now() :
@@ -392,7 +402,6 @@ def lets_rock():
                lib_cm.message_write_to_console( ac, first_sendung[0][2] )
                lib_cm.message_write_to_console( ac, datetime.datetime.now() )
                # Bearbeiten
-               #repeat_offline = check_and_work_on_files(repeat_sendungen)
                repeat_offline = check_and_work_on_files(item)
             else:
                 lib_cm.message_write_to_console( ac, "Erstsendung noch nicht gelaufen oder beendet, Proto kann nicht vorhanden sein" )
