@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable-msg=C0103
 
 """
 Play Out Preview 
@@ -11,7 +12,8 @@ Distributed under the terms of GNU GPL version 2 or later
 Copyright (C) Joerg Sorge joergsorge at guugel
 2011-10-06
 
-Dieses Script ermittelt vorgesehene Sendungen und uebertraegt sie in die Web-Datenbank. 
+Dieses Script ermittelt vorgesehene Sendungen 
+und uebertraegt sie in die Web-Datenbank. 
 Dort werden diese Datensaetze zur Programmvorschau angezeigt
 
 Dateiname Script: play_out_preview.py
@@ -25,7 +27,8 @@ Error 000 Parameter-Typ oder Inhalt stimmt nich
 Error 001 Fehler beim Uebertragen zum Web-Server 
 
 Parameterliste:
-Param 1: Anzahl Sendungen, die fuer Vorschau geladen werden (nicht zu hoch einstellen)
+Param 1: Anzahl Sendungen, die fuer Vorschau geladen werden 
+(nicht zu hoch einstellen!)
 Param 2: URL Web-Script
 Param 3: Benutzer
 Param 4: Passwort
@@ -55,9 +58,12 @@ class app_config( object ):
         self.app_errorfile = "error_play_out_preview.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 Fehler beim Uebertragen zum Web-Server ")
-        self.app_errorslist.append(u"Error 002 Web-Server fuer Vorschau nicht erreichbar")
+        self.app_errorslist.append(u"Error 000 "
+            "Parameter-Typ oder Inhalt stimmt nicht ")
+        self.app_errorslist.append(u"Error 001 "
+            "Fehler beim Uebertragen zum Web-Server ")
+        self.app_errorslist.append(u"Error 002 "
+            "Web-Server fuer Vorschau nicht erreichbar")
         # anzahl parameter
         self.app_config_params_range = 5
         # params-type-list, typ entsprechend der params-liste in der config
@@ -70,30 +76,34 @@ class app_config( object ):
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
-        self.app_windows = "yes"
+        self.app_debug_mod = "no"
+        #self.app_windows = "yes"
         # zeit fuer sendungensuche: ab jetzt
-        #self.time_target = datetime.datetime.now() + datetime.timedelta( )
+        #self.time_target = datetime.datetime.now() + datetime.timedelta()
         self.time_target = datetime.datetime.now()
 
 
-def load_prev_sendungen(ac ):
-    """In DB nachsehen, ob Sendungen fuer die kommende Stunde vorgesehen sind """
-    lib_cm.message_write_to_console( ac, "load_prev_sendungen" )
+def load_prev_sendungen():
+    """In DB nachsehen, ob Sendungen fuer die kommende Stunde vorgesehen sind"""
+    lib_cm.message_write_to_console(ac, "load_prev_sendungen")
     # zfill fuellt nullen auf bei einstelliger stundenzahl
     
-    c_date_time = str( ac.time_target.date() ) + " " + str( ac.time_target.hour ).zfill(2) 
-    db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '" + c_date_time + "' " 
+    c_date_time = (str( ac.time_target.date() ) 
+                    + " " + str( ac.time_target.hour ).zfill(2))
+    db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND "
+        "SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '" + c_date_time + "' " 
         "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F'")
     
-    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_a( ac,  db,  db_tbl_condition )
+    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_a(ac, 
+                                db, db_tbl_condition )
     if sendung_data is None:
         log_message = u"Keine Sendungen für: " + str(ac.time_target.date() ) 
         db.write_log_to_db(ac, log_message, "t"  )
         return sendung_data
     
-    # log schreiben
-    #log_message = u"Vorschau-Sendungen vorhanden ab: " + str(ac.time_target.date() ) + ", " + str(ac.time_target.hour ).zfill(2) + " Uhr"
+    #log_message = (u"Vorschau-Sendungen vorhanden ab: " 
+            #+ str(ac.time_target.date() ) + ", " 
+            #+ str(ac.time_target.hour ).zfill(2) + " Uhr")
     #db.write_log_to_db(ac, log_message, "t" )
     return sendung_data
     
@@ -106,7 +116,8 @@ def beam_prev_sendungen(list_preview_sendungen ):
     #anzahl_sendungen = 5
     url = db.ac_config_1[2]
     
-    # Assoziatives Array / Dictionary / Hashmap fuer datenuebertragung append: data_upload['px']='peix'' 
+    # Assoziatives Array / Dictionary / Hashmap 
+    # fuer datenuebertragung append: data_upload['px']='peix'' 
     data_upload = {'pa' : 'hinein',
         'pc' : db.ac_config_1[3],
         'pd' : db.ac_config_1[4]}
@@ -114,21 +125,23 @@ def beam_prev_sendungen(list_preview_sendungen ):
     z = 0
     for item in list_preview_sendungen:
         c_time = str( item[2])
-        c_autor = lib_cm.replace_uchar_with_html( item[14]) + " " + lib_cm.replace_uchar_with_html( item[15] )
+        c_autor = (lib_cm.replace_uchar_with_html( item[14]) + " " 
+                + lib_cm.replace_uchar_with_html( item[15] ))
         c_title = lib_cm.replace_uchar_with_html( item[11] )
         
         data_upload['px'+str( z+1 )] = c_time 
         data_upload['py'+str( z+1 )] = c_autor
         data_upload['pz'+str( z+1 )] = c_title
-        z +=1
+        z += 1
         if z == anzahl_sendungen:
             break
     
     # anzahel der uebergebenen sendungen
-    data_upload['pb']= str( anzahl_sendungen )
-    lib_cm.message_write_to_console( ac, data_upload  )
+    data_upload['pb'] = str(anzahl_sendungen )
+    lib_cm.message_write_to_console(ac, data_upload  )
     
-    # urlencode kann fehler werfen, wenn sonderzeichen nicht encodet werden können
+    # urlencode kann fehler werfen, 
+    # wenn sonderzeichen nicht encodet werden können
     try:
         data_upload_encoded = urllib.urlencode( data_upload )
     except Exception, e:
@@ -143,17 +156,19 @@ def beam_prev_sendungen(list_preview_sendungen ):
     # uebertragen
     web = lib_cm.upload_data(ac, db, url, data_upload_encoded)
     if web is None:
-        db.write_log_to_db_a(ac,  ac.app_errorslist[2] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x", 
+            "write_also_to_console" )
         return None
         
-    lib_cm.message_write_to_console( ac, web )
+    lib_cm.message_write_to_console(ac, web)
     
     if web[0:6] == "Fehler":
         db.write_log_to_db(ac, u"web-script:" + web, "x" )  
         return None
     else:
-        db.write_log_to_db( ac, u"Sendungen fuer Programmvorschau ab " + str(ac.time_target.hour ).zfill(2) + " Uhr uebertragen: " + str(z) + u" Stueck", "i" )
-        #db.write_log_to_db( ac, u"Sendungen fuer Programmvorschau: " + str(z) + u" Stueck", "i" )
+        db.write_log_to_db(ac, u"Sendungen fuer Programmvorschau ab " 
+            + str(ac.time_target.hour ).zfill(2) + " Uhr uebertragen: " 
+            + str(z) + u" Stueck", "i" )
     
     return str(z) 
 
@@ -162,7 +177,7 @@ def lets_rock():
     """Hauptfunktion """
     print "lets_rock " 
     # sendungen holen 
-    list_preview_sendungen = load_prev_sendungen(ac)
+    list_preview_sendungen = load_prev_sendungen()
     if list_preview_sendungen is None: 
         log_message = u"Keine Sendungen fuer Programm-Vorschau gefunden" 
         db.write_log_to_db(ac, log_message, "t" )
@@ -172,7 +187,8 @@ def lets_rock():
     beam_ok = beam_prev_sendungen(list_preview_sendungen)
     if beam_ok is None:
         # Error 001 Fehler beim Uebertragen zum Web-Server
-        db.write_log_to_db_a(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x", 
+            "write_also_to_console" )
     
     return
     
@@ -181,7 +197,7 @@ if __name__ == "__main__":
     ac = app_config()
     print  "lets_work: " + ac.app_desc 
     # losgehts
-    db.write_log_to_db( ac,  ac.app_desc + " gestartet", "r"  )
+    db.write_log_to_db(ac, ac.app_desc + " gestartet", "r" )
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac,  db)
     if db.ac_config_1 is not None:
@@ -191,6 +207,6 @@ if __name__ == "__main__":
             lets_rock()
     
     # fertsch
-    db.write_log_to_db( ac, ac.app_desc + " gestoppt", "s"  )
+    db.write_log_to_db(ac, ac.app_desc + " gestoppt", "s"  )
     print "lets_lay_down" 
     sys.exit()
