@@ -59,7 +59,7 @@ import string
 import datetime
 import time
 import tweepy
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 class app_config( object ):
     """Application-Config """
@@ -219,7 +219,7 @@ def tweet_log(log_message):
         #lib_cm.message_write_to_console( ac, tweet_log )
     except Exception, e:
         log_message = ac.app_errorslist[1] + str(e) + " " + log_message[0:90]
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
 
 def tweet_message(log_message):
     """ Log als Message an Twitter uebertragen """
@@ -233,10 +233,10 @@ def tweet_message(log_message):
         for item in message_to:
             # mit strip ev. leerzeichen vor und hinter dem empfaengernamen entfernen
             api.send_direct_message(item.strip(), text=log_message[0:140])
-            db.write_log_to_db_1(ac, log_message[0:140], "p", "write_also_to_console" )
+            db.write_log_to_db_a(ac, log_message[0:140], "p", "write_also_to_console" )
     except Exception, e:
         log_message = ac.app_errorslist[1] + str(e) + " " + log_message[0:90]
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
         # damit die naechsten tweets nicht erst abgesendet werden wenn hier keine verbindung erfolgt
         tweet_error = "yes"
     
@@ -287,7 +287,7 @@ def lets_rock():
         load_notis(c_time_back)
     else:
         log_message = ac.app_errorslist[1] + " Twittern ausgesetzt"
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
     
     # alte logs des vortages loeschen
     if datetime.datetime.now().hour == 0:
@@ -308,7 +308,7 @@ if __name__ == '__main__':
             if db.ac_config_1[1] == "on":
                 lets_rock()
             else:
-                db.write_log_to_db_1(ac, "Log_Tweeter ausgeschaltet", "e", "write_also_to_console" )
+                db.write_log_to_db_a(ac, "Log_Tweeter ausgeschaltet", "e", "write_also_to_console" )
     #lets_rock()
     # fertsch
     #db.write_log_to_db(ac,  ac.app_desc + " gestoppt", "s")
