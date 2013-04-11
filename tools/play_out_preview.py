@@ -39,7 +39,7 @@ ehe sich die Wahrheit die Schuhe anzieht. Mark Twain
 import sys
 import datetime
 import urllib
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -86,7 +86,7 @@ def load_prev_sendungen(ac ):
     db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '" + c_date_time + "' " 
         "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F'")
     
-    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_1( ac,  db,  db_tbl_condition )
+    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_a( ac,  db,  db_tbl_condition )
     if sendung_data is None:
         log_message = u"Keine Sendungen für: " + str(ac.time_target.date() ) 
         db.write_log_to_db(ac, log_message, "t"  )
@@ -135,15 +135,15 @@ def beam_prev_sendungen(list_preview_sendungen ):
         log_message = u"urlencode Error: %s" % str(e)
         db.write_log_to_db( ac, log_message, "x"  )
         log_message = u"urlencode Error Data " + c_autor + " " + c_title
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
         log_message = u"Uebertragung auf Web-Server abgebrochen "
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
         return None
     
     # uebertragen
     web = lib_cm.upload_data(ac, db, url, data_upload_encoded)
     if web is None:
-        db.write_log_to_db_1(ac,  ac.app_errorslist[2] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[2] , "x", "write_also_to_console" )
         return None
         
     lib_cm.message_write_to_console( ac, web )
@@ -172,7 +172,7 @@ def lets_rock():
     beam_ok = beam_prev_sendungen(list_preview_sendungen)
     if beam_ok is None:
         # Error 001 Fehler beim Uebertragen zum Web-Server
-        db.write_log_to_db_1(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
     
     return
     
