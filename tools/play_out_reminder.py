@@ -38,7 +38,7 @@ Jonathan Swift
 
 import sys
 import datetime
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -70,13 +70,13 @@ def load_off_air_sendungen(ac ):
         "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) <= '" + c_date_time_to + "' " 
         "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F'")
     
-    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_1( ac,  db,  db_tbl_condition )
+    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_a( ac,  db,  db_tbl_condition )
     if sendung_data is None:
         log_message = u"Keine Off-Air-Sendungen fuer: " + c_date_time_from + u" bis " + c_date_time_to
     else:   
         log_message = u"Off-Air-Sendungen vorhanden von: " + c_date_time_from + u" bis " + c_date_time_to + " Uhr"
     
-    db.write_log_to_db_1(ac,  log_message, "t", "write_also_to_console" )
+    db.write_log_to_db_a(ac,  log_message, "t", "write_also_to_console" )
     return sendung_data
     
 def load_studio_sendungen(ac ):
@@ -91,13 +91,13 @@ def load_studio_sendungen(ac ):
         "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) <= '" + c_date_time_to + "' " 
         "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F'")
     
-    sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_1( ac,  db,  db_tbl_condition )
+    sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_a( ac,  db,  db_tbl_condition )
     if sendung_data is None:
         log_message = u"Keine Studio-Sendungen fuer: " + c_date_time_from + u" bis " + c_date_time_to
     else:
         log_message = u"Studio-Sendungen vorhanden von: " + c_date_time_from + u" bis " + c_date_time_to + " Uhr"
     
-    db.write_log_to_db_1(ac,  log_message, "t", "write_also_to_console" )
+    db.write_log_to_db_a(ac,  log_message, "t", "write_also_to_console" )
     return sendung_data
 
 
