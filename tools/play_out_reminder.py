@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable-msg=C0103
 
 """
 Play Out Reminder 
@@ -51,51 +52,72 @@ class app_config( object ):
         self.app_errorfile = "error_play_out_reminder.log"
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # zeit fuer sendungensuche: ab jetzt
-        #self.time_target = datetime.datetime.now() + datetime.timedelta( )
+        #self.time_target = datetime.datetime.now() + datetime.timedelta()
         # ab naechste stunde
-        self.time_target = datetime.datetime.now() + datetime.timedelta( hours=+1 )
+        self.time_target = (datetime.datetime.now() 
+                            + datetime.timedelta(hours=+1))
 
 
-def load_off_air_sendungen(ac ):
-    """In DB nachsehen, ob nicht freigeschaltene Sendungen fuer die kommende Stunde vorgesehen sind """
-    lib_cm.message_write_to_console( ac, "load_prev_sendungen" )
+def load_off_air_sendungen():
+    """
+    In DB nachsehen, 
+    ob nicht freigeschaltene Sendungen fuer die kommende Stunde vorgesehen sind 
+    """
+    lib_cm.message_write_to_console(ac, "load_prev_sendungen")
     # zfill fuellt nullen auf bei einstelliger stundenzahl
     
-    c_date_time_from = str( ac.time_target.date() ) + " " + str( ac.time_target.hour ).zfill(2) 
-    c_date_time_to = str( ac.time_target.date() ) + " " + str( ac.time_target.hour +1 ).zfill(2) 
+    c_date_time_from = (str( ac.time_target.date() ) + " " 
+                        + str( ac.time_target.hour ).zfill(2))
+    c_date_time_to = (str( ac.time_target.date() ) + " " 
+                        + str( ac.time_target.hour +1 ).zfill(2))
     db_tbl_condition = ("A.SG_HF_ON_AIR = 'F' "
-        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '" + c_date_time_from + "' " 
-        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) <= '" + c_date_time_to + "' " 
+        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '" 
+        + c_date_time_from + "' " 
+        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) <= '" 
+        + c_date_time_to + "' " 
         "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F'")
     
-    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_a( ac,  db,  db_tbl_condition )
+    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_a(ac, 
+                                        db, db_tbl_condition)
     if sendung_data is None:
-        log_message = u"Keine Off-Air-Sendungen fuer: " + c_date_time_from + u" bis " + c_date_time_to
+        log_message = (u"Keine Off-Air-Sendungen fuer: " 
+                       + c_date_time_from + u" bis " + c_date_time_to)
     else:   
-        log_message = u"Off-Air-Sendungen vorhanden von: " + c_date_time_from + u" bis " + c_date_time_to + " Uhr"
+        log_message = (u"Off-Air-Sendungen vorhanden von: " 
+                       + c_date_time_from + u" bis " + c_date_time_to + " Uhr")
     
     db.write_log_to_db_a(ac,  log_message, "t", "write_also_to_console" )
     return sendung_data
     
-def load_studio_sendungen(ac ):
-    """In DB nachsehen, ob Studio-Sendungen fuer die kommende Stunde vorgesehen sind """
-    lib_cm.message_write_to_console( ac, "load_studio_live_sendungen" )
+def load_studio_sendungen():
+    """
+    In DB nachsehen, 
+    ob Studio-Sendungen fuer die kommende Stunde vorgesehen sind 
+    """
+    lib_cm.message_write_to_console(ac, "load_studio_live_sendungen")
     # zfill fuellt nullen auf bei einstelliger stundenzahl
     
-    c_date_time_from = str( ac.time_target.date() ) + " " + str( ac.time_target.hour ).zfill(2) 
-    c_date_time_to = str( ac.time_target.date() ) + " " + str( ac.time_target.hour +1 ).zfill(2) 
+    c_date_time_from = (str( ac.time_target.date() ) + " " 
+                        + str( ac.time_target.hour ).zfill(2))
+    c_date_time_to = (str( ac.time_target.date() ) + " " 
+                        + str( ac.time_target.hour +1 ).zfill(2))
     db_tbl_condition = ("A.SG_HF_SOURCE_ID <> '03' "
-        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '" + c_date_time_from + "' " 
-        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) <= '" + c_date_time_to + "' " 
+        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '" 
+        + c_date_time_from + "' " 
+        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) <= '" 
+        + c_date_time_to + "' " 
         "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F'")
     
-    sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_a( ac,  db,  db_tbl_condition )
+    sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_a(ac, 
+                                        db, db_tbl_condition)
     if sendung_data is None:
-        log_message = u"Keine Studio-Sendungen fuer: " + c_date_time_from + u" bis " + c_date_time_to
+        log_message = (u"Keine Studio-Sendungen fuer: " 
+                       + c_date_time_from + u" bis " + c_date_time_to)
     else:
-        log_message = u"Studio-Sendungen vorhanden von: " + c_date_time_from + u" bis " + c_date_time_to + " Uhr"
+        log_message = (u"Studio-Sendungen vorhanden von: " 
+                       + c_date_time_from + u" bis " + c_date_time_to + " Uhr")
     
     db.write_log_to_db_a(ac,  log_message, "t", "write_also_to_console" )
     return sendung_data
@@ -104,25 +126,29 @@ def load_studio_sendungen(ac ):
 def log_off_air_sendungen(list_off_air_sendungen ):
     """ Off-Air Sendungen in Log registrieren """
     for item in list_off_air_sendungen:            
-        db.write_log_to_db( ac, u"Achtung, Sendung nicht freigeschalten: " + str(item[2]) + u" - " + item[15] + u" - " + item[11] , "n")
+        db.write_log_to_db( ac, 
+            u"Achtung, Sendung nicht freigeschalten: " 
+            + str(item[2]) + u" - " + item[15] + u" - " + item[11] , "n")
 
 def log_studio_sendungen(list_studio_sendungen ):
     """ Studio Sendungen in Log registrieren """
     for item in list_studio_sendungen:            
-        db.write_log_to_db( ac, u"Achtung, Sendung aus Studio/ von ISDN o.a. vorgesehen: " + str(item[2]) + u" - " + item[15] + u" - " + item[11] , "n" )
+        db.write_log_to_db( ac, 
+            u"Achtung, Sendung aus Studio/ von ISDN o.a. vorgesehen: " 
+            + str(item[2]) + u" - " + item[15] + u" - " + item[11] , "n" )
 
 
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock " 
     # off-air-sendungen holen 
-    list_off_air_sendungen = load_off_air_sendungen(ac)
+    list_off_air_sendungen = load_off_air_sendungen()
     if list_off_air_sendungen is not None: 
         # sendungen in log-tabelle schreiben
         log_off_air_sendungen(list_off_air_sendungen)
 
     # studio-sendungen holen 
-    list_studio_sendungen = load_studio_sendungen(ac)
+    list_studio_sendungen = load_studio_sendungen()
     if list_studio_sendungen is not None: 
         # sendungen in log-tabelle schreiben
         log_studio_sendungen(list_studio_sendungen)
