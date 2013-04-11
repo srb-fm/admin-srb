@@ -53,7 +53,7 @@ import re
 import datetime
 import os
 import shutil
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -306,16 +306,10 @@ def erase_files_from_protokoll_temp( ):
     # Dateinamensyntax Rotter: SRB_Prot-2012-05-04-17.mp3
     # item[4:14]
     
-    
     z = 0
     for item in files_sendung_temp:
-        #print item
-        #print item[4:14]
-        #print item[23:27]
-        #len(variable_name)
+        # datum extrahieren
         date_filename = item[len(db.ac_config_1[5])+1:len(db.ac_config_1[5])+11]
-        #print date_filename
-        #if item[4:14] <= date_to_erase:
         if date_filename <= date_to_erase:
             # Infofiles die mit 001 beginnen ignorieren
             if item[0:3] != "001":
@@ -362,28 +356,6 @@ def check_files_in_protokoll_completely( n_days_back ):
     path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
     path_sendung_dest += date_proto.strftime("%Y_%m_%d") 
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
-
-
-    #if ac.app_windows == "yes":
-        # pfad anpassen, win-backslash hinten dran:
-     #   if path_sendung_source[-1] != "\\":
-     #       path_sendung_source += "\\"
-        
-        #Pfad mit Datum ergaenzen
-     #   if path_sendung_dest[-1] != "\\":
-     #       path_sendung_dest += "\\" 
-     #       path_sendung_dest += date_proto.strftime("%Y_%m_%d") 
-     #       path_sendung_dest += "\\"
-        
-    #else:
-     #   if path_sendung_source[-1] != "/":
-     #       path_sendung_source += "/" 
-    
-        #Pfad mit Datum ergaenzen
-     #   if path_sendung_dest[-1] != "/":
-     #       path_sendung_dest += "/" 
-     #       path_sendung_dest += date_proto.strftime("%Y_%m_%d") 
-     #       path_sendung_dest += "/"
     
     lib_cm.message_write_to_console( ac, path_sendung_source )
     lib_cm.message_write_to_console( ac, path_sendung_dest )
@@ -480,7 +452,7 @@ def lets_rock():
     write_ok = write_files_to_protokoll()
     if write_ok is None:
         # Error 001 Fehler beim Kopieren in Protokoll-Archiv
-        db.write_log_to_db_1(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
     else:
         ac.action_summary = u"Audio-Protokoll archiviert"
     
@@ -488,13 +460,13 @@ def lets_rock():
     erase_proto_ok = erase_files_from_protokoll()
     if erase_proto_ok is None:
         # Error 002 Fehler beim Loeschen veralteter archivierter Protokoll-Dateien
-        db.write_log_to_db_1(ac,  ac.app_errorslist[2] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[2] , "x", "write_also_to_console" )
     
     # Temp-Protokoll-Dateien loeschen
     erase_temp_ok = erase_files_from_protokoll_temp()
     if erase_proto_ok is None:
         # Error 003 Fehler beim Loeschen veralteter temporaerer Protokoll-Dateien
-        db.write_log_to_db_1(ac,  ac.app_errorslist[3] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[3] , "x", "write_also_to_console" )
     
     # Kopieren nachholen wenn bei vorigen Tagen Fehler beim Kopieren aufgetreten
     n_days_back = int(db.ac_config_1[7]) +1
@@ -504,19 +476,19 @@ def lets_rock():
             check_ok = check_files_in_protokoll_completely( i )
             if check_ok is None:
                 # Error 004 Fehler beim Ueberpruefen von Protokoll-Dateien
-                db.write_log_to_db_1(ac,  ac.app_errorslist[4] , "x", "write_also_to_console" )
+                db.write_log_to_db_a(ac,  ac.app_errorslist[4] , "x", "write_also_to_console" )
     
     # Veraltete Log-Eintraege in DB loeschen
     #delete_ok = delete_log_in_db( )
     #if delete_ok is None:
         # Error 005 Fehler beim Loeschen veralteter Logeintraege
-        #db.write_log_to_db_1(ac,  ac.app_errorslist[5] , "x", "write_also_to_console" )
+        #db.write_log_to_db_a(ac,  ac.app_errorslist[5] , "x", "write_also_to_console" )
 
     # Veraltete Log-Eintraege in DB-log loeschen
     delete_ok = delete_log_in_db_log( )
     if delete_ok is None:
         # Error 005 Fehler beim Loeschen veralteter Logeintraege
-        db.write_log_to_db_1(ac,  ac.app_errorslist[5] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[5] , "x", "write_also_to_console" )
 
     return
 
