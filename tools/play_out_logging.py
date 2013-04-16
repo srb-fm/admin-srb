@@ -81,7 +81,7 @@ import types
 import re
 import datetime
 import urllib
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -173,7 +173,7 @@ def upload_data_prepare():
     """ Upload auf Webserver vorbereiten """
     # Bei I-Netfehler upload aussetzen
     if ac.app_counter_error > 3:
-        db.write_log_to_db_1(ac,  ac.app_errorslist[5] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[5] , "x", "write_also_to_console" )
         ac.app_counter_error = 0
         return
         
@@ -209,7 +209,7 @@ def upload_data_prepare():
 
     web = lib_cm.upload_data(ac, db, ac.config_extended[5], data_upload_encoded)
     if web is None:
-        db.write_log_to_db_1(ac,  ac.app_errorslist[4] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[4] , "x", "write_also_to_console" )
         ac.app_counter_error += 1
         return web
     
@@ -221,7 +221,7 @@ def upload_data_prepare():
     return web
 
     
-def work_on_data_from_logfile(time_now,  log_data):
+def work_on_data_from_logfile( time_now,  log_data):
     """Daten aus mAirlist-Logfile extrahieren"""
     lib_cm.message_write_to_console(ac, u"work_on_data_from_logfile" )
     log_start = extract_from_stuff(log_data,  "start=", 6 , "&author=",  0)
@@ -233,12 +233,12 @@ def work_on_data_from_logfile(time_now,  log_data):
     sendung_data_search_for_id_only = "no"
     
     # Falls Uebernahme per Inetstream, erkennbar an http
-    if  log_title[0 : 7] == "http://":
-        lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream" )
-        db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '" + str( time_now.date() )+ "' " 
-            "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '" + str( time_now.hour ) + "' AND B.SG_HF_CONT_FILENAME ='" + log_title + "'" )
-        # daten aus db holen
-        sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac, db, db_tbl_condition)
+    if log_title[0 : 7] == "http://":
+       lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream" )
+       db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '" + str( time_now.date() )+ "' " 
+           "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '" + str( time_now.hour ) + "' AND B.SG_HF_CONT_FILENAME ='" + log_title + "'" )
+       # daten aus db holen
+       sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac, db, db_tbl_condition)
     
     
     # Falls SRB-Dateiname, erkennbar an 7stelliger Zahl am Anfang
@@ -363,7 +363,7 @@ class my_form( Frame ):
         # WICHTIG:  Der log_text nach dem hier gesucht wird, wird von play_out_load geschrieben
         
         if source_log is None:            
-            db.write_log_to_db_1(ac, ac.app_errorslist[1], "x", "write_also_to_console")
+            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x", "write_also_to_console")
             log_meldung_1 = ac.app_errorslist[1] + "\n"
             self.display_logging(log_meldung_1, None)
             return
@@ -408,7 +408,7 @@ class my_form( Frame ):
             sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac, db, db_tbl_condition)
             if sendung_data is not None:
                 if ac.log_start == str( sendung_data[2] ):
-                    # Startzeit der Sendung ist gleich der im vorigen Durchlauf ermittelten Sendung, also laeuft sie noch, keine Aenderung
+                    # Startzeit der Sendung (SG_HF_TIME) ist gleich der im vorigen Durchlauf ermittelten Sendung, also laeuft sie noch, keine Aenderung
                     lib_cm.message_write_to_console(ac, u"ISDN-Uebertragung laeuft noch" )
                     log_meldung_1 = ("Keine Aenderung... \n" +
                     ac.log_start + " - " + ac.log_author + " - " + ac.log_title )
@@ -435,7 +435,7 @@ class my_form( Frame ):
             if mairlist_log_data is None:
                 # Fehler beim Lesen des Logfiles
                 ac.error_counter_read_log_file += 1
-                db.write_log_to_db_1(ac, ac.app_errorslist[2], "x", "write_also_to_console")
+                db.write_log_to_db_a(ac, ac.app_errorslist[2], "x", "write_also_to_console")
                 log_meldung_1 = ac.app_errorslist[1] + " \n"
                 if ac.error_counter_read_log_file == 1: 
                     # Fehler-Meldung nur einmal uebertragen
@@ -478,7 +478,7 @@ class my_form( Frame ):
         # Bezeichnung der Quelle holen
         log_source_desc = db.read_tbl_row_with_cond(ac,  db, "SG_HF_SOURCE",  "SG_HF_SOURCE_ID, SG_HF_SOURCE_DESC", "SG_HF_SOURCE_ID ='" +source_id +"'" )
         # 5. Logging in db
-        db.write_log_to_db(ac, log_source_desc[1] + ": " + ac.log_author + " - " +  ac.log_title, "a")  
+        db.write_log_to_db(ac, log_source_desc[1].strip() + ": " + ac.log_author + " - " +  ac.log_title, "a")  
         log_meldung_1 = log_source_desc[1] + ": \n" + ac.log_author + " - " +  ac.log_title
     
         # 6. Upload auf Webserver
