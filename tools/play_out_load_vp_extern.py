@@ -61,7 +61,7 @@ import shutil
 import subprocess
 import ftplib
 import socket
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -113,7 +113,7 @@ def load_roboting_sgs(ac):
     if sendungen_data is None:
         log_message = u"Keine Sendungen fuer Uebernahme als VPs vorgesehen.. "
         #db.write_log_to_db( ac,  log_message, "t" )
-        db.write_log_to_db_1(ac,  log_message, "t", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  log_message, "t", "write_also_to_console" )
         return sendungen_data
     
     return sendungen_data
@@ -122,12 +122,12 @@ def load_sg(ac, sg_titel ):
     """Erstsendung suchen"""
     lib_cm.message_write_to_console( ac, u"Sendung suchen" )
     db_tbl_condition = "A.SG_HF_FIRST_SG ='T' AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '" + str( ac.time_target.date() )+ "' " + "AND B.SG_HF_CONT_TITEL='"+ sg_titel +"' "
-    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_2(ac, db, db_tbl_condition)
+    sendung_data =  db.read_tbl_rows_sg_cont_ad_with_cond_b(ac, db, db_tbl_condition)
     
     if sendung_data is None:
         log_message = u"Keine Sendung mit diesem Titel gefunden: " + sg_titel
         #db.write_log_to_db( ac,  log_message, "t" )
-        db.write_log_to_db_1(ac,  log_message, "t", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  log_message, "t", "write_also_to_console" )
         return sendung_data
     
     return sendung_data
@@ -145,7 +145,7 @@ def audio_validate(ac, file_dest):
         p = subprocess.Popen([c_validator, u"-f", c_source_file],  stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(  )
     except Exception, e:
         log_message = ac.app_errorslist[4] +u": %s" % str(e)
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
         return
     lib_cm.message_write_to_console( ac, u"returncode 0" )
     lib_cm.message_write_to_console( ac, p[0] )
@@ -162,12 +162,12 @@ def audio_validate(ac, file_dest):
         lib_cm.message_write_to_console( ac, "ok" )
         #bak-Datei löschen
         c_source_file = c_source_file + ".bak"
-        delete_bak_ok = lib_cm.erase_file_1(ac, db, c_source_file,  u"mp3validator-bak-Datei geloescht " )    
+        delete_bak_ok = lib_cm.erase_file_a(ac, db, c_source_file,  u"mp3validator-bak-Datei geloescht " )    
         if delete_bak_ok is None:
             # Error 004 Fehler beim Loeschen der mp3validator-bak-Datei
-            db.write_log_to_db_1(ac,  ac.app_errorslist[4], "x", "write_also_to_console")
+            db.write_log_to_db_a(ac,  ac.app_errorslist[4], "x", "write_also_to_console")
     else:
-        db.write_log_to_db_1(ac,  u"mp3-Validator fix offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  u"mp3-Validator fix offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
     
 def audio_mp3gain(ac, path_file_dest):
     """mp3-File Gainanpassung"""
@@ -181,7 +181,7 @@ def audio_mp3gain(ac, path_file_dest):
         p = subprocess.Popen([c_mp3gain, u"-r", c_source_file],  stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(  )
     except Exception, e:
         log_message = ac.app_errorslist[3] + u": %s" % str(e)
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
         return
 
     lib_cm.message_write_to_console( ac, u"returncode 0" )
@@ -200,7 +200,7 @@ def audio_mp3gain(ac, path_file_dest):
         db.write_log_to_db( ac, log_message, "k" )
         lib_cm.message_write_to_console( ac, "ok" )
     else:
-        db.write_log_to_db_1(ac,  u"mp3gain offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  u"mp3gain offenbar nicht noetig: " + c_source_file, "p", "write_also_to_console" )
 
 def check_and_work_on_files(roboting_sgs):
     """ 
@@ -221,8 +221,7 @@ def check_and_work_on_files(roboting_sgs):
             lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden" )
             continue
         
-        #db.write_log_to_db_1(ac, u"Sendung fuer VP-Uebernahme gefunden: "+sendung[0][11], "t", "write_also_to_console" )
-        db.write_log_to_db_1(ac, u"Sendung fuer VP-Uebernahme gefunden: "+sendung[0][11].encode('ascii', 'ignore'), "t", "write_also_to_console" )
+        db.write_log_to_db_a(ac, u"Sendung fuer VP-Uebernahme gefunden: "+sendung[0][11].encode('ascii', 'ignore'), "t", "write_also_to_console" )
         
         try:
             #lib_cm.message_write_to_console(ac, l_titel_file[1] )
@@ -235,7 +234,7 @@ def check_and_work_on_files(roboting_sgs):
             path_file_dest = path_dest + str(sendung[0][8]) + "_" + sendung[0][16] + "_" + lib_cm.replace_sonderzeichen_with_latein( sendung[0][13]) + ".mp3"
         except Exception, e:
             log_message = ac.app_errorslist[5] + str(e)
-            db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console" )
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
             continue
         
         lib_cm.message_write_to_console(ac, path_file_source )
@@ -243,21 +242,21 @@ def check_and_work_on_files(roboting_sgs):
 
         if not os.path.isfile( path_file_source ):
             lib_cm.message_write_to_console( ac, u"nicht vorhanden: "+ path_file_dest )
-            db.write_log_to_db_1(ac, u"Audio Vorproduktion noch nicht vorhanden: "+ path_file_source, "f", "write_also_to_console" )
+            db.write_log_to_db_a(ac, u"Audio Vorproduktion noch nicht vorhanden: "+ path_file_source, "f", "write_also_to_console" )
             continue
 
         if os.path.isfile( path_file_dest ):
             lib_cm.message_write_to_console( ac, u"vorhanden: "+ path_file_dest )
-            db.write_log_to_db_1(ac, u"Audiodatei fuer Sendung bereits vorhanden: "+ path_file_dest, "k", "write_also_to_console" )
+            db.write_log_to_db_a(ac, u"Audiodatei fuer Sendung bereits vorhanden: "+ path_file_dest, "k", "write_also_to_console" )
             continue
             
         # In Play-Out kopieren
         try:
             shutil.copy( path_file_source, path_file_dest )
-            db.write_log_to_db_1(ac, u"Audio Vorproduktion: "+ path_file_source, "v", "write_also_to_console" )
-            db.write_log_to_db_1(ac, u"Audio kopiert nach: "+ path_file_dest, "c", "write_also_to_console" )
+            db.write_log_to_db_a(ac, u"Audio Vorproduktion: "+ path_file_source, "v", "write_also_to_console" )
+            db.write_log_to_db_a(ac, u"Audio kopiert nach: "+ path_file_dest, "c", "write_also_to_console" )
         except Exception, e:
-            db.write_log_to_db_1(ac,  ac.app_errorslist[1], "x", "write_also_to_console" )
+            db.write_log_to_db_a(ac,  ac.app_errorslist[1], "x", "write_also_to_console" )
             log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
             lib_cm.message_write_to_console( ac, log_message )
             db.write_log_to_db(ac, log_message, "x" )
@@ -271,8 +270,8 @@ def check_and_work_on_files(roboting_sgs):
         else:
             filename = path_file_dest[string.rfind(path_file_dest,  "\\")+1:]
             
-        db.write_log_to_db_1(ac, "VP bearbeitet: " + filename, "i", "write_also_to_console" )
-        db.write_log_to_db_1(ac, "VP bearbeitet: " + filename, "n", "write_also_to_console" )
+        db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "i", "write_also_to_console" )
+        db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "n", "write_also_to_console" )
 
 
 def lets_rock():
@@ -297,7 +296,10 @@ if __name__ == "__main__":
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac,  db)
     if db.ac_config_1 is not None:
-        lets_rock()
+        param_check = lib_cm.params_check_1(ac, db) 
+        # alles ok: weiter
+        if param_check is not None: 
+            lets_rock()
 
     # fertsch
     db.write_log_to_db(ac,  ac.app_desc + u" gestoppt", "s")
