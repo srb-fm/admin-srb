@@ -64,7 +64,7 @@ import re
 import datetime
 import os
 import shutil
-import lib_common as lib_cm
+import lib_common_1 as lib_cm
 
 
 class app_config( object ):
@@ -123,17 +123,6 @@ def write_files_to_archive_prepare( sendung_art ):
     # pfad anpassen
     path_sendung_source = lib_cm.check_slashes(ac, path_sendung_source)
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
-    #if ac.app_windows == "yes":
-        # pfad anpassen, win-backslash hinten dran:
-    #    if path_sendung_source[-1] != "\\":
-    #        path_sendung_source += "\\" 
-    #    if path_sendung_dest[-1] != "\\":
-    #        path_sendung_dest += "\\" 
-    #else:
-    #    if path_sendung_source[-1] != "/":
-    #        path_sendung_source += "/" 
-    #    if path_sendung_dest[-1] != "/":
-    #        path_sendung_dest += "/" 
     
     lib_cm.message_write_to_console( ac, path_sendung_source )
     lib_cm.message_write_to_console( ac, path_sendung_dest )
@@ -162,11 +151,6 @@ def write_files_to_archive_prepare( sendung_art ):
 
     # pfad anpassen
     current_year_path = path_sendung_dest + lib_cm.check_slashes(ac, current_year)
-    
-    #if ac.app_windows == "yes":
-    #    current_year_path =  path_sendung_dest + current_year + "\\" 
-    #else:
-    #    current_year_path =  path_sendung_dest + current_year + "/"
     
     try:
         if not os.path.exists( current_year_path ):
@@ -202,7 +186,7 @@ def write_files_to_archive_prepare( sendung_art ):
             # sind bei den Durchlaeufen mehr als x mal keine Dateien kopiert worden, erstmal aussetzen indem ein Dummy-Satz eingetragen
             if z_non_copys >= 3:
                 log_message = u"Dateien archiviert von: " + sendung_art + " - "  +  item + " - uebersprungen"
-                db.write_log_to_db_1(ac, log_message, "e", "write_also_to_console" )
+                db.write_log_to_db_a(ac, log_message, "e", "write_also_to_console" )
                 continue
             else:
                 write_files_to_archive( files_sendung_source, path_sendung_source,  path_sendung_dest, item, sendung_art )
@@ -224,12 +208,6 @@ def write_files_to_archive(files_sendung_source, path_sendung_source, path_sendu
 
     # pfad anpassen
     path_sendung_dest += lib_cm.check_slashes(ac, dir_year)
-    
-    #if ac.app_windows == "yes":
-    #    path_sendung_dest +=  dir_year + "\\"
-    #else:
-    #    path_sendung_dest +=  dir_year + "/"
-    
     log_message = u"Dateien archivieren nach: " + path_sendung_dest
     db.write_log_to_db( ac, log_message, "f" )
     
@@ -260,7 +238,8 @@ def write_files_to_archive(files_sendung_source, path_sendung_source, path_sendu
             db_tbl_order = "A.SG_HF_TIME"
             sendung_data =  db.read_tbl_rows_sg_cont_ad_with_limit_cond_and_order( ac,  db,  db_tbl_limit, db_tbl_condition,  db_tbl_order )
             #print sendung_data
-            if sendung_data != "nix":
+            #if sendung_data != "nix":
+            if sendung_data is not None:
                 for row in sendung_data:
                     y += 1
                     #print row
@@ -329,18 +308,6 @@ def erase_files_from_play_out_prepare( sendung_art ):
     # pfad anpassen
     path_sendung_source = lib_cm.check_slashes(ac, path_sendung_source)
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
-    
-    #if ac.app_windows == "yes":
-        # pfad anpassen, win-backslash hinten dran:
-    #    if path_sendung_source[-1] != "\\":
-    #        path_sendung_source += "\\" 
-    #    if path_sendung_dest[-1] != "\\":
-    #        path_sendung_dest += "\\" 
-    #else:
-    #    if path_sendung_source[-1] != "/":
-    #        path_sendung_source += "/" 
-    #    if path_sendung_dest[-1] != "/":
-    #        path_sendung_dest += "/" 
     
     lib_cm.message_write_to_console( ac, path_sendung_source )
     lib_cm.message_write_to_console( ac, path_sendung_dest )
@@ -448,7 +415,8 @@ def erase_files_from_play_out( files_sendung_source, path_sendung_source,  path_
                     lib_cm.message_write_to_console( ac, item )
                     # nur  
                     if sendung_date < date_back and sendung_year == int( dir_year ) :
-                        if row[13] != "05":
+                        if row[13].strip() != "05":
+                            # Jingle SRB (05) nicht loeschen 
                             lib_cm.message_write_to_console( ac, u"loeschen: " + row[12] )
                             file_source = path_sendung_source + item
                             
@@ -495,26 +463,26 @@ def lets_rock():
     archiv_ok = write_files_to_archive_prepare( sendung_art )
     if archiv_ok is None:
         # Error 001 Fehler beim Lesen oder Schreiben von Archiv-Ordnern oder Dateien
-        db.write_log_to_db_1(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
         return
     
     erase_files_ok = erase_files_from_play_out_prepare(sendung_art )
     if erase_files_ok is None:
         # Error 002 Fehler beim Loeschen von Dateien in Play-Out
-        db.write_log_to_db_1(ac,  ac.app_errorslist[2] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[2] , "x", "write_also_to_console" )
         return
     
     sendung_art = "Sendung normal"
     archiv_ok_1 = write_files_to_archive_prepare(sendung_art )
     if archiv_ok_1 is None:
         # Error 001 Fehler beim Lesen oder Schreiben von Archiv-Ordnern oder Dateien
-        db.write_log_to_db_1(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[1] , "x", "write_also_to_console" )
         return
     
     erase_files_ok_1 = erase_files_from_play_out_prepare(sendung_art )
     if erase_files_ok_1 is None:
         # Error 002 Fehler beim Loeschen von Dateien in Play-Out
-        db.write_log_to_db_1(ac,  ac.app_errorslist[2] , "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac,  ac.app_errorslist[2] , "x", "write_also_to_console" )
         return
     
     return
