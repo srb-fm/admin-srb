@@ -104,6 +104,7 @@ class app_config(object):
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
         self.app_debug_mod = "no"
+        self.app_windows = "no"
 
 
 def write_files_to_archive_prepare( sendung_art ):
