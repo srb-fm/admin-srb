@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+	<title>Admin-SRB-Dispo</title>
+	<style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
+	<style type="text/css">	@import url("../parts/style/style_srb_jq_2.css"); </style>
+
+	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
+	<script type="text/javascript" src="../parts/jquery/jquery_my_tools/jq_my_tools_2.js"></script>
+</head>
+<body>
+
+<div id="main">
+	<!--#include virtual="../parts/site_elements/header_srb_2.inc" -->
+	<!--#include virtual="../parts/menu/menu_srb_root_1_eb_1.inc" -->
+	
+	<div class="column_left">
+		<div class="head_item_left">
+			<b>Disposition</b>	
+		</div>
+		<!--#include virtual="parts/dispo_menu.inc" -->	
+	</div>
+	
+	<div class="column_right">
+		<div class="head_item_right">
+			Terminplanung
+		</div>			
+		<div class="content">
+			<a href="https://srb-radio.de/kalender" target="_blank" title='Dispo Termine, Studios und Räume'><img id='first_element_of_toolbar' src='../parts/pict/1279122328_Contacts.png' width='32px' height='32px' title='Termine, Dispo Studios und Räume, Sendeplanung' alt='Termine, Dispo Studios und Räume, Sendeplanung'></a>	
+		</div>
+		<div class="content">
+			<ul class='u_list_normal'>
+			<li> Buchen von Studiozeiten
+			<li> Reservierung von Reportagesets
+			<li> Urlaubs- und Berufsschulzeiten
+			</ul>
+		</div>	
+	</div>		
+</div>
+<script type="text/JavaScript" src="../parts/js/js_my_tools/js_my_toolbar_focus.js"></script>
+</body>
+</html>
