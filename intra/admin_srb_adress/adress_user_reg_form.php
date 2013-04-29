@@ -127,7 +127,7 @@ if ( $user_rights == "yes" ) {
 			
 	// user_specials
 	$tbl_row_a = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'Nutzer_Anmeldung'");
-	echo "<textarea class='textarea_a_2' name='ad_text'>";
+	echo "<textarea class='textarea_a_5' name='ad_text'>";
 	echo $tbl_row_a->USER_SP_TEXT;
 	echo "</textarea>";
 	echo "<div class='space_line'> </div>";

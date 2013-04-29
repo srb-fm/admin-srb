@@ -129,7 +129,7 @@ if ( $user_rights == "yes" ) {
 			
 	// user_specials
 	$tbl_row_a = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'Nutzer_Einwilligung'");	
-	echo "<textarea class='textarea_a_3' name='ad_text'>".$tbl_row_a->USER_SP_TEXT."</textarea>";
+	echo "<textarea class='textarea_a_6' name='ad_text'>".$tbl_row_a->USER_SP_TEXT."</textarea>";
 	echo "<div class='space_line'> </div>";
 	echo "<div class='space_line'> </div>";
 	echo "<div class='space_line'> </div>";
