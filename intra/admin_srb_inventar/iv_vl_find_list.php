@@ -1,7 +1,7 @@
 <?php
 
 /** 
-* adress-details anzeigen 
+* Inventar Suchergebnisse von Verleih  
 *
 * PHP version 5
 *

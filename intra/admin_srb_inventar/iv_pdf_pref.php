@@ -1,7 +1,7 @@
 <?php
 
 /** 
-* adress-details anzeigen 
+* Inventar PDF-Listen zusammenstellen 
 *
 * PHP version 5
 *

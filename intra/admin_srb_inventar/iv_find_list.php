@@ -1,7 +1,7 @@
 <?php
 
 /** 
-* adress-details anzeigen 
+* Inventar Suchergebnisse 
 *
 * PHP version 5
 *

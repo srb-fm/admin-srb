@@ -1,6 +1,6 @@
 <?php
 /** 
-* adress-details anzeigen 
+* index inventar anzeigen 
 *
 * PHP version 5
 *

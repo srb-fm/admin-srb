@@ -1,7 +1,7 @@
 <?php
 
 /** 
-* adress-details anzeigen 
+* Inventar pdf Ausmusterungsformular 
 *
 * PHP version 5
 *

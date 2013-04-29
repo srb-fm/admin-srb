@@ -1,7 +1,7 @@
 <?php
 
 /** 
-* adress-details anzeigen 
+* inventar-details bearbeiten 
 *
 * PHP version 5
 *

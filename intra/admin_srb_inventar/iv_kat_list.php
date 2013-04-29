@@ -1,7 +1,7 @@
 <?php
 
 /** 
-* adress-details anzeigen 
+* Inventar Kategorien anzeigen 
 *
 * PHP version 5
 *
