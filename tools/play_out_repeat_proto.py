@@ -52,11 +52,9 @@ denn es ist nicht mehr das gleiche wie gestern.
 Krishnamurti
 """
 
-#import time
 import sys
 import os
 import string
-#import types
 import re
 import datetime
 import shutil
@@ -114,11 +112,14 @@ class app_config( object ):
         #self.time_target = datetime.datetime.now()
 
 
-#def load_sg_repeat(ac):
 def load_sg_repeat():
     """Pruefen ob Sendungen zur WH vorgesehen"""
     lib_cm.message_write_to_console(ac, u"load_podcast")
-
+    # wenn in Stunde 0, dann mit aktuellem Tag suchen,
+    # damit Sendungen von 23 bis 0 Uhr beruecksichtigt werden
+    if datetime.datetime.now().hour == 0:
+        ac.time_target = datetime.datetime.now()
+        
     db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '" 
                         + str( ac.time_target.date() )+ "' " 
                         + "AND A.SG_HF_REPEAT_PROTO='T' ")
@@ -137,7 +138,6 @@ def load_sg_repeat():
     db.write_log_to_db(ac, log_message, "e")
     return sendung_data
 
-#def load_sg_first(ac, sg_cont_nr ):
 def load_sg_first(sg_cont_nr):
     """Erstsednung zur WH suchen"""
     lib_cm.message_write_to_console(ac, u"Erstsednung zur WH suchen" )
@@ -230,7 +230,6 @@ def audio_mp3gain(file_dest):
         db.write_log_to_db_a(ac, u"mp3gain offenbar nicht noetig: " 
                              + c_source_file, "p", "write_also_to_console")
 
-#def audio_id3tag(ac, file_dest, id3_author, id3_title):
 def audio_id3tag(file_dest, id3_author, id3_title):
     """mp3-id3Tag schreiben"""
     lib_cm.message_write_to_console(ac, u"mp3-id3Tag schreiben" )
@@ -279,7 +278,7 @@ def check_and_work_on_files(repeat_sendung):
     lib_cm.message_write_to_console(ac, type(repeat_sendung[12].split("_")[0]) )
     lib_cm.message_write_to_console(ac, repeat_sendung[8] )
     lib_cm.message_write_to_console(ac, type(repeat_sendung[8]) )
-    # wenn Filename nicht gsplitet werden kann, wird nur ein splitt erzeugt
+    # wenn Filename nicht gsplittet werden kann, wird nur ein splitt erzeugt
     try:
         # wenn keine nr im filename fehler abfangen
         # Ergebnis des split repeat_sendung[12].split("_")[0]) ist unicode, 
@@ -328,13 +327,13 @@ def check_and_work_on_files(repeat_sendung):
         
     # Suchen ob vorhanden    
     if os.path.isfile(file_dest):
-        lib_cm.message_write_to_console( ac, u"vorhanden: "+ file_dest )
+        lib_cm.message_write_to_console(ac, u"vorhanden: " + file_dest )
         db.write_log_to_db_a(ac, 
             u"Audiodatei fuer Wiederholung bereits vorhanden: " 
             + file_dest, "k", "write_also_to_console")
         return
     
-    lib_cm.message_write_to_console( ac, u"nicht vorhanden: "+ file_dest )
+    lib_cm.message_write_to_console(ac, u"nicht vorhanden: " + file_dest )
     # Erstsendung suchen
     #first_sendung = load_sg_first(ac, repeat_sendung[8])
     first_sendung = load_sg_first(repeat_sendung[8])
@@ -422,9 +421,8 @@ def check_and_work_on_files(repeat_sendung):
         db.write_log_to_db(ac,  u"Dateiname in Sendeanmeldung aktualisiert: " 
                             + filename, "k")
     
-    #db.write_log_to_db(ac, u"Bearbeitet: " + filename, "p" )
-    db.write_log_to_db(ac, u"Fuer WH von Proto bearbeitet: " + filename, "i" )
-    db.write_log_to_db_a(ac, u"Fuer WH von Proto bearbeitet: " + filename, "n", 
+    db.write_log_to_db(ac, u"WH von Proto bearbeitet: " + filename, "i" )
+    db.write_log_to_db_a(ac, u"WH von Proto bearbeitet: " + filename, "n", 
         "write_also_to_console" )
 
 
@@ -433,7 +431,6 @@ def lets_rock():
     print "lets_rock " 
     
     # Sendungen holen die fuer Wiederholung aus Proto vorgesehen
-    #repeat_sendungen = load_sg_repeat(ac)
     repeat_sendungen = load_sg_repeat()
     if repeat_sendungen is None:
         db.write_log_to_db(ac, 
@@ -442,7 +439,6 @@ def lets_rock():
         return
     
     # Erstsendung suchen und pruefen ob sie schon gelaufen sind
-    #first_sg_vorhanden = None
     for item in repeat_sendungen:
         # item:  ASG_HF_ID, A.SG_HF_CONTENT_ID, 
         # A.SG_HF_TIME, A.SG_HF_DURATION, "
