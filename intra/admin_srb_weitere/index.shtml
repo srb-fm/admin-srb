@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+	<title>Admin-SRB weitere Module</title>
+	<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+	<style type="text/css">	@import url("../parts/style/style_srb_2.css");   </style>
+	<style type="text/css">	@import url("../parts/style/style_srb_jq_2.css");</style>
+
+	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
+	<script type="text/javascript" src="../parts/jquery/jquery_my_tools/jq_my_tools_2.js"></script>
+</head>
+<body>
+
+<div class="main">
+	<!--#include virtual="../parts/site_elements/header_srb_2.inc" -->
+	<!--#include virtual="../parts/menu/menu_srb_root_1_eb_1.inc" -->
+	
+	<div class="column_left">
+		<div class="head_item_left">
+			<b>Weitere Module</b>	
+		</div>
+		<!--#include virtual="parts/menu_srb_weitere.inc" -->		
+	</div>
+	
+	<div class="column_right">
+		<div class="head_item_right">
+			Weitere Module anzeigen und deren Inhalte bearbeiten
+		</div>
+		<div class="content">
+		<div>
+				<a href="../../admin_srb_user/index.php" title= 'Admin'><img src='../parts/pict/administrative_tools .png' width='48px' height='48px' title='Admin' alt='Admin'></a>
+				<a href="../../admin_srb_inventar/index.php" title= 'Inventar'><img src='../parts/pict/Box_content.png' width='48px' height='48px' title='Inventar' alt='Inventar'></a>
+				<a href="../../admin_srb_sendung_tv/index.php" title='Sendung TV'><img src='../parts/pict/tv.png' width='48px' height='48px' title='Sendung TV' alt='Sendung TV'></a> 		
+		</div>
+		
+		</div>
+	</div>		
+</div>
+
+</body>
+</html>
