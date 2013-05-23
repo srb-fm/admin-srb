@@ -1,0 +1,141 @@
+.cal_main {
+	background: #363E6F;
+	color : White;
+	position: relative;
+	left: auto;
+	width : 1190px;
+}
+
+.cal_head_item {
+	color : White;
+	margin-top : 6px;
+	margin-left: 1px;
+	padding-top : 3px;
+	padding-left : 5px;
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 14px;
+	font-weight: bold;
+	background : #63698D;
+	border-top : medium solid Navy;
+	border-bottom : medium solid #2C324A;
+	width: 1180px;
+	height: 18px;
+}
+
+
+.cal_content {
+	background: #F0F8FF;
+	color : Navy;
+	border-top : medium solid Navy;
+	border-bottom : medium solid #2C324A;
+	margin-top : 5px;
+	margin-left : 1px;
+	padding-top : 10px;
+	padding-left : 5px;
+	padding-bottom: 8px;
+	font-size : 10px;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	float : NONE;
+	width : 1180px;
+	height : 700px;
+}
+
+.cal_day {
+	color : Navy;
+	border-top : medium solid Navy;
+	border-bottom : medium solid #2C324A;
+	margin-top : 5px;
+	margin-left : 1px;
+	padding-top : 1px;
+	padding-left : 1px;
+	padding-bottom: 1px;
+	font-size : 12px;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	float : left;
+	width : 165px;
+}
+
+.cal_content_row_a {
+	color: Navy;
+	border-top: 2px solid Navy;
+	margin-top: 5px;
+	margin-left: 1px;
+	padding-top: 1px;
+	padding-left: 1px;
+	padding-bottom: 1px;
+	font-size: 9px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	width: 160px;
+	background-color: #E4FFCE;
+}
+
+.cal_content_row_a_it {
+	color: Navy;
+	border-top: 2px solid red;
+	margin-top: 5px;
+	margin-left: 1px;
+	padding-top: 1px;
+	padding-left: 1px;
+	padding-bottom: 1px;
+	font-size: 9px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	width: 160px;
+	background-color: #E4FFCE;
+}
+
+.cal_content_row_a_mg {
+	color: Navy;
+	border-top: 2px solid #FF9933;
+	margin-top: 5px;
+	margin-left: 1px;
+	padding-top: 1px;
+	padding-left: 1px;
+	padding-bottom: 1px;
+	font-size: 9px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	width: 160px;
+	background-color: #E4FFCE;
+}
+
+.cal_content_row_b {
+	color: Navy;
+	border-top: 2px solid Navy;
+	margin-top: 5px;
+	margin-left: 1px;
+	padding-top: 1px;
+	padding-left: 1px;
+	padding-bottom: 1px;
+	font-size: 9px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	width: 160px;
+	background-color: #D2F0FF;
+}
+
+.cal_content_row_b_it {
+	color: Navy;
+	border-top: 2px solid red;
+	margin-top: 5px;
+	margin-left: 1px;
+	padding-top: 1px;
+	padding-left: 1px;
+	padding-bottom: 1px;
+	font-size: 9px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	width: 160px;
+	background-color: #D2F0FF;
+}
+
+.cal_content_row_b_mg {
+	color: Navy;
+	border-top: 2px solid #FF9933;
+	margin-top: 5px;
+	margin-left: 1px;
+	padding-top: 1px;
+	padding-left: 1px;
+	padding-bottom: 1px;
+	font-size: 9px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	width: 160px;
+	background-color: #D2F0FF;
+}
+

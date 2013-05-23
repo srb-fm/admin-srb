@@ -1,0 +1,136 @@
+/*Reset*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+
+body {
+	size:297mm 210mm;
+	/*margin-top:1.5cm;*/
+	margin-bottom:1.5cm;
+	/*margin-left:0.5cm;
+	margin-right:0.5cm;*/
+}
+
+p {
+	padding-top : 5px;
+	padding-bottom : 5px;
+}
+
+.head_line {
+	width: 100%;
+	height : 60px;
+}
+
+.logo {
+	float : left;
+}
+
+.head_adress {
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-bottom: 5px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	margin-top: 5px;
+	width: 250px;
+	float: right;
+	text-align: right;
+}
+
+.us_box {
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-bottom: 5px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	margin-top: 41px;
+	width: 145px;
+	border-top : thin solid #2C324A;
+	float: left;
+	text-align: right;
+}
+
+.head_box {
+	padding-top: 5px;
+	padding-left: 10px;
+	padding-bottom: 5px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	font-weight: bolder;
+	margin-top: 15px;
+	width: 400px;
+	border-bottom : thin solid #2C324A;
+	float: left;
+}
+
+.cal_content {
+	margin-top : 15px;
+	margin-left : 1px;
+	padding-left : 5px;
+	padding-bottom: 8px;
+	font-size : 8pt;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	float : NONE;
+	width : 100%;
+	height : 100%;
+}
+
+.cal_day {
+	border-top : medium solid Navy;
+	border-bottom : medium solid #2C324A;
+	margin-top : 5px;
+	margin-left : 1px;
+	padding-top : 1px;
+	padding-left : 1px;
+	padding-bottom: 1px;
+	font-size : 8pt;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	float : left;
+	width : 135px;
+}
+
+.cal_content_row_a {
+	border-top: 2px dotted Navy;
+	margin-top: 3px;
+	margin-left: 1px;
+	padding-top: 1px;
+	padding-left: 1px;
+	padding-bottom: 1px;
+	font-size: 6pt;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	width: 100%;
+}
+
+.cal_content_row_b {
+	border-top: 2px dotted Navy;
+	margin-top: 3px;
+	margin-left: 1px;
+	padding-top: 1px;
+	padding-left: 1px;
+	padding-bottom: 1px;
+	font-size: 6pt;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	width: 100%;
+}
+
+.line_break{
+ clear:both;
+ }
+ 
+.footer {
+   float: left;}

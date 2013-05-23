@@ -1,0 +1,237 @@
+/*Reset*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+
+body {
+	size:210mm 297mm;
+	/*margin-top:1.5cm;*/
+	margin-bottom:1.5cm;
+	margin-left:1.0cm;
+	margin-right:0.5cm;
+}
+
+p{
+	padding-top : 5px;
+	padding-bottom : 5px;
+}
+
+.head_item_a_1{
+	padding-top : 5px;
+	padding-bottom : 5px;
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12pt;
+	font-weight : bold;
+	margin-top : 10px;
+	float : left;
+}
+
+.head_item_a_2{
+	padding-top : 5px;
+	padding-bottom : 5px;
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12pt;
+	font-weight : bold;
+	margin-top : 10px;
+	width : 400px;
+	float : left;
+}
+
+.head_item_a_3{
+	padding-top : 5px;
+	padding-left : 5px;
+	padding-bottom : 5px;
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12pt;
+	font-weight : bold;
+	margin-top : 10px;
+	margin-left : 10px;
+	width : 790px;
+	float : left;
+}
+
+.head_item_a_4{
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-bottom: 5px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12pt;
+	font-weight: bold;
+	margin-top: 0px;
+	width: 250px;
+	float: right;
+	text-align: right;
+}
+
+.content {
+	margin-left : 10px;
+	padding-left : 5px;
+	padding-bottom: 8px;
+	font-size : 12pt;
+	font-family : Verdana, Arial, Helvetica, sans-serif;
+	float : NONE;
+	width : 100%;
+}
+
+
+.content_column_a_1 {
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	width: 20%;
+	height: 21px;
+	float: left;
+}
+
+.content_column_a_2 {
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	width: 30%;
+	height: 21px;
+	float: left;
+}
+
+.content_column_a_3 {
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: bolder;
+	width: 75%;
+	height: 21px;
+	float: left;
+}
+
+.content_column_a_4 {
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: bolder;
+	width: 120px;
+	height: 21px;
+	float: left;
+}
+
+.content_column_a_5 {
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	width: 170px;
+	height: 21px;
+	float: left;
+}
+
+.content_column_b_1 {
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	width: 20%;
+	height: 21px;
+	float: left;
+}
+
+.content_column_b_3 {
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: bolder;
+	width: 75%;
+	height: 21px;
+	float: left;
+}
+
+.content_column_b_4 {
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	font-weight: bolder;
+	width: 20%;
+	height: 21px;
+	float: left;
+}
+
+.textarea_a_1, .textarea_a_2, .textarea_a_3, .textarea_a_4, .textarea_a_5, .textarea_a_6 {
+	margin-top: 2px;
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 8pt;
+	border: thin solid Navy;
+	width:98%;
+	height: 340px;
+	rows: 20;
+	cols: 20; 
+	float: left;
+}
+
+.textarea_a_2 {
+	font-size: 6pt;
+	height: 150px;
+}
+
+.textarea_a_3 {
+	font-size: 6pt;
+	height: 350px;
+}
+
+.textarea_a_4 {
+	font-size: 8pt;
+	height: 350px;
+}
+
+.textarea_a_5 {
+	font-size: 10pt;
+	height: 245px;
+}
+
+.textarea_a_6 {
+	font-size: 10pt;
+	height: 370px;
+}
+
+.line {
+	margin-top: 8px;
+	padding-bottom: 8px;
+	border-top : thin solid Navy;
+	width : 780px;
+	float: left;
+}
+
+.space_line {
+	margin-top: 8px;
+	padding-bottom: 8px;
+	width : 780px;
+	float: left;
+}

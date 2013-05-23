@@ -1,0 +1,89 @@
+.menu_list {	
+	margin-top : 8px;
+	width: 198px;
+}
+
+.menu_head {
+	padding:1px 15px 1px 5px;
+	cursor: pointer;
+	position: relative;
+	margin:1px;
+   font-weight:bold;
+	background-color: #D2691E;
+	color:White;
+	font:normal 11px arial,sans-serif;
+}
+
+.menu_body {
+	display:none;
+}
+
+.menu_body a{
+	display:block;
+  	color: White;
+	font:normal 11px arial,sans-serif;
+	padding:1px 15px 1px 5px;
+	text-decoration:none;
+	background-color:#2C324A;
+	border:1px solid Navy;
+	border-left:4px solid Navy;
+	text-align:left;
+}
+
+.menu_body a:hover{
+	color:Navy;
+	background-color: #FF9C00;
+	border:1px solid #363E6F;
+	border-left:4px solid #363E6F;
+	text-align:left;
+  }
+
+
+.content_row_toggle_head_1, .content_row_toggle_head_2, .content_row_toggle_head_3 {
+	cursor: pointer;
+	color: Navy;
+	padding-top: 2px;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	border-left: solid White;
+	border-left-width: thin; 
+	height: 18px;
+	width: 18px;
+	float: left;
+}
+
+.content_row_toggle_body_1, .content_row_toggle_body_2, .content_row_toggle_body_3 {
+	display: none;
+	padding-top: 2px;
+	padding-left: 5px;
+	background: #FFFFCC;
+	width: 92%;
+	float: left;
+}
+
+.content_row_toggle_body_2 {
+	padding-left: 10px;
+}
+
+.content_row_toggle_body_3 {
+	padding-left: 25px;
+}
+
+.blink{
+	background: #F69A9A;
+	}
+
+#back-to-top {  
+	/* button-div muss ausserhalb des main-divs sein */
+    position:fixed; /* Wichtig! */  
+    bottom:100px;  
+    left:950px;  
+    cursor:pointer;  
+    padding:10px;  
+    background:Navy;  
+    border-radius:2px;  
+    color:white;  
+    display:none;  
+}  

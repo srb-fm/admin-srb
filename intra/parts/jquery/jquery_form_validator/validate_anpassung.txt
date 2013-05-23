@@ -1,0 +1,2 @@
+jquery.validationEngine-ge.js
+wird um eigene validate-Muster ergänzt
