@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>Admin-SRB-lokal</title>
+	<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+	<style type="text/css">	   @import url("parts/style/style_srb_2.css");    </style>
+	
+</head>
+<body>
+
+<div id="main">
+	<!--#include virtual="parts/site_elements/header_srb_2.inc" -->
+	<!--#include virtual="parts/menu/menu_srb_root_1.inc" -->
+	
+	<div class="column_left">
+		<div class="head_item_left">
+			SRB-Home
+		</div>
+		
+		
+	</div>	
+	
+	<div class="column_right">
+		<div class="head_item_right">
+			Admin-SRB-lokal
+		</div>
+		
+		
+		
+		<div class="content">
+		Dies ist der interne Bereich des SRB/ OK-Saalfeld.<p>
+		Über das Menü oben sind verschiedene Verwaltungsgebiete erreichbar.<br>
+		Unten weitere nützliche Links<p>
+		<ul>
+		<li><a href="http://www.srb.fm/index.php/" target="_blank">Webseite des SRB</a>
+		<li><a href="https://www.facebook.com/srb.fm" target="_blank">SRB-facebook</a>
+		<p>
+		<li><a href="http://192.168.5.100:8000/srb-stream-intern.m3u">SRB-Livestream intern</a>
+		<p>		
+		<li><a href="https://www.srb-radio.de/wiki" target="_blank">SRB-Wiki</a>
+		<p>
+		<li><a href="../../admin_srb_play_out/play_out_log_find_list.php?action=list_last_hour_all" title='Action-Log, gesamt vergangene Stunde'>Action-Log, gesamt vergangene Stunde</a>
+		<li><a href="../../admin_srb_play_out/play_out_log_find_list.php?action=list_today_error" title='Error-Log, gesamt heute'>Error-Log, gesamt heute</a>		
+		<p>		
+		<li><a href="seminare/index.html">Seminare</a>
+		<p>
+		</ul>
+		</div>
+	</div>		
+</div>
+<script type="text/JavaScript" src="../parts/js/js_my_tools/js_my_menu_focus.js"></script>
+</body>
+</html>
