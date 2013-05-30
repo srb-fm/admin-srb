@@ -21,7 +21,7 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 <html>
 <head>
 	<title>Admin-SRB-Administration</title>
-	<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 	<style type="text/css">	@import url("../parts/style/style_srb_2.css");   </style>
 	<style type="text/css">	@import url("../parts/style/style_srb_jq_2.css");</style>
 	<style type="text/css"> @import url("../parts/colorbox/colorbox.css");  </style>
