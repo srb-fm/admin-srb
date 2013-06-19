@@ -4,6 +4,11 @@
 *.php~
 *.bfproject
 *.py[cod]
+*.sh~
+*.py~
+
+.eric4project/
+*.e4p
 
 # C extensions
 *.so
