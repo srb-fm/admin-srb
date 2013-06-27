@@ -6,7 +6,17 @@
 *.py[cod]
 *.sh~
 *.py~
+*.log
 
+# configs
+db_config.py
+_db_config.py
+
+# infos
+wichtig
+wichtig~
+
+# Projects
 .eric4project/
 *.e4p
 
