@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Config fuer backup
+# Source and destinationfolders
+
+media_play_out_sendung="Sourcepath/Sendung"
+media_play_out_infotime="Sourcepath/Infotime"
+media_backup_sendung="Backuppath/Sendung"
+media_backup_infotime="Backuppath/Infotime"
