@@ -254,8 +254,14 @@ def tweet_message(log_message):
 def delete_tweet_log_in_db_log( ):
     """Veraltete Log-Eintraege in DB-log loeschen"""
     lib_cm.message_write_to_console(ac, u"delete_tweet_log_in_db_log" )
+    date_log_back = (datetime.datetime.now() 
+                     + datetime.timedelta(days= - 1 ) )
+    c_date_log_back = date_log_back.strftime("%Y-%m-%d %H:%M") 
+
+    ACTION = ("DELETE FROM TWITTER_LOGS WHERE TW_LOG_TIME <= '" 
+              + c_date_log_back + "'")
     
-    ACTION = "DELETE FROM TWITTER_LOGS"
+    #ACTION = "DELETE FROM TWITTER_LOGS"
 
     db.dbase_log_connect( ac )
     if db.db_log_con is None:
