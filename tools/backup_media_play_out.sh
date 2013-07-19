@@ -8,7 +8,8 @@
 # 2013-06-19
 
 # folders from config:
-source backup_media_play_out_conf.sh
+# notice fullpath to conf for using with cron and different workdir
+source ~/srb-tools/backup_media_play_out_conf.sh
 
 echo "Backup aus play_out Sendung"
 rsync -r -t -v -s --delete --log-file=backup_media_play_out_sg.log $media_play_out_sendung $media_backup_sendung
