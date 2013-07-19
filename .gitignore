@@ -7,10 +7,12 @@
 *.sh~
 *.py~
 *.log
+_.htaccess
 
 # configs
 db_config.py
 _db_config.py
+*conf.sh
 
 # infos
 wichtig
