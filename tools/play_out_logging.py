@@ -236,7 +236,7 @@ def upload_data_prepare():
 
     web = lib_cm.upload_data(ac, db, db.config_extended[5], data_upload_encoded)
     if web is None:
-        db.write_log_to_db_a(ac,  ac.app_errorslist[4] , "x", 
+        db.write_log_to_db_a(ac, ac.app_errorslist[4], "x", 
             "write_also_to_console" )
         ac.app_counter_error += 1
         return web
@@ -519,6 +519,8 @@ class my_form( Frame ):
                     web = upload_data_prepare()
                     if web is not None:
                         self.display_logging(log_meldung_1, web)
+                    else:
+                        self.display_logging(log_meldung_1, None)
                 else:
                     self.display_logging(log_meldung_1, None)
                 return
@@ -567,7 +569,13 @@ class my_form( Frame ):
         web = upload_data_prepare()
         if web is not None:
             self.display_logging(log_meldung_1, web)
-        
+        else:
+            ac.log_start = (str( time_now.date() ) + " " 
+                + str(time_now.time())[0:8])
+            ac.log_author = db.config_extended[3]
+            ac.log_title = db.config_extended[4]
+            log_meldung_1 = ac.app_errorslist[4] + " \n"
+            self.display_logging(log_meldung_1, None)
         return
 
 
