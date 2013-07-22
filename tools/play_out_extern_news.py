@@ -12,7 +12,9 @@ Distributed under the terms of GNU GPL version 2 or later
 Copyright (C) Joerg Sorge joergsorge at googell
 2011-09-30
 
-Dieses Script....
+Dieses Script laedt eine Audio-Datei von einem ftp-Server,
+bearbeitet diese, und stellt sie der Radioautomation
+zum PlayOut zur Verfuegung.
 
 Dateiname Script: play_out_extern_news.py
 Schluesselwort fuer Einstellungen: PO_News_extern_Config_1
@@ -21,8 +23,15 @@ Bezieht Daten aus: Firebird-Datenbank
 
 Fehlerliste:
 Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 
-Error 002 
+Error 001 beim Herunterladen externer News
+Error 002 beim Stille enfernen externer News
+Error 003 beim Komprimieren der Sprache externer News
+Error 004 beim ermitteln der Laenge externer News
+Error 005 beim Trimmen des Soundbeds fuer externe News
+Error 006 beim Mixen der externen News
+Error 007 beim Verketten von Layout und externer News
+Error 008 beim Schreiben von id3Tags in externe News
+Error 009 beim Aktualisieren der Sendebuchung der externen News
 
 Parameterliste:
 Param 1: On/Off Switch
@@ -52,9 +61,7 @@ In der Regel also ca. 11:51 Uhr
 """
 
 import sys
-#import os
 import string
-#import shutil
 import subprocess
 import datetime
 import lib_common_1 as lib_cm
