@@ -52,9 +52,9 @@ In der Regel also ca. 11:51 Uhr
 """
 
 import sys
-import os
+#import os
 import string
-import shutil
+#import shutil
 import subprocess
 import datetime
 import lib_common_1 as lib_cm
@@ -193,13 +193,15 @@ def trim_silence():
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd )
     source_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
-    dest_file = lib_cm.extract_filename(ac, db.ac_config_1[6]).replace("mp3", "wav")
+    dest_file = lib_cm.extract_filename(ac, 
+                db.ac_config_1[6]).replace("mp3", "wav")
     lib_cm.message_write_to_console(ac, source_file )
     # subprozess starten
     #silence 1 0.1 1% reverse silence 1 0.1 1% reverse
     try:
         p = subprocess.Popen([cmd, u"-S", source_file, dest_file, 
-            u"silence", u"1", u"0.1", u"1%", u"reverse", u"silence", u"1", u"0.1", u"1%", u"reverse"], 
+            u"silence", u"1", u"0.1", u"1%", u"reverse", 
+            u"silence", u"1", u"0.1", u"1%", u"reverse"], 
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
         log_message = ac.app_errorslist[2] + u": %s" % str(e)
@@ -272,13 +274,13 @@ def compand_voice():
     cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings )
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd )
-    #source_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
-    source_file = lib_cm.extract_filename(ac, db.ac_config_1[6]).replace("mp3", "wav")
-    dest_file = lib_cm.extract_filename(ac, db.ac_config_1[6]).replace(".mp3", "_comp.wav")
+    source_file = lib_cm.extract_filename(ac, 
+                db.ac_config_1[6]).replace("mp3", "wav")
+    dest_file = lib_cm.extract_filename(ac, 
+                db.ac_config_1[6]).replace(".mp3", "_comp.wav")
     lib_cm.message_write_to_console(ac, source_file )
     # subprozess starten
     #compand 0.3,1 6:-70,-60,-20 -5 -90
-    # 
     try:
         p = subprocess.Popen([cmd, u"-S", source_file, dest_file, 
             #u"compand", u"0.3,1","6:-70,-60,-20", u"-12", u"-90", u"0.2"], 
@@ -289,8 +291,6 @@ def compand_voice():
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
 
-    #lib_cm.message_write_to_console(ac, u"returncode 0" )
-    #lib_cm.message_write_to_console(ac, p[0] )
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
     
@@ -340,13 +340,14 @@ def mix_bed():
     cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
-    news_file = lib_cm.extract_filename(ac, db.ac_config_1[6]).replace(".mp3", "_comp.wav")
+    news_file = lib_cm.extract_filename(ac, 
+                db.ac_config_1[6]).replace(".mp3", "_comp.wav")
     news_file_temp = news_file.replace("_comp.wav", "_temp.wav")
     # subprozess starten
     #silence 1 0.1 1% reverse silence 1 0.1 1% reverse
     try:
-        #p = subprocess.Popen([cmd, u"-S", u"-m", u"News_ext_Automation_Bed_trimmed.wav", u"mXm_News_12.wav", 
-        p = subprocess.Popen([cmd, u"-S", u"-m", ac.app_file_bed_trim, news_file, 
+        p = subprocess.Popen([cmd, u"-S", u"-m", 
+            ac.app_file_bed_trim, news_file, 
             news_file_temp], 
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
@@ -381,7 +382,8 @@ def concatenate_media(filename):
     # muessen alle cmds im richtigen zeichensatz encoded sein
     cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings)
     #cmd = "sox"
-    news_file = lib_cm.extract_filename(ac, db.ac_config_1[6]).replace("mp3", "wav")
+    news_file = lib_cm.extract_filename(ac, 
+                db.ac_config_1[6]).replace("mp3", "wav")
     news_file_temp = news_file.replace(".wav", "_temp.wav")
     source_path = lib_cm.check_slashes(ac, db.ac_config_1[9])
     #source_file_intro = source_path + "News_ext_Automation_Intro.wav"
@@ -391,10 +393,7 @@ def concatenate_media(filename):
     dest_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
     dest_path_file = dest_path + filename
     lib_cm.message_write_to_console(ac, cmd )
-    #c_source_file = path_file.encode(ac.app_encode_out_strings )
-    #lib_cm.message_write_to_console(ac, c_source_file )
     # subprozess starten
-    #ffmpeg -i input1.mp3 -i input2.mp3 -filter_complex amerge -c:a libmp3lame -q:a 4 output.mp3
     try:
         p = subprocess.Popen([cmd, u"-S", 
             source_file_intro, news_file_temp, source_file_closer, 
@@ -413,7 +412,8 @@ def concatenate_media(filename):
     # erfolgsmeldung suchen, wenn nicht gefunden: -1
     cmd_output_1 = string.find( p[1], "100%" )
     if cmd_output_1 != -1:
-        log_message = u"Externe News bearbeitet und in Play-Out bereitgestellt... "
+        log_message = (u"Externe News bearbeitet"
+            + " und in Play-Out bereitgestellt... ")
         db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
         return "ok"
     else:
@@ -431,7 +431,9 @@ def add_id3(sendung_data):
     #cmd = "id3v2"
     dest_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
     dest_path_file = dest_path + sendung_data[12]
-    c_author = sendung_data[15].encode(ac.app_encode_out_strings) + " " + sendung_data[16].encode(ac.app_encode_out_strings)
+    c_author = (sendung_data[15].encode(
+            ac.app_encode_out_strings) + " " 
+            + sendung_data[16].encode(ac.app_encode_out_strings))
     c_title = sendung_data[11].encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, cmd)
     # subprozess starten
@@ -452,9 +454,10 @@ def add_id3(sendung_data):
     
     # error?
     cmd_output_1 = p[1]
-    if cmd_output_1 !="":
+    if cmd_output_1 != "":
         lib_cm.message_write_to_console(ac, cmd_output_1)
-        db.write_log_to_db_a(ac, ac.app_errorslist[8], "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, 
+            ac.app_errorslist[8], "x", "write_also_to_console")
         return None
     else:
         log_message = u"ID3-Tags in Externe News geschrieben... "
@@ -465,26 +468,26 @@ def collect_garbage(garbage_counter):
     """ aufraeumen """
     if garbage_counter >= 2:
         temp_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
-        delete_temp_ok = lib_cm.erase_file_a(ac, db, temp_file, 
+        lib_cm.erase_file_a(ac, db, temp_file, 
             u"Externe News-mp3-Datei geloescht ")
     
     if garbage_counter >= 2:
         temp_file_1 = temp_file.replace("mp3", "wav")
-        delete_temp_ok = lib_cm.erase_file_a(ac, db, temp_file_1, 
+        lib_cm.erase_file_a(ac, db, temp_file_1, 
             u"Externe News-wav-Datei geloescht ")
     
     if garbage_counter >= 3:
         temp_file_2 = temp_file_1.replace(".wav", "_comp.wav")
-        delete_temp_ok = lib_cm.erase_file_a(ac, db, temp_file_2, 
+        lib_cm.erase_file_a(ac, db, temp_file_2, 
             u"Externe News-comp-Datei geloescht ")
 
     if garbage_counter >= 4:
-        delete_temp_ok = lib_cm.erase_file_a(ac, db, ac.app_file_bed_trim, 
+        lib_cm.erase_file_a(ac, db, ac.app_file_bed_trim, 
             u"Externe News-Bed-Datei geloescht ")
     
     if garbage_counter == 5:
         temp_file_2 = temp_file_1.replace(".wav", "_temp.wav")
-        delete_temp_ok = lib_cm.erase_file_a(ac, db, temp_file_2, 
+        lib_cm.erase_file_a(ac, db, temp_file_2, 
             u"Externe News-temp-Datei geloescht ")
 
 def lets_rock():
@@ -509,7 +512,8 @@ def lets_rock():
         collect_garbage(2)
         return
     
-    source_file = lib_cm.extract_filename(ac, db.ac_config_1[6]).replace("mp3", "wav")
+    source_file = lib_cm.extract_filename(ac, 
+                db.ac_config_1[6]).replace("mp3", "wav")
     lenght_news = check_lenght(source_file)
     if lenght_news is None:
         return
