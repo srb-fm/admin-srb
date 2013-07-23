@@ -10,6 +10,7 @@
 _.htaccess
 
 # configs
+admin_srb_conf.php
 db_config.py
 _db_config.py
 *conf.sh
