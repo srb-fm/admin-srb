@@ -18,7 +18,7 @@ im Play-Out-Server zur Verfuegung.
 Dabei werden sie durch diverse Tools bearbeitet (z.B. mp3Gain)
 Festgelegt sind die Sendungen in der Tabelle SG_HF_ROBOT.
 
-Dateiname Script: play_out_load_vp_extern.py
+Dateiname Script: play_out_extern_vp.py
 Schluesselwort fuer Einstellungen: PO_VP_Config_1
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
@@ -51,17 +51,12 @@ und von Computern gesteuert wird.
 Erich Fromm, Die Revolution der Hoffnung
 """
 
-#import time
 import sys
 import os
 import string
-#import types
-#import re
 import datetime
 import shutil
 import subprocess
-#import ftplib
-#import socket
 import lib_common_1 as lib_cm
 
 
@@ -123,15 +118,14 @@ def load_roboting_sgs():
     
     if sendungen_data is None:
         log_message = u"Keine Sendungen fuer Uebernahme als VPs vorgesehen.. "
-        #db.write_log_to_db( ac,  log_message, "t" )
-        db.write_log_to_db_a(ac,  log_message, "t", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
         return sendungen_data
     
     return sendungen_data
 
 def load_sg(sg_titel ):
     """Erstsendung suchen"""
-    lib_cm.message_write_to_console( ac, u"Sendung suchen" )
+    lib_cm.message_write_to_console(ac, u"Sendung suchen")
     db_tbl_condition = ("A.SG_HF_FIRST_SG ='T' "
         "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '" 
         + str( ac.time_target.date() )+ "' " + "AND B.SG_HF_CONT_TITEL='" 
@@ -142,20 +136,20 @@ def load_sg(sg_titel ):
     if sendung_data is None:
         log_message = u"Keine Sendung mit diesem Titel gefunden: " + sg_titel
         #db.write_log_to_db( ac,  log_message, "t" )
-        db.write_log_to_db_a(ac,  log_message, "t", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
         return sendung_data
     
     return sendung_data
 
 def audio_validate(file_dest):
     """mp3-File validieren"""
-    lib_cm.message_write_to_console( ac, u"mp3-File validieren" )
+    lib_cm.message_write_to_console(ac, u"mp3-File validieren")
     # damit die uebergabe der befehle richtig klappt 
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    c_validator = db.ac_config_1[3].encode(ac.app_encode_out_strings )
+    c_validator = db.ac_config_1[3].encode(ac.app_encode_out_strings)
     #c_validator = "/usr/bin/mp3val"
-    c_source_file = file_dest.encode(ac.app_encode_out_strings )
-    lib_cm.message_write_to_console(ac, c_source_file )
+    c_source_file = file_dest.encode(ac.app_encode_out_strings)
+    lib_cm.message_write_to_console(ac, c_source_file)
     # subprozess starten
     try:
         p = subprocess.Popen([c_validator, u"-f", c_source_file], 
@@ -164,23 +158,23 @@ def audio_validate(file_dest):
         log_message = ac.app_errorslist[4] +u": %s" % str(e)
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return
-    lib_cm.message_write_to_console(ac, u"returncode 0" )
+    lib_cm.message_write_to_console(ac, u"returncode 0")
     lib_cm.message_write_to_console(ac, p[0] )
-    lib_cm.message_write_to_console(ac, u"returncode 1" )
-    lib_cm.message_write_to_console(ac, p[1] )
+    lib_cm.message_write_to_console(ac, u"returncode 1")
+    lib_cm.message_write_to_console(ac, p[1])
     
     # erfolgsmeldung suchen, wenn nicht gefunden: -1
-    validate_output = string.find( p[0], "FIXED" )
+    validate_output = string.find(p[0], "FIXED")
     
     # wenn gefunden, position, sonst -1
     if validate_output != -1:
         log_message = u"mp3-Validator fixed: " + c_source_file
-        db.write_log_to_db( ac, log_message, "k" )
-        lib_cm.message_write_to_console(ac, "ok" )
-        #bak-Datei löschen
+        db.write_log_to_db( ac, log_message, "k")
+        lib_cm.message_write_to_console(ac, "ok")
+        # bak-Datei löschen
         c_source_file = c_source_file + ".bak"
         delete_bak_ok = lib_cm.erase_file_a(ac, db, c_source_file, 
-            u"mp3validator-bak-Datei geloescht " )
+            u"mp3validator-bak-Datei geloescht ")
         if delete_bak_ok is None:
             # Error 004 Fehler beim Loeschen der mp3validator-bak-Datei
             db.write_log_to_db_a(ac,  ac.app_errorslist[4], "x", 
@@ -195,7 +189,7 @@ def audio_mp3gain(path_file_dest):
     # damit die uebergabe der befehle richtig klappt 
     # muessen alle cmds im richtigen zeichensatz encoded sein
     c_mp3gain = db.ac_config_1[4].encode(ac.app_encode_out_strings)
-    c_source_file = path_file_dest.encode( ac.app_encode_out_strings )
+    c_source_file = path_file_dest.encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, c_source_file)
     # subprozess starten
     try:
@@ -203,24 +197,24 @@ def audio_mp3gain(path_file_dest):
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
         log_message = ac.app_errorslist[3] + u": %s" % str(e)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console" )
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return
 
     lib_cm.message_write_to_console(ac, u"returncode 0")
     lib_cm.message_write_to_console(ac, p[0] )
-    lib_cm.message_write_to_console(ac, u"returncode 1" )
+    lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1] )
     
     # erfolgsmeldung suchen, wenn nicht gefunden: -1
     mp3gain_output = string.find( p[1], "99%" )
     mp3gain_output_1 = string.find( p[1], "written" )
     lib_cm.message_write_to_console(ac, mp3gain_output )
-    lib_cm.message_write_to_console(ac, mp3gain_output_1 )
+    lib_cm.message_write_to_console(ac, mp3gain_output_1)
     # wenn gefunden, position, sonst -1
     if mp3gain_output != -1 and mp3gain_output_1 != -1:
         log_message = u"mp3gain angepasst: " + c_source_file
-        db.write_log_to_db( ac, log_message, "k" )
-        lib_cm.message_write_to_console(ac, "ok" )
+        db.write_log_to_db( ac, log_message, "k")
+        lib_cm.message_write_to_console(ac, "ok")
     else:
         db.write_log_to_db_a(ac, u"mp3gain offenbar nicht noetig: " 
                              + c_source_file, "p", "write_also_to_console")
@@ -249,7 +243,6 @@ def check_and_work_on_files(roboting_sgs):
                     "write_also_to_console")
         
         try:
-            #lib_cm.message_write_to_console(ac, l_titel_file[1] )
             path_source = lib_cm.check_slashes(ac, db.ac_config_1[1]) 
             path_file_source = (path_source + l_path_title[0] 
                 + sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
@@ -267,9 +260,9 @@ def check_and_work_on_files(roboting_sgs):
         lib_cm.message_write_to_console(ac, path_file_source)
         lib_cm.message_write_to_console(ac, path_file_dest)
 
-        if not os.path.isfile( path_file_source ):
-            lib_cm.message_write_to_console( ac, u"nicht vorhanden: " 
-                        + path_file_dest )
+        if not os.path.isfile(path_file_source):
+            lib_cm.message_write_to_console(ac, u"nicht vorhanden: " 
+                        + path_file_dest)
             db.write_log_to_db_a(ac, 
                 u"Audio Vorproduktion noch nicht vorhanden: " 
                 + path_file_source, "f", "write_also_to_console")
@@ -286,15 +279,15 @@ def check_and_work_on_files(roboting_sgs):
         try:
             shutil.copy(path_file_source, path_file_dest)
             db.write_log_to_db_a(ac, u"Audio Vorproduktion: " 
-                    + path_file_source, "v", "write_also_to_console" )
+                    + path_file_source, "v", "write_also_to_console")
             db.write_log_to_db_a(ac, u"Audio kopiert nach: " 
-                    + path_file_dest, "c", "write_also_to_console" )
+                    + path_file_dest, "c", "write_also_to_console")
         except Exception, e:
             db.write_log_to_db_a(ac, ac.app_errorslist[1], "x", 
-                "write_also_to_console" )
+                "write_also_to_console")
             log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
-            lib_cm.message_write_to_console( ac, log_message )
-            db.write_log_to_db(ac, log_message, "x" )
+            lib_cm.message_write_to_console( ac, log_message)
+            db.write_log_to_db(ac, log_message, "x")
             continue        
         
         audio_validate(path_file_dest)
@@ -306,9 +299,9 @@ def check_and_work_on_files(roboting_sgs):
             filename = path_file_dest[string.rfind(path_file_dest, "\\")+ 1:]
             
         db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "i", 
-            "write_also_to_console" )
+            "write_also_to_console")
         db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "n", 
-            "write_also_to_console" )
+            "write_also_to_console")
 
 
 def lets_rock():
@@ -329,7 +322,7 @@ if __name__ == "__main__":
     ac = app_config()
     print  "lets_work: " + ac.app_desc 
     # losgehts
-    db.write_log_to_db(ac,  ac.app_desc + u" gestartet", "a")
+    db.write_log_to_db(ac, ac.app_desc + u" gestartet", "a")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac,  db)
     if db.ac_config_1 is not None:
@@ -339,6 +332,6 @@ if __name__ == "__main__":
             lets_rock()
 
     # fertsch
-    db.write_log_to_db(ac,  ac.app_desc + u" gestoppt", "s")
+    db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
     print "lets_lay_down"
     sys.exit()
