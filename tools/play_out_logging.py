@@ -125,7 +125,7 @@ class app_config( object ):
         self.app_errorslist.append(u"Error 005 "
             "Externes PlayOut-Logging ausgesetzt, Webserver nicht erreichbar")
         # meldungen auf konsole ausgeben oder nicht: "no"
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # anzahl parameter list 0
         self.app_config_params_range = 9
         # params-type-list, typ entsprechend der params-liste in der config
@@ -248,7 +248,7 @@ def upload_data_prepare():
     
 def work_on_data_from_logfile(time_now,  log_data):
     """Daten aus mAirlist-Logfile extrahieren"""
-    lib_cm.message_write_to_console(ac, u"work_on_data_from_logfile" )
+    lib_cm.message_write_to_console(ac, u"work_on_data_from_logfile")
     #log_start = extract_from_stuff(log_data, "start=", 6, "&author=", 0)
     log_author = extract_from_stuff(log_data, "&author=", 8, "&title=", 0)
     log_title = extract_from_stuff(log_data, "&title=", 7, "&file=", 0)
@@ -268,10 +268,10 @@ def work_on_data_from_logfile(time_now,  log_data):
             
         db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
             "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '" 
-            + str( time_now.date() )+ "' " 
+            + str( time_now.date())+ "' " 
             "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '" 
             + c_hour + "' AND B.SG_HF_CONT_FILENAME ='" 
-            + log_title + "'" )
+            + log_title + "'")
         # daten aus db holen
         sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac, 
                 db, db_tbl_condition)
@@ -288,8 +288,8 @@ def work_on_data_from_logfile(time_now,  log_data):
             "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '" 
             + str( time_now.date() )+ "' " 
             "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '" 
-            + str( time_now.hour ) + "' AND B.SG_HF_CONT_ID ='" 
-            + sendung_id + "'" )
+            + str( time_now.hour) + "' AND B.SG_HF_CONT_ID ='" 
+            + sendung_id + "'")
         sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac, 
                     db, db_tbl_condition)
         if sendung_data is None:
@@ -306,12 +306,12 @@ def work_on_data_from_logfile(time_now,  log_data):
 
     #  Daten aus db
     if sendung_data is not None:
-        lib_cm.message_write_to_console(ac, u"daten_aus_db" )
+        lib_cm.message_write_to_console(ac, u"daten_aus_db")
         log_author = sendung_data[12] + " " + sendung_data[13]
         log_title = sendung_data[9] 
-        lib_cm.message_write_to_console(ac, log_author + " - " + log_title )
+        lib_cm.message_write_to_console(ac, log_author + " - " + log_title)
     else:
-        lib_cm.message_write_to_console(ac, u"nix in db gefunden" )
+        lib_cm.message_write_to_console(ac, u"nix in db gefunden")
         # prüfen ob autor und titel in logdatei vorhanden
         author_title_ok = "no"
         if  log_author != "":
@@ -328,21 +328,21 @@ def work_on_data_from_logfile(time_now,  log_data):
         else:
             # keine daten in id3-author, deshalb aus filename nehmen
             lib_cm.message_write_to_console(ac, u"daten_aus_filname")
-            log_title =  log_title[11 : len(log_title )]
+            log_title =  log_title[11 : len(log_title)]
             #print log_title
             # split in autor und title, 
             # klappt nur wenn ein unterstrich dazwischen
-            index_trenner = string.find(  log_title,  "_" )
+            index_trenner = string.find(  log_title,  "_")
             log_author =  log_title[ 0:index_trenner] 
-            log_title = extract_from_stuff_after_match( log_title, "_" )
-            log_author = lib_cm.convert_to_unicode(log_author )
-            log_title = lib_cm.convert_to_unicode(log_title )
+            log_title = extract_from_stuff_after_match(log_title, "_")
+            log_author = lib_cm.convert_to_unicode(log_author)
+            log_title = lib_cm.convert_to_unicode(log_title)
     
     log_data_list = []
     #log_data_list.append(log_start) 
     log_data_list.append(log_author) 
     log_data_list.append(log_title)
-    lib_cm.message_write_to_console(ac, log_data_list )
+    lib_cm.message_write_to_console(ac, log_data_list)
     return log_data_list
 
 
@@ -379,7 +379,7 @@ class my_form( Frame ):
         self.textBox1.insert(END, "...and the End\n")
 
         # registering callback
-        self.listenID = self.after( 500, self.lets_rock )
+        self.listenID = self.after(500, self.lets_rock)
 
 
     def display_logging(self, log_meldung_1, log_meldung_2):
@@ -389,27 +389,27 @@ class my_form( Frame ):
                 + str(ac.app_counter ) + "  / Interval von " 
                 + str(int( db.config_extended[2])) + " Sekunden")
             self.textBox.delete('1.0', '3.end')
-            self.textBox.insert(END, log_meldung_1 + "\n" )
+            self.textBox.insert(END, log_meldung_1 + "\n")
         
         if log_meldung_2 is not None:
             self.text_label.config(text="Play-Out-Logging Nr: " 
                 + str( ac.app_counter ) + "  / Interval von " 
-                + str( int( db.config_extended[2])) + " Sekunden")
+                + str( int(db.config_extended[2])) + " Sekunden")
             self.textBox1.delete('1.0', '8.end')
-            self.textBox1.insert( END, log_meldung_2 + "\n" )
+            self.textBox1.insert(END, log_meldung_2 + "\n")
     
         self.listenID = self.after(
-                        int( db.config_extended[2] )*1000, self.lets_rock)
+                        int(db.config_extended[2] )*1000, self.lets_rock)
         return
     
     
-    def lets_rock( self  ):
+    def lets_rock(self):
         """Hauptfunktion"""
         lib_cm.message_write_to_console(ac, u"lets rock")
         ac.app_counter += 1
         log_data = None
         time_now = datetime.datetime.now()
-        time_back = datetime.datetime.now() + datetime.timedelta(hours= - 1 ) 
+        time_back = datetime.datetime.now() + datetime.timedelta(hours= - 1) 
         c_time = time_back.strftime("%Y-%m-%d %H")  
         lib_cm.message_write_to_console(ac, c_time)
         
@@ -420,7 +420,7 @@ class my_form( Frame ):
             u"USER_LOG_ACTION LIKE "
             u"'Datei für Sendequellenumschalter geschrieben:%' "
             + u"AND SUBSTRING( USER_LOG_TIME FROM 1 FOR 13) ='" 
-            +  c_time + "' ORDER BY USER_LOG_TIME DESC" )
+            +  c_time + "' ORDER BY USER_LOG_TIME DESC")
         # WICHTIG:  Der log_text nach dem hier gesucht wird, 
         # wird von play_out_load geschrieben
         
@@ -465,12 +465,17 @@ class my_form( Frame ):
         # Sendung muesste in db zu finden sein
         if source_id == "05":
             lib_cm.message_write_to_console(ac, u"ISDN-Uebertragung")
+            # Sendestunde ermitteln, anpassen
+            if time_now.hour < 10:
+                c_hour = "0" + str(time_now.hour)
+            else:
+                c_hour = str(time_now.hour)
             # Daten aus db holen
             db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
                 "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '" 
-                + str( time_now.date() )+ "' " 
+                + str(time_now.date())+ "' " 
                 "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '" 
-                + str( time_now.hour ) + "' AND A.SG_HF_SOURCE_ID ='" 
+                + c_hour + "' AND A.SG_HF_SOURCE_ID ='" 
                 + source_id + "'" )
             sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac, 
                             db, db_tbl_condition)
