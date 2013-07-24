@@ -146,7 +146,7 @@ if ( $user_rights == "yes" ) {
 	for ($count = 1; $count < 8; $count++) {
 		// Tag beginnen
 		echo "<div class='cal_day'>\n";
-		echo get_german_day_name_1($date_day);
+		echo get_german_day_name_a($date_day);
 								
 		if ( 	$db_result_it	) {	
 			foreach ($db_result_it as $item_it ) {

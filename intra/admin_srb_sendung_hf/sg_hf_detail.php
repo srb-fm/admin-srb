@@ -233,7 +233,7 @@ $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_
 if ( $user_rights == "yes" ) { 
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Datum/ Zeit/ Länge</div>";
-	echo "<div class='content_column_4'>" .get_date_format_deutsch(substr($tbl_row_sg->SG_HF_TIME, 0, 10))." (".get_german_day_name_1(substr($tbl_row_sg->SG_HF_TIME, 0, 10)).") </div>";
+	echo "<div class='content_column_4'>" .get_date_format_deutsch(substr($tbl_row_sg->SG_HF_TIME, 0, 10))." (".get_german_day_name_a(substr($tbl_row_sg->SG_HF_TIME, 0, 10)).") </div>";
 	echo "<div class='content_column_4'>" .substr($tbl_row_sg->SG_HF_TIME, 11, 8). " </div>";
 			
 	switch ( rtrim($tbl_row_sg->SG_HF_DURATION)) {
@@ -501,7 +501,7 @@ if ( $user_rights == "yes" ) {
 				} else { 
 					echo "<div class='content_row_b'>";
 				}
-				echo "<a href='sg_hf_detail.php?action=display&amp;sg_id=".$item_dub['SG_HF_ID']."'> ".get_german_day_name_1(substr($item_dub['SG_HF_TIME'], 0, 10))." - ". get_date_format_deutsch(substr($item_dub['SG_HF_TIME'], 0, 10))." - ".substr($item_dub['SG_HF_TIME'], 11, 8)."</a>";
+				echo "<a href='sg_hf_detail.php?action=display&amp;sg_id=".$item_dub['SG_HF_ID']."'> ".get_german_day_name_a(substr($item_dub['SG_HF_TIME'], 0, 10))." - ". get_date_format_deutsch(substr($item_dub['SG_HF_TIME'], 0, 10))." - ".substr($item_dub['SG_HF_TIME'], 11, 8)."</a>";
 				echo "</div><br>";
 			}
 		}

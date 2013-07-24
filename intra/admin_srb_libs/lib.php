@@ -85,14 +85,14 @@ function get_german_day_name( $c_day_name )
 }
 
 /**
-* get_german_day_name_1
+* get_german_day_name_a
 *
 * @param c_date_sql $c_date_sql sql-Datum
 * 
 * @return deutscher Name des Tages
 *
 */
-function get_german_day_name_1( $c_date_sql )
+function get_german_day_name_a( $c_date_sql )
 {
 	$j = substr($c_date_sql, 0, 4);
 	$m = substr($c_date_sql, 5, 2);

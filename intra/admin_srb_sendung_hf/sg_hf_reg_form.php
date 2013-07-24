@@ -71,7 +71,7 @@ if ( $user_rights == "yes" ) {
 	echo html_header_srb_print_a("Sendeanmeldung");
 	echo "<div class='content'>";
 	echo "<div class='content_column_b_1'>Datum/ Zeit/ Länge</div>";
-	echo "<div class='content_column_b_4'>" .get_german_day_name_1(substr($tbl_row_sg->SG_HF_TIME, 0, 10)).", ".get_date_format_deutsch(substr($tbl_row_sg->SG_HF_TIME, 0, 10)).  "</div>";
+	echo "<div class='content_column_b_4'>" .get_german_day_name_a(substr($tbl_row_sg->SG_HF_TIME, 0, 10)).", ".get_date_format_deutsch(substr($tbl_row_sg->SG_HF_TIME, 0, 10)).  "</div>";
 	echo "<div class='content_column_b_4'>" .substr($tbl_row_sg->SG_HF_TIME, 11, 8). " </div>";
 	echo "<div class='content_column_b_4'>" .$tbl_row_sg->SG_HF_DURATION. " </div>";
 	echo "<br>\n";
