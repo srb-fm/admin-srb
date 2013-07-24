@@ -1,0 +1,19 @@
+40 */2 * * * /home/my-server/srb-tools/statistik_webstream.py && exit
+25 6 * * * /home/my-server/srb-tools/play_out_archiv.py && exit
+1 * * * * /home/my-server/srb-tools/play_out_protokoll.py && exit
+56 * * * * /home/my-server/srb-tools/play_out_load.py && exit
+10 0 1 1 * /home/my-server/srb-tools/statistik_user_active.py && exit
+10 0 1 4 * /home/my-server/srb-tools/statistik_user_active.py && exit
+10 0 1 7 * /home/my-server/srb-tools/statistik_user_active.py && exit
+10 0 1 10 * /home/my-server/srb-tools/statistik_user_active.py && exit
+50 * * * * /home/my-server/srb-tools/play_out_preview.py && exit
+15 6-20 * * * /home/my-server/srb-tools/podcast_beamer.py && exit
+30 * * * * /home/my-server/srb-tools/play_out_repeat_proto.py && exit
+45 * * * * /home/my-server/srb-tools/play_out_extern_vp.py && exit
+*/2 * * * * /home/my-server/srb-tools/log_tweeter.py && exit
+# * * * * * /home/my-server/srb-tools/tweet_runner.py && exit
+46 * * * * /home/my-server/srb-tools/play_out_reminder.py && exit
+*/2 * * * * /home/my-server/srb-tools/watch_dog_mp3_gain.py && exit
+35 9 * * 3 /home/my-server/srb-tools/play_out_dublikator.py && exit
+20 4 * * 6 /home/my-server/srb-tools/backup_media_archiv.sh && exit
+51 11 * * * /home/my-server/srb-tools/play_out_extern_news.py && exit
