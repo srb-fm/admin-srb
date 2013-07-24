@@ -88,13 +88,10 @@ Die Bibel 1. Koenige 3,8
 """
 
 
-#from Tkinter import *
 from Tkinter import Frame, Label, NW, END
 from ScrolledText import ScrolledText
-#import time
 import sys
 import string
-#import types
 import re
 import datetime
 import urllib
@@ -128,7 +125,7 @@ class app_config( object ):
         self.app_errorslist.append(u"Error 005 "
             "Externes PlayOut-Logging ausgesetzt, Webserver nicht erreichbar")
         # meldungen auf konsole ausgeben oder nicht: "no"
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # anzahl parameter list 0
         self.app_config_params_range = 9
         # params-type-list, typ entsprechend der params-liste in der config
@@ -249,7 +246,7 @@ def upload_data_prepare():
     return web
 
     
-def work_on_data_from_logfile( time_now,  log_data):
+def work_on_data_from_logfile(time_now,  log_data):
     """Daten aus mAirlist-Logfile extrahieren"""
     lib_cm.message_write_to_console(ac, u"work_on_data_from_logfile" )
     #log_start = extract_from_stuff(log_data, "start=", 6, "&author=", 0)
@@ -262,12 +259,18 @@ def work_on_data_from_logfile( time_now,  log_data):
     
     # Falls Uebernahme per Inetstream, erkennbar an http
     if log_title[0 : 7] == "http://":
-        lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream" )
+        lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream")
+        # Sendestunde ermitteln, anpassen
+        if time_now.hour < 10:
+            c_hour = "0" + str(time_now.hour)
+        else:
+            c_hour = str(time_now.hour)
+            
         db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
             "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '" 
             + str( time_now.date() )+ "' " 
             "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '" 
-            + str( time_now.hour ) + "' AND B.SG_HF_CONT_FILENAME ='" 
+            + c_hour + "' AND B.SG_HF_CONT_FILENAME ='" 
             + log_title + "'" )
         # daten aus db holen
         sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac, 
