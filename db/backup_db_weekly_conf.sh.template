@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Config for backup
+# Source and destinationfolders
+
+fb_db_user=""
+fb_db_pw=""
+fb_db=""
+fb_db_backup=""
+fb_db_backup_log=""
+fb_programm=""
