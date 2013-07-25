@@ -78,7 +78,7 @@ class app_config( object ):
         self.app_config = u"PO_News_extern_Config_1"
         self.app_config_develop = u"PO_News_extern_Config_1_e"
         # anzahl parameter
-        self.app_config_params_range = 10
+        self.app_config_params_range = 11
         self.app_errorfile = "error_play_out_news_extern.log"
         # errorlist
         self.app_errorslist = []
@@ -111,6 +111,7 @@ class app_config( object ):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_url")
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -278,20 +279,23 @@ def compand_voice():
     lib_cm.message_write_to_console(ac, u"Sprache komprimieren")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings )
+    cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings)
     #cmd = "sox"
-    lib_cm.message_write_to_console(ac, cmd )
+    lib_cm.message_write_to_console(ac, cmd)
     source_file = lib_cm.extract_filename(ac, 
                 db.ac_config_1[6]).replace("mp3", "wav")
     dest_file = lib_cm.extract_filename(ac, 
                 db.ac_config_1[6]).replace(".mp3", "_comp.wav")
-    lib_cm.message_write_to_console(ac, source_file )
+    lib_cm.message_write_to_console(ac, source_file)
+    compand_prams = db.ac_config_1[11].split()
+    lib_cm.message_write_to_console(ac, compand_prams)
     # subprozess starten
     #compand 0.3,1 6:-70,-60,-20 -5 -90
     try:
         p = subprocess.Popen([cmd, u"-S", source_file, dest_file, 
             #u"compand", u"0.3,1","6:-70,-60,-20", u"-12", u"-90", u"0.2"], 
-            u"compand", u"0.3,0.6","-80,-60,-75,-16", u"-18", u"-80", u"0.2"], 
+            #u"compand", u"0.3,1","-80,-60,-75,-16", u"-18", u"-80", u"0.2"], 
+            u"compand", compand_prams[0], compand_prams[1], compand_prams[2], compand_prams[3], compand_prams[4]], 
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
         log_message = ac.app_errorslist[2] + u": %s" % str(e)
