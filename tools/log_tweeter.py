@@ -258,7 +258,7 @@ def delete_tweet_log_in_db_log( ):
                      + datetime.timedelta(days= - 1 ) )
     c_date_log_back = date_log_back.strftime("%Y-%m-%d %H:%M") 
 
-    ACTION = ("DELETE FROM TWITTER_LOGS WHERE TW_LOG_TIME <= '" 
+    ACTION = ("DELETE FROM TWITTER_LOGS WHERE TW_LOG_TIME < '" 
               + c_date_log_back + "'")
     
     #ACTION = "DELETE FROM TWITTER_LOGS"
