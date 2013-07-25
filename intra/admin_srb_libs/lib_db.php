@@ -196,38 +196,6 @@ function db_query_load_id_by_value( $c_table, $c_field, $c_value )
 }
 
 /**
-* db_query_load_id_by_value_1
-*
-* Load ID  
-* fuer LookUps
-* Uebergabe fields und condition unterscheidet sich zu db_query_load_id_by_value
-*
-* @param c_table     $c_table     db-Tabelle
-* @param c_fields    $c_fields    Felder
-* @param c_condition $c_condition Bedingung
-* 
-* @return ID 
-*
-*/
-function db_query_load_id_by_value_1( $c_table, $c_fields, $c_condition ) 
-{
-	// 
-	$db_connect = db_connect();
-	$db_query 	= "SELECT ".$c_fields." FROM " .$c_table;
-	$db_query 	.= " WHERE " .$c_condition;
-	$db_result = ibase_query($db_connect, $db_query);
-	if ( !$db_result ) {
-		echo "Error executing: db_query_load_id_by_value_1! ";
-		ibase_close($db_connect);
-		exit;
-	}
-	$tbl_row = ibase_fetch_row($db_result);
-	ibase_close($db_connect);
-	// erstes feld ist id
-	return $tbl_row[0];
-}
-
-/**
 * db_query_load_item
 *
 * Load item  
