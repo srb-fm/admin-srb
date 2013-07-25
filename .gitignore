@@ -8,6 +8,7 @@
 *.py~
 *.log
 _.htaccess
+*.template~
 
 # configs
 admin_srb_conf.php
