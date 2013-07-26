@@ -10,11 +10,12 @@
 _.htaccess
 *.template~
 
-# configs
+# configs etc
 admin_srb_conf.php
 db_config.py
 _db_config.py
 *conf.sh
+backup_db_manuell.sh
 
 # infos
 wichtig
