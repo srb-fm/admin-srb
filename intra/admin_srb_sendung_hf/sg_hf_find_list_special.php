@@ -276,7 +276,7 @@ if ( $user_rights == "yes" ) {
 					}	
 				}
 				if ( $action == "list" ) {
-						//echo html_sg_state_1( $item['SG_HF_FIRST_SG'], $item['SG_HF_ON_AIR'], $item['SG_HF_CONT_FILENAME'] )." " ;
+						//echo html_sg_state_a( $item['SG_HF_FIRST_SG'], $item['SG_HF_ON_AIR'], $item['SG_HF_CONT_FILENAME'] )." " ;
 				}	
 				
 				switch ( $find_option ) {

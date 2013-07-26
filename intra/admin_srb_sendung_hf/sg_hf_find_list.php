@@ -467,7 +467,7 @@ if ( $user_rights == "yes" ) {
 			}
 			
 			if ( $action == "list" ) {
-				echo html_sg_state_1(rtrim($item['SG_HF_FIRST_SG']), rtrim($item['SG_HF_ON_AIR']), rtrim($item['SG_HF_CONT_FILENAME']))." " ;
+				echo html_sg_state_a(rtrim($item['SG_HF_FIRST_SG']), rtrim($item['SG_HF_ON_AIR']), rtrim($item['SG_HF_CONT_FILENAME']))." " ;
 			}
 			echo "<a href='sg_hf_detail.php?action=display&amp;sg_id=".$item['SG_HF_ID']."' class='c_box'>".get_date_format_deutsch(substr($item['SG_HF_TIME'], 0, 10))." - ".substr($item['SG_HF_TIME'], 11, 8)." - ".substr($item['SG_HF_CONT_TITEL'], 0, 50)." - ".substr($item['AD_NAME'], 0, 12)."</a>";
 			echo "</div>";

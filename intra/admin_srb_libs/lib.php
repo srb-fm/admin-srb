@@ -390,7 +390,7 @@ function html_sg_state( $c_first_sg,  $c_on_air, $c_filename )
 }
 
 /**
-* html_sg_state_1
+* html_sg_state_a
 *
 * @param c_first_sg $c_first_sg T or F 
 * @param c_on_air   $c_on_air   T or F  
@@ -399,7 +399,7 @@ function html_sg_state( $c_first_sg,  $c_on_air, $c_filename )
 * @return html
 *
 */ 
-function html_sg_state_1( $c_first_sg, $c_on_air, $c_filename )
+function html_sg_state_a( $c_first_sg, $c_on_air, $c_filename )
 {
     // noch einbauen: Pruefung File im Archiv
 	if ( $c_first_sg == "T" ) {

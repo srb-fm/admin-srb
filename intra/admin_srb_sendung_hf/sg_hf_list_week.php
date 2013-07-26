@@ -328,7 +328,7 @@ if ( $user_rights == "yes" ) {
 								
 			// item anzeigen				
 			echo "<a href='sg_hf_detail.php?action=display&amp;sg_id=".$item['SG_HF_ID']."' class='c_box'>";
-			echo html_sg_state_1(trim($item['SG_HF_FIRST_SG']), rtrim($item['SG_HF_ON_AIR']), rtrim($item['SG_HF_CONT_FILENAME']))."</a>";
+			echo html_sg_state_a(trim($item['SG_HF_FIRST_SG']), rtrim($item['SG_HF_ON_AIR']), rtrim($item['SG_HF_CONT_FILENAME']))."</a>";
 			echo " ".substr($item['SG_HF_TIME'], 11, 8)." - ".substr($item['SG_HF_CONT_TITEL'], 0, 50)." - ".substr($item['AD_NAME'], 0, 15)."";
 			echo "</div>";
 
