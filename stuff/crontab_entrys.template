@@ -13,7 +13,7 @@
 */2 * * * * /home/my-server/srb-tools/log_tweeter.py && exit
 # * * * * * /home/my-server/srb-tools/tweet_runner.py && exit
 46 * * * * /home/my-server/srb-tools/play_out_reminder.py && exit
-*/2 * * * * /home/my-server/srb-tools/watch_dog_mp3_gain.py && exit
+*/3 * * * * /home/my-server/srb-tools/watch_dog_mp3_gain.py && exit
 35 9 * * 3 /home/my-server/srb-tools/play_out_dublikator.py && exit
 20 4 * * 6 /home/my-server/srb-tools/backup_media_archiv.sh && exit
 51 11 * * * /home/my-server/srb-tools/play_out_extern_news.py && exit
