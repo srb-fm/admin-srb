@@ -180,25 +180,29 @@ class dbase(object):
             return params_list
             self.db_con.close()
 
-    def params_load_1(self,  ac,  db ):
-        """ Config-Parameter aus Voreinstellungen holen und in Liste schreiben"""
+    def params_load_1(self, ac, db):
+        """Config-Parameter aus Voreinstellungen holen und in Liste schreiben"""
         # Pramssuche abhaenging davon ob entwickler oder normal-version
         if ac.app_develop == "yes":
             ac.app_config_params_desc = ac.app_config_develop
         else:
             ac.app_config_params_desc = ac.app_config
 
-        message_write_to_console( ac, "params_load: " + ac.app_config_params_desc )
+        message_write_to_console(
+            ac, "params_load: " + ac.app_config_params_desc)
 
-        self.dbase_connect( ac )
+        self.dbase_connect(ac)
         if self.db_con is None:
             return
 
         try:
             db_cur = self.db_con.cursor()
-            SELECT = ("SELECT USER_SP_SPECIAL, USER_SP_PARAM_1, USER_SP_PARAM_2, "
-                "USER_SP_PARAM_3, USER_SP_PARAM_4, USER_SP_PARAM_5, USER_SP_PARAM_6, "
-                "USER_SP_PARAM_7, USER_SP_PARAM_8, USER_SP_PARAM_9, USER_SP_PARAM_10, "
+            SELECT = ("SELECT USER_SP_SPECIAL, "
+                "USER_SP_PARAM_1, USER_SP_PARAM_2, "
+                "USER_SP_PARAM_3, USER_SP_PARAM_4, "
+                "USER_SP_PARAM_5, USER_SP_PARAM_6, "
+                "USER_SP_PARAM_7, USER_SP_PARAM_8, "
+                "USER_SP_PARAM_9, USER_SP_PARAM_10, "
                 "USER_SP_PARAM_11, USER_SP_PARAM_12 from USER_SPECIALS "
                 "where USER_SP_SPECIAL='" + ac.app_config_params_desc + "'")
             db_cur.execute(SELECT)
@@ -206,40 +210,45 @@ class dbase(object):
 
             # wenn kein satz vorhanden
             if params_list is None:
-                log_message = "Parameter nicht in config gefunden: "+ ac.app_config_params_desc
-                db.write_log_to_db( ac, log_message, "x" )
-                message_write_to_console(ac, log_message )
+                log_message = ("Parameter nicht in config gefunden: "
+                                 + ac.app_config_params_desc)
+                db.write_log_to_db(ac, log_message, "x")
+                message_write_to_console(ac, log_message)
 
         except Exception, e:
             self.db_con.close()
             log_message = "read_params_from_config: Error: %s" % str(e)
-            message_write_to_console( ac, log_message )
-            db.write_log_to_db( ac, log_message, "x" )
+            message_write_to_console(ac, log_message)
+            db.write_log_to_db(ac, log_message, "x")
 
         else:
-            message_write_to_console( ac, params_list )
+            message_write_to_console(ac, params_list)
             return params_list
             self.db_con.close()
 
-    def params_load_2(self,  ac,  db,  config_params_desc ):
-        """ Zusaetzliche Config-Parameter aus Voreinstellungen holen und in Liste schreiben"""
+    def params_load_1a(self, ac, db, config_params_desc):
+        """Zusaetzliche Config-Parameter aus Voreinstellungen holen
+        und in Liste schreiben"""
         # Pramssuche abhaenging davon ob entwickler oder normal-version
         if ac.app_develop == "yes":
             ac.app_config_params_desc = ac.app_config_develop
         else:
             ac.app_config_params_desc = ac.app_config
 
-        message_write_to_console( ac, "params_load: " + config_params_desc )
+        message_write_to_console(ac, "params_load: " + config_params_desc)
 
-        self.dbase_connect( ac )
+        self.dbase_connect(ac)
         if self.db_con is None:
             return
 
         try:
             db_cur = self.db_con.cursor()
-            SELECT = ("SELECT USER_SP_SPECIAL, USER_SP_PARAM_1, USER_SP_PARAM_2, "
-                "USER_SP_PARAM_3, USER_SP_PARAM_4, USER_SP_PARAM_5, USER_SP_PARAM_6, "
-                "USER_SP_PARAM_7, USER_SP_PARAM_8, USER_SP_PARAM_9, USER_SP_PARAM_10, "
+            SELECT = ("SELECT USER_SP_SPECIAL, "
+                "USER_SP_PARAM_1, USER_SP_PARAM_2, "
+                "USER_SP_PARAM_3, USER_SP_PARAM_4, "
+                "USER_SP_PARAM_5, USER_SP_PARAM_6, "
+                "USER_SP_PARAM_7, USER_SP_PARAM_8, "
+                "USER_SP_PARAM_9, USER_SP_PARAM_10, "
                 "USER_SP_PARAM_11, USER_SP_PARAM_12 from USER_SPECIALS "
                 "where USER_SP_SPECIAL='" + config_params_desc + "'")
             db_cur.execute(SELECT)
@@ -247,18 +256,19 @@ class dbase(object):
 
             # wenn kein satz vorhanden
             if params_list is None:
-                log_message = "Parameter nicht in config gefunden: "+ config_params_desc
-                db.write_log_to_db( ac, log_message, "x" )
-                message_write_to_console(ac, log_message )
+                log_message = ("Parameter nicht in config gefunden: "
+                                + config_params_desc)
+                db.write_log_to_db(ac, log_message, "x")
+                message_write_to_console(ac, log_message)
 
         except Exception, e:
             self.db_con.close()
             log_message = "read_params_from_config: Error: %s" % str(e)
-            message_write_to_console( ac, log_message )
-            db.write_log_to_db( ac, log_message, "x" )
+            message_write_to_console(ac, log_message)
+            db.write_log_to_db(ac, log_message, "x")
 
         else:
-            message_write_to_console( ac, params_list )
+            message_write_to_console(ac, params_list)
             return params_list
             self.db_con.close()
 
@@ -1104,21 +1114,23 @@ def erase_file( ac, db, path_filename ):
 
     return
 
+
 def erase_file_a(ac, db, path_filename,  msg_done):
     """Datei loeschen"""
     message_write_to_console(ac, "erase_file: " + path_filename)
 
     try:
-        if os.path.isfile( path_filename ):
-            os.remove( path_filename )
-            message_write_to_console(ac, msg_done + path_filename )
+        if os.path.isfile(path_filename):
+            os.remove(path_filename)
+            message_write_to_console(ac, msg_done + path_filename)
             log_message = msg_done + path_filename
             db.write_log_to_db(ac, log_message, "k")
 
     except OSError, msg:
-        message_write_to_console( ac, "erase_file: " + "%r: %s" % ( msg,  path_filename ))
-        log_message = "erase_file: " + "%r: %s" % ( msg,  path_filename )
-        db.write_log_to_db( ac, log_message, "x" )
+        message_write_to_console(
+            ac, "erase_file: " + "%r: %s" % (msg, path_filename))
+        log_message = "erase_file: " + "%r: %s" % (msg, path_filename)
+        db.write_log_to_db(ac, log_message, "x")
         return None
 
     return path_filename
