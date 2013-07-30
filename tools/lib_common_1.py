@@ -145,7 +145,7 @@ class dbase(object):
         return "ok"
 
 
-    def params_load( self,  ac,  db ):
+    def xxx_params_load( self,  ac,  db ):
         # params einstellungen aus db holen
         message_write_to_console( ac, "params_load: " + ac.app_config_params_desc )
 
