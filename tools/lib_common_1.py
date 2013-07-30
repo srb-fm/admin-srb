@@ -10,6 +10,7 @@ import os
 import htmlentitydefs
 import db_config
 
+
 class dbase(object):
     """Datenbankzugriff"""
 
@@ -26,11 +27,11 @@ class dbase(object):
         self.db_log_con = None
 
 
-    def dbase_connect(self,  ac):
+    def dbase_connect(self, ac):
         """db connect"""
         message_write_to_console(ac, "dbase_connect")
         try:
-            self.db_con = kinterbasdb.connect( dsn=self.db_name, user=self.db_user, password=self.db_pw,  charset='UTF8' )
+            self.db_con = kinterbasdb.connect(dsn=self.db_name, user=self.db_user, password=self.db_pw,  charset='UTF8')
         except Exception, e:
             err_message = "db_connect Error: %s" % str(e)
             error_write_to_file( ac,  err_message )
@@ -261,32 +262,6 @@ class dbase(object):
             return params_list
             self.db_con.close()
 
-    def xx_write_log_to_db(self,  ac, log_message,  log_icon ):
-        """Logmeldungen in DB schreiben"""
-        message_write_to_console( ac, "write_log_to_db" )
-        # Hochkomma ersetzen sonst knallts im db.execute.string
-        message = re.sub ("'", "-", log_message )
-
-        ACTION = "INSERT INTO USER_LOGS ( USER_LOG_ACTION, USER_LOG_ICON, USER_LOG_MODUL_ID ) "
-        ACTION += "VALUES ( '" + message + "', '" + log_icon + "', '" + ac.app_id + "')"
-
-        self.dbase_connect( ac )
-        if self.db_con is None:
-            err_message = log_message + "Error 1 write_log_to_db: %s" % str(e)
-            error_write_to_file(ac, err_message )
-            return
-
-        try:
-            db_cur = self.db_con.cursor()
-            db_cur.execute( ACTION )
-            self.db_con.commit()
-            self.db_con.close()
-        except Exception, e:
-            message_write_to_console( ac, log_message + "write_log_to_db Error: %s</p>" % str(e) )
-            err_message = log_message + "Error 2 write_log_to_db: %s" % str(e)
-            error_write_to_file(ac, err_message )
-            #self.db_con.rollback()
-            #self.db_con.close()
 
     def write_log_to_db(self,  ac, log_message,  log_icon ):
         """Logmeldungen in DB-log schreiben"""
