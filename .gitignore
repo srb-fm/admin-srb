@@ -10,6 +10,7 @@
 _.htaccess
 *.template~
 *.nja
+__init__.py
 
 # configs etc
 admin_srb_conf.php
