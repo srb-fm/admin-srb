@@ -1,0 +1,4 @@
+Dateiname:
+D:\Play_Out_mAirList\SRB_play_out_on_air_03.log
+Format des Start-Eintrages:
+start=%Y-%M-%D %h:%m:%s&author=%a&title=%b&file=%2

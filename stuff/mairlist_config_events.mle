@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EventList>
+  <Event>
+    <Description>PlayList_Musik_stuendlich</Description>
+    <Month>1-12</Month>
+    <Day>1-31</Day>
+    <Weekday>1-7</Weekday>
+    <Hour>0-23</Hour>
+    <Minute>59</Minute>
+    <Second>55</Second>
+    <RunInAutomation />
+    <LastExecution>2013-05-31 08:59:55</LastExecution>
+    <ActionList>
+      <Action Class="DatabaseLoadPlaylist">
+        <DatabaseID>mAirListDB:FE3D293AA100A2CAE47DF30DADC1AE7E</DatabaseID>
+        <PlaylistOptions>
+          <PlaylistOption Name="NextPlaylist" Value="on" />
+        </PlaylistOptions>
+      </Action>
+    </ActionList>
+  </Event>
+  <Event>
+    <Description>PlayList_00_Sendung_Infotime_volle_Stunde</Description>
+    <Month>1-12</Month>
+    <Day>1-31</Day>
+    <Weekday>1-7</Weekday>
+    <Hour>0-23</Hour>
+    <Minute>59</Minute>
+    <Second>59</Second>
+    <RunInAutomation />
+    <LastExecution>2013-05-31 08:59:59</LastExecution>
+    <ActionList>
+      <Action Class="InsertAndPlayPlaylist">
+        <Filename>O:\SRB_pl_00.m3u</Filename>
+      </Action>
+    </ActionList>
+  </Event>
+  <Event>
+    <Description>PlayList_Magazine_15_nach_Um</Description>
+    <Month>1-12</Month>
+    <Day>1-31</Day>
+    <Weekday>1-7</Weekday>
+    <Hour>0-23</Hour>
+    <Minute>15</Minute>
+    <Second>0</Second>
+    <RunInAutomation />
+    <LastExecution>2013-05-31 09:15:00</LastExecution>
+    <ActionList>
+      <Action Class="InsertPlaylist">
+        <Filename>O:\SRB_pl_magazine_01.m3u</Filename>
+      </Action>
+    </ActionList>
+  </Event>
+  <Event>
+    <Description>PlayList_Magazine_30_nach_Um</Description>
+    <Month>1-12</Month>
+    <Day>1-31</Day>
+    <Weekday>1-7</Weekday>
+    <Hour>0-23</Hour>
+    <Minute>31</Minute>
+    <Second>0</Second>
+    <RunInAutomation />
+    <LastExecution>2013-05-31 09:31:00</LastExecution>
+    <ActionList>
+      <Action Class="InsertPlaylist">
+        <Filename>O:\SRB_pl_magazine_02.m3u</Filename>
+      </Action>
+    </ActionList>
+  </Event>
+  <Event>
+    <Description>PlayList_Magazine_45_nach_Um</Description>
+    <Month>1-12</Month>
+    <Day>1-31</Day>
+    <Weekday>1-7</Weekday>
+    <Hour>0-23</Hour>
+    <Minute>45</Minute>
+    <Second>0</Second>
+    <RunInAutomation />
+    <LastExecution>2013-05-31 08:45:00</LastExecution>
+    <ActionList>
+      <Action Class="InsertPlaylist">
+        <Filename>O:\SRB_pl_magazine_03.m3u</Filename>
+      </Action>
+    </ActionList>
+  </Event>
+  <Event>
+    <Description>PlayList_05_Sendung_05_nach_Um</Description>
+    <Month>1-12</Month>
+    <Day>1-31</Day>
+    <Weekday>1-7</Weekday>
+    <Hour>0-23</Hour>
+    <Minute>5</Minute>
+    <Second>0</Second>
+    <RunInAutomation />
+    <LastExecution>2013-05-31 09:05:00</LastExecution>
+    <ActionList>
+      <Action Class="InsertAndPlayPlaylist">
+        <Filename>O:\SRB_pl_05.m3u</Filename>
+      </Action>
+    </ActionList>
+  </Event>
+  <Event>
+    <Description>PlayList_30_Sendung_30_nach_um</Description>
+    <Month>1-12</Month>
+    <Day>1-31</Day>
+    <Weekday>1-7</Weekday>
+    <Hour>0-23</Hour>
+    <Minute>30</Minute>
+    <Second>0</Second>
+    <RunInAutomation />
+    <LastExecution>2013-05-31 09:30:00</LastExecution>
+    <ActionList>
+      <Action Class="InsertAndPlayPlaylist">
+        <Filename>O:\SRB_pl_30.m3u</Filename>
+      </Action>
+    </ActionList>
+  </Event>
+  <Event>
+    <Description>PlayListen_Musik_schreiben</Description>
+    <Month>1-12</Month>
+    <Day>1-31</Day>
+    <Weekday>1-7</Weekday>
+    <Hour>1</Hour>
+    <Minute>30</Minute>
+    <Second>0</Second>
+    <RunInAutomation />
+    <LastExecution>2013-05-31 01:30:00</LastExecution>
+    <ActionList>
+      <Action Class="GeneratePlaylists">
+        <DatabaseID>mAirListDB:FE3D293AA100A2CAE47DF30DADC1AE7E</DatabaseID>
+        <Hours>26</Hours>
+        <IncludeCurrent />
+        <Overwrite />
+      </Action>
+    </ActionList>
+  </Event>
+</EventList>
