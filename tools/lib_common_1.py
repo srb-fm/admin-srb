@@ -5,6 +5,7 @@
 import sys
 import kinterbasdb
 import datetime
+import string
 import re
 import os
 import htmlentitydefs
@@ -1118,3 +1119,11 @@ def check_slashes(ac, path_to_check):
 
     return path_to_check
 
+
+def extract_filename(ac, path_filename):
+    """filename rechts von slash extrahieren"""
+    if ac.app_windows == "no":
+        filename = path_filename[string.rfind(path_filename, "/") + 1:]
+    else:
+        filename = path_filename[string.rfind(path_filename, "\\") + 1:]
+    return filename
