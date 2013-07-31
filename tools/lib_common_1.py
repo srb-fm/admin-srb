@@ -43,7 +43,9 @@ class dbase(object):
         """db-log connect"""
         message_write_to_console(ac, "dbase_log_connect")
         try:
-            self.db_log_con = kinterbasdb.connect( dsn=self.db_log_name, user=self.db_log_user, password=self.db_log_pw,  charset='UTF8' )
+            self.db_log_con = kinterbasdb.connect(
+                dsn=self.db_log_name, user=self.db_log_user,
+                password=self.db_log_pw, charset='UTF8')
         except Exception, e:
             err_message = "db_log_connect Error: %s" % str(e)
             error_write_to_file(ac, err_message)
@@ -77,11 +79,11 @@ class dbase(object):
         except Exception, e:
             self.db_con.close()
             log_message = "load_generator_id Error: %s" % str(e)
-            message_write_to_console(ac,  log_message)
+            message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return None
         else:
-            message_write_to_console(ac, str( gen_id ))
+            message_write_to_console(ac, str(gen_id))
             self.db_con.close()
             return gen_id[0]
 
@@ -112,20 +114,19 @@ class dbase(object):
         except Exception, e:
             self.db_con.close()
             log_message = "count_rows Error: %s" % str(e)
-            message_write_to_console( ac,  log_message )
+            message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x", ac.app_id)
             return None
         else:
-            message_write_to_console(ac, str( row_counter ))
+            message_write_to_console(ac, str(row_counter))
             self.db_con.close()
             return row_counter[0]
-
 
     def exec_sql(self, ac, db, sql_command):
         """sql-statement ausfuehren"""
         message_write_to_console(ac, "exec_sql: " + ac.app_desc)
 
-        self.dbase_connect( ac )
+        self.dbase_connect(ac)
         if self.db_con is None:
             log_message = "DB-Connect fehlgeschlagen"
             message_write_to_console(ac, log_message)
@@ -145,41 +146,6 @@ class dbase(object):
             #self.db_con.close()
             return None
         return "ok"
-
-
-    def xxx_params_load( self,  ac,  db ):
-        # params einstellungen aus db holen
-        message_write_to_console(ac, "params_load: " + ac.app_config_params_desc)
-
-        self.dbase_connect(ac)
-        if self.db_con is None:
-            return
-
-        try:
-            db_cur = self.db_con.cursor()
-            SELECT = ("SELECT USER_SP_SPECIAL, USER_SP_PARAM_1, USER_SP_PARAM_2, "
-                "USER_SP_PARAM_3, USER_SP_PARAM_4, USER_SP_PARAM_5, USER_SP_PARAM_6, "
-                "USER_SP_PARAM_7, USER_SP_PARAM_8, USER_SP_PARAM_9, USER_SP_PARAM_10, "
-                "USER_SP_PARAM_11, USER_SP_PARAM_12 from USER_SPECIALS "
-                "where USER_SP_SPECIAL='" + ac.app_config_params_desc + "'")
-            db_cur.execute(SELECT)
-            params_list = db_cur.fetchone()
-
-            # wenn kein satz vorhanden
-            if params_list is None:
-                log_message = "params_load_from_config: " + ac.app_config_params_desc + " nicht gefunden.."
-                db.write_log_to_db(ac, log_message, "x")
-
-        except Exception, e:
-            self.db_con.close()
-            log_message = "read_params_from_config: Error: %s" % str(e)
-            message_write_to_console(ac, log_message)
-            db.write_log_to_db(ac, log_message, "x")
-
-        else:
-            message_write_to_console(ac, params_list)
-            return params_list
-            self.db_con.close()
 
     def params_load_1(self, ac, db):
         """Config-Parameter aus Voreinstellungen holen und in Liste schreiben"""
@@ -273,7 +239,6 @@ class dbase(object):
             return params_list
             self.db_con.close()
 
-
     def write_log_to_db(self, ac, log_message, log_icon):
         """Logmeldungen in DB-log schreiben"""
         message_write_to_console(ac, "write_log_to_db_log")
@@ -295,7 +260,8 @@ class dbase(object):
             self.db_log_con.commit()
             self.db_log_con.close()
         except Exception, e:
-            message_write_to_console( ac, log_message + "write_log_to_db Error: %s</p>" % str(e) )
+            message_write_to_console(
+                ac, log_message + "write_log_to_db Error: %s</p>" % str(e) )
             err_message = log_message + "Error 2 write_log_to_db: %s" % str(e)
             error_write_to_file(ac, err_message)
 
@@ -324,7 +290,8 @@ class dbase(object):
             self.db_log_con.commit()
             self.db_log_con.close()
         except Exception, e:
-            message_write_to_console(ac, log_message + "write_log_to_db_log Error: %s</p>" % str(e))
+            message_write_to_console(
+                ac, log_message + "write_log_to_db_log Error: %s</p>" % str(e))
             err_message = log_message + "Error 2 write_log_to_db_log: %s" % str(e)
             error_write_to_file(ac, err_message)
 
@@ -349,7 +316,7 @@ class dbase(object):
             self.db_log_con.commit()
             self.db_log_con.close()
         except Exception, e:
-            message_write_to_console( ac, log_message + "write_twitter_log_to_db_log Error: %s</p>" % str(e) )
+            message_write_to_console(ac, log_message + "write_twitter_log_to_db_log Error: %s</p>" % str(e) )
             err_message = log_message + "Error 2 write_twitter_log_to_db_log: %s" % str(e)
             error_write_to_file(ac, err_message)
 
@@ -427,7 +394,6 @@ class dbase(object):
             self.db_log_con.close()
             return row
 
-
     def read_tbl_row_with_cond(self, ac, db, table, fields, condition):
         # zeile aus tabelle sendung lesen
         row = None
@@ -461,7 +427,6 @@ class dbase(object):
             message_write_to_console(ac, row)
             self.db_con.close()
             return row
-
 
     def read_tbl_rows_with_cond(self, ac, db, table, fields, condition):
         """ Zeilen nach uebergebener Bedingung aus Tabelle lesen """
@@ -503,7 +468,6 @@ class dbase(object):
             return rows
             self.db_con.close()
 
-
     def read_tbl_rows_sg_cont_ad_with_cond(self, ac, db, condition):
         # zeile aus tabelle sendung lesen
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
@@ -515,7 +479,7 @@ class dbase(object):
         sql_string += "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
         sql_string += "LEFT JOIN AD_MAIN C "
         sql_string += "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
-        sql_string += "WHERE "+ condition + "ORDER BY A.SG_HF_TIME"
+        sql_string += "WHERE " + condition + "ORDER BY A.SG_HF_TIME"
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -536,7 +500,7 @@ class dbase(object):
 
             # wenn kein satz vorhanden
             if z == 0:
-                rows ="nix"
+                rows = "nix"
                 log_message = "read_tbl_rows_sg_cont_ad: nichts gefunden..." + condition
                 message_write_to_console(ac, log_message)
                 # logmeldung zu lang und zu häufig:
@@ -551,7 +515,6 @@ class dbase(object):
             message_write_to_console(ac, rows)
             return rows
             self.db_con.close()
-
 
     def read_tbl_row_sg_cont_ad_with_cond(self, ac, db, condition):
         """ Zeile aus Tabelle Sendung entspr. der Bedingung lesen """
@@ -597,7 +560,6 @@ class dbase(object):
             self.db_con.close()
             return row
 
-
     def read_tbl_rows_sg_cont_ad_with_cond_a(self, ac, db, condition):
         """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
@@ -611,7 +573,7 @@ class dbase(object):
             "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
             "LEFT JOIN AD_MAIN C "
             "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
-            "WHERE "+ condition + "ORDER BY A.SG_HF_TIME")
+            "WHERE " + condition + "ORDER BY A.SG_HF_TIME")
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -663,7 +625,7 @@ class dbase(object):
             "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
             "LEFT JOIN AD_MAIN C "
             "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
-            "WHERE "+ condition + "ORDER BY A.SG_HF_TIME")
+            "WHERE " + condition + "ORDER BY A.SG_HF_TIME")
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -735,7 +697,7 @@ class dbase(object):
 
             z = 0
             for row in result:
-                rows.append( row )
+                rows.append(row)
                 z += 1
 
             # wenn kein satz vorhanden
@@ -752,7 +714,7 @@ class dbase(object):
             db.write_log_to_db(ac, log_message, "x")
             return None
         else:
-            message_write_to_console( ac, rows )
+            message_write_to_console(ac, rows)
             self.db_con.close()
             return rows
 
@@ -767,7 +729,7 @@ class dbase(object):
         sql_string += "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
         sql_string += "LEFT JOIN AD_MAIN C "
         sql_string += "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
-        sql_string += "WHERE "+ condition + "ORDER BY " + order
+        sql_string += "WHERE " + condition + "ORDER BY " + order
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -797,7 +759,7 @@ class dbase(object):
         except Exception, e:
             self.db_con.close()
             log_message = "read_tbl_rows_sg_cont_ad Error: %s" % str(e)
-            message_write_to_console( ac, log_message )
+            message_write_to_console(ac, log_message )
             db.write_log_to_db(ac, log_message, "x")
         else:
             message_write_to_console(ac, rows)
@@ -820,7 +782,7 @@ class dbase(object):
             "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
             "WHERE "+ condition + "ORDER BY " + order)
 
-        self.dbase_connect( ac )
+        self.dbase_connect(ac)
         if self.db_con is None:
             log_message = "DB-Connect fehlgeschlagen"
             message_write_to_console(ac, log_message)
@@ -834,7 +796,7 @@ class dbase(object):
             rows = []
             result = db_cur.fetchall()
 
-            z =0
+            z = 0
             for row in result:
                 rows.append(row)
                 z += 1
@@ -901,7 +863,8 @@ def params_read_1(ac, db):
     if db.ac_config_1 is None:
         err_message = "Exit nach Error 000 - keine Parameter gefunden fuer: " + ac.app_config_params_desc
         error_write_to_file(ac, err_message)
-        message_write_to_console(ac, ac.app_desc + ": execution because of errors stopped")
+        message_write_to_console(
+            ac, ac.app_desc + ": execution because of errors stopped")
         sys.exit()
     else:
         params_check(ac, db.ac_config_1)
@@ -915,7 +878,8 @@ def params_check_1(ac, db):
     #if db.ac_config_1 is not None:
     #    message_write_to_console(ac, "params_check not none")
     for i in range(ac.app_config_params_range):
-        param_check = params_check_type(ac, db, ac.app_params_type_list[i], db.ac_config_1[i])
+        param_check = params_check_type(
+            ac, db, ac.app_params_type_list[i], db.ac_config_1[i])
         if param_check is None:
             err_message = ac.app_errorslist[0] + " " + db.ac_config_1[i]
             message_write_to_console(ac, err_message)
@@ -927,13 +891,15 @@ def params_check_1(ac, db):
 
 
 def params_check_a(ac, db, params_range, params_type_list, params_list):
-    """ Fuer Zusatzparams: Pruefen ob Params geladen wurden und richtigen Typ haben"""
+    """ Fuer Zusatzparams:
+    Pruefen ob Params geladen wurden und richtigen Typ haben"""
     message_write_to_console(ac, "check_params ")
 
     #if db.ac_config_2 is not None:
      #   message_write_to_console(ac, "params_check not none")
-    for i in range(params_range ):
-        param_check = params_check_type(ac, db, params_type_list[i], params_list[i])
+    for i in range(params_range):
+        param_check = params_check_type(
+            ac, db, params_type_list[i], params_list[i])
         if param_check is None:
             err_message = ac.app_errorslist[0] + " " + params_list[i]
             message_write_to_console(ac, err_message)
@@ -948,22 +914,22 @@ def params_check_type(ac, db, param_typ, param_value):
     """ Pruefen ob in Param-Feldern entsprechender Typ eingetragen"""
     message_write_to_console(ac, "check_params_type ")
 
-    if param_typ =="p_string":
+    if param_typ == "p_string":
         pm = re.match(r".+", param_value)
-    elif param_typ =="p_int":
+    elif param_typ == "p_int":
         # Zahlen suchen, wenn nicht gefunden dann None
         pm = re.match(r"\d", param_value)
         # Nichtzahlen suchen, wenn gefunden dann None, weil das darf nicht sein
         pma = re.search(r"[^0-9]", param_value)
         if pma is not None:
-            pm= None
+            pm = None
     elif param_typ == "p_url":
         pm = re.match(r"http://", param_value)
 
     return pm
 
 
-def error_write_to_file( ac, err_message ):
+def error_write_to_file(ac, err_message):
     # fehler in datei schreiben, wenn nicht in db möglich
     message_write_to_console(ac, "error_write_to_file")
     message = str(datetime.datetime.now()) + " - " + err_message + "\n"
@@ -971,7 +937,8 @@ def error_write_to_file( ac, err_message ):
     try:
         f_errors = open(ac.app_errorfile, 'a')
     except IOError as (errno, strerror):
-        message_write_to_console(ac, "I/O error({0}): {1}".format(errno, strerror))
+        message_write_to_console(
+            ac, "I/O error({0}): {1}".format(errno, strerror))
         message_write_to_console(ac, message)
     else:
         f_errors.write(message)
@@ -1033,14 +1000,14 @@ def replace_uchar_sonderzeichen_with_latein(my_string):
 
 def read_file_first_line(ac, db, filename):
     """Erste Zeile einer Datei lesen"""
-    message_write_to_console(ac, u"read_file_first_line "+ filename)
+    message_write_to_console(ac, u"read_file_first_line " + filename)
     try:
         # mit "with" wird file autom geschlossen
         with open(filename) as f:
             line = f.readline()
     except IOError as (errno, strerror):
         line = None
-        log_message = "read_file_first_line: {2} - I/O error({0}): {1}".format(errno, strerror, filename )
+        log_message = "read_file_first_line: {2} - I/O error({0}): {1}".format(errno, strerror, filename)
         db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console")
     return line
 
@@ -1110,7 +1077,8 @@ def erase_file(ac, db, path_filename):
             db.write_log_to_db(ac, log_message, "k")
 
     except OSError, msg:
-        message_write_to_console(ac, "erase_file: " + "%r: %s" % (msg, path_filename))
+        message_write_to_console(
+            ac, "erase_file: " + "%r: %s" % (msg, path_filename))
         log_message = "erase_file: " + "%r: %s" % (msg, path_filename)
         db.write_log_to_db(ac, log_message, "x")
 
