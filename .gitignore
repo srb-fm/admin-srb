@@ -9,6 +9,7 @@
 *.log
 _.htaccess
 *.template~
+*.nja
 
 # configs etc
 admin_srb_conf.php
