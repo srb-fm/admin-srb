@@ -103,9 +103,9 @@ class app_config(object):
         self.app_windows = "no"
 
 
-def write_files_to_archive_prepare( sendung_art ):
+def write_files_to_archive_prepare(sendung_art):
     """Dateien in Archiv kopieren, Vorbereitung"""
-    lib_cm.message_write_to_console( ac, u"write_files_to_archive_prepare" )
+    lib_cm.message_write_to_console(ac, u"write_files_to_archive_prepare")
 
     # Pfade
     if sendung_art == "Info-Time":
@@ -118,53 +118,53 @@ def write_files_to_archive_prepare( sendung_art ):
         path_sendung_dest = db.ac_config_1[4]
         log_message = u"Sendungen archivieren..."
 
-    db.write_log_to_db( ac, log_message, "p" )
+    db.write_log_to_db(ac, log_message, "p")
 
     # pfad anpassen
     path_sendung_source = lib_cm.check_slashes(ac, path_sendung_source)
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
 
-    lib_cm.message_write_to_console(ac, path_sendung_source )
-    lib_cm.message_write_to_console(ac, path_sendung_dest )
+    lib_cm.message_write_to_console(ac, path_sendung_source)
+    lib_cm.message_write_to_console(ac, path_sendung_dest)
 
     # Archiv-Ordner einlesen
     try:
-        files_sendung_source = os.listdir( path_sendung_source )
+        files_sendung_source = os.listdir(path_sendung_source)
     except Exception, e:
         log_message = u"read_files_from_dir Error: %s" % str(e)
-        lib_cm.message_write_to_console(ac, log_message + path_sendung_source )
-        db.write_log_to_db( ac, log_message, "x" )
+        lib_cm.message_write_to_console(ac, log_message + path_sendung_source)
+        db.write_log_to_db(ac, log_message, "x")
         return None
 
     try:
-        list_dirs = os.listdir( path_sendung_dest  )
+        list_dirs = os.listdir(path_sendung_dest)
     except Exception, e:
         log_message = u"read_files_from_dir Error: %s" % str(e)
         lib_cm.message_write_to_console(ac, log_message + path_sendung_dest)
-        db.write_log_to_db( ac, log_message, "x" )
+        db.write_log_to_db(ac, log_message, "x")
         return None
 
-    lib_cm.message_write_to_console( ac, list_dirs )
+    lib_cm.message_write_to_console(ac, list_dirs)
 
     # pruefen ob neues jahr angelegt werden muss
-    current_year = str( datetime.datetime.now().year )
+    current_year = str(datetime.datetime.now().year)
 
     # pfad anpassen
     current_year_path = path_sendung_dest + lib_cm.check_slashes(ac,
                                                 current_year)
 
     try:
-        if not os.path.exists( current_year_path ):
+        if not os.path.exists(current_year_path):
             # neuen ordner anlegen
             log_message = u"anlegen Archiv-Verzeichnis: " + current_year_path
-            lib_cm.message_write_to_console( ac, log_message )
-            db.write_log_to_db( ac, log_message, "k" )
-            os.mkdir( current_year_path )
+            lib_cm.message_write_to_console(ac, log_message)
+            db.write_log_to_db(ac, log_message, "k")
+            os.mkdir(current_year_path)
 
     except Exception, e:
         log_message = u"anlegen Archiv-Verzeichnis Error: %s" % str(e)
-        lib_cm.message_write_to_console( ac, log_message )
-        db.write_log_to_db( ac, log_message, "x" )
+        lib_cm.message_write_to_console(ac, log_message)
+        db.write_log_to_db(ac, log_message, "x")
         return None
 
     # archivierung entsprechend der jahre durchgenen
@@ -173,11 +173,11 @@ def write_files_to_archive_prepare( sendung_art ):
         db_tbl_condition = ("USER_LOG_ACTION LIKE 'Dateien archiviert von: "
                             + sendung_art + " - "
                             + item + "%' ORDER BY USER_LOG_ID DESC")
-        log_data =  db.read_tbl_rows_with_cond_log(ac, db,
-            "USER_LOGS", "FIRST 7 USER_LOG_ACTION", db_tbl_condition )
+        log_data = db.read_tbl_rows_with_cond_log(ac, db,
+            "USER_LOGS", "FIRST 7 USER_LOG_ACTION", db_tbl_condition)
 
         if log_data is not None:
-            lib_cm.message_write_to_console(ac, log_data )
+            lib_cm.message_write_to_console(ac, log_data)
             z_non_copys = 0
             for row in log_data:
                 #lib_cm.message_write_to_console( ac, row )
@@ -191,9 +191,9 @@ def write_files_to_archive_prepare( sendung_art ):
             # keine Dateien kopiert worden,
             # erstmal aussetzen indem ein Dummy-Satz eingetragen
             if z_non_copys >= 3:
-                log_message = (u"Dateien archiviert von: "
+                log_message = ("Archivierung der Dateien von: "
                                + sendung_art + " - "
-                               +  item + " - uebersprungen")
+                               + item + " - uebersprungen")
                 db.write_log_to_db_a(ac, log_message, "e",
                     "write_also_to_console")
                 continue
@@ -202,34 +202,34 @@ def write_files_to_archive_prepare( sendung_art ):
                     path_sendung_source, path_sendung_dest, item, sendung_art)
         else:
             write_files_to_archive(files_sendung_source, path_sendung_source,
-                    path_sendung_dest, item, sendung_art )
+                    path_sendung_dest, item, sendung_art)
 
     return "ok"
 
 
 def write_files_to_archive(files_sendung_source,
-        path_sendung_source, path_sendung_dest, dir_year, sendung_art ):
+        path_sendung_source, path_sendung_dest, dir_year, sendung_art):
     """Dateien in Archiv kopieren, Durchfuerung"""
-    lib_cm.message_write_to_console( ac, u"write_files_to_archive " + dir_year)
+    lib_cm.message_write_to_console(ac, u"write_files_to_archive " + dir_year)
 
     # Zeiten
-    lib_cm.message_write_to_console( ac, db.ac_config_1[5] )
+    lib_cm.message_write_to_console(ac, db.ac_config_1[5])
     date_back = (datetime.datetime.now()
-                 + datetime.timedelta(days= -int(db.ac_config_1[5])))
-    lib_cm.message_write_to_console( ac, db.ac_config_1[7] )
-    nr_of_files_to_archive = int( db.ac_config_1[7] )
+                 + datetime.timedelta(days = - int(db.ac_config_1[5])))
+    lib_cm.message_write_to_console(ac, db.ac_config_1[7])
+    nr_of_files_to_archive = int(db.ac_config_1[7])
 
     # pfad anpassen
     path_sendung_dest += lib_cm.check_slashes(ac, dir_year)
     log_message = u"Dateien archivieren nach: " + path_sendung_dest
-    db.write_log_to_db( ac, log_message, "f" )
+    db.write_log_to_db(ac, log_message, "f")
 
     try:
         files_sendung_dest = os.listdir(path_sendung_dest)
     except Exception, e:
         log_message = u"read_files_from_dir Error: %s" % str(e)
-        lib_cm.message_write_to_console( ac, log_message )
-        db.write_log_to_db( ac, log_message, "x" )
+        lib_cm.message_write_to_console(ac, log_message)
+        db.write_log_to_db(ac, log_message, "x")
         return
 
     # items aus sendungen liste rausholen, wenn nix dann eben nix
@@ -246,15 +246,15 @@ def write_files_to_archive(files_sendung_source,
     # die keine files enthaelt, die schon in destination vorhanden
     for item in files_sendung:
         # srb-dateiname, erkennbar an 7stelliger zahl am anfang
-        if re.match("\d{7,}", item ) is None:
+        if re.match("\d{7,}", item) is None:
             continue
 
         db_tbl_limit = "FIRST 1"
-        db_tbl_condition = "B.SG_HF_CONT_ID = '" +  item[0 : 7] + "' "
+        db_tbl_condition = "B.SG_HF_CONT_ID = '" + item[0:7] + "' "
         db_tbl_order = "A.SG_HF_TIME"
         sendung_data = (
             db.read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(ac, db,
-            db_tbl_limit, db_tbl_condition,  db_tbl_order ))
+            db_tbl_limit, db_tbl_condition, db_tbl_order))
 
         if sendung_data is None:
             lib_cm.message_write_to_console(ac, "nix")
@@ -264,30 +264,30 @@ def write_files_to_archive(files_sendung_source,
             y += 1
             #print row
             sendung_year = row[2].year
-            lib_cm.message_write_to_console(ac, sendung_year )
+            lib_cm.message_write_to_console(ac, sendung_year)
 
             sendung_date = row[2]
-            lib_cm.message_write_to_console(ac, sendung_date )
-            lib_cm.message_write_to_console( ac, item )
+            lib_cm.message_write_to_console(ac, sendung_date)
+            lib_cm.message_write_to_console(ac, item)
             # nur
 
-            if (sendung_date < date_back and sendung_year == int( dir_year )):
+            if (sendung_date < date_back and sendung_year == int(dir_year)):
                 lib_cm.message_write_to_console(ac, u"archivieren: " + row[12])
                 file_source = path_sendung_source + item
-                file_destination = path_sendung_dest+ item
+                file_destination = path_sendung_dest + item
 
                 try:
                     shutil.copy(file_source, file_destination)
                     log_message = u"archiviert: " + item
-                    db.write_log_to_db( ac, log_message, "c" )
+                    db.write_log_to_db(ac, log_message, "c")
                     z += 1
                     # nicht nochmal kopieren
                     # falls noch weitere WH archivert werden muessten
                     #break
                 except Exception, e:
                     log_message = u"copy_files_to_dir Error: %s" % str(e)
-                    lib_cm.message_write_to_console(ac, log_message )
-                    db.write_log_to_db( ac, log_message, "x" )
+                    lib_cm.message_write_to_console(ac, log_message)
+                    db.write_log_to_db(ac, log_message, "x")
 
             else:
                 lib_cm.message_write_to_console(
@@ -299,18 +299,18 @@ def write_files_to_archive(files_sendung_source,
             break
 
     lib_cm.message_write_to_console(ac, u"dateien bearbeitet: " + str(x))
-    lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y) )
-    lib_cm.message_write_to_console(ac, u"dateien archiviert: " + str(z) )
+    lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y))
+    lib_cm.message_write_to_console(ac, u"dateien archiviert: " + str(z))
     log_message = (u"Archivierung, Dateien bearbeitet: " + sendung_art + " - "
-                   +  dir_year + " - " + str(x) + u" - in Archiv kopiert: "
-                   +  str(z))
-    db.write_log_to_db( ac, log_message, "k" )
+                   + dir_year + " - " + str(x) + u" - in Archiv kopiert: "
+                   + str(z))
+    db.write_log_to_db(ac, log_message, "k")
     if z != 0:
-        db.write_log_to_db( ac, log_message, "i" )
+        db.write_log_to_db(ac, log_message, "i")
     return
 
 
-def erase_files_from_play_out_prepare( sendung_art ):
+def erase_files_from_play_out_prepare(sendung_art):
     """Dateien in Play-Out loeschen, Vorbereitung"""
     lib_cm.message_write_to_console(ac, u"erase_files_from_play_out_prepare")
 
@@ -325,37 +325,37 @@ def erase_files_from_play_out_prepare( sendung_art ):
         path_sendung_dest = db.ac_config_1[4]
         log_message = u"Sendungen in Play_Out loeschen..."
 
-    db.write_log_to_db( ac, log_message, "p" )
+    db.write_log_to_db(ac, log_message, "p")
 
     # pfad anpassen
     path_sendung_source = lib_cm.check_slashes(ac, path_sendung_source)
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
 
-    lib_cm.message_write_to_console(ac, path_sendung_source )
-    lib_cm.message_write_to_console(ac, path_sendung_dest )
+    lib_cm.message_write_to_console(ac, path_sendung_source)
+    lib_cm.message_write_to_console(ac, path_sendung_dest)
 
     # source: files in list
     try:
-        files_sendung_source = os.listdir( path_sendung_source )
+        files_sendung_source = os.listdir(path_sendung_source)
     except Exception, e:
         log_message = u"read_files_from_dir Error: %s" % str(e)
-        lib_cm.message_write_to_console( ac, log_message )
-        db.write_log_to_db( ac, log_message, "x" )
+        lib_cm.message_write_to_console(ac, log_message)
+        db.write_log_to_db(ac, log_message, "x")
         return None
 
-    list_dirs = os.listdir(path_sendung_dest  )
-    lib_cm.message_write_to_console(ac, list_dirs )
+    list_dirs = os.listdir(path_sendung_dest)
+    lib_cm.message_write_to_console(ac, list_dirs)
 
     # loeschen entsprechend der jahre durchgenen
     for item in list_dirs:
         # pruefen ob logs aus vergangenen loeschungen vorhanden
         db_tbl_condition = ("USER_LOG_ACTION LIKE 'Dateien loeschen von: "
-            + sendung_art + " - "  +  item + "%' ORDER BY USER_LOG_ID DESC")
-        log_data =  db.read_tbl_rows_with_cond_log(ac,
-            db, "USER_LOGS", "FIRST 7 USER_LOG_ACTION", db_tbl_condition )
+            + sendung_art + " - " + item + "%' ORDER BY USER_LOG_ID DESC")
+        log_data = db.read_tbl_rows_with_cond_log(ac,
+            db, "USER_LOGS", "FIRST 7 USER_LOG_ACTION", db_tbl_condition)
 
         if log_data is not None:
-            lib_cm.message_write_to_console( ac, log_data )
+            lib_cm.message_write_to_console(ac, log_data)
             z_non_copys = 0
             for row in log_data:
                 # archivierungsdurchlaeufe zaehlen
@@ -368,32 +368,32 @@ def erase_files_from_play_out_prepare( sendung_art ):
             # erstmal aussetzen indem ein dummy-satz eingetragen wird
             if z_non_copys >= 3:
                 log_message = (u"Dateien loeschen von: " + sendung_art
-                    + " - "  +  item + " - uebersprungen")
-                db.write_log_to_db( ac, log_message, "e" )
-                lib_cm.message_write_to_console( ac, log_message )
+                    + " - " + item + " - uebersprungen")
+                db.write_log_to_db(ac, log_message, "e")
+                lib_cm.message_write_to_console(ac, log_message)
                 continue
             else:
                 #log_message = "Dateien loeschen von: " + path_sendung_source
                 #db.write_log_to_db( ac, log_message, "t" )
                 erase_files_from_play_out(files_sendung_source,
-                    path_sendung_source,  path_sendung_dest, item, sendung_art )
+                    path_sendung_source, path_sendung_dest, item, sendung_art)
         else:
             #log_message = "Dateien loeschen von: " + path_sendung_source
             #db.write_log_to_db( ac, log_message, "t" )
             erase_files_from_play_out(files_sendung_source,
-                path_sendung_source, path_sendung_dest, item, sendung_art )
+                path_sendung_source, path_sendung_dest, item, sendung_art)
 
     return "ok"
 
 
 def erase_files_from_play_out(files_sendung_source, path_sendung_source,
-                              path_sendung_dest, dir_year, sendung_art ):
+                              path_sendung_dest, dir_year, sendung_art):
     """Dateien in Play-Out loeschen, Durchfuehrung"""
-    lib_cm.message_write_to_console(ac, u"erase_files_from_play_out" )
+    lib_cm.message_write_to_console(ac, u"erase_files_from_play_out")
     # Zeiten
-    lib_cm.message_write_to_console( ac, db.ac_config_1[6] )
+    lib_cm.message_write_to_console(ac, db.ac_config_1[6])
     date_back = (datetime.datetime.now()
-                 + datetime.timedelta(days= -int( db.ac_config_1[6])))
+                 + datetime.timedelta(days = -int(db.ac_config_1[6])))
     #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
     lib_cm.message_write_to_console(ac, db.ac_config_1[7])
     nr_of_files_to_archive = int(db.ac_config_1[7])
@@ -402,14 +402,14 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
     path_sendung_dest += lib_cm.check_slashes(ac, dir_year)
     log_message = (u"Dateien von " + dir_year + u" loeschen aus: "
                    + path_sendung_source)
-    db.write_log_to_db(ac, log_message, "v" )
+    db.write_log_to_db(ac, log_message, "v")
 
     try:
-        files_sendung_dest = os.listdir( path_sendung_dest )
+        files_sendung_dest = os.listdir(path_sendung_dest)
     except Exception, e:
         log_message = u"read_files_from_dir Error: %s" % str(e)
-        lib_cm.message_write_to_console( ac, log_message )
-        db.write_log_to_db( ac, log_message, "x" )
+        lib_cm.message_write_to_console(ac, log_message)
+        db.write_log_to_db(ac, log_message, "x")
         return
 
     # items aus sendungen liste rausholen, wenn nix dann eben nix
@@ -419,7 +419,7 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
 
     # gemeinsamkeiten, also die dateien in neue liste, die in beiden drinne sind
     files_sendung = (list(
-        set(files_sendung_source).intersection(set( files_sendung_dest))))
+        set(files_sendung_source).intersection(set(files_sendung_dest))))
 
     # jetzt mit liste weiter, die alle files enthaelt,
     # die in source UND destination
@@ -427,17 +427,17 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
     for item in files_sendung:
         # srb-dateiname, erkennbar an 7stelliger zahl am anfang
 
-        if re.match("\d{7,}",  item ) is None:
+        if re.match("\d{7,}", item) is None:
             continue
 
         db_tbl_limit = "FIRST 1"
-        db_tbl_condition = "B.SG_HF_CONT_ID = '" +  item[0 : 7] + "' "
+        db_tbl_condition = "B.SG_HF_CONT_ID = '" + item[0:7] + "' "
         db_tbl_order = "A.SG_HF_TIME DESCENDING"
         sendung_data = db.read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(
                     ac, db, db_tbl_limit, db_tbl_condition, db_tbl_order)
         #print sendung_data
         if sendung_data is None:
-            lib_cm.message_write_to_console( ac, "nix" )
+            lib_cm.message_write_to_console(ac, "nix")
             continue
 
         for row in sendung_data:
@@ -445,10 +445,10 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
             #print row
             sendung_year = row[2].year
             sendung_date = row[2]
-            lib_cm.message_write_to_console( ac, sendung_date )
-            lib_cm.message_write_to_console( ac, item )
+            lib_cm.message_write_to_console(ac, sendung_date)
+            lib_cm.message_write_to_console(ac, item)
             # nur
-            if sendung_date < date_back and sendung_year == int( dir_year ):
+            if sendung_date < date_back and sendung_year == int(dir_year):
                 if row[13].strip() != "05":
                     # Jingle SRB (05) nicht loeschen
                     lib_cm.message_write_to_console(ac, u"loeschen: " + row[12])
@@ -457,15 +457,15 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
                     try:
                         os.remove(file_source)
                         log_message = u"geloescht: " + item
-                        db.write_log_to_db( ac, log_message, "e" )
+                        db.write_log_to_db(ac, log_message, "e")
                         z += 1
                         # nicht nochmal bei WH loeschen,
                         # braucme nich, nur ein satz wird geholt (der juengste)
                         # break
                     except Exception, e:
                         log_message = u"erase_files_fom_dir Error: %s" % str(e)
-                        lib_cm.message_write_to_console( ac, log_message )
-                        db.write_log_to_db( ac, log_message, "x" )
+                        lib_cm.message_write_to_console(ac, log_message)
+                        db.write_log_to_db(ac, log_message, "x")
 
                 else:
                     lib_cm.message_write_to_console(ac,
@@ -480,15 +480,15 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
         if z >= nr_of_files_to_archive:
             break
 
-    lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(x) )
-    lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y) )
-    lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(z) )
+    lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(x))
+    lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y))
+    lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(z))
     log_message = (u"Archivierung, Dateien bearbeitet: " + sendung_art + " - "
         +  dir_year + " - "  + str(x)
         + u" - Sendungen in Play_Out geloescht: "  +  str(z))
-    db.write_log_to_db( ac, log_message, "k" )
+    db.write_log_to_db(ac, log_message, "k")
     if z != 0:
-        db.write_log_to_db( ac, log_message, "i" )
+        db.write_log_to_db(ac, log_message, "i")
     return
 
 
