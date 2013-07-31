@@ -60,7 +60,7 @@ class dbase(object):
 
         self.dbase_connect(ac)
         if self.db_con is None:
-            log_message = "load_generator_id: %s" % str(e)
+            log_message = "No connect to db for load_generator_id"
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return None
