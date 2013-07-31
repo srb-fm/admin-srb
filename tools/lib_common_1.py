@@ -95,7 +95,7 @@ class dbase(object):
 
         self.dbase_connect(ac)
         if self.db_con is None:
-            log_message = "count_rows Error: %s" % str(e)
+            log_message = "No connect to db for count_rows"
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return None
@@ -246,8 +246,10 @@ class dbase(object):
         # Hochkomma ersetzen sonst knallts im db.execute.string
         message = re.sub("'", "-", log_message)
 
-        ACTION = "INSERT INTO USER_LOGS ( USER_LOG_ACTION, USER_LOG_ICON, USER_LOG_MODUL_ID ) "
-        ACTION += "VALUES ( '" + message + "', '" + log_icon + "', '" + ac.app_id + "')"
+        ACTION = ("INSERT INTO "
+            "USER_LOGS(USER_LOG_ACTION, USER_LOG_ICON, USER_LOG_MODUL_ID)"
+            "VALUES('" + message + "', '"
+            + log_icon + "', '" + ac.app_id + "')")
 
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
@@ -262,7 +264,7 @@ class dbase(object):
             self.db_log_con.close()
         except Exception, e:
             message_write_to_console(
-                ac, log_message + "write_log_to_db Error: %s</p>" % str(e) )
+                ac, log_message + "write_log_to_db Error: %s</p>" % str(e))
             err_message = log_message + "Error 2 write_log_to_db: %s" % str(e)
             error_write_to_file(ac, err_message)
 
