@@ -253,7 +253,8 @@ class dbase(object):
 
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
-            err_message = log_message + "Error 1 write_log_to_db_log: %s" % str(e)
+            err_message = (log_message
+                             + "No connect to db for write_log_to_db_log")
             error_write_to_file(ac, err_message)
             return
 
@@ -278,8 +279,10 @@ class dbase(object):
         # Hochkomma ersetzen sonst knallts im db.execute.string
         message = re.sub("'", "-", log_message)
 
-        ACTION = ("INSERT INTO USER_LOGS ( USER_LOG_ACTION, USER_LOG_ICON, USER_LOG_MODUL_ID ) "
-            "VALUES ( '" + message + "', '" + log_icon + "', '" + ac.app_id + "')")
+        ACTION = ("INSERT INTO USER_LOGS(USER_LOG_ACTION, "
+                    "USER_LOG_ICON, USER_LOG_MODUL_ID ) "
+                    "VALUES ( '" + message + "', '"
+                    + log_icon + "', '" + ac.app_id + "')")
 
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
