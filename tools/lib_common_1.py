@@ -332,7 +332,8 @@ class dbase(object):
     def read_tbl_rows_with_cond_log(self, ac, db, table, fields, condition):
         """ Zeilen nach uebergebener Bedingung aus Tabelle in db-log lesen """
         message_write_to_console(ac, u"read_tbl_rows_with_condition_log: ")
-        sql_string = "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
+        sql_string = ("SELECT " + fields +  " FROM " + table
+                     + " WHERE " + condition)
 
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
@@ -354,7 +355,8 @@ class dbase(object):
             # wenn kein satz vorhanden
             if z == 0:
                 rows = None
-                log_message = u"read_tbl_rows_with_cond_log: nichts gefunden..." + condition
+                log_message = (u"read_tbl_rows_with_cond_log: "
+                                "nichts gefunden..." + condition)
                 message_write_to_console(ac, log_message)
                 # logmeldung zu lang und zu häufig:
                 #db.write_log_to_db( ac, log_message, "x", "003" )
