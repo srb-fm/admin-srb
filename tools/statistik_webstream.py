@@ -160,7 +160,7 @@ def extract_cut_off(website, match_string_1, match_string_2):
         lib_cm.message_write_to_console(ac, "cut_off_error_2")
         return  cut_off
 
-    cut_off = website [index_begin:index_end]
+    cut_off = website[index_begin:index_end]
     lib_cm.message_write_to_console(ac, cut_off)
     return cut_off
 
@@ -199,7 +199,7 @@ def extract_time(website, match_string_2, charackters_forwards):
         return  t_uptime_current
 
     index_a_begin = index_a_ident + int(charackters_forwards)
-    index_a_end   = index_a_begin + 20
+    index_a_end = index_a_begin + 20
 
     # website_uptime ermitteln fuer dateiname oder db_satz_id
     c_uptime_current = website[index_a_begin:index_a_end]
