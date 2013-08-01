@@ -475,7 +475,6 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
                 lib_cm.message_write_to_console(ac,
                 u"Sendedatum liegt vor Archivdatum, noch nicht loeschen ...")
 
-
         x += 1
         if z >= nr_of_files_to_archive:
             break
@@ -483,9 +482,9 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
     lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(x))
     lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y))
     lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(z))
-    log_message = (u"Archivierung, Dateien bearbeitet: " + sendung_art + " - "
-        +  dir_year + " - "  + str(x)
-        + u" - Sendungen in Play_Out geloescht: "  +  str(z))
+    log_message = (u"Dateien archiviert: " + sendung_art + " - "
+        + dir_year + " - " + str(x)
+        + u" - Sendungen in Play_Out geloescht: " + str(z))
     db.write_log_to_db(ac, log_message, "k")
     if z != 0:
         db.write_log_to_db(ac, log_message, "i")

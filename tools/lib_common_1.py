@@ -286,7 +286,7 @@ class dbase(object):
 
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
-            err_message = log_message + "Error 1 write_log_to_db: %s" % str(e)
+            err_message = log_message + "No connect to db for write_log_to_db:"
             error_write_to_file(ac, err_message)
             return
 
@@ -298,7 +298,8 @@ class dbase(object):
         except Exception, e:
             message_write_to_console(
                 ac, log_message + "write_log_to_db_log Error: %s</p>" % str(e))
-            err_message = log_message + "Error 2 write_log_to_db_log: %s" % str(e)
+            err_message = (log_message
+                         + "Error 2 write_log_to_db_log: %s" % str(e))
             error_write_to_file(ac, err_message)
 
     def write_twitter_log_to_db_1(self, ac, log_id, log_console):
@@ -308,11 +309,12 @@ class dbase(object):
         if log_console is not None:
             message_write_to_console(ac, log_id)
 
-        ACTION = "INSERT INTO TWITTER_LOGS(TW_USER_LOG_ID) VALUES ('" + str(log_id) + "')"
+        ACTION = ("INSERT INTO TWITTER_LOGS(TW_USER_LOG_ID) VALUES('"
+                 + str(log_id) + "')")
 
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
-            err_message = log_message + "Error 1 write_twitter_log_to_db: %s" % str(e)
+            err_message = ("No connect to db for write_twitter_log_to_db:")
             error_write_to_file(ac, err_message)
             return
 
@@ -322,14 +324,15 @@ class dbase(object):
             self.db_log_con.commit()
             self.db_log_con.close()
         except Exception, e:
-            message_write_to_console(ac, log_message + "write_twitter_log_to_db_log Error: %s</p>" % str(e) )
-            err_message = log_message + "Error 2 write_twitter_log_to_db_log: %s" % str(e)
+            message_write_to_console(ac,
+                 "write_twitter_log_to_db_log Error: %s</p>" % str(e))
+            err_message = "Error 2 write_twitter_log_to_db_log: %s" % str(e)
             error_write_to_file(ac, err_message)
 
     def read_tbl_rows_with_cond_log(self, ac, db, table, fields, condition):
         """ Zeilen nach uebergebener Bedingung aus Tabelle in db-log lesen """
         message_write_to_console(ac, u"read_tbl_rows_with_condition_log: ")
-        sql_string =  "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
+        sql_string = "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
 
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
@@ -404,7 +407,7 @@ class dbase(object):
         # zeile aus tabelle sendung lesen
         row = None
         message_write_to_console(ac, "read_tbl_row_with_condition: ")
-        sql_string =  "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
+        sql_string = "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -437,7 +440,7 @@ class dbase(object):
     def read_tbl_rows_with_cond(self, ac, db, table, fields, condition):
         """ Zeilen nach uebergebener Bedingung aus Tabelle lesen """
         message_write_to_console(ac, u"read_tbl_rows_with_condition: ")
-        sql_string =  "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
+        sql_string = "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -478,7 +481,7 @@ class dbase(object):
         # zeile aus tabelle sendung lesen
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
 
-        sql_string =  "SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
+        sql_string = "SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
         sql_string += "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
         sql_string += "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
         sql_string += "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
@@ -526,7 +529,7 @@ class dbase(object):
         """ Zeile aus Tabelle Sendung entspr. der Bedingung lesen """
         message_write_to_console(ac, "read_tbl_row_sg_cont_ad_condition: ")
 
-        sql_string =  ("SELECT A.SG_HF_ID, A.SG_HF_CONT_ID, A.SG_HF_TIME, A.SG_HF_MAGAZINE, A.SG_HF_ON_AIR, A.SG_HF_SOURCE_ID, "
+        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONT_ID, A.SG_HF_TIME, A.SG_HF_MAGAZINE, A.SG_HF_ON_AIR, A.SG_HF_SOURCE_ID, "
             "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
             "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
             "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
@@ -672,7 +675,7 @@ class dbase(object):
 
     def read_tbl_rows_sg_cont_ad_with_cond_c(self, ac, db, condition):
         """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
-        message_write_to_console( ac, "read_tbl_rows_sg_cont_ad_condition_3: " )
+        message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition_3: ")
         sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, "
             "A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
             "A.SG_HF_SOURCE_ID, A.SG_HF_REPEAT_PROTO, A.SG_HF_FIRST_SG, "
@@ -786,7 +789,7 @@ class dbase(object):
             "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
             "LEFT JOIN AD_MAIN C "
             "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
-            "WHERE "+ condition + "ORDER BY " + order)
+            "WHERE " + condition + "ORDER BY " + order)
 
         self.dbase_connect(ac)
         if self.db_con is None:

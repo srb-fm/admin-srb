@@ -196,7 +196,7 @@ def encode_file(podcast_sendung):
     # infotime
     if podcast_sendung[4] == "T":
         #c_source_file = path_it_mg_source + podcast_sendung[0]
-        c_source_file = (path_it_mg_source.encode( ac.app_encode_out_strings )
+        c_source_file = (path_it_mg_source.encode( ac.app_encode_out_strings)
                     + podcast_sendung[0].encode(ac.app_encode_out_strings))
 
     # magazin
@@ -207,7 +207,7 @@ def encode_file(podcast_sendung):
 
     lib_cm.message_write_to_console(ac, c_source_file)
     lib_cm.message_write_to_console(ac, u"type(c_source_file)")
-    lib_cm.message_write_to_console(ac, type( c_source_file ))
+    lib_cm.message_write_to_console(ac, type( c_source_file))
 
     # dest recoded file
     #path_dest = db.ac_config_1[5]
@@ -238,7 +238,7 @@ def encode_file(podcast_sendung):
                         stderr=subprocess.PIPE).communicate()
     #print p
     lib_cm.message_write_to_console(ac, u"returncode 0")
-    lib_cm.message_write_to_console(ac, p[0] )
+    lib_cm.message_write_to_console(ac, p[0])
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
@@ -281,8 +281,8 @@ def check_files_online(podcast_sendungen):
                                         + db.ac_config_1[8])
         return None
 
-    ftp.login( db.ac_config_1[9], db.ac_config_1[10])
-    ftp.cwd( db.ac_config_1[11])
+    ftp.login(db.ac_config_1[9], db.ac_config_1[10])
+    ftp.cwd(db.ac_config_1[11])
 
     files_online = []
     try:
