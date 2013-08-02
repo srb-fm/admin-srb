@@ -411,7 +411,7 @@ class dbase(object):
         # zeile aus tabelle sendung lesen
         row = None
         message_write_to_console(ac, "read_tbl_row_with_condition: ")
-        sql_string = ("SELECT " + fields +  " FROM " + table
+        sql_string = ("SELECT " + fields + " FROM " + table
                      + " WHERE " + condition)
 
         self.dbase_connect(ac)
@@ -570,7 +570,8 @@ class dbase(object):
 
         except Exception, e:
             self.db_con.close()
-            log_message = "read_tbl_row_sg_cont_ad_with_cond_1 Error: %s" % str(e)
+            log_message = ("read_tbl_row_sg_cont_ad_with_cond_1 "
+                            "Error: %s" % str(e))
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return None
@@ -623,7 +624,8 @@ class dbase(object):
 
         except Exception, e:
             self.db_con.close()
-            log_message = "read_tbl_rows_sg_cont_ad_with_cond_1 Error: %s" % str(e)
+            log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1 "
+                            "Error: %s" % str(e))
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return None
@@ -676,7 +678,8 @@ class dbase(object):
 
         except Exception, e:
             self.db_con.close()
-            log_message = "read_tbl_rows_sg_cont_ad_with_cond_2 Error: %s" % str(e)
+            log_message = ("read_tbl_rows_sg_cont_ad_with_cond_2 "
+                            "Error: %s" % str(e))
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return None
@@ -731,7 +734,8 @@ class dbase(object):
 
         except Exception, e:
             self.db_con.close()
-            log_message = "read_tbl_rows_sg_cont_ad_with_cond_2 Error: %s" % str(e)
+            log_message = ("read_tbl_rows_sg_cont_ad_with_cond_2 "
+                            "Error: %s" % str(e))
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return None
