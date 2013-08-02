@@ -270,7 +270,7 @@ def delete_tweet_log_in_db_log():
 
     db.dbase_log_connect(ac)
     if db.db_log_con is None:
-        err_message = u"Error 1 delete_tweet_log_in_db_log: %s" % str(e)
+        err_message = u"No connect to db for delete_tweet_log_in_db_log"
         lib_cm.error_write_to_file(ac, err_message)
         return None
 
@@ -284,8 +284,10 @@ def delete_tweet_log_in_db_log():
         db.write_log_to_db(ac, log_message, "e")
     except Exception, e:
         lib_cm.message_write_to_console(ac,
-            log_message + u"Error 2 delete_tweet_log_in_db_log: %s</p>" % str(e))
-        err_message = log_message + u"Error 2 delete_tweet_log_in_db: %s" % str(e)
+            log_message
+            + u"Error 2 delete_tweet_log_in_db_log: %s</p>" % str(e))
+        err_message = (log_message
+                         + u"Error 2 delete_tweet_log_in_db: %s" % str(e))
         lib_cm.error_write_to_file(ac, err_message)
         db.db_log_con.rollback()
         db.db_log_con.close()

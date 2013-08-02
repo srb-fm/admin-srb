@@ -489,14 +489,17 @@ class dbase(object):
         # zeile aus tabelle sendung lesen
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
 
-        sql_string = "SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
-        sql_string += "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
-        sql_string += "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
-        sql_string += "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
-        sql_string += "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
-        sql_string += "LEFT JOIN AD_MAIN C "
-        sql_string += "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
-        sql_string += "WHERE " + condition + "ORDER BY A.SG_HF_TIME"
+        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID,"
+            " A.SG_HF_TIME, A.SG_HF_DURATION, A.SG_HF_INFOTIME,"
+            " A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
+            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID,"
+            " B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
+            "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
+            "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
+            "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
+            "LEFT JOIN AD_MAIN C "
+            "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
+            "WHERE " + condition + "ORDER BY A.SG_HF_TIME")
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -538,8 +541,11 @@ class dbase(object):
         """ Zeile aus Tabelle Sendung entspr. der Bedingung lesen """
         message_write_to_console(ac, "read_tbl_row_sg_cont_ad_condition: ")
 
-        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONT_ID, A.SG_HF_TIME, A.SG_HF_MAGAZINE, A.SG_HF_ON_AIR, A.SG_HF_SOURCE_ID, "
-            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
+        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONT_ID,"
+            " A.SG_HF_TIME, A.SG_HF_MAGAZINE,"
+            " A.SG_HF_ON_AIR, A.SG_HF_SOURCE_ID, "
+            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID,"
+            " B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
             "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
             "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
             "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
@@ -584,8 +590,10 @@ class dbase(object):
         """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
 
-        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, "
-            "A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
+        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID,"
+            " A.SG_HF_TIME, A.SG_HF_DURATION, "
+            "A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE,"
+            " A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
             "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, "
             "B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
             "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
@@ -638,10 +646,14 @@ class dbase(object):
         """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition_2: ")
 
-        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, "
-            "A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
-            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, "
-            "B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, B.SG_HF_CONT_STICHWORTE, "
+        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID,"
+            " A.SG_HF_TIME, A.SG_HF_DURATION, "
+            "A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE,"
+            " A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
+            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID,"
+            " B.SG_HF_CONT_AD_ID, "
+            "B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME,"
+            " B.SG_HF_CONT_STICHWORTE, "
             "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
             "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
             "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
@@ -692,12 +704,16 @@ class dbase(object):
         """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition_3: ")
         sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, "
-            "A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
+            "A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE,"
+            " A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
             "A.SG_HF_SOURCE_ID, A.SG_HF_REPEAT_PROTO, A.SG_HF_FIRST_SG, "
-            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, "
+            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID,"
+            " B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, "
             "B.SG_HF_CONT_FILENAME, B.SG_HF_CONT_STICHWORTE, "
-            "B.SG_HF_CONT_GENRE_ID, B.SG_HF_CONT_SPEECH_ID, B.SG_HF_CONT_TEAMPRODUCTION, "
-            "B.SG_HF_CONT_UNTERTITEL, B.SG_HF_CONT_REGIEANWEISUNG,B.SG_HF_CONT_WEB, "
+            "B.SG_HF_CONT_GENRE_ID, B.SG_HF_CONT_SPEECH_ID,"
+            " B.SG_HF_CONT_TEAMPRODUCTION, "
+            "B.SG_HF_CONT_UNTERTITEL, B.SG_HF_CONT_REGIEANWEISUNG,"
+            " B.SG_HF_CONT_WEB, "
             "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
             "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
             "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
@@ -748,14 +764,17 @@ class dbase(object):
         # zeile aus tabelle sendung lesen
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
 
-        sql_string =  "SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
-        sql_string += "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
-        sql_string += "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
-        sql_string += "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
-        sql_string += "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
-        sql_string += "LEFT JOIN AD_MAIN C "
-        sql_string += "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
-        sql_string += "WHERE " + condition + "ORDER BY " + order
+        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID,"
+                    " A.SG_HF_TIME, A.SG_HF_DURATION, A.SG_HF_INFOTIME,"
+                    " A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
+                    "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID,"
+                    " B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
+                    "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
+                    "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
+                    "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
+                    "LEFT JOIN AD_MAIN C "
+                    "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
+                    "WHERE " + condition + "ORDER BY " + order)
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -798,9 +817,12 @@ class dbase(object):
         # zeile aus tabelle sendung lesen
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
 
-        sql_string = ( "SELECT " + limit + "A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, "
-            "A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
-            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, "
+        sql_string = ("SELECT " + limit
+            + "A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, "
+            "A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE,"
+            " A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
+            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID,"
+            " B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, "
             "B.SG_HF_CONT_FILENAME, B.SG_HF_CONT_GENRE_ID, "
             "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
             "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
