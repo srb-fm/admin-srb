@@ -180,6 +180,7 @@ def delete_log_in_db_log():
         return None
     return "ok"
 
+
 def write_files_to_protokoll():
     """Dateien in Protokoll-Archiv kopieren """
     lib_cm.message_write_to_console(ac, u"write_files_to_protokoll")
