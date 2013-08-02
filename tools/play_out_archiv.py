@@ -215,7 +215,7 @@ def write_files_to_archive(files_sendung_source,
     # Zeiten
     lib_cm.message_write_to_console(ac, db.ac_config_1[5])
     date_back = (datetime.datetime.now()
-                 + datetime.timedelta(days = - int(db.ac_config_1[5])))
+                 + datetime.timedelta(days=- int(db.ac_config_1[5])))
     lib_cm.message_write_to_console(ac, db.ac_config_1[7])
     nr_of_files_to_archive = int(db.ac_config_1[7])
 
@@ -240,7 +240,7 @@ def write_files_to_archive(files_sendung_source,
     # unterschiede, also die dateien in neue liste,
     # die in einer von beiden nicht drinne
     files_sendung = (list(
-        set( files_sendung_source).difference( set( files_sendung_dest))))
+        set(files_sendung_source).difference(set(files_sendung_dest))))
 
     # jetzt mit liste weiter,
     # die keine files enthaelt, die schon in destination vorhanden
@@ -301,7 +301,7 @@ def write_files_to_archive(files_sendung_source,
     lib_cm.message_write_to_console(ac, u"dateien bearbeitet: " + str(x))
     lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y))
     lib_cm.message_write_to_console(ac, u"dateien archiviert: " + str(z))
-    log_message = (u"Archivierung, Dateien bearbeitet: " + sendung_art + " - "
+    log_message = (u"Dateien archiviert: " + sendung_art + " - "
                    + dir_year + " - " + str(x) + u" - in Archiv kopiert: "
                    + str(z))
     db.write_log_to_db(ac, log_message, "k")
@@ -393,7 +393,7 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
     # Zeiten
     lib_cm.message_write_to_console(ac, db.ac_config_1[6])
     date_back = (datetime.datetime.now()
-                 + datetime.timedelta(days = -int(db.ac_config_1[6])))
+                 + datetime.timedelta(days=- int(db.ac_config_1[6])))
     #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
     lib_cm.message_write_to_console(ac, db.ac_config_1[7])
     nr_of_files_to_archive = int(db.ac_config_1[7])
