@@ -332,7 +332,7 @@ class dbase(object):
     def read_tbl_rows_with_cond_log(self, ac, db, table, fields, condition):
         """ Zeilen nach uebergebener Bedingung aus Tabelle in db-log lesen """
         message_write_to_console(ac, u"read_tbl_rows_with_condition_log: ")
-        sql_string = ("SELECT " + fields +  " FROM " + table
+        sql_string = ("SELECT " + fields + " FROM " + table
                      + " WHERE " + condition)
 
         self.dbase_log_connect(ac)
@@ -375,7 +375,8 @@ class dbase(object):
         # zeile aus db-log lesen
         row = None
         message_write_to_console(ac, "read_tbl_row_with_condition_log: ")
-        sql_string =  "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
+        sql_string = ("SELECT " + fields + " FROM " + table
+                         + " WHERE " + condition)
 
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
@@ -390,7 +391,8 @@ class dbase(object):
             # wenn kein satz vorhanden
             if result is None:
                 row = None
-                log_message = "read_tbl_row_with_cond: nichts gefunden..." + condition
+                log_message = ("read_tbl_row_with_cond: nichts gefunden..."
+                                 + condition)
                 message_write_to_console(ac, log_message)
                 # logmeldung zu lang und zu häufig:
 
@@ -409,7 +411,8 @@ class dbase(object):
         # zeile aus tabelle sendung lesen
         row = None
         message_write_to_console(ac, "read_tbl_row_with_condition: ")
-        sql_string = "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
+        sql_string = ("SELECT " + fields +  " FROM " + table
+                     + " WHERE " + condition)
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -424,7 +427,8 @@ class dbase(object):
             # wenn kein satz vorhanden
             if result is None:
                 row = None
-                log_message = "read_tbl_row_with_cond: nichts gefunden..." + condition
+                log_message = ("read_tbl_row_with_cond: nichts gefunden..."
+                                 + condition)
                 message_write_to_console(ac, log_message)
                 # logmeldung zu lang und zu häufig:
 
@@ -442,7 +446,8 @@ class dbase(object):
     def read_tbl_rows_with_cond(self, ac, db, table, fields, condition):
         """ Zeilen nach uebergebener Bedingung aus Tabelle lesen """
         message_write_to_console(ac, u"read_tbl_rows_with_condition: ")
-        sql_string = "SELECT " + fields +  " FROM " + table + " WHERE "+ condition
+        sql_string = ("SELECT " + fields + " FROM " + table
+                         + " WHERE " + condition)
 
         self.dbase_connect(ac)
         if self.db_con is None:
@@ -464,7 +469,8 @@ class dbase(object):
             # wenn kein satz vorhanden
             if z == 0:
                 rows = None
-                log_message = u"read_tbl_rows_with_cond: nichts gefunden..." + condition
+                log_message = (u"read_tbl_rows_with_cond: nichts gefunden..."
+                             + condition)
                 message_write_to_console(ac, log_message)
                 # logmeldung zu lang und zu häufig:
                 #db.write_log_to_db( ac, log_message, "x", "003" )
@@ -512,7 +518,8 @@ class dbase(object):
             # wenn kein satz vorhanden
             if z == 0:
                 rows = "nix"
-                log_message = "read_tbl_rows_sg_cont_ad: nichts gefunden..." + condition
+                log_message = ("read_tbl_rows_sg_cont_ad: nichts gefunden..."
+                             + condition)
                 message_write_to_console(ac, log_message)
                 # logmeldung zu lang und zu häufig:
                 #db.write_log_to_db( ac, log_message, "x" )
@@ -555,7 +562,8 @@ class dbase(object):
 
             # wenn kein satz vorhanden
             if row is None:
-                log_message = "read_tbl_row_sg_cont_ad: nichts gefunden..." + condition
+                log_message = ("read_tbl_row_sg_cont_ad: nichts gefunden..."
+                                 + condition)
                 message_write_to_console(ac, log_message)
                 self.db_con.close()
                 return None
@@ -607,7 +615,8 @@ class dbase(object):
 
             # wenn kein satz vorhanden
             if z == 0:
-                log_message = "read_tbl_rows_sg_cont_ad_with_cond_1: nichts gefunden..." + condition
+                log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
+                                " nichts gefunden..." + condition)
                 message_write_to_console(ac, log_message)
                 self.db_con.close()
                 return None
@@ -659,7 +668,8 @@ class dbase(object):
 
             # wenn kein satz vorhanden
             if z == 0:
-                log_message = "read_tbl_rows_sg_cont_ad_with_cond_1: nichts gefunden..." + condition
+                log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
+                                " nichts gefunden..." + condition)
                 message_write_to_console(ac, log_message)
                 self.db_con.close()
                 return None
@@ -713,7 +723,8 @@ class dbase(object):
 
             # wenn kein satz vorhanden
             if z == 0:
-                log_message = "read_tbl_rows_sg_cont_ad_with_cond_1: nichts gefunden..." + condition
+                log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
+                                " nichts gefunden..." + condition)
                 message_write_to_console(ac, log_message)
                 self.db_con.close()
                 return None
@@ -731,7 +742,7 @@ class dbase(object):
 
     def read_tbl_rows_sg_cont_ad_with_cond_and_order(self, ac, db, condition, order):
         # zeile aus tabelle sendung lesen
-        message_write_to_console( ac, "read_tbl_rows_sg_cont_ad_condition: ")
+        message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
 
         sql_string =  "SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_PODCAST, A.SG_HF_ON_AIR, "
         sql_string += "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
@@ -762,7 +773,8 @@ class dbase(object):
             # wenn kein satz vorhanden
             if z == 0:
                 rows = "nix"
-                log_message = "read_tbl_rows_sg_cont_ad: nichts gefunden..." + condition
+                log_message = ("read_tbl_rows_sg_cont_ad: nichts gefunden..."
+                                 + condition)
                 message_write_to_console(ac, log_message)
                 # logmeldung zu lang und zu häufig:
                 #db.write_log_to_db( ac, log_message, "x" )
@@ -770,7 +782,7 @@ class dbase(object):
         except Exception, e:
             self.db_con.close()
             log_message = "read_tbl_rows_sg_cont_ad Error: %s" % str(e)
-            message_write_to_console(ac, log_message )
+            message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
         else:
             message_write_to_console(ac, rows)
@@ -815,7 +827,8 @@ class dbase(object):
             # wenn kein satz vorhanden
             if z == 0:
                 #rows ="nix"
-                log_message = "read_tbl_rows_sg_cont_ad: nichts gefunden..." + condition
+                log_message = ("read_tbl_rows_sg_cont_ad: nichts gefunden..."
+                                 + condition)
                 message_write_to_console(ac, log_message)
                 # logmeldung zu lang und zu häufig:
                 #db.write_log_to_db( ac, log_message, "x" )
@@ -872,7 +885,8 @@ def params_read_1(ac, db):
     db.ac_config_1 = db.params_load(ac, db)
 
     if db.ac_config_1 is None:
-        err_message = "Exit nach Error 000 - keine Parameter gefunden fuer: " + ac.app_config_params_desc
+        err_message = ("Exit nach Error 000 - keine Parameter gefunden fuer: "
+                         + ac.app_config_params_desc)
         error_write_to_file(ac, err_message)
         message_write_to_console(
             ac, ac.app_desc + ": execution because of errors stopped")
@@ -1018,7 +1032,8 @@ def read_file_first_line(ac, db, filename):
             line = f.readline()
     except IOError as (errno, strerror):
         line = None
-        log_message = "read_file_first_line: {2} - I/O error({0}): {1}".format(errno, strerror, filename)
+        log_message = ("read_file_first_line: {2} - I/O error({0}): {1}"
+                        .format(errno, strerror, filename))
         db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console")
     return line
 
@@ -1034,14 +1049,15 @@ def upload_data(ac, db, url, data_upload):
 
     try:
         response = urllib2.urlopen(req)
-    except HTTPError, e:
-        log_message = "connect_url_1 The server couldnot fulfill the request..."+url
+    except HTTPError:
+        log_message = ("connect_url_1 "
+                        "The server couldnot fulfill the request..." + url)
         message_write_to_console(ac, log_message)
         #db.write_log_to_db( ac, log_message, "x" )
-    except URLError, e:
+    except URLError:
         log_message = "connect_url_2 We failed to reach a server.."
         #db.write_log_to_db( ac, log_message, "x" )
-    except Exception, e:
+    except Exception:
         log_message = "connect_url_3 Fehler.."
         #db.write_log_to_db( ac, log_message, "x" )
     else:
@@ -1062,11 +1078,12 @@ def download_website(ac, db, url):
 
     try:
         response = urlopen(req)
-    except HTTPError, e:
-        log_message = "connect_url_1 The server couldnot fulfill the request..."+url
+    except HTTPError:
+        log_message = ("connect_url_1 "
+                        "The server couldnot fulfill the request..." + url)
         message_write_to_console(ac, log_message)
         db.write_log_to_db(ac, log_message, "x")
-    except URLError, e:
+    except URLError:
         log_message = "connect_url_2 We failed to reach a server.."
         db.write_log_to_db(ac, log_message, "x")
     else:

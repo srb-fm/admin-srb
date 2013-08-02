@@ -175,7 +175,7 @@ def encode_file(podcast_sendung):
     lib_cm.message_write_to_console(ac, type(c_id3_author))
     id3_author_value_uni = (lib_cm.replace_sonderzeichen_with_latein(
             podcast_sendung[2]) + " "
-            + lib_cm.replace_sonderzeichen_with_latein( podcast_sendung[3]))
+            + lib_cm.replace_sonderzeichen_with_latein(podcast_sendung[3]))
     c_id3_author_value = id3_author_value_uni.encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, u"type(c_id3_author_value )")
     lib_cm.message_write_to_console(ac, type(c_id3_author_value))
@@ -196,7 +196,7 @@ def encode_file(podcast_sendung):
     # infotime
     if podcast_sendung[4] == "T":
         #c_source_file = path_it_mg_source + podcast_sendung[0]
-        c_source_file = (path_it_mg_source.encode( ac.app_encode_out_strings)
+        c_source_file = (path_it_mg_source.encode(ac.app_encode_out_strings)
                     + podcast_sendung[0].encode(ac.app_encode_out_strings))
 
     # magazin
@@ -207,7 +207,7 @@ def encode_file(podcast_sendung):
 
     lib_cm.message_write_to_console(ac, c_source_file)
     lib_cm.message_write_to_console(ac, u"type(c_source_file)")
-    lib_cm.message_write_to_console(ac, type( c_source_file))
+    lib_cm.message_write_to_console(ac, type(c_source_file))
 
     # dest recoded file
     #path_dest = db.ac_config_1[5]
@@ -275,7 +275,7 @@ def check_files_online(podcast_sendungen):
 
     try:
         ftp = ftplib.FTP(db.ac_config_1[8])
-    except (socket.error, socket.gaierror), e:
+    except (socket.error, socket.gaierror):
         #print 'ERROR: cannot reach "%s"' % db.ac_config_1[7]
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
                                         + db.ac_config_1[8])
@@ -329,7 +329,7 @@ def upload_file(podcast_sendung):
     lib_cm.message_write_to_console(ac, u"upload_file")
     try:
         ftp = ftplib.FTP(db.ac_config_1[8])
-    except (socket.error, socket.gaierror), e:
+    except (socket.error, socket.gaierror):
         #print 'ERROR: cannot reach "%s"' % db.ac_config_1[7]
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
                                         + db.ac_config_1[8])
@@ -374,7 +374,7 @@ def delete_files_online():
     lib_cm.message_write_to_console(ac, u"delete_files_online")
     try:
         ftp = ftplib.FTP(db.ac_config_1[8])
-    except (socket.error, socket.gaierror), e:
+    except (socket.error, socket.gaierror):
         #print 'ERROR: cannot reach "%s"' % db.ac_config_1[7]
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
                                         + db.ac_config_1[8])
