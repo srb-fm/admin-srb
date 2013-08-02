@@ -760,7 +760,8 @@ class dbase(object):
             self.db_con.close()
             return rows
 
-    def read_tbl_rows_sg_cont_ad_with_cond_and_order(self, ac, db, condition, order):
+    def read_tbl_rows_sg_cont_ad_with_cond_and_order(
+                                    self, ac, db, condition, order):
         # zeile aus tabelle sendung lesen
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
 
@@ -813,7 +814,8 @@ class dbase(object):
             self.db_con.close()
 
 
-    def read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(self, ac, db, limit, condition, order):
+    def read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(
+                                self, ac, db, limit, condition, order):
         # zeile aus tabelle sendung lesen
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
 
@@ -898,7 +900,7 @@ def convert_to_unicode(my_string):
     return data
 
 
-def params_read_1(ac, db):
+def xx_params_read_1(ac, db):
     # params_desc fuer suche in db abhaengigkeit von entwicklung oder normal
     if ac.app_develop == "yes":
         ac.app_config_params_desc = ac.app_config_develop
