@@ -108,7 +108,7 @@ class app_config(object):
         #self.time_target = (datetime.datetime.now()
                             # + datetime.timedelta( days=-1 ))
         self.time_target = (datetime.datetime.now()
-                            + datetime.timedelta(days=+1 ))
+                            + datetime.timedelta(days=+ 1))
         #self.time_target = datetime.datetime.now()
 
 
@@ -255,7 +255,7 @@ def audio_id3tag(file_dest, id3_author, id3_title):
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return
     lib_cm.message_write_to_console(ac, u"returncode 0")
-    lib_cm.message_write_to_console(ac, p[0] )
+    lib_cm.message_write_to_console(ac, p[0])
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
