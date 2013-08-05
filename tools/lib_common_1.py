@@ -813,7 +813,6 @@ class dbase(object):
             return rows
             self.db_con.close()
 
-
     def read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(
                                 self, ac, db, limit, condition, order):
         # zeile aus tabelle sendung lesen
@@ -898,30 +897,6 @@ def convert_to_unicode(my_string):
         continue
 
     return data
-
-
-def xx_params_read_1(ac, db):
-    # params_desc fuer suche in db abhaengigkeit von entwicklung oder normal
-    if ac.app_develop == "yes":
-        ac.app_config_params_desc = ac.app_config_develop
-    else:
-        ac.app_config_params_desc = ac.app_config
-
-    message_write_to_console(ac, "params_read_1: " + ac.app_config_params_desc)
-
-    # prams aus db holen
-    db.ac_config_1 = db.params_load(ac, db)
-
-    if db.ac_config_1 is None:
-        err_message = ("Exit nach Error 000 - keine Parameter gefunden fuer: "
-                         + ac.app_config_params_desc)
-        error_write_to_file(ac, err_message)
-        message_write_to_console(
-            ac, ac.app_desc + ": execution because of errors stopped")
-        sys.exit()
-    else:
-        params_check(ac, db.ac_config_1)
-    return
 
 
 def params_check_1(ac, db):
