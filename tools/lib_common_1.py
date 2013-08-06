@@ -586,9 +586,65 @@ class dbase(object):
             self.db_con.close()
             return row
 
+    def read_tbl_rows_sg_cont_ad_with_cond(self, ac, db, condition):
+        """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
+        message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition")
+        sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONT_ID,"
+            " A.SG_HF_TIME, A.SG_HF_DURATION,"
+            " A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE,"
+            " A.SG_HF_ON_AIR, A.SG_HF_SOURCE_ID, "
+            "B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID,"
+            " B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_TITEL, B.SG_HF_CONT_FILENAME, "
+            "C.AD_ID, C.AD_VORNAME, C.AD_NAME "
+            "FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
+            "ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "
+            "LEFT JOIN AD_MAIN C "
+            "ON B.SG_HF_CONT_AD_ID = C.AD_ID "
+            "WHERE " + condition + "ORDER BY A.SG_HF_TIME")
+
+        self.dbase_connect(ac)
+        if self.db_con is None:
+            log_message = "DB-Connect fehlgeschlagen"
+            message_write_to_console(ac, log_message)
+            db.write_log_to_db(ac, log_message, "x")
+            return None
+
+        try:
+            db_cur = self.db_con.cursor()
+            SELECT = sql_string
+            db_cur.execute(SELECT)
+            rows = []
+            result = db_cur.fetchall()
+
+            z = 0
+            for row in result:
+                rows.append(row)
+                z += 1
+
+            # wenn kein satz vorhanden
+            if z == 0:
+                log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
+                                " nichts gefunden..." + condition)
+                # logmeldung zu lang und zu häufig:
+                #message_write_to_console(ac, log_message)
+                self.db_con.close()
+                return None
+
+        except Exception, e:
+            self.db_con.close()
+            log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1 "
+                            "Error: %s" % str(e))
+            message_write_to_console(ac, log_message)
+            db.write_log_to_db(ac, log_message, "x")
+            return None
+        else:
+            message_write_to_console(ac, rows)
+            self.db_con.close()
+            return rows
+
     def read_tbl_rows_sg_cont_ad_with_cond_a(self, ac, db, condition):
         """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
-        message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
+        message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition_a")
 
         sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID,"
             " A.SG_HF_TIME, A.SG_HF_DURATION, "
