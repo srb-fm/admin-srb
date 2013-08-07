@@ -1094,7 +1094,7 @@ def read_file_first_line(ac, db, filename):
         line = None
         log_message = ("read_file_first_line: {2} - I/O error({0}): {1}"
                         .format(errno, strerror, filename))
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
     return line
 
 
@@ -1103,12 +1103,12 @@ def read_random_file_from_dir(ac, db, path):
     try:
         dirList = os.listdir(path)
         random_file = random.choice(dirList)
-        log_message = ("random_file" + random_file)
-        db.write_log_to_db_1(ac, log_message, "t", "write_also_to_console")
+        log_message = ("random_file: " + random_file)
+        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
         return random_file
     except OSError, msg:
         log_message = "read_random_files_in_list: " + "%r: %s" % (msg, path)
-        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
 
 
