@@ -9,6 +9,7 @@ import string
 import re
 import os
 import htmlentitydefs
+import random
 import db_config
 
 
@@ -1095,6 +1096,20 @@ def read_file_first_line(ac, db, filename):
                         .format(errno, strerror, filename))
         db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console")
     return line
+
+
+def read_random_file_from_dir(ac, db, path):
+    """Datei per Zufall aus Verzeichnis ermitteln"""
+    try:
+        dirList = os.listdir(path)
+        random_file = random.choice(dirList)
+        log_message = ("random_file" + random_file)
+        db.write_log_to_db_1(ac, log_message, "t", "write_also_to_console")
+        return random_file
+    except OSError, msg:
+        log_message = "read_random_files_in_list: " + "%r: %s" % (msg, path)
+        db.write_log_to_db_1(ac, log_message, "x", "write_also_to_console")
+        return None
 
 
 def upload_data(ac, db, url, data_upload):
