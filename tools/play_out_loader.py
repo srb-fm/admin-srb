@@ -7,7 +7,7 @@ import codecs
 import string
 #import re
 import datetime
-import os
+#import os
 import random
 from mutagen.mp3 import MP3
 import lib_common_1 as lib_cm
@@ -88,9 +88,9 @@ class app_config(object):
         # Laenge InfoTime
         self.po_it_duration = 0
         # aktuelle Stunde
-        #self.time_target = datetime.datetime.now()
+        self.time_target = datetime.datetime.now()
         # kommende stunde
-        self.time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
+        #self.time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
 
 
 def load_extended_params():
@@ -332,14 +332,14 @@ def rock_sendung(minute_start, minute_end):
             # Wenn keine Sendungen vorhanden, dann IT!
             ac.po_it = True
             log_message = "Infotime vorsehen!"
-            db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+            db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
             # Wenn keine Sendungen vorhanden, dann MAG!
             ac.po_mg = True
             ac.po_mg_list[0] = True
             ac.po_mg_list[1] = True
             ac.po_mg_list[2] = True
             log_message = "Magazin komplett vorsehen!"
-            db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+            db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
         else:
             # Quelle fuer Switch einstellen
             # Quelle befindet sich an Postition 0
@@ -353,19 +353,19 @@ def rock_sendung(minute_start, minute_end):
                 ac.po_mg_list[0] = True
                 log_message = "Magazin 1 vorsehen!"
                 db.write_log_to_db_a(ac, log_message,
-                                         "t", "write_also_to_console")
+                                         "p", "write_also_to_console")
             if list_result[2] < 25:
                 ac.po_mg = True
                 ac.po_mg_list[1] = True
                 log_message = "Magazin 2 vorsehen!"
                 db.write_log_to_db_a(ac, log_message,
-                                         "t", "write_also_to_console")
+                                         "p", "write_also_to_console")
             if list_result[2] < 35:
                 ac.po_mg = True
                 ac.po_mg_list[2] = True
                 log_message = "Magazin 3 vorsehen!"
                 db.write_log_to_db_a(ac, log_message,
-                                         "t", "write_also_to_console")
+                                         "p", "write_also_to_console")
 
     if minute_start > "00" and minute_start < "30":
         # Quelle fuer Switch 2 und 3 einstellen
@@ -437,7 +437,7 @@ def prepare_pl_broadcast(minute_start, list_result):
     if len(list_result[0]) == 1 and ac.po_switch[nZ_po_switch] != "03":
         log_message = (u"Sendung nicht via Play-Out,"
                 " keine PL geschrieben: " + "".join(list_result[4]))
-        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+        db.write_log_to_db_a(ac, log_message, "e", "write_also_to_console")
         db.write_log_to_db(ac, "".join(list_result[4]), "i")
     else:
         write_to_file_playlist(path_filename, list_result[0], list_result[1])
@@ -573,7 +573,7 @@ def write_to_file_playlist_it(path_filename, list_sendung_filename):
     f_playlist.close
 
 
-def write_to_file_playlist_mg(path_file_pl, path_file_mg):
+def write_to_file_playlist_mg(path_file_pl, file_mg):
     """Playlist Magazin schreiben"""
     try:
         if (ac.app_windows == "yes"):
@@ -589,8 +589,15 @@ def write_to_file_playlist_mg(path_file_pl, path_file_mg):
         db.write_log_to_db_a(ac, ac.app_errorslist[7], "x",
                                              "write_also_to_console")
         return
+
+    path_mg = lib_cm.check_slashes(ac, db.ac_config_mairlist[2])
+    path_file_mg = path_mg + file_mg
     f_playlist.write(path_file_mg + "\r\n")
     f_playlist.close
+    log_message = "In Magazin-Playlist aufgenommen: " + file_mg
+    db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
+    log_message = "Magazin: " + file_mg
+    db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
 
 
 def write_to_file_switch_params():
@@ -696,11 +703,11 @@ def read_infotime():
             if ac.time_target.hour > 0 and ac.time_target.hour % 2 != 0:
                 # ungerade stunde
                 db.write_log_to_db_a(ac, "IT: ungerade Stunde pruefen",
-                                     "e", "write_also_to_console")
+                                     "p", "write_also_to_console")
                 list_result = load_infotime(db.ac_config_times[7])
             else:
                 db.write_log_to_db_a(ac, "IT: gerade Stunde pruefen",
-                                     "e", "write_also_to_console")
+                                     "p", "write_also_to_console")
                 list_result = load_infotime(db.ac_config_times[1])
     else:
         db.write_log_to_db_a(ac, "Ausserhalb des InfoTime Zeitfensters!",
@@ -908,9 +915,9 @@ def rock_magazin():
             if ac.po_mg_list[zz - 1] is True:
                 path_file_pl = (db.ac_config_mairlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                path_mg = lib_cm.check_slashes(ac, db.ac_config_mairlist[2])
-                path_file_mg = path_mg + item
-                write_to_file_playlist_mg(path_file_pl, path_file_mg)
+                #path_mg = lib_cm.check_slashes(ac, db.ac_config_mairlist[2])
+                #path_file_mg = path_mg + item
+                write_to_file_playlist_mg(path_file_pl, item)
             else:
                 log_message = (u"Magazinbeitrag "
                      + str(zz) + u" fällt wegen Normalsendung aus")
@@ -926,17 +933,17 @@ def rock_magazin():
         if mag_hour > 0 and mag_hour % 2 == 0:
             # gerade Stunde
             log_message = u"Magazin Serie A geht auf Sendung"
-            db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
+            db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
 
             for index, item in enumerate(list_sendung):
                 if index < 3:
                     if ac.po_mg_list[zz - 1] is True:
                         path_file_pl = (db.ac_config_mairlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                        path_mg = lib_cm.check_slashes(ac,
-                                             db.ac_config_mairlist[2])
-                        path_file_mg = path_mg + item
-                        write_to_file_playlist_mg(path_file_pl, path_file_mg)
+                        #path_mg = lib_cm.check_slashes(ac,
+                        #                     db.ac_config_mairlist[2])
+                        #path_file_mg = path_mg + item
+                        write_to_file_playlist_mg(path_file_pl, item)
                     else:
                         log_message = (u"Magazinbeitrag "
                                  + str(zz) + u" fällt wegen Normalsendung aus")
@@ -946,16 +953,16 @@ def rock_magazin():
         else:
             # ungerade Stunde
             log_message = u"Magazin Serie B geht auf Sendung"
-            db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
+            db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
             for index, item in enumerate(list_sendung):
                 if index > 2:
                     if ac.po_mg_list[zz - 1] is True:
                         path_file_pl = (db.ac_config_mairlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                        path_mg = lib_cm.check_slashes(ac,
-                                             db.ac_config_mairlist[2])
-                        path_file_mg = path_mg + item
-                        write_to_file_playlist_mg(path_file_pl, path_file_mg)
+                        #path_mg = lib_cm.check_slashes(ac,
+                        #                     db.ac_config_mairlist[2])
+                        #path_file_mg = path_mg + item
+                        write_to_file_playlist_mg(path_file_pl, item)
                     else:
                         log_message = (u"Magazinbeitrag "
                                  + str(zz) + u" fällt wegen Normalsendung aus")
@@ -985,16 +992,16 @@ def rock_magazin():
             log_message = u"Magazin Serie B geht auf Sendung"
         if n_mag_serie == 6:
             log_message = u"Magazin Serie C geht auf Sendung"
-        db.write_log_to_db_a(ac, log_message, "t",
+        db.write_log_to_db_a(ac, log_message, "p",
                                              "write_also_to_console")
         for index, item in enumerate(list_sendung_mag):
             if ac.po_mg_list[zz - 1] is True:
                 path_file_pl = (db.ac_config_mairlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                path_mg = lib_cm.check_slashes(ac,
-                                             db.ac_config_mairlist[2])
-                path_file_mg = path_mg + item
-                write_to_file_playlist_mg(path_file_pl, path_file_mg)
+                #path_mg = lib_cm.check_slashes(ac,
+                #                             db.ac_config_mairlist[2])
+                #path_file_mg = path_mg + item
+                write_to_file_playlist_mg(path_file_pl, item)
             else:
                 log_message = (u"Magazinbeitrag "
                                  + str(zz) + u" fällt wegen Normalsendung aus")
