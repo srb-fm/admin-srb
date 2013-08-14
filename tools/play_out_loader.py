@@ -5,10 +5,7 @@
 import sys
 import codecs
 import string
-#import re
 import datetime
-#import os
-import random
 from mutagen.mp3 import MP3
 import lib_common_1 as lib_cm
 
@@ -88,9 +85,9 @@ class app_config(object):
         # Laenge InfoTime
         self.po_it_duration = 0
         # aktuelle Stunde
-        self.time_target = datetime.datetime.now()
+        #self.time_target = datetime.datetime.now()
         # kommende stunde
-        #self.time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
+        self.time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
 
 
 def load_extended_params():
@@ -342,6 +339,8 @@ def rock_sendung(minute_start, minute_end):
             #log_message = "Magazin komplett vorsehen!"
             #db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
         else:
+            log_message = "Infotime wird nicht gesendet!"
+            db.write_log_to_db_a(ac, log_message, "e", "write_also_to_console")
             # Quelle fuer Switch einstellen
             # Quelle befindet sich an Postition 0
             # der vierten liste [3] innerhalb der liste 'list_result'
