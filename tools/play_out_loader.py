@@ -71,11 +71,11 @@ class app_config(object):
         # IT senden
         self.po_it = None
         # Mags senden
-        self.po_mg = None
+        #self.po_mg = None
         self.po_mg_list = []
-        self.po_mg_list.append(None)
-        self.po_mg_list.append(None)
-        self.po_mg_list.append(None)
+        self.po_mg_list.append(True)
+        self.po_mg_list.append(True)
+        self.po_mg_list.append(True)
         # Instrumental senden
         self.po_instrumental = None
         # Switch Schaltpunkte
@@ -326,20 +326,21 @@ def rock_sendung(minute_start, minute_end):
     lib_cm.message_write_to_console(ac, minute_start + minute_end)
     list_result = load_broadcast(minute_start, minute_end)
 
-    # Volle Stunde entscheidet ueber IT
     if minute_start == "00":
         if list_result[0][0] == "nix":
+            # KEINE Sendungen vorhanden
+            # Volle Stunde entscheidet ueber IT
             # Wenn keine Sendungen vorhanden, dann IT!
             ac.po_it = True
             log_message = "Infotime vorsehen!"
             db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
             # Wenn keine Sendungen vorhanden, dann MAG!
-            ac.po_mg = True
-            ac.po_mg_list[0] = True
-            ac.po_mg_list[1] = True
-            ac.po_mg_list[2] = True
-            log_message = "Magazin komplett vorsehen!"
-            db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
+            #ac.po_mg = True
+            #ac.po_mg_list[0] = True
+            #ac.po_mg_list[1] = True
+            #ac.po_mg_list[2] = True
+            #log_message = "Magazin komplett vorsehen!"
+            #db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
         else:
             # Quelle fuer Switch einstellen
             # Quelle befindet sich an Postition 0
@@ -347,62 +348,60 @@ def rock_sendung(minute_start, minute_end):
             ac.po_switch[0] = list_result[3][0][:2]
             ac.po_switch[1] = list_result[3][0][:2]
             ac.po_switch[2] = list_result[3][0][:2]
-            # Mag nur in Abhaegigkeit der Laenge der Sendungen
-            if list_result[2] < 5:
-                ac.po_mg = True
-                ac.po_mg_list[0] = True
-                log_message = "Magazin 1 vorsehen!"
-                db.write_log_to_db_a(ac, log_message,
-                                         "p", "write_also_to_console")
-            if list_result[2] < 25:
-                ac.po_mg = True
-                ac.po_mg_list[1] = True
-                log_message = "Magazin 2 vorsehen!"
-                db.write_log_to_db_a(ac, log_message,
-                                         "p", "write_also_to_console")
-            if list_result[2] < 35:
-                ac.po_mg = True
-                ac.po_mg_list[2] = True
-                log_message = "Magazin 3 vorsehen!"
-                db.write_log_to_db_a(ac, log_message,
-                                         "p", "write_also_to_console")
+            # Magazin nur in Abhaegigkeit der Laenge der Sendungen
+            if list_result[2] > 5:
+                #ac.po_mg = True
+                ac.po_mg_list[0] = None
+                #log_message = "Magazin 1 vorsehen!"
+                #db.write_log_to_db_a(ac, log_message,
+                #                         "p", "write_also_to_console")
+            if list_result[2] > 25:
+                #ac.po_mg = True
+                ac.po_mg_list[1] = None
+                #log_message = "Magazin 2 vorsehen!"
+                #db.write_log_to_db_a(ac, log_message,
+                #                         "p", "write_also_to_console")
+            if list_result[2] > 35:
+                #ac.po_mg = True
+                ac.po_mg_list[2] = None
+                #log_message = "Magazin 3 vorsehen!"
+                #db.write_log_to_db_a(ac, log_message,
+                #                         "p", "write_also_to_console")
 
     if minute_start > "00" and minute_start < "30":
-        # Quelle fuer Switch 2 und 3 einstellen
-        # Quelle befindet sich an Postition 0
-        # der vierten liste [3] innerhalb der liste 'list_result'
         if list_result[0][0] != "nix":
+            # Sendungen vorhanden
+            # Quelle fuer Switch 2 und 3 einstellen
+            # Quelle befindet sich an Postition 0
+            # der vierten liste [3] innerhalb der liste 'list_result'
             ac.po_switch[1] = list_result[3][0][:2]
             ac.po_switch[2] = list_result[3][0][:2]
             # Instrumental nach IT senden
             ac.po_instrumental = True
-            # Mag nur in Abhaegigkeit der Laenge der Sendungen
-            if list_result[2] < (20 - int(minute_start)):
-                ac.po_mg = True
-                ac.po_mg_list[1] = True
-            else:
+            # In Abhaegigkeit der Laenge der Sendungen
+            # Magazin 1
+            if list_result[2] > 5:
+                #ac.po_mg = True
+                ac.po_mg_list[0] = None
+            # Magazin 2
+            if list_result[2] > 20:
+                #ac.po_mg = True
                 ac.po_mg_list[1] = None
-        else:
-            # Wenn keine Sendungen vorhanden, dann MAG!
-            ac.po_mg = True
-            ac.po_mg_list[1] = True
+            if list_result[2] > 35:
+                #ac.po_mg = True
+                ac.po_mg_list[2] = None
 
     if minute_start == "30":
-        # Quelle fuer Switch 3 einstellen
-        # Quelle befindet sich an Postition 0
-        # der vierten liste [3] innerhalb der liste 'list_result'
         if list_result[0][0] != "nix":
+            # Sendungen vorhanden
+            # Quelle fuer Switch 3 einstellen
+            # Quelle befindet sich an Postition 0
+            # der vierten liste [3] innerhalb der liste 'list_result'
             ac.po_switch[2] = list_result[3][0][:2]
-            # Mag nur in Abhaegigkeit der Laenge der Sendungen
-            if list_result[2] < (20 - int(minute_start)):
-                ac.po_mg = True
-                ac.po_mg_list[2] = True
-            else:
+            # Magazin 2 und 3 nur in Abhaegigkeit der Laenge der Sendungen
+            if list_result[2] > 5:
+                #ac.po_mg = True
                 ac.po_mg_list[2] = None
-        else:
-            # Wenn keine Sendungen vorhanden, dann MAG!
-            ac.po_mg = True
-            ac.po_mg_list[2] = True
 
     # PL schreiben
     prepare_pl_broadcast(minute_start, list_result)
@@ -883,10 +882,17 @@ def rock_magazin():
             db.write_log_to_db_a(ac, ac.app_errorslist[13], "x",
                                              "write_also_to_console")
     # Einstellungen
-    if db.ac_config_1[6] == "off" and ac.po_mg is None:
-        db.write_log_to_db_a(ac, "Magazin ist deaktiviert "
-                    "oder nicht noetig", "e", "write_also_to_console")
+    if db.ac_config_1[6] == "off":
+        db.write_log_to_db_a(ac, "Magazin ist deaktiviert ",
+                                     "e", "write_also_to_console")
         return
+    # Sendung oder Magazin
+    if (ac.po_mg_list[0] is None and ac.po_mg_list[1] is None and
+                                    ac.po_mg_list[2] is None):
+        db.write_log_to_db_a(ac, "Magazin wird nicht gesendet",
+                                     "e", "write_also_to_console")
+        return
+
     # Zeitfenster fuer InfoTime
     if (str(ac.time_target.hour).zfill(2) >= db.ac_config_times[1]
         and str(ac.time_target.hour).zfill(2) < db.ac_config_times[2]):
