@@ -5,7 +5,7 @@
 import sys
 import codecs
 import string
-import re
+#import re
 import datetime
 import os
 import random
@@ -405,10 +405,10 @@ def rock_sendung(minute_start, minute_end):
             ac.po_mg_list[2] = True
 
     # PL schreiben
-    rock_pl_broadcast(minute_start, list_result)
+    prepare_pl_broadcast(minute_start, list_result)
 
 
-def rock_pl_broadcast(minute_start, list_result):
+def prepare_pl_broadcast(minute_start, list_result):
     """Playlist fuer Sendungen schreiben"""
 
     if minute_start == "00":
