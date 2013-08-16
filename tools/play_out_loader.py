@@ -6,6 +6,7 @@ import sys
 import codecs
 import string
 import datetime
+import ntpath
 from mutagen.mp3 import MP3
 import lib_common_1 as lib_cm
 
@@ -518,7 +519,7 @@ def write_to_file_playlist_it(path_filename, list_sendung_filename):
     for item in list_sendung_filename:
         # Win Zeilenumbruch hinten dran
         f_playlist.write(item + "\r\n")
-        action_msg = item
+        action_msg = ntpath.basename(item)
 
         log_message = "In Playlist aufgenommen: " + item
         db.write_log_to_db(ac, log_message, "k")
@@ -942,7 +943,7 @@ def rock_magazin():
                     zz += 1
 
     # Bis 9 Stueck
-    if nZ_Magazins > 9:
+    if nZ_Magazins > 6:
         zz = 1
         list_sendung = list_result[0]
         # diese liste enthaelt 24 items,
@@ -956,7 +957,7 @@ def rock_magazin():
                    list_index_sendung_hour[ac.time_target.hour]:
                    list_index_sendung_hour[ac.time_target.hour] + 3])
          # Serie ermitteln und loggen
-        n_mag_serie = list_index_sendung_hour[mag_hour]
+        n_mag_serie = list_index_sendung_hour[ac.time_target.hour]
         if n_mag_serie == 0:
             log_message = u"Magazin Serie A geht auf Sendung"
         if n_mag_serie == 3:
