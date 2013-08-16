@@ -528,33 +528,14 @@ def write_to_file_playlist_it(path_filename, list_sendung_filename):
                                              "write_also_to_console")
         return
 
-    path_mediafile = lib_cm.check_slashes(ac, db.ac_config_mairlist[3])
-
     z = 0
-    sendung = ""
     action_msg = ""
     for item in list_sendung_filename:
-        sendung = item
-        if item[0:11] == "XXno_pathXX":
-            # pfad uebernehmen
-            # prefix und windows-zeilenumbruch (aus win-playlisten) wegnehmen
-            sendung = item[11:-1]
-            action_msg = item[11:-1]
-            f_playlist.write(sendung + "\r\n")
+        # Win Zeilenumbruch hinten dran
+        f_playlist.write(item + "\r\n")
+        action_msg = item
 
-        elif item[0:11] == "YYno_pathYY":
-            # pfad uebernehmen
-            # prefix wegnehmen
-            sendung = item[11:len(item)]
-            action_msg = item[11:len(item)]
-            f_playlist.write(sendung + "\r\n")
-
-        else:
-            # pfad voranstellen
-            f_playlist.write(path_mediafile + sendung + "\r\n")
-            action_msg = item
-
-        log_message = "In Playlist aufgenommen: " + sendung
+        log_message = "In Playlist aufgenommen: " + item
         db.write_log_to_db(ac, log_message, "k")
 
         # Einige Eintraege fuer Info-Meldung uebergehen
@@ -658,7 +639,7 @@ def read_zeitansage():
         db.write_log_to_db_a(ac, ac.app_errorslist[9], "x",
                                              "write_also_to_console")
     else:
-        ac.po_it_pl.append("YYno_pathYY" + path_zeitansage_po + file_zeitansage)
+        ac.po_it_pl.append(path_zeitansage_po + file_zeitansage)
         lib_cm.message_write_to_console(ac, ac.po_it_pl)
 
 
@@ -677,9 +658,9 @@ def read_jingle():
     else:
         if db.ac_config_1[1] == "on":
             # wenn Zeitansage, dann danach einsortieren
-            ac.po_it_pl.insert(1, "YYno_pathYY" + path_jingle_po + file_jingle)
+            ac.po_it_pl.insert(1, path_jingle_po + file_jingle)
         else:
-            ac.po_it_pl.insert(0, "YYno_pathYY" + path_jingle_po + file_jingle)
+            ac.po_it_pl.insert(0, path_jingle_po + file_jingle)
         lib_cm.message_write_to_console(ac, ac.po_it_pl)
 
 
@@ -725,7 +706,7 @@ def read_infotime():
 
     # Filenames mit Path in List
     for item in list_result[0]:
-        ac.po_it_pl.append("YYno_pathYY" + path_it_po + item)
+        ac.po_it_pl.append(path_it_po + item)
     return True
 
 
@@ -748,8 +729,7 @@ def read_instrumental():
             db.write_log_to_db_a(ac, ac.app_errorslist[11], "x",
                                              "write_also_to_console")
         else:
-            ac.po_it_pl.append("YYno_pathYY" + path_instrumental_po
-                                             + file_instrumental)
+            ac.po_it_pl.append(path_instrumental_po + file_instrumental)
             lib_cm.message_write_to_console(ac, ac.po_it_pl)
 
         try:
@@ -821,7 +801,7 @@ def prepare_pl_infotime():
     # Dies hier und nicht in read_zeitansage
     # weil der Fader auch bei deaktivierter Zeitansage rein soll
     path_fader = lib_cm.check_slashes(ac, db.ac_config_zeitansage[3])
-    path_file_fader = "YYno_pathYY" + path_fader + db.ac_config_zeitansage[2]
+    path_file_fader = path_fader + db.ac_config_zeitansage[2]
     ac.po_it_pl.insert(0, path_file_fader)
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
     path_filename = db.ac_config_mairlist[1] + "_00.m3u"
