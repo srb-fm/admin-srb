@@ -17,12 +17,13 @@ class app_config(object):
         # app_config
         self.app_id = "009"
         self.app_desc = "play_out_loader"
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # Entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # Meldungen auf konsole ausgeben
         self.app_debug_mod = "yes"
+        # Laeuft unter Windows
         self.app_windows = "no"
-        # schluessel fuer config in db
+        # Schluessel fuer config in db
         self.app_config = "PO_Loader"
         self.app_config_develop = "PO_Loader"
         self.app_errorfile = "error_play_out_loader.log"
@@ -65,6 +66,8 @@ class app_config(object):
             "beim Lesen der Laenge von Instrumentals")
         self.app_errorslist.append(u"Error 013 "
             "beim Loeschen der Magazin-Playlist")
+        # Playlist lauft unter Windows
+        self.pl_win = "yes"
         # IT senden
         self.po_it = None
         # Mags senden
@@ -445,7 +448,8 @@ def write_to_file_playlist(path_filename,
                                              "write_also_to_console")
         return
 
-    path_mediafile = lib_cm.check_slashes(ac, db.ac_config_mairlist[3])
+    path_mediafile = lib_cm.check_slashes_a(ac,
+                             db.ac_config_mairlist[3], ac.pl_win)
 
     z = 0
     sendung = ""
@@ -550,7 +554,8 @@ def write_to_file_playlist_mg(path_file_pl, file_mg):
                                              "write_also_to_console")
         return
 
-    path_mg = lib_cm.check_slashes(ac, db.ac_config_mairlist[2])
+    path_mg = lib_cm.check_slashes_a(ac,
+                         db.ac_config_mairlist[2], ac.pl_win)
     path_file_mg = path_mg + file_mg
     f_playlist.write(path_file_mg + "\r\n")
     f_playlist.close
@@ -611,9 +616,11 @@ def read_zeitansage():
     path_zeitansage = (lib_cm.check_slashes(ac, db.ac_config_zeitansage[4])
                     + str(ac.time_target.hour).zfill(2))
     # Pfad von mAirlist zu Zeitansage
-    path_zeitansage_po = (lib_cm.check_slashes(ac, db.ac_config_zeitansage[3])
+    path_zeitansage_po = (lib_cm.check_slashes_a(ac,
+                         db.ac_config_zeitansage[3], ac.pl_win)
                     + str(ac.time_target.hour).zfill(2))
-    path_zeitansage_po = (lib_cm.check_slashes(ac, path_zeitansage_po))
+    path_zeitansage_po = (lib_cm.check_slashes_a(ac,
+                             path_zeitansage_po, ac.pl_win))
     # Zeitansage zu passender Zeit per Zufall aus Pool holen
     file_zeitansage = lib_cm.read_random_file_from_dir(ac, db, path_zeitansage)
     if file_zeitansage is None:
@@ -629,8 +636,10 @@ def read_jingle():
     # Pfad von play_out_loader zu Jingle
     path_jingle = (lib_cm.check_slashes(ac, db.ac_config_it_paths[2]))
     # Pfad von mAirlist zu Jingle
-    path_jingle_po = (lib_cm.check_slashes(ac, db.ac_config_it_paths[4]))
-    path_jingle_po = (lib_cm.check_slashes(ac, path_jingle_po))
+    path_jingle_po = (lib_cm.check_slashes_a(ac,
+                         db.ac_config_it_paths[4], ac.pl_win))
+    path_jingle_po = (lib_cm.check_slashes_a(ac,
+                                     path_jingle_po, ac.pl_win))
     # Jingle per Zufall aus Pool holen
     file_jingle = lib_cm.read_random_file_from_dir(ac, db, path_jingle)
     if file_jingle is None:
@@ -683,7 +692,8 @@ def read_infotime():
     ac.po_it_duration = list_result[2]
 
     # Pfad von mAirlist zu InfoTime
-    path_it_po = lib_cm.check_slashes(ac, db.ac_config_it_paths[3])
+    path_it_po = lib_cm.check_slashes_a(ac,
+                             db.ac_config_it_paths[3], ac.pl_win)
 
     # Filenames mit Path in List
     for item in list_result[0]:
@@ -696,7 +706,8 @@ def read_instrumental():
     # Pfad von play_out_loader zu Instrumentals
     path_instrumental = lib_cm.check_slashes(ac, db.ac_config_it_paths[5])
     # Pfad von mAirlist zu Instrumentals
-    path_instrumental_po = (lib_cm.check_slashes(ac, db.ac_config_it_paths[6]))
+    path_instrumental_po = (lib_cm.check_slashes_a(ac,
+                             db.ac_config_it_paths[6], ac.pl_win))
     # fuer Gesamtlaenge
     duration_minute_instr = 0
     duration_minute_target = int(db.ac_config_times[4]) - ac.po_it_duration
@@ -782,7 +793,8 @@ def prepare_pl_infotime():
     # Fader an den Anfang
     # Dies hier und nicht in read_zeitansage
     # weil der Fader auch bei deaktivierter Zeitansage rein soll
-    path_fader = lib_cm.check_slashes(ac, db.ac_config_zeitansage[3])
+    path_fader = lib_cm.check_slashes_a(ac,
+                             db.ac_config_zeitansage[3], ac.pl_win)
     path_file_fader = path_fader + db.ac_config_zeitansage[2]
     ac.po_it_pl.insert(0, path_file_fader)
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
@@ -882,8 +894,6 @@ def rock_magazin():
             if ac.po_mg[zz - 1] is True:
                 path_file_pl = (db.ac_config_mairlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                #path_mg = lib_cm.check_slashes(ac, db.ac_config_mairlist[2])
-                #path_file_mg = path_mg + item
                 write_to_file_playlist_mg(path_file_pl, item)
             else:
                 log_message = (u"Magazinbeitrag "
@@ -959,9 +969,6 @@ def rock_magazin():
             if ac.po_mg[zz - 1] is True:
                 path_file_pl = (db.ac_config_mairlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                #path_mg = lib_cm.check_slashes(ac,
-                #                             db.ac_config_mairlist[2])
-                #path_file_mg = path_mg + item
                 write_to_file_playlist_mg(path_file_pl, item)
             else:
                 log_message = (u"Magazinbeitrag "
