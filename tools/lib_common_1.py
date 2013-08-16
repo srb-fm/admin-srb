@@ -1221,6 +1221,19 @@ def check_slashes(ac, path_to_check):
     return path_to_check
 
 
+def check_slashes_a(ac, path_to_check, win):
+    """Back oder Slashes bei Pfad hintendran machen"""
+    if win == "yes":
+        # pfad anpassen, win-backslash hinten dran:
+        if path_to_check[-1] != "\\":
+            path_to_check += "\\"
+    else:
+        if path_to_check[-1] != "/":
+            path_to_check += "/"
+
+    return path_to_check
+
+
 def extract_filename(ac, path_filename):
     """filename rechts von slash extrahieren"""
     if ac.app_windows == "no":
