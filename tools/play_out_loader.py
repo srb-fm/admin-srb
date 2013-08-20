@@ -422,7 +422,7 @@ def prepare_pl_broadcast(minute_start, list_result):
         log_message = (u"Sendung nicht via Play-Out,"
                 " keine PL geschrieben: " + "".join(list_result[4]))
         db.write_log_to_db_a(ac, log_message, "e", "write_also_to_console")
-        db.write_log_to_db(ac, "".join(list_result[4]), "i")
+        db.write_log_to_db(ac, "Sendung live: " + "".join(list_result[4]), "i")
     else:
         write_to_file_playlist(path_filename, list_result[0], list_result[1])
 
