@@ -21,7 +21,8 @@ class app_config(object):
         # Entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # Meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        # muss auf no gestellt werden wenn run per chronjob!
+        self.app_debug_mod = "no"
         # Laeuft unter Windows
         self.app_windows = "no"
         # Schluessel fuer config in db
@@ -453,11 +454,11 @@ def write_to_file_playlist(path_filename,
         if item[0:7] == "http://":
             f_playlist.write("#mAirList STREAM "
                  + str(list_sendung_duration[z]) + " [] " + item + "\r\n")
-            action_msg = item[8:-1]
+            action_msg = "Sendung: " + item[8:-1]
         else:
             # pfad voranstellen
             f_playlist.write(path_mediafile + item + "\r\n")
-            action_msg = item
+            action_msg = "Sendung: " + item
 
         log_message = "In Playlist aufgenommen: " + item
         db.write_log_to_db(ac, log_message, "k")
@@ -488,7 +489,7 @@ def write_to_file_playlist_it(path_filename, list_sendung_filename):
     for item in list_sendung_filename:
         # Win Zeilenumbruch hinten dran
         f_playlist.write(item + "\r\n")
-        action_msg = ntpath.basename(item)
+        action_msg = "Infotime: " + ntpath.basename(item)
 
         log_message = "In Playlist aufgenommen: " + item
         db.write_log_to_db(ac, log_message, "k")
