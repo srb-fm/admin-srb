@@ -390,7 +390,11 @@ if ( $user_rights == "yes" ) {
 				if ( file_exists($php_remotefilename_archiv)) {
 					$remotefilename = $remotefilename_archiv;
 					$file_exist = "yes";
-					$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config->USER_SP_PARAM_8.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
+					if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" or rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
+						$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config->USER_SP_PARAM_6.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
+					} else {
+						$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config->USER_SP_PARAM_8.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
+					}
 				} else { 
 					$error_message .= "Media-Datei weder in Play-Out noch im Archiv vorhanden!"; 
 				}
