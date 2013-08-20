@@ -429,11 +429,6 @@ def prepare_pl_broadcast(minute_start, list_result):
 def write_to_file_playlist(path_filename,
                          list_sendung_filename, list_sendung_duration):
     """Playlist Sendung schreiben"""
-    #print "write_to_file_playlist_broadcast: "
-    # + filename.encode('ascii', 'ignore')
-    #print list_sendung_filename
-    #db.write_log_to_db(ac, "Play_Out_Load write", "a")
-
     try:
         if (ac.app_windows == "yes"):
             f_playlist = codecs.open(path_filename, 'w', "iso-8859-1")
@@ -453,45 +448,19 @@ def write_to_file_playlist(path_filename,
                              db.ac_config_mairlist[3], ac.pl_win)
 
     z = 0
-    sendung = ""
     action_msg = ""
     for item in list_sendung_filename:
-        sendung = item
         if item[0:7] == "http://":
             f_playlist.write("#mAirList STREAM "
                  + str(list_sendung_duration[z]) + " [] " + item + "\r\n")
             action_msg = item[8:-1]
-        elif item[0:11] == "XXno_pathXX":
-            # pfad uebernehmen
-            # prefix und windows-zeilenumbruch (aus win-playlisten) wegnehmen
-            sendung = item[11:-1]
-            action_msg = item[11:-1]
-            f_playlist.write(sendung + "\r\n")
-
-        elif item[0:11] == "YYno_pathYY":
-            # pfad uebernehmen
-            # prefix wegnehmen
-            sendung = item[11:len(item)]
-            action_msg = item[11:len(item)]
-            f_playlist.write(sendung + "\r\n")
-
         else:
             # pfad voranstellen
-            f_playlist.write(path_mediafile + sendung + "\r\n")
+            f_playlist.write(path_mediafile + item + "\r\n")
             action_msg = item
 
-        log_message = "In Playlist aufgenommen: " + sendung
+        log_message = "In Playlist aufgenommen: " + item
         db.write_log_to_db(ac, log_message, "k")
-
-        # Einige Eintraege fuer Info-Meldung uebergehen
-        #waste = None
-        #if string.find(action_msg, "Zeitansage") != -1:
-        #    waste = True
-        #if string.find(action_msg, "SRB_Jingles") != -1:
-        #    waste = True
-        #if string.find(action_msg, "Instrumental") != -1:
-        #    waste = True
-        #if waste is None:
         db.write_log_to_db(ac, action_msg, "i")
         z += 1
     f_playlist.close
