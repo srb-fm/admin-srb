@@ -10,7 +10,7 @@ www.srb.fm
 
 Distributed under the terms of GNU GPL version 2 or later
 Copyright (C) Joerg Sorge joergsorge at googell
-2011-09-30
+2013-06-30
 
 Dieses Script laedt eine Audio-Datei von einem ftp-Server,
 bearbeitet diese, und stellt sie der Radioautomation

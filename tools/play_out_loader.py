@@ -1,6 +1,42 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+Play Out Loader
+Autor: Joerg Sorge
+Org: SRB - Das Buergerradio
+www.srb.fm
+
+Distributed under the terms of GNU GPL version 2 or later
+Copyright (C) Joerg Sorge joergsorge at googell
+2013-06-30
+
+Dieses Script ist Hauptbestandteil der Sendeabwicklung.
+Es erzeugt die noetigen Playlisten zum Ausspielen
+und stellt die Werte fur die Audiofreischaltung
+der Sendequellen bereit.
+
+Dateiname Script: play_out_loader.py
+Schluesselwort fuer Einstellungen: PO_Loader
+Benoetigt: lib_common.py im gleichen Verzeichnis
+Bezieht Daten aus: Firebird-Datenbank
+
+Fehlerliste:
+
+Parameterliste:
+
+Funktionsweise
+1. Bereitstellen der vorgesehenen "normalen" Sendungen
+2. Loeschen der alten Playlisten
+3. Bereitstellen der "Schaltpunkte" fuer Audioquellenswitch
+4. Bereitstellen von Infotime-Sendungen wenn vorgesehen
+5. Bereitstellen von Magazinsendungen-Sendungen wenn vorgesehen
+
+Dieses Script wird zeitgesteuert (crontab)
+in der Stunde vor der Ausstrahlung ausgefuehrt.
+In der Regel also z.B. ca. 11:56 Uhr
+
+"""
 
 import sys
 import codecs
