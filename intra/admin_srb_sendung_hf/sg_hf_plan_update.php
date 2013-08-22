@@ -42,7 +42,7 @@ if ( $action_ok == "yes" ) {
 		//$n_it_start_hour = substr( db_query_load_fieldvalue_by_condition( "USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Info_Time_Config_2'" ),0,2 );
 		//$n_it_interval = 1;
 								
-		$n_it_interval_sekunden = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_3", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+		$n_it_interval_sekunden = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_8", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 		$c_it_date = $_POST['sendungen_date'];
 		$timestamp = mktime($n_it_start_hour, 0, 0, substr($c_it_date, 5, 2), substr($c_it_date, 8, 2), substr($c_it_date, 0, 4));
 				
