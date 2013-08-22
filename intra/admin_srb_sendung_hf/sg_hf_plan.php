@@ -50,7 +50,7 @@ if ( $find_option_ok = "yes" ) {
 			
 		switch ( $find_option ) {
 		case "info_time_yesterday_a":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_gestern = date('Y-m-d', mktime(0, 0, 0, $m, $d-1, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d-1, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_gestern."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
@@ -59,7 +59,7 @@ if ( $find_option_ok = "yes" ) {
 			break;
 				
 		case "info_time_yesterday_b":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_2", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_gestern = date('Y-m-d', mktime(0, 0, 0, $m, $d-1, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d-1, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_gestern."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
@@ -68,7 +68,7 @@ if ( $find_option_ok = "yes" ) {
 			break;
 					
 		case "info_time_today_a":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_word = date('l');
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".date("Y-m-d")."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
 			$message_find_string = "Info-Time heute - ".get_german_day_name($d_word). ", ".get_date_format_deutsch(date("Y-m-d"))." - ES und WH - Serie A";
@@ -76,7 +76,7 @@ if ( $find_option_ok = "yes" ) {
 			break;
 
 		case "info_time_today_b":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_2", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_word = date('l');
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".date("Y-m-d")."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
 			$message_find_string = "Info-Time heute - ".get_german_day_name($d_word). ", ".get_date_format_deutsch(date("Y-m-d"))." - ES und WH - Serie B";
@@ -84,7 +84,7 @@ if ( $find_option_ok = "yes" ) {
 			break;
 
 		case "info_time_tomorrow_a":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+1, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+1, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_tomorrow."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
@@ -93,7 +93,7 @@ if ( $find_option_ok = "yes" ) {
 			break;					
 				
 		case "info_time_tomorrow_b":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_2", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+1, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+1, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_tomorrow."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
@@ -102,7 +102,7 @@ if ( $find_option_ok = "yes" ) {
 			break;					
 								
 		case "info_time_after_tomorrow_a":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+2, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+2, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_a_tomorrow."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
@@ -111,7 +111,7 @@ if ( $find_option_ok = "yes" ) {
 			break;
 				
 		case "info_time_after_tomorrow_b":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_2", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+2, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+2, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_a_tomorrow."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
@@ -120,7 +120,7 @@ if ( $find_option_ok = "yes" ) {
 			break;
 				
 		case "info_time_after_after_tomorrow_a":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+3, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+3, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_a_tomorrow."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
@@ -129,7 +129,7 @@ if ( $find_option_ok = "yes" ) {
 			break;
 					
 		case "info_time_four_days_a":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+4, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+4, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_a_tomorrow."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
@@ -138,7 +138,7 @@ if ( $find_option_ok = "yes" ) {
 			break;
 				
 		case "info_time_after_after_tomorrow_b":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_2", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+3, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+3, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_a_tomorrow."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
@@ -147,7 +147,7 @@ if ( $find_option_ok = "yes" ) {
 			break;
 					
 		case "info_time_four_days_b":
-			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_2", "USER_SP_SPECIAL = 'PO_Info_Time_Config_Times'"), 0, 2);
+			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+4, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+4, $j));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_INFOTIME = 'T' AND SG_HF_MAGAZINE = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_a_tomorrow."' AND SUBSTRING( SG_HF_TIME FROM 12 FOR 2) ='".$it_start_hour."' ORDER BY SG_HF_TIME";
