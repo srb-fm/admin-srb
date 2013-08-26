@@ -506,11 +506,12 @@ class my_form(Frame):
             if mairlist_log_data is None:
                 # Fehler beim Lesen des Logfiles
                 ac.error_counter_read_log_file += 1
-                db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
-                    "write_also_to_console")
                 log_meldung_1 = ac.app_errorslist[1] + " \n"
                 if ac.error_counter_read_log_file == 1:
-                    # Fehler-Meldung nur einmal uebertragen
+                    # Error-Meldung nur einmal registrieren
+                    db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+                    "write_also_to_console")
+                    # Ausfall-Meldung nur einmal uebertragen
                     ac.log_start = (str(time_now.date()) + " "
                         + str(time_now.time())[0:8])
                     ac.log_author = db.config_extended[3]
