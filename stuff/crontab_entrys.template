@@ -1,7 +1,7 @@
 40 */2 * * * /home/my-server/srb-tools/statistik_webstream.py && exit
 25 6 * * * /home/my-server/srb-tools/play_out_archiv.py && exit
 1 * * * * /home/my-server/srb-tools/play_out_protokoll.py && exit
-56 * * * * /home/my-server/srb-tools/play_out_load.py && exit
+56 * * * * /home/my-server/srb-tools/play_out_loader.py && exit
 10 0 1 1 * /home/my-server/srb-tools/statistik_user_active.py && exit
 10 0 1 4 * /home/my-server/srb-tools/statistik_user_active.py && exit
 10 0 1 7 * /home/my-server/srb-tools/statistik_user_active.py && exit
