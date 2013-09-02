@@ -266,7 +266,11 @@ def trim_bed(c_lenght):
     lib_cm.message_write_to_console(ac, p[1])
 
     # erfolgsmeldung suchen, wenn nicht gefunden: -1
-    cmd_output_1 = string.find(p[1], c_lenght[0:8])
+    #cmd_output_1 = string.find(p[1], c_lenght[0:8])
+    # Suche nach exacter Time ist nicht immer moeglich
+    # Es gibt Abweichungen um Sekunden und Hundertstel
+    cmd_output_1 = string.find(p[1], "Done.")
+
     if cmd_output_1 != -1:
         log_message = u"Bed getrimmt... " + c_lenght[0:8]
         db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
