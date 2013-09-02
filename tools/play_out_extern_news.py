@@ -93,7 +93,7 @@ class app_config(object):
         self.app_errorslist.append(u"Error 004 "
             "beim ermitteln der Laenge externer News")
         self.app_errorslist.append(u"Error 005 "
-            "beim Trimmen des Soundbeds fuer externe News")
+            "beim Trimmen des Soundbeds fuer externe News ")
         self.app_errorslist.append(u"Error 006 "
             "beim Mixen der externen News")
         self.app_errorslist.append(u"Error 007 "
@@ -542,12 +542,12 @@ def lets_rock():
 
     trim_bed_ok = trim_bed(lenght_news)
     if trim_bed_ok is None:
-        collect_garbage(2)
+        collect_garbage(4)
         return
 
     mix_bed_ok = mix_bed()
     if mix_bed_ok is None:
-        collect_garbage(3)
+        collect_garbage(4)
         return
 
     concatenate_ok = concatenate_media(sendung_data[0][12])
