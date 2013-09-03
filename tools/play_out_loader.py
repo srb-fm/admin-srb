@@ -21,9 +21,54 @@ Schluesselwort fuer Einstellungen: PO_Loader
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
+Parameterliste:
+Von PO_Loader:
+P1 Zeitansage on/off
+P2 Jingle on/off
+P3 Jingle senden wenn InfoTime-Beiträge vorhanden sind ? on/off
+P4 Infotime on/off
+P5 Instrumental on/off
+P6 Magazin on/off
+
+Von PO_mAirList_PL:
+Param_1: Präfix pl-Datei fuer play_out_load.py
+Param_2: Pfad HF_Media Infotime fuer mAirlist
+Param_3: Pfad HF_Media_Sendung fuer mAirlist
+Param_4: Pfad/Datei Playlist Instrumentals fuer play_out_load.py
+Param_5: Pfad Instrumentals fuer play_out_load.py
+Param_6: Pfad Instrumentals fuer mAirlist
+
+Von PO_Info_Time_Config_Paths:
+Param 1: LW:\Pfad\Dateiname - Playlist für mAirList
+Param 2: LW:\Pfad der Jingles von srb-sperver aus
+Param 3: LW:\Pfad - Files - Quelle Play-Out-Files (mAirlist auf PlayOut-Rechner)
+Param 4: LW:\Pfad der Jingles von mAilrlist aus
+Param 5 Pfad zu Instrumentals von server aus
+Param 6 Pfad zu Instrumentsls vom mAirlist aus
+
+Von PO_Time_Config:
+Param 1: Beginn Tagesstunde Infotime und Magazin
+Param 2: Ende Tagesstunde Infotime und Magazin
+Param 3: Beginn normale Sendung 1 oder Beginn Info-Time
+(kann in der Regel nur 00 sein!!!)
+Param 4: Beginn normale Sendung 2 (Ende Info-Time)
+Param 5: Beginne normale Sendung 3
+Param 6: Interval (Abstand) der Magazin-Beitraege in Minuten (zweistellig)
+Param 7: Beginn Infotime Serie B (stunde zweistellig)
+Param 8: Interval (Abstand) der Infotime-Beitraege in Sekunden (zweistellig)
+
+Von PO_Zeitansage_Config:
+Param 1: on oder off
+Param 2: Datei mit Stille zum faden
+Param 3: Pfad - Files - Zeitansagen von mAirList zu Audios
+Param 4: Pfad von script zu Zeitansagen-Audios
+
+Von PO_Switch_Broadcast_Config:
+Param 1: Pfad\Dateiname Sendeumschalterdatei
+
 Fehlerliste:
 
-Parameterliste:
+
 
 Funktionsweise
 1. Bereitstellen der vorgesehenen "normalen" Sendungen
@@ -33,7 +78,7 @@ Funktionsweise
 5. Bereitstellen von Magazinsendungen-Sendungen wenn vorgesehen
 
 Dieses Script wird zeitgesteuert (crontab)
-in der Stunde vor der Ausstrahlung ausgefuehrt.
+kurz vor der vollen Stunde vor der Ausstrahlung ausgefuehrt.
 In der Regel also z.B. ca. 11:56 Uhr
 
 """
