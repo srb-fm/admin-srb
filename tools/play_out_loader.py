@@ -67,7 +67,20 @@ Von PO_Switch_Broadcast_Config:
 Param 1: Pfad\Dateiname Sendeumschalterdatei
 
 Fehlerliste:
-
+Error 000 Parameter-Typ oder Inhalt stimmt nicht
+Error 001 beim Lesen Parameter mAirlist
+Error 002 beim Lesen Parameter InfoTime Pfade
+Error 003 beim Lesen Parameter Times
+Error 004 beim Lesen Parameter Zeitansage
+Error 005 beim Lesen Parameter Audioswitch
+Error 006 beim Loeschen der Playlist
+Error 007 beim Schreiben der Playlist
+Error 008 beim Schreiben der Audio-Switch Steuerdatei
+Error 009 beim Lesen der Zeitansage
+Error 010 beim Lesen des Jingles
+Error 011 beim Lesen des Instrumentals
+Error 012 beim Lesen der Laenge von Instrumentals
+Error 013 beim Loeschen der Magazin-Playlist
 
 
 Funktionsweise
