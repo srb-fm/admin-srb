@@ -279,7 +279,7 @@ if ( $action_ok == "no" ) {
 }
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
 if ( $user_rights == "yes" ) { 
-	echo "<p>Einstellungen der Bedingung: " .$message_find_string. "</p> <div id='line'> </div>\n";
+	//echo "<p>Einstellungen der Bedingung: " .$message_find_string. "</p> <div id='line'> </div>\n";
 	// Auswahl App
 	echo "<form name='form1' action='play_out_log_find_list.php' method='POST' enctype='application/x-www-form-urlencoded'>\n";
 	echo "<input type='hidden' name='action' value='".$action."'>\n";
