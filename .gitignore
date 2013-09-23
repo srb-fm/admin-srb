@@ -17,7 +17,11 @@ admin_srb_conf.php
 db_config.py
 _db_config.py
 *conf.sh
+
+# with paths or special conigs
 backup_db_manuell.sh
+play_out_actions.php
+play_out_loader_akt_stunde.py
 
 # infos
 wichtig
