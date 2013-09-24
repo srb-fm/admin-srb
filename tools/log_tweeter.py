@@ -153,6 +153,7 @@ def load_errors(c_time_back):
         return
 
     #  daten aus db durchgehen
+    item_log_last = ""
     for row in log_data:
         tweetet_log = load_tweet_logs(row[0])
         if tweetet_log is not None:
@@ -161,6 +162,10 @@ def load_errors(c_time_back):
 
         item_log_current = row[2] + " - " + row[1].strftime("%Y-%m-%d %H:%M:%S")
         # twitter nicht bombardieren
+        item_log_current_a = row[2]
+        if item_log_last == item_log_current_a:
+            # doppelte Meldung
+            continue
         if (row[2] == "001 Fehler beim Twittern "
             "User is over daily status update limit."):
             twitter_errors = "yes"
@@ -171,6 +176,7 @@ def load_errors(c_time_back):
             return twitter_errors
         lib_cm.message_write_to_console(ac, item_log_current)
         twitter_errors = tweet_message(item_log_current)
+        item_log_last = row[2]
 
     return twitter_errors
 
@@ -339,4 +345,3 @@ if __name__ == '__main__':
     #db.write_log_to_db(ac,  ac.app_desc + " gestoppt", "s")
     print "lets_lay_down"
     sys.exit()
-
