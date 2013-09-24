@@ -611,7 +611,13 @@ if ( $user_rights == "yes" ) {
 	echo "</div>";
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Dateiname</div>";
-	echo "<input type='text' name='form_sg_filename' class='text_1' maxlength='100' value='".$tbl_row_sg->SG_HF_CONT_FILENAME."' >";
+	if ( $tbl_row_sg->SG_HF_CONT_AD_ID != $tbl_row_ad->AD_ID ) {
+		// Aufruf kommt von Aenderung Sendeverantwortlicher
+		// Filename soll beim speichern neu zusammengesetzt werden
+		echo "<input type='text' name='form_sg_filename' class='text_1' maxlength='100' value='' >";
+	} else {	
+		echo "<input type='text' name='form_sg_filename' class='text_1' maxlength='100' value='".$tbl_row_sg->SG_HF_CONT_FILENAME."' >";
+	}
 	echo "</div>";
 	echo "<div class='content_footer'>"; 
 								
