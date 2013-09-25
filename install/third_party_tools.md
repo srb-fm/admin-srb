@@ -1,7 +1,6 @@
 Benötigte Tools von Drittanbietern
 =========
 
-
 ## Für Intra
 Folgende Drittanbieter-Tools werden verwendet. Sie sind, teilweise mit entsprechenden Konfigurationen, im Repository enthalten: 
 * [jquery](http://jquery.com/)
@@ -9,3 +8,6 @@ Folgende Drittanbieter-Tools werden verwendet. Sie sind, teilweise mit entsprech
 * [colorbox](http://www.jacklmoore.com/colorbox/)
 * [ckeditor](http://ckeditor.com/)
 * [fpdf](http://www.fpdf.de/)
+
+## Für Tools
+Drittanbieter und sonstige Tools für python, php etc. werden durch die install-Scripte installiert. Siehe dort!
