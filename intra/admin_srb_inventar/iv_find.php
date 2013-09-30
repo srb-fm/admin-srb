@@ -37,13 +37,17 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	<script type="text/javascript">
 	
 	function chk_formular () {
-		cEingabe = document.form1.iv_objekt.value + document.form1.iv_typ.value + document.form1.iv_hersteller.value + document.form1.iv_rechnung.value + document.form1.iv_id.value
-
+		cEingabe = document.form1.iv_objekt.value + document.form1.iv_typ.value; 
+		cEingabe += document.form1.iv_hersteller.value + document.form1.iv_rechnung.value;
+		cEingabe += document.form1.iv_eigentuemer.options[document.form1.iv_eigentuemer.selectedIndex].text; 
+		cEingabe += document.form1.iv_id.value;
   		if ( cEingabe == "") {		  
 	    	alert("Es wurden keine Suchbegriffe eingegeben!");
     		document.form1.iv_objekt.focus();
-			return false;}
+			return false;
 		}
+	}
+		    	
 	</script>
 
 </head>
@@ -73,7 +77,9 @@ if ( $user_rights == "yes" ) {
 	echo "<tr><td>Typ</td><td><input type='TEXT' name='iv_typ' value='' size='60' maxlength='100'></td></tr>";
 	echo "<tr><td>Hersteller</td><td><input type='TEXT' name='iv_hersteller' value='' size='60' maxlength='100'></td></tr>";
 	echo "<tr><td>Rechnung</td><td><input type='TEXT' name='iv_rechnung' value='' size='60' maxlength='100'></td></tr>";
+	echo "<tr><td>Eigentümer</td><td>".html_dropdown_from_table_1_a("IV_EIGENTUEMER", "IV_EIG_DESC", "iv_eigentuemer", "text_a_1", "00")."</td></tr>";
 	echo "<tr><td>Nummer</td><td><input type='TEXT' name='iv_id' value='' size='60' maxlength='100'></td></tr>";
+	
 	echo "<tr><td> </td></tr>";
 	echo "<tr><td>Optionen für Suche</td><td><input type='radio' name='find_option' value='begin' checked='checked' > Anfang <input type='radio' name='find_option' value='in'> Innerhalb <input type='radio' name='find_option' value='exact'> Exakte Übereinstimmung</td></tr>";
 	echo "<tr><td><br>&nbsp;<br></td><td><br>&nbsp;<br><input type='SUBMIT' name='submit' value='Finden'> <input type='RESET' name='reset' value='Zurücksetzen'></td></tr>";
