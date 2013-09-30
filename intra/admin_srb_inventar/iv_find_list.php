@@ -86,6 +86,17 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 	
+	if ( isset( $_POST['iv_eigentuemer'] ) ) {
+		if ( $_POST['iv_eigentuemer'] !="") { 
+			$c_field_desc = "IV_EIGENTUEMER_ID";
+			$c_field_value = db_query_load_id_by_value("IV_EIGENTUEMER", "IV_EIG_DESC", $_POST['iv_eigentuemer']);
+			if ( $c_field_value =="") {
+				$action_ok = "no";
+				$message .= "Eigentuemer nicht gefunden... "; 	
+			}
+		}
+	}
+
 	if ( isset( $_POST['iv_id'] ) ) {
 		if ( $_POST['iv_id'] !="") { 
 			$c_field_desc = "IV_ID";
@@ -170,7 +181,6 @@ if ( $condition_delivery != "yes" ) {
 } else {// $condition_delivery != "yes"
 		$message_find_string = $_GET['find_string'] ;
 } // $condition_delivery != "yes"
-	
 
 // ausgabebegrenzung 1
 if ( 	$find_limit_skip == "no" ) {			
