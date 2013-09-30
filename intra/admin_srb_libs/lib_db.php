@@ -611,7 +611,7 @@ function db_query_delete_item( $c_table, $c_field_id, $n_id )
 * @return html mit Adresse
 *
 */
-function html_dropdown_from_table_1( $c_table_lookup, $c_lookup_field_desc, $c_select_name, $c_select_class,  $db_table_main_field_id ) 
+function html_dropdown_from_table_1( $c_table_lookup, $c_lookup_field_desc, $c_select_name, $c_select_class, $db_table_main_field_id ) 
 {
 	$db_connect = db_connect();
 	$db_result = db_query_load_items_sort_by_desc($c_table_lookup, $c_lookup_field_desc);
@@ -648,12 +648,11 @@ function html_dropdown_from_table_1( $c_table_lookup, $c_lookup_field_desc, $c_s
 * @param c_lookup_field_desc    $c_lookup_field_desc    Tabelle-Feld
 * @param c_select_name          $c_select_name          html-dropdown Name
 * @param c_select_class         $c_select_class         html-dropdown Klasse
-* @param db_table_main_field_id $db_table_main_field_id id fuer preselected item 
 *
 * @return html mit Adresse
 *
 */
-function html_dropdown_from_table_1_a( $c_table_lookup, $c_lookup_field_desc, $c_select_name, $c_select_class,  $db_table_main_field_id ) 
+function html_dropdown_from_table_1_a( $c_table_lookup, $c_lookup_field_desc, $c_select_name, $c_select_class ) 
 {
 	$db_connect = db_connect();
 	$db_result = db_query_load_items_sort_by_desc($c_table_lookup, $c_lookup_field_desc);
