@@ -77,7 +77,7 @@ if ( $user_rights == "yes" ) {
 	echo "<tr><td>Typ</td><td><input type='TEXT' name='iv_typ' value='' size='60' maxlength='100'></td></tr>";
 	echo "<tr><td>Hersteller</td><td><input type='TEXT' name='iv_hersteller' value='' size='60' maxlength='100'></td></tr>";
 	echo "<tr><td>Rechnung</td><td><input type='TEXT' name='iv_rechnung' value='' size='60' maxlength='100'></td></tr>";
-	echo "<tr><td>Eigentümer</td><td>".html_dropdown_from_table_1_a("IV_EIGENTUEMER", "IV_EIG_DESC", "iv_eigentuemer", "text_a_1", "00")."</td></tr>";
+	echo "<tr><td>Eigentümer</td><td>".html_dropdown_from_table_1_a("IV_EIGENTUEMER", "IV_EIG_DESC", "iv_eigentuemer", "text_a_1")."</td></tr>";
 	echo "<tr><td>Nummer</td><td><input type='TEXT' name='iv_id' value='' size='60' maxlength='100'></td></tr>";
 	
 	echo "<tr><td> </td></tr>";
