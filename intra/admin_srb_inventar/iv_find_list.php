@@ -97,6 +97,17 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 
+	if ( isset( $_POST['iv_kategorie'] ) ) {
+		if ( $_POST['iv_kategorie'] !="") { 
+			$c_field_desc = "IV_KATEGORIE_ID";
+			$c_field_value = db_query_load_id_by_value("IV_KATEGORIE", "IV_KAT_DESC", $_POST['iv_kategorie']);
+			if ( $c_field_value =="") {
+				$action_ok = "no";
+				$message .= "Eigentuemer nicht gefunden... "; 	
+			}
+		}
+	}
+	
 	if ( isset( $_POST['iv_id'] ) ) {
 		if ( $_POST['iv_id'] !="") { 
 			$c_field_desc = "IV_ID";
