@@ -635,6 +635,45 @@ function html_dropdown_from_table_1( $c_table_lookup, $c_lookup_field_desc, $c_s
 }
 
 /**
+* html_dropdown_from_table_1_a
+*
+* Dropdowns
+* Nachschlagetabelle enthaelt Felder in Reihenfolge id, desc
+* Zugriff auf id hier ueber Feld $tbl_row[0]
+* alles html wird in variable "gesammelt"
+* weil direkte echo-Ausgabe zu falscher Platzierung in aufrufender Seite fuehrt
+* keine Ahnung warum
+*
+* @param c_table_lookup         $c_table_lookup         db-Tabelle
+* @param c_lookup_field_desc    $c_lookup_field_desc    Tabelle-Feld
+* @param c_select_name          $c_select_name          html-dropdown Name
+* @param c_select_class         $c_select_class         html-dropdown Klasse
+* @param db_table_main_field_id $db_table_main_field_id id fuer preselected item 
+*
+* @return html mit Adresse
+*
+*/
+function html_dropdown_from_table_1_a( $c_table_lookup, $c_lookup_field_desc, $c_select_name, $c_select_class,  $db_table_main_field_id ) 
+{
+	$db_connect = db_connect();
+	$db_result = db_query_load_items_sort_by_desc($c_table_lookup, $c_lookup_field_desc);
+
+	if ( !$db_result )	{
+		echo "Error executing: html_dropdown_from_table_1_a!";
+		ibase_close($db_connect);
+		exit;
+	}
+	$drop_down = "<select name='".$c_select_name."' class='".$c_select_class."' size='1'>";
+	$drop_down = $drop_down."<option> </option>";	
+	while ( $tbl_row = ibase_fetch_row($db_result)) {
+		$drop_down = $drop_down."<option>".$tbl_row[1]."</option>";	
+	}
+	$drop_down = $drop_down."</select>";
+	ibase_close($db_connect);			
+	return $drop_down;
+}
+
+/**
 * html_header_srb_print_a
 *
 * Adresskopf fuer Ausdruck
@@ -678,7 +717,7 @@ function html_header_srb_print_a( $c_head_text )
 */
 function html_header_srb_print_b() 
 {
-	$db_query 	= "SELECT * FROM USER_DATA ";
+	$db_query 	= "SELECT * FROM USER_DATA";
 	$db_connect = db_connect();
 	$db_result = ibase_query($db_connect, $db_query);
 	ibase_close($db_connect);
