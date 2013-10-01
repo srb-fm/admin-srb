@@ -38,11 +38,19 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	
 	function chk_formular () {
 		cEingabe = document.form1.sg_titel.value + document.form1.sg_untertitel.value + document.form1.sg_stichwort.value;
-		cEingabe += document.form1.sg_regieanweisung.value + document.form1.sg_dateiname.value + document.form1.sg_genre.value;
-		cEingabe += document.form1.sg_quelle.value + document.form1.sg_datum.value + document.form1.sg_cont_id.value;
-		cEingabe += document.form1.sg_magazin.value + document.form1.sg_live.value
+		cEingabe += document.form1.sg_regieanweisung.value + document.form1.sg_dateiname.value;
+		cEingabe += document.form1.sg_datum.value + document.form1.sg_cont_id.value;
+		//+ document.form1.sg_live.value;
+		cEingabe += document.form1.sg_genre.options[document.form1.sg_genre.selectedIndex].text;
+		cEingabe += document.form1.sg_quelle.options[document.form1.sg_quelle.selectedIndex].text;
+		if ( document.form1.sg_magazin.checked == true ) {
+  			cEingabe += "T";
+		}
+		if ( document.form1.sg_live.checked == true ) {
+  			cEingabe += "T";
+		}
 
-  		if ( cEingabe == "") {		  
+  		if ( cEingabe == "") {
 	    	alert("Es wurden keine Suchbegriffe eingegeben!");
     		document.form1.sg_titel.focus();
 			return false;}
