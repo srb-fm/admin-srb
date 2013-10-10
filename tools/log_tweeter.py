@@ -22,8 +22,9 @@ Bezieht Daten aus: Firebird-Datenbank
 
 Ablauf:
 1. Parameter aus der Config holen (url, suchstring)
-2. Actions suchen und twittern
-3. Errors suchen und twittern
+2. Errors suchen und twittern
+3. Ations suchen und twittern
+4. Notifications suchen und twittern
 
 Details:
 Die Logs sind mit verschiedenen Merkmalen gekennzeichnet.
