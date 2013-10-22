@@ -85,7 +85,7 @@ class app_config(object):
         self.app_errorslist.append(u"Error 004 "
             "Fehler beim Loeschen der mp3validator-bak-Datei")
         self.app_errorslist.append(u"Error 005 "
-            "Fehler beim Generieren des Dateinamens: ")
+            "Fehler beim Generieren des Dateinamens ")
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -256,7 +256,7 @@ def check_and_work_on_files(roboting_sgs):
                 + lib_cm.replace_sonderzeichen_with_latein(sendung[0][13])
                 + ".mp3")
         except Exception, e:
-            log_message = (ac.app_errorslist[5] + "fuer:"
+            log_message = (ac.app_errorslist[5] + "fuer: "
                 + sendung[0][11].encode('ascii', 'ignore') + " " + str(e))
             db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
             continue
