@@ -233,7 +233,7 @@ def check_and_work_on_files(roboting_sgs):
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
         titel = item[0]
         # Pfad-Datei und Titel nach Datums-Muster teilen
-        l_path_title = item[1].split("yyyy_mm_tt")
+        l_path_title = item[1].split("yyyy_mm_dd")
         # Sendung suchen
         sendung = load_sg(titel)
 
@@ -249,7 +249,9 @@ def check_and_work_on_files(roboting_sgs):
             path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
             path_file_source = (path_source + l_path_title[0]
                 + sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
+
             path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+
             # replace_sonderzeichen_with_latein
             path_file_dest = (path_dest + str(sendung[0][8])
                 + "_" + sendung[0][16] + "_"
