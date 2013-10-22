@@ -256,7 +256,8 @@ def check_and_work_on_files(roboting_sgs):
                 + lib_cm.replace_sonderzeichen_with_latein(sendung[0][13])
                 + ".mp3")
         except Exception, e:
-            log_message = ac.app_errorslist[5] + str(e)
+            log_message = (ac.app_errorslist[5] + "fuer:"
+                + sendung[0][11].encode('ascii', 'ignore') + " " + str(e))
             db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
             continue
 
