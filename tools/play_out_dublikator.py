@@ -125,13 +125,13 @@ def search_sg(sg_titel, t_sg_time):
     return sendung_data
 
 
-def load_roboting_sgs():
+def load_roboting_sgs(dub_way):
     """Sendungen suchen, die bearbeitet werden sollen"""
     lib_cm.message_write_to_console(ac,
         u"Sendungen suchen, die bearbeitet werden sollen")
     sendungen_data = db.read_tbl_rows_with_cond(ac, db,
         "SG_HF_ROBOT", "SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE",
-        "SG_HF_ROB_DUB ='T'")
+        "SG_HF_ROB_DUB_ID ='" + dub_way + "'")
 
     if sendungen_data is None:
         log_message = u"Keine Sendungen zur Duplizierung vorgesehen.. "
@@ -239,35 +239,18 @@ def lets_rock():
     lib_cm.message_write_to_console(ac, u"lets_rock")
 
     # Sendungen suchen, die bearbeitet werden sollen
-    #roboting_sgs = load_roboting_sgs(ac)
-    roboting_sgs = load_roboting_sgs()
+    # c
+    roboting_sgs = load_roboting_sgs("01")
     if roboting_sgs is None:
         return
 
-    #z = 0
     for item in roboting_sgs:
-        #z += 1
         lib_cm.message_write_to_console(ac, item)
-        #titel = item[0]
         # Sendung suchen
-        #sendung = load_sg(ac, item[0])
         sendung = load_sg(item[0])
         if sendung is None:
             lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
             continue
-
-        # sendung: 0.SG_HF_ID, 1.SG_HF_CONTENT_ID, 2.SG_HF_TIME, "
-        #    "3.SG_HF_DURATION, 4.SG_HF_INFOTIME, 5.SG_HF_MAGAZINE,
-        #     6.SG_HF_PODCAST, 7.SG_HF_ON_AIR, "
-        #    "8.SG_HF_SOURCE_ID, 9.SG_HF_REPEAT_PROTO, 10.SG_HF_FIRST_SG, "
-        #    "11.SG_HF_CONT_ID, 12.SG_HF_CONT_SG_ID,
-        #    13.SG_HF_CONT_AD_ID, 14.SG_HF_CONT_TITEL, "
-        #    "15.SG_HF_CONT_FILENAME, 16.SG_HF_CONT_STICHWORTE, "
-        #    "17.SG_HF_CONT_GENRE_ID, 18.SG_HF_CONT_SPEECH_ID,
-        #     19.SG_HF_CONT_TEAMPRODUCTION, "
-        #    "20.SG_HF_CONT_UNTERTITEL, 21.SG_HF_CONT_REGIEANWEISUNG,
-        #     22.SG_HF_CONT_WEB, "
-        #    "23.AD_ID, 24.AD_VORNAME, 25.AD_NAME "
 
         db.write_log_to_db_a(ac, u"Sendung zum Duplizieren gefunden: "
                             + sendung[0][14].encode('ascii', 'ignore'),
