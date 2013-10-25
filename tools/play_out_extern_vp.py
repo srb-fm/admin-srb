@@ -253,8 +253,8 @@ def check_and_work_on_files(roboting_sgs):
             path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
 
             # replace_sonderzeichen_with_latein
-            path_file_dest = (path_dest + str(sendung[0][8])
-                + "_" + sendung[0][16] + "_"
+            path_file_dest = (path_dest + str(sendung[0][8]) + "_"
+                + lib_cm.replace_sonderzeichen_with_latein(sendung[0][16]) + "_"
                 + lib_cm.replace_sonderzeichen_with_latein(sendung[0][13])
                 + ".mp3")
         except Exception, e:
