@@ -87,12 +87,12 @@ class app_config(object):
         # meldungen auf konsole ausgeben
         self.app_debug_mod = "no"
         # das script laeuft mitwochs xx uhr, hier wochenzeitraum einstellen
-        self.time_target_start = (datetime.datetime.now()
-                            + datetime.timedelta(days=-2)
-                            + datetime.timedelta(hours=-10))
-        self.time_target_end = (datetime.datetime.now()
-                            + datetime.timedelta(days=+4)
-                            + datetime.timedelta(hours=+4))
+        #self.time_target_start = (datetime.datetime.now()
+        #                    + datetime.timedelta(days=-2)
+        #                    + datetime.timedelta(hours=-10))
+        #self.time_target_end = (datetime.datetime.now()
+        #                    + datetime.timedelta(days=+4)
+        #                    + datetime.timedelta(hours=+4))
         # develop at Tuesday
         self.time_target_start = (datetime.datetime.now()
                                   + datetime.timedelta(days=-1)
@@ -140,7 +140,7 @@ def load_roboting_sgs(dub_way):
     return sendungen_data
 
 
-def load_sg(sg_titel):
+def load_sg(sg_titel, dub_way):
     """Erstsendung als Vorlage suchen"""
     lib_cm.message_write_to_console(ac, u"Sendung als Vorlage suchen")
 
@@ -239,7 +239,7 @@ def lets_rock():
     lib_cm.message_write_to_console(ac, u"lets_rock")
 
     # Sendungen suchen, die bearbeitet werden sollen
-    # c
+    # weekly
     roboting_sgs = load_roboting_sgs("01")
     if roboting_sgs is None:
         return
@@ -247,7 +247,7 @@ def lets_rock():
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item)
         # Sendung suchen
-        sendung = load_sg(item[0])
+        sendung = load_sg(item[0], "01")
         if sendung is None:
             lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
             continue
