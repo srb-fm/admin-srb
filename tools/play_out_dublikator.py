@@ -49,7 +49,6 @@ Erich Fromm, Die Revolution der Hoffnung
 
 import time
 import sys
-#import string
 import datetime
 import lib_common_1 as lib_cm
 
@@ -87,19 +86,19 @@ class app_config(object):
         # meldungen auf konsole ausgeben
         self.app_debug_mod = "no"
         # das script laeuft mitwochs xx uhr, hier wochenzeitraum einstellen
-        #self.time_target_start = (datetime.datetime.now()
-        #                    + datetime.timedelta(days=-2)
-        #                    + datetime.timedelta(hours=-10))
-        #self.time_target_end = (datetime.datetime.now()
-        #                    + datetime.timedelta(days=+4)
-        #                    + datetime.timedelta(hours=+4))
-        # develop at Tuesday
         self.time_target_start = (datetime.datetime.now()
-                                  + datetime.timedelta(days=-1)
-                                  + datetime.timedelta(hours=-10))
+                            + datetime.timedelta(days=-2)
+                            + datetime.timedelta(hours=-10))
         self.time_target_end = (datetime.datetime.now()
-                                + datetime.timedelta(days=+5)
-                                + datetime.timedelta(hours=+4))
+                            + datetime.timedelta(days=+4)
+                            + datetime.timedelta(hours=+4))
+        # develop at Tuesday
+        #self.time_target_start = (datetime.datetime.now()
+        #                          + datetime.timedelta(days=-1)
+        #                          + datetime.timedelta(hours=-10))
+        #self.time_target_end = (datetime.datetime.now()
+        #                        + datetime.timedelta(days=+5)
+        #                        + datetime.timedelta(hours=+4))
         #self.time_target = datetime.datetime.now()
 
 
