@@ -242,7 +242,11 @@ def lets_rock():
     roboting_sgs = load_roboting_sgs("01")
     if roboting_sgs is None:
         return
+    rock_weekly(roboting_sgs)
 
+
+def rock_weekly(roboting_sgs):
+    """weekly dublikating"""
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item)
         # Sendung suchen
@@ -353,13 +357,9 @@ def lets_rock():
             sendung[0][14], sg_filename, sg_stichwort, sendung[0][17].strip(),
             sendung[0][18].strip(), sendung[0][19].strip(), sendung[0][20],
             sendung[0][21], sendung[0][22]]
-        #continue
-        #return
         # Daten eintragen
-        #db_op_success_main = write_sg_main(ac, l_data_sg_main )
         db_op_success_main = write_sg_main(l_data_sg_main)
         if db_op_success_main is not None:
-            #db_op_success_cont = write_sg_cont(ac, l_data_sg_content )
             db_op_success_cont = write_sg_cont(l_data_sg_content)
             if db_op_success_cont is None:
                 # Fehler beim insert in sg_cont ac.app_errorslist[1]
@@ -368,7 +368,6 @@ def lets_rock():
                     + sendung[0][14].encode('ascii', 'ignore'))
                 db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
                     "write_also_to_console")
-                #delete_failed_sg_in_db(ac, main_id_sg )
                 delete_failed_sg_in_db(main_id_sg)
 
         if db_op_success_cont is not None:
