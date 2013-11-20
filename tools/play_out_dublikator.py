@@ -85,13 +85,15 @@ class app_config(object):
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
         self.app_debug_mod = "no"
-        # das script laeuft mitwochs xx uhr, hier wochenzeitraum einstellen
+        # das script laeuft mitwochs 9:30 uhr, hier wochenzeitraum einstellen
         self.time_target_start = (datetime.datetime.now()
                             + datetime.timedelta(days=-2)
-                            + datetime.timedelta(hours=-10))
+                            + datetime.timedelta(hours=-9)
+                            + datetime.timedelta(minutes=-30))
         self.time_target_end = (datetime.datetime.now()
                             + datetime.timedelta(days=+4)
-                            + datetime.timedelta(hours=+4))
+                            + datetime.timedelta(hours=+14)
+                            + datetime.timedelta(minutes=+30))
         # develop at Tuesday
         #self.time_target_start = (datetime.datetime.now()
         #                          + datetime.timedelta(days=-1)
@@ -244,9 +246,18 @@ def lets_rock():
         return
     rock_weekly(roboting_sgs)
 
+    # Sendungen suchen, die bearbeitet werden sollen
+    # daily
+    roboting_sgs = load_roboting_sgs("02")
+    if roboting_sgs is None:
+        return
+    rock_daily(roboting_sgs)
+
 
 def rock_weekly(roboting_sgs):
     """weekly dublikating"""
+    log_message = u"Duplizierung woechentlich bearbeiten.. "
+    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item)
         # Sendung suchen
@@ -380,6 +391,22 @@ def rock_weekly(roboting_sgs):
                 + str(dt_sg_new_date), "n", "write_also_to_console")
             time.sleep(2)
 
+
+def rock_daily(roboting_sgs):
+    """daily dublikating"""
+    log_message = u"Duplizierung taeglich bearbeiten.. "
+    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    for item in roboting_sgs:
+        lib_cm.message_write_to_console(ac, item)
+        # Sendung suchen
+        sendung = load_sg(item[0], "02")
+        if sendung is None:
+            lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
+            continue
+
+        db.write_log_to_db_a(ac, u"Sendung zum Duplizieren gefunden: "
+                            + sendung[0][14].encode('ascii', 'ignore'),
+                            "t", "write_also_to_console")
 
 if __name__ == "__main__":
     db = lib_cm.dbase()
