@@ -97,7 +97,7 @@ class app_config(object):
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -135,12 +135,14 @@ def load_sg(sg_titel):
                     db, db_tbl_condition)
 
     if sendung_data is None:
-        log_message = u"Keine Sendung mit diesem Titel gefunden: " + sg_titel
+        log_message = (u"Keine Sendung mit diesem Titel gefunden: "
+                            + sg_titel.encode('ascii', 'ignore'))
         #db.write_log_to_db( ac,  log_message, "t" )
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
         return sendung_data
 
     return sendung_data
+
 
 def audio_validate(file_dest):
     """mp3-File validieren"""
@@ -252,10 +254,12 @@ def check_and_work_on_files(roboting_sgs):
 
             path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
 
-            # replace_sonderzeichen_with_latein
+            # replace sonderzeichen
+            # replace_uchar_sonderzeichen_with_latein
             path_file_dest = (path_dest + str(sendung[0][8]) + "_"
                 + lib_cm.replace_sonderzeichen_with_latein(sendung[0][16]) + "_"
-                + lib_cm.replace_sonderzeichen_with_latein(sendung[0][13])
+                 + lib_cm.replace_sonderzeichen_with_latein(sendung[0][13])
+            #+ lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[0][13])
                 + ".mp3")
         except Exception, e:
             log_message = (ac.app_errorslist[5] + "fuer: "
