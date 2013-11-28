@@ -174,7 +174,7 @@ def audio_validate(file_dest):
         log_message = u"mp3-Validator fixed: " + c_source_file
         db.write_log_to_db(ac, log_message, "k")
         lib_cm.message_write_to_console(ac, "ok")
-        # bak-Datei löschen
+        # bak-Datei loeschen
         c_source_file = c_source_file + ".bak"
         delete_bak_ok = lib_cm.erase_file_a(ac, db, c_source_file,
             u"mp3validator-bak-Datei geloescht ")
