@@ -85,15 +85,15 @@ class app_config(object):
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
         self.app_debug_mod = "no"
-        # das script laeuft mitwochs 9:30 uhr, hier wochenzeitraum einstellen
+        # das script laeuft mitwochs 9:35 uhr, hier wochenzeitraum einstellen
         self.time_target_start = (datetime.datetime.now()
                             + datetime.timedelta(days=-2)
                             + datetime.timedelta(hours=-9)
-                            + datetime.timedelta(minutes=-30))
+                            + datetime.timedelta(minutes=-25))
         self.time_target_end = (datetime.datetime.now()
                             + datetime.timedelta(days=+4)
                             + datetime.timedelta(hours=+14)
-                            + datetime.timedelta(minutes=+30))
+                            + datetime.timedelta(minutes=+35))
         # develop at Tuesday
         #self.time_target_start = (datetime.datetime.now()
         #                          + datetime.timedelta(days=-1)
