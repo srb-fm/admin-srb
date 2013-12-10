@@ -318,8 +318,10 @@ def lets_rock():
         load_actions(c_time_back)
         load_notis(c_time_back)
     else:
-        log_message = ac.app_errorslist[1] + " Twittern ausgesetzt"
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        #log_message = ac.app_errorslist[1] + " Twittern ausgesetzt"
+        #db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        log_message = "Vorhergehende Twitter-Fehler, versuche sie zu uebergehen"
+        db.write_log_to_db_a(ac, log_message, "n", "write_also_to_console")
 
     # alte logs des vortages loeschen
     if datetime.datetime.now().hour == 0:
