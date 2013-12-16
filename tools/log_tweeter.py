@@ -175,6 +175,10 @@ def load_errors(c_time_back):
             "Failed to send request: [Errno -2] Name or service not known"):
             twitter_errors = "yes"
             return twitter_errors
+        if (row[2] == "Vorhergehende Twitter-Fehler,"):
+            twitter_errors = "yes"
+            return twitter_errors
+
         lib_cm.message_write_to_console(ac, item_log_current)
         twitter_errors = tweet_message(item_log_current)
         item_log_last = row[2]
@@ -254,8 +258,10 @@ def tweet_message(log_message):
             db.write_log_to_db_a(ac, log_message[0:140], "p",
                 "write_also_to_console")
     except Exception, e:
-        log_message = ac.app_errorslist[1] + str(e) + " " + log_message[0:90]
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        err_message = ac.app_errorslist[1] + str(e) + " " + log_message[0:90]
+        if err_message[0:90] != log_message[0:90]:
+            # nur einmal registrieren
+            db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
         # damit die naechsten tweets nicht erst abgesendet werden,
         # wenn hier keine verbindung erfolgt
         tweet_error = "yes"
@@ -317,11 +323,11 @@ def lets_rock():
     if twitter_errors is None:
         load_actions(c_time_back)
         load_notis(c_time_back)
-    else:
+    #else:
         #log_message = ac.app_errorslist[1] + " Twittern ausgesetzt"
         #db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        log_message = "Vorhergehende Twitter-Fehler, versuche sie zu uebergehen"
-        db.write_log_to_db_a(ac, log_message, "n", "write_also_to_console")
+        #log_message = "Vorhergehende Twitter-Fehler, versuche sie zu uebergehen"
+        #db.write_log_to_db_a(ac, log_message, "n", "write_also_to_console")
 
     # alte logs des vortages loeschen
     if datetime.datetime.now().hour == 0:
