@@ -156,7 +156,14 @@ def load_errors(c_time_back):
     #  daten aus db durchgehen
     item_log_last = ""
     for row in log_data:
+        #lib_cm.message_write_to_console(ac, row[2][33:94])
+        if (row[2][33:94] == "-message-: -Not authorized to use this endpoint."
+            "-, -code-: 37"):
+            # ignore
+            lib_cm.message_write_to_console(ac, "Twitter-Error-Code 37: ")
+            continue
         tweetet_log = load_tweet_logs(row[0])
+
         if tweetet_log is not None:
             lib_cm.message_write_to_console(ac, "schon getwittert: " + row[2])
             continue
@@ -167,6 +174,7 @@ def load_errors(c_time_back):
         if item_log_last == item_log_current_a:
             # doppelte Meldung
             continue
+
         if (row[2] == "001 Fehler beim Twittern "
             "User is over daily status update limit."):
             twitter_errors = "yes"
