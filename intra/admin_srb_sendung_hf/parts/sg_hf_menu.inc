@@ -23,7 +23,7 @@
 
 	<p class="menu_head">Kalender</p>
 	<div class="menu_body">
-		<a href="https://srb-radio.de/kalender">Sendeplanung</a>
+		<a href="https://srb-radio.de/kalender4">Sendeplanung</a>
 		<a href="../../admin_srb_sendung_hf/sg_hf_cal_week.php?action=list&amp;find_option=broadcast_week_all" class="c_box_1">Alle Sendungen diese Woche</a>
 		<a href="../../admin_srb_sendung_hf/sg_hf_cal_week.php?action=list&amp;find_option=broadcast_week_next_all" class="c_box_1">Alle Sendungen nächster Woche</a>
 		<a href="../../admin_srb_sendung_hf/sg_hf_cal_week.php?action=list&amp;find_option=broadcast_week_previous_all" class="c_box_1">Alle Sendungen verg. Woche</a>
