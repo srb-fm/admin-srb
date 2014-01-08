@@ -84,7 +84,7 @@ class app_config(object):
         # entwicklungsmodus, andere parameter, z.b. bei verzeichnissen
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # das script laeuft mitwochs 9:35 uhr, hier wochenzeitraum einstellen
         self.time_target_start = (datetime.datetime.now()
                             + datetime.timedelta(days=-2)
@@ -234,6 +234,25 @@ def delete_failed_sg_in_db(main_id_sg):
     return "ok"
 
 
+def create_filename(sendung, sg_stichwort, main_id_sg_cont):
+    """filename zusammenbauen"""
+    if sendung[0][8].strip() == "03":
+        # Vorproduziert oder stream
+        if sendung[0][15][0:7] == "http://":
+            # wenn stream, dann nix bauen sondern uebernehmen
+            sg_filename = sendung[0][15]
+        else:
+            sg_filename = (str(main_id_sg_cont) + "_"
+            + lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[0][25])
+            + "_"
+            + lib_cm.replace_uchar_sonderzeichen_with_latein(sg_stichwort)
+            + ".mp3")
+    else:
+        # Live
+        sg_filename = "Keine_Audiodatei"
+    return sg_filename
+
+
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
@@ -348,20 +367,7 @@ def rock_weekly(roboting_sgs):
             continue
 
         # filename zusammenbauen
-        if sendung[0][8].strip() == "03":
-            # Vorproduziert oder stream
-            if sendung[0][15][0:7] == "http://":
-                # wenn stream dann nix bauen sondern uebernehmen
-                sg_filename = sendung[0][15]
-            else:
-                sg_filename = (str(main_id_sg_cont) + "_"
-                + lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[0][25])
-                + "_"
-                + lib_cm.replace_uchar_sonderzeichen_with_latein(sg_stichwort)
-                + ".mp3")
-        else:
-            # Live
-            sg_filename = "Keine_Audiodatei"
+        sg_filename = create_filename(sendung, sg_stichwort, main_id_sg_cont)
 
         # values l_data_sg_content aus gefundener sendung zusammenbauen
         l_data_sg_content = [main_id_sg_cont, main_id_sg, sendung[0][13],
