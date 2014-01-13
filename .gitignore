@@ -9,6 +9,8 @@
 *.log
 _.htaccess
 *.template~
+*.inc~
+*.shtml~
 *.nja
 __init__.py
 
