@@ -138,11 +138,7 @@ if ( $user_rights == "yes" ) {
 	} else { 
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'> VP-Übernahme ";
 	}				
-	if ( rtrim($tbl_row->SG_HF_ROB_DUB) == "T") {
-		echo "<input type='checkbox' name='form_sg_rob_dub' value='T' checked='checked' title='Wird wöchentlich dupliziert'> Wöchentlich duplizieren ";
-	} else { 
-		echo "<input type='checkbox' name='form_sg_rob_dub' value='T' title='Wird nicht wöchentlich dupliziert'> Wöchentlich duplizieren ";
-	}				
+	echo "/ Wiederholung: ".db_query_load_value_by_id("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_ID", $tbl_row->SG_HF_ROB_DUB_ID);
 	echo "</div></div>\n";			
 	echo "<div class='line_a'> </div>\n";
 			

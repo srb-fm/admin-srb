@@ -46,7 +46,7 @@ if ( $action_ok == "yes" ) {
 
 		case "add":
 			// fields
-			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE, SG_HF_ROB_FILENAME, SG_HF_ROB_VP, SG_HF_ROB_DUB";
+			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE, SG_HF_ROB_FILENAME, SG_HF_ROB_VP, SG_HF_ROB_DUB_ID";
 			$main_id = db_generator_main_id_load_value();
 			// checkboxen
 			if ( isset( $_POST['form_sg_rob_vp'] ) ) { 
@@ -54,11 +54,8 @@ if ( $action_ok == "yes" ) {
 			} else { 
 				$tbl_value_vp = "F" ;
 			}
-			if ( isset( $_POST['form_sg_rob_dub'] ) ) { 
-				$tbl_value_dub = $_POST['form_sg_rob_dub']; 
-			} else { 
-				$tbl_value_dub = "F";
-			}
+			// lookups
+			$tbl_value_dub = db_query_load_id_by_value("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", $_POST['form_sg_rob_dub']);
 				
     		$a_values = array($main_id, trim($_POST['form_sg_rob_titel']), trim($_POST['form_sg_rob_stichworte']),
     		trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub);
@@ -73,18 +70,17 @@ if ( $action_ok == "yes" ) {
 			break;
 			
 		case "update":
-			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, SG_HF_ROB_FILENAME=?, SG_HF_ROB_VP=?, SG_HF_ROB_DUB=?";
+			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, SG_HF_ROB_FILENAME=?, SG_HF_ROB_VP=?, SG_HF_ROB_DUB_ID=?";
 			// checkboxen
 			if ( isset( $_POST['form_sg_rob_vp'] ) ) { 
 				$tbl_value_vp = $_POST['form_sg_rob_vp']; 
 			} else { 
 				$tbl_value_vp = "F" ;
 			}
-			if ( isset($_POST['form_sg_rob_dub']) ) { 
-				$tbl_value_dub = $_POST['form_sg_rob_dub']; 
-			} else { 
-				$tbl_value_dub = "F" ;
-			}
+
+			// lookups
+			$tbl_value_dub = db_query_load_id_by_value("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", $_POST['form_sg_rob_dub']);
+			
     		$a_values = array( trim($_POST['form_sg_rob_titel']), trim($_POST['form_sg_rob_stichworte']),
     		trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub );   					
     		$update_ok = db_query_update_item_b("SG_HF_ROBOT", $fields_params, "SG_HF_ROB_ID =".$id, $a_values);
@@ -153,11 +149,8 @@ if ( $user_rights == "yes" ) {
 	} else { 
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'> VP-Übernahme ";
 	}				
-	if ( rtrim($tbl_row->SG_HF_ROB_DUB) == "T") {
-		echo "<input type='checkbox' name='form_sg_rob_dub' value='T' checked='checked' title='Wird wöchentlich dupliziert'> Wöchentlich duplizieren ";
-	} else { 
-		echo "<input type='checkbox' name='form_sg_rob_dub' value='T' title='Wird nicht wöchentlich dupliziert'> Wöchentlich duplizieren ";
-	}				
+
+	echo "/ Wiederholung: ".html_dropdown_from_table_1("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", "form_sg_rob_dub", "text_2", rtrim($tbl_row->SG_HF_ROB_DUB_ID));
 	echo "</div></div>\n";
 	echo "<br>";
 	echo "<div class='line'> </div>";			
