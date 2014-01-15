@@ -84,7 +84,7 @@ class app_config(object):
         # entwicklungsmodus, andere parameter, z.b. bei verzeichnissen
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # das script laeuft mitwochs 9:35 uhr, hier wochenzeitraum einstellen
         self.time_target_start = (datetime.datetime.now()
                             + datetime.timedelta(days=-2)
@@ -253,6 +253,59 @@ def create_filename(sendung, sg_stichwort, main_id_sg_cont):
     return sg_filename
 
 
+def create_keyword(sendung, item, dt_sg_new_date):
+    """Stichwort zusammenbauen"""
+    try:
+        lib_cm.message_write_to_console(ac, sendung[0][16])
+        lib_cm.message_write_to_console(ac, item[1])
+        # counter suchen und erhoehen
+        counter_pos = item[1].find("nnn")
+        if counter_pos != -1:
+            counter_old = sendung[0][16][counter_pos:counter_pos + 3]
+            lib_cm.message_write_to_console(ac, counter_old)
+            # bei zweistelligem ergebnis null auffuellen
+            counter_new = str(int(counter_old) + 1).zfill(3)
+            lib_cm.message_write_to_console(ac, counter_new)
+            # Stichwort bis Counter
+            # stichwort_anfang = sendung[0][16][0:counter_pos]
+
+        # datum in stichwort suchen
+        date_pos = item[1].find("yyyy_mm_dd")
+
+        # counter und date vorhanden
+        if counter_pos != -1 and date_pos != -1:
+            # durch sendung[0][16][date_pos+10:] wird alles
+            # was in stichwort sonst noch eingetragen
+            # hinten wieder dran gesetzt
+            sg_stichwort = (item[1][0:counter_pos] + counter_new
+                                + "_" + dt_sg_new_date.strftime("%Y_%m_%d")
+                                + sendung[0][16][date_pos + 10:])
+        # counter aber kein date vorhanden
+        if counter_pos != -1 and date_pos == -1:
+            sg_stichwort = item[1][0:counter_pos] + counter_new
+        # counter nicht, aber date vorhanden
+        if counter_pos == -1 and date_pos != -1:
+            sg_stichwort = (item[1][0:date_pos]
+                                + dt_sg_new_date.strftime("%Y_%m_%d")
+                                + sendung[0][16][date_pos + 10:])
+        # weder counter noch date in stichwort vorhanden
+        if counter_pos == -1 and date_pos == -1:
+            sg_stichwort = sendung[0][16]
+
+        # max. laenge stichwort pruefen, wenn noetig kuerzen
+        if len(sg_stichwort) > 40:
+                sg_stichwort = sg_stichwort[0:40]
+
+        lib_cm.message_write_to_console(ac, sg_stichwort)
+    except Exception, e:
+        lib_cm.message_write_to_console(ac,
+            "Fehler Stichwort generieren :" + str(e))
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+        sg_stichwort = None
+    return sg_stichwort
+
+
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
@@ -317,53 +370,8 @@ def rock_weekly(roboting_sgs):
             sendung[0][9].strip(), sendung[0][10].strip()]
 
         # Stichwort zusammenbauen
-        try:
-            lib_cm.message_write_to_console(ac, sendung[0][16])
-            lib_cm.message_write_to_console(ac, item[1])
-            # counter suchen und erhoehen
-            counter_pos = item[1].find("nnn")
-            if counter_pos != -1:
-                counter_old = sendung[0][16][counter_pos:counter_pos + 3]
-                lib_cm.message_write_to_console(ac, counter_old)
-                # bei zweistelligem ergebnis null auffuellen
-                counter_new = str(int(counter_old) + 1).zfill(3)
-                lib_cm.message_write_to_console(ac, counter_new)
-                # Stichwort bis Counter
-                # stichwort_anfang = sendung[0][16][0:counter_pos]
-
-            # datum in stichwort suchen
-            date_pos = item[1].find("yyyy_mm_dd")
-
-            # counter und date vorhanden
-            if counter_pos != -1 and date_pos != -1:
-                # durch sendung[0][16][date_pos+10:] wird alles
-                # was in stichwort sonst noch eingetragen
-                # hinten wieder dran gesetzt
-                sg_stichwort = (item[1][0:counter_pos] + counter_new
-                                + "_" + dt_sg_new_date.strftime("%Y_%m_%d")
-                                + sendung[0][16][date_pos + 10:])
-            # counter aber kein date vorhanden
-            if counter_pos != -1 and date_pos == -1:
-                sg_stichwort = item[1][0:counter_pos] + counter_new
-            # counter nicht, aber date vorhanden
-            if counter_pos == -1 and date_pos != -1:
-                sg_stichwort = (item[1][0:date_pos]
-                                + dt_sg_new_date.strftime("%Y_%m_%d")
-                                + sendung[0][16][date_pos + 10:])
-            # weder counter noch date in stichwort vorhanden
-            if counter_pos == -1 and date_pos == -1:
-                sg_stichwort = sendung[0][16]
-
-            # max. laenge stichwort pruefen, wenn noetig kuerzen
-            if len(sg_stichwort) > 40:
-                sg_stichwort = sg_stichwort[0:40]
-
-            lib_cm.message_write_to_console(ac, sg_stichwort)
-        except Exception, e:
-            lib_cm.message_write_to_console(ac,
-                "Fehler Stichwort generieren :" + str(e))
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-                "write_also_to_console")
+        sg_stichwort = create_keyword(sendung, item, dt_sg_new_date)
+        if sg_stichwort is None:
             continue
 
         # filename zusammenbauen
