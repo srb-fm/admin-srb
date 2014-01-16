@@ -84,7 +84,7 @@ class app_config(object):
         # entwicklungsmodus, andere parameter, z.b. bei verzeichnissen
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # das script laeuft mitwochs 9:35 uhr, hier wochenzeitraum einstellen
         self.time_target_start = (datetime.datetime.now()
                             + datetime.timedelta(days=-2)
@@ -253,13 +253,13 @@ def create_filename(sendung, sg_stichwort, main_id_sg_cont):
     return sg_filename
 
 
-def create_keyword(sendung, item, dt_sg_new_date):
+def create_keyword(sendung, roboting_sg, dt_sg_new_date):
     """Stichwort zusammenbauen"""
     try:
         lib_cm.message_write_to_console(ac, sendung[0][16])
-        lib_cm.message_write_to_console(ac, item[1])
+        lib_cm.message_write_to_console(ac, roboting_sg[1])
         # counter suchen und erhoehen
-        counter_pos = item[1].find("nnn")
+        counter_pos = roboting_sg[1].find("nnn")
         if counter_pos != -1:
             counter_old = sendung[0][16][counter_pos:counter_pos + 3]
             lib_cm.message_write_to_console(ac, counter_old)
@@ -270,22 +270,22 @@ def create_keyword(sendung, item, dt_sg_new_date):
             # stichwort_anfang = sendung[0][16][0:counter_pos]
 
         # datum in stichwort suchen
-        date_pos = item[1].find("yyyy_mm_dd")
+        date_pos = roboting_sg[1].find("yyyy_mm_dd")
 
         # counter und date vorhanden
         if counter_pos != -1 and date_pos != -1:
             # durch sendung[0][16][date_pos+10:] wird alles
             # was in stichwort sonst noch eingetragen
             # hinten wieder dran gesetzt
-            sg_stichwort = (item[1][0:counter_pos] + counter_new
+            sg_stichwort = (roboting_sg[1][0:counter_pos] + counter_new
                                 + "_" + dt_sg_new_date.strftime("%Y_%m_%d")
                                 + sendung[0][16][date_pos + 10:])
         # counter aber kein date vorhanden
         if counter_pos != -1 and date_pos == -1:
-            sg_stichwort = item[1][0:counter_pos] + counter_new
+            sg_stichwort = roboting_sg[1][0:counter_pos] + counter_new
         # counter nicht, aber date vorhanden
         if counter_pos == -1 and date_pos != -1:
-            sg_stichwort = (item[1][0:date_pos]
+            sg_stichwort = (roboting_sg[1][0:date_pos]
                                 + dt_sg_new_date.strftime("%Y_%m_%d")
                                 + sendung[0][16][date_pos + 10:])
         # weder counter noch date in stichwort vorhanden
@@ -320,20 +320,20 @@ def lets_rock():
 
     # Sendungen suchen, die bearbeitet werden sollen
     # daily
-    roboting_sgs = load_roboting_sgs("02")
-    if roboting_sgs is None:
-        return
-    rock_daily(roboting_sgs)
+    #roboting_sgs = load_roboting_sgs("02")
+    #if roboting_sgs is None:
+    #    return
+    #rock_daily(roboting_sgs)
 
 
 def rock_weekly(roboting_sgs):
     """weekly dublikating"""
     log_message = u"Duplizierung woechentlich bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
-    for item in roboting_sgs:
-        lib_cm.message_write_to_console(ac, item)
-        # Sendung suchen
-        sendung = load_sg(item[0], "01")
+    for roboting_sg in roboting_sgs:
+        lib_cm.message_write_to_console(ac, roboting_sg)
+        # Sendungen suchen
+        sendung = load_sg(roboting_sg[0], "01")
         if sendung is None:
             lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
             continue
@@ -341,6 +341,8 @@ def rock_weekly(roboting_sgs):
         db.write_log_to_db_a(ac, u"Sendung zum Duplizieren gefunden: "
                             + sendung[0][14].encode('ascii', 'ignore'),
                             "t", "write_also_to_console")
+        # ab hier for roboting_sg_sg in sendung:
+
         # ids fuer neue datensaetze holen
         main_id_sg = db.load_gen_id(ac, db)
         main_id_sg_cont = db.load_gen_id(ac, db)
@@ -357,8 +359,8 @@ def rock_weekly(roboting_sgs):
         dt_sg_new_date = sendung[0][2] + datetime.timedelta(days=+7)
 
         # pruefen ob sendung schon gebucht
-        #sendung_dub = search_sg(ac, item[0], dt_sg_new_date )
-        sendung_dub = search_sg(item[0], dt_sg_new_date)
+        #sendung_dub = search_sg(ac, roboting_sg[0], dt_sg_new_date )
+        sendung_dub = search_sg(roboting_sg[0], dt_sg_new_date)
         if sendung_dub is not None:
             continue
 
@@ -370,7 +372,7 @@ def rock_weekly(roboting_sgs):
             sendung[0][9].strip(), sendung[0][10].strip()]
 
         # Stichwort zusammenbauen
-        sg_stichwort = create_keyword(sendung, item, dt_sg_new_date)
+        sg_stichwort = create_keyword(sendung, roboting_sg, dt_sg_new_date)
         if sg_stichwort is None:
             continue
 
@@ -410,10 +412,10 @@ def rock_daily(roboting_sgs):
     """daily dublikating"""
     log_message = u"Duplizierung taeglich bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
-    for item in roboting_sgs:
-        lib_cm.message_write_to_console(ac, item)
+    for roboting_sg in roboting_sgs:
+        lib_cm.message_write_to_console(ac, roboting_sg)
         # Sendung suchen
-        sendung = load_sg(item[0], "02")
+        sendung = load_sg(roboting_sg[0], "02")
         if sendung is None:
             lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
             continue
