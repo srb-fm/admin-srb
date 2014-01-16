@@ -236,14 +236,14 @@ def delete_failed_sg_in_db(main_id_sg):
 
 def create_filename(sendung, sg_stichwort, main_id_sg_cont):
     """filename zusammenbauen"""
-    if sendung[0][8].strip() == "03":
+    if sendung[8].strip() == "03":
         # Vorproduziert oder stream
-        if sendung[0][15][0:7] == "http://":
+        if sendung[15][0:7] == "http://":
             # wenn stream, dann nix bauen sondern uebernehmen
-            sg_filename = sendung[0][15]
+            sg_filename = sendung[15]
         else:
             sg_filename = (str(main_id_sg_cont) + "_"
-            + lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[0][25])
+            + lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[25])
             + "_"
             + lib_cm.replace_uchar_sonderzeichen_with_latein(sg_stichwort)
             + ".mp3")
@@ -256,30 +256,30 @@ def create_filename(sendung, sg_stichwort, main_id_sg_cont):
 def create_keyword(sendung, roboting_sg, dt_sg_new_date):
     """Stichwort zusammenbauen"""
     try:
-        lib_cm.message_write_to_console(ac, sendung[0][16])
+        lib_cm.message_write_to_console(ac, sendung[16])
         lib_cm.message_write_to_console(ac, roboting_sg[1])
         # counter suchen und erhoehen
         counter_pos = roboting_sg[1].find("nnn")
         if counter_pos != -1:
-            counter_old = sendung[0][16][counter_pos:counter_pos + 3]
+            counter_old = sendung[16][counter_pos:counter_pos + 3]
             lib_cm.message_write_to_console(ac, counter_old)
             # bei zweistelligem ergebnis null auffuellen
             counter_new = str(int(counter_old) + 1).zfill(3)
             lib_cm.message_write_to_console(ac, counter_new)
             # Stichwort bis Counter
-            # stichwort_anfang = sendung[0][16][0:counter_pos]
+            # stichwort_anfang = sendung[16][0:counter_pos]
 
         # datum in stichwort suchen
         date_pos = roboting_sg[1].find("yyyy_mm_dd")
 
         # counter und date vorhanden
         if counter_pos != -1 and date_pos != -1:
-            # durch sendung[0][16][date_pos+10:] wird alles
+            # durch sendung[16][date_pos+10:] wird alles
             # was in stichwort sonst noch eingetragen
             # hinten wieder dran gesetzt
             sg_stichwort = (roboting_sg[1][0:counter_pos] + counter_new
                                 + "_" + dt_sg_new_date.strftime("%Y_%m_%d")
-                                + sendung[0][16][date_pos + 10:])
+                                + sendung[16][date_pos + 10:])
         # counter aber kein date vorhanden
         if counter_pos != -1 and date_pos == -1:
             sg_stichwort = roboting_sg[1][0:counter_pos] + counter_new
@@ -287,10 +287,10 @@ def create_keyword(sendung, roboting_sg, dt_sg_new_date):
         if counter_pos == -1 and date_pos != -1:
             sg_stichwort = (roboting_sg[1][0:date_pos]
                                 + dt_sg_new_date.strftime("%Y_%m_%d")
-                                + sendung[0][16][date_pos + 10:])
+                                + sendung[16][date_pos + 10:])
         # weder counter noch date in stichwort vorhanden
         if counter_pos == -1 and date_pos == -1:
-            sg_stichwort = sendung[0][16]
+            sg_stichwort = sendung[16]
 
         # max. laenge stichwort pruefen, wenn noetig kuerzen
         if len(sg_stichwort) > 40:
@@ -333,79 +333,79 @@ def rock_weekly(roboting_sgs):
     for roboting_sg in roboting_sgs:
         lib_cm.message_write_to_console(ac, roboting_sg)
         # Sendungen suchen
-        sendung = load_sg(roboting_sg[0], "01")
-        if sendung is None:
+        sendungen = load_sg(roboting_sg[0], "01")
+        if sendungen is None:
             lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
             continue
 
-        db.write_log_to_db_a(ac, u"Sendung zum Duplizieren gefunden: "
-                            + sendung[0][14].encode('ascii', 'ignore'),
+        for sendung in sendungen:
+            db.write_log_to_db_a(ac, u"Sendung zum Duplizieren gefunden: "
+                            + sendung[14].encode('ascii', 'ignore'),
                             "t", "write_also_to_console")
-        # ab hier for roboting_sg_sg in sendung:
 
-        # ids fuer neue datensaetze holen
-        main_id_sg = db.load_gen_id(ac, db)
-        main_id_sg_cont = db.load_gen_id(ac, db)
-        #lib_cm.message_write_to_console(ac, main_id_sg )
-        #lib_cm.message_write_to_console(ac, main_id_sg_cont )
+            # ids fuer neue datensaetze holen
+            main_id_sg = db.load_gen_id(ac, db)
+            main_id_sg_cont = db.load_gen_id(ac, db)
+            #lib_cm.message_write_to_console(ac, main_id_sg )
+            #lib_cm.message_write_to_console(ac, main_id_sg_cont )
 
-        # Datum um 7 Tage vorzaehlen
-        lib_cm.message_write_to_console(ac, sendung[0][2].day)
-        lib_cm.message_write_to_console(ac,
-                        sendung[0][2] + datetime.timedelta(days=+7))
-        lib_cm.message_write_to_console(ac, ac.time_target_start.date())
-        lib_cm.message_write_to_console(ac,
+            # Datum um 7 Tage vorzaehlen
+            lib_cm.message_write_to_console(ac, sendung[2].day)
+            lib_cm.message_write_to_console(ac,
+                        sendung[2] + datetime.timedelta(days=+7))
+            lib_cm.message_write_to_console(ac, ac.time_target_start.date())
+            lib_cm.message_write_to_console(ac,
                         ac.time_target_start.strftime("%Y-%m-%d %T"))
-        dt_sg_new_date = sendung[0][2] + datetime.timedelta(days=+7)
+            dt_sg_new_date = sendung[2] + datetime.timedelta(days=+7)
 
-        # pruefen ob sendung schon gebucht
-        #sendung_dub = search_sg(ac, roboting_sg[0], dt_sg_new_date )
-        sendung_dub = search_sg(roboting_sg[0], dt_sg_new_date)
-        if sendung_dub is not None:
-            continue
+            # pruefen ob sendung schon gebucht
+            #sendung_dub = search_sg(ac, roboting_sg[0], dt_sg_new_date )
+            sendung_dub = search_sg(roboting_sg[0], dt_sg_new_date)
+            if sendung_dub is not None:
+                continue
 
-        # values l_data_sg_main aus gefundener sendung zusammenbauen
-        l_data_sg_main = [main_id_sg, main_id_sg_cont,
-            dt_sg_new_date, sendung[0][3].strip(),
-            sendung[0][4].strip(), sendung[0][5].strip(),
-            sendung[0][6].strip(), u"F", sendung[0][8].strip(),
-            sendung[0][9].strip(), sendung[0][10].strip()]
+            # values l_data_sg_main aus gefundener sendung zusammenbauen
+            l_data_sg_main = [main_id_sg, main_id_sg_cont,
+                dt_sg_new_date, sendung[3].strip(),
+                sendung[4].strip(), sendung[5].strip(),
+                sendung[6].strip(), u"F", sendung[8].strip(),
+                sendung[9].strip(), sendung[10].strip()]
 
-        # Stichwort zusammenbauen
-        sg_stichwort = create_keyword(sendung, roboting_sg, dt_sg_new_date)
-        if sg_stichwort is None:
-            continue
+            # Stichwort zusammenbauen
+            sg_stichwort = create_keyword(sendung, roboting_sg, dt_sg_new_date)
+            if sg_stichwort is None:
+                continue
 
-        # filename zusammenbauen
-        sg_filename = create_filename(sendung, sg_stichwort, main_id_sg_cont)
+            # filename zusammenbauen
+            sg_filename = create_filename(sendung, sg_stichwort, main_id_sg_cont)
 
-        # values l_data_sg_content aus gefundener sendung zusammenbauen
-        l_data_sg_content = [main_id_sg_cont, main_id_sg, sendung[0][13],
-            sendung[0][14], sg_filename, sg_stichwort, sendung[0][17].strip(),
-            sendung[0][18].strip(), sendung[0][19].strip(), sendung[0][20],
-            sendung[0][21], sendung[0][22]]
-        # Daten eintragen
-        db_op_success_main = write_sg_main(l_data_sg_main)
-        if db_op_success_main is not None:
-            db_op_success_cont = write_sg_cont(l_data_sg_content)
-            if db_op_success_cont is None:
-                # Fehler beim insert in sg_cont ac.app_errorslist[1]
-                lib_cm.message_write_to_console(ac,
+            # values l_data_sg_content aus gefundener sendung zusammenbauen
+            l_data_sg_content = [main_id_sg_cont, main_id_sg, sendung[13],
+                sendung[14], sg_filename, sg_stichwort, sendung[17].strip(),
+                sendung[18].strip(), sendung[19].strip(), sendung[20],
+                sendung[21], sendung[22]]
+            # Daten eintragen
+            db_op_success_main = write_sg_main(l_data_sg_main)
+            if db_op_success_main is not None:
+                db_op_success_cont = write_sg_cont(l_data_sg_content)
+                if db_op_success_cont is None:
+                    # Fehler beim insert in sg_cont ac.app_errorslist[1]
+                    lib_cm.message_write_to_console(ac,
                     "Fehler bei insert into sg_cont, main_sg wieder loeschen! "
-                    + sendung[0][14].encode('ascii', 'ignore'))
-                db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+                    + sendung[14].encode('ascii', 'ignore'))
+                    db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
                     "write_also_to_console")
-                delete_failed_sg_in_db(main_id_sg)
+                    delete_failed_sg_in_db(main_id_sg)
 
-        if db_op_success_cont is not None:
-            db.write_log_to_db_a(ac, "automatisch gebucht, bitte pruefen: "
-                + sendung[0][14].encode('ascii', 'ignore') + " "
-                + str(dt_sg_new_date), "i", "write_also_to_console")
-            time.sleep(1)
-            db.write_log_to_db_a(ac, "automatisch gebucht, bitte pruefen: "
-                + sendung[0][14].encode('ascii', 'ignore') + " "
-                + str(dt_sg_new_date), "n", "write_also_to_console")
-            time.sleep(2)
+            if db_op_success_cont is not None:
+                db.write_log_to_db_a(ac, "automatisch gebucht, bitte pruefen: "
+                    + sendung[14].encode('ascii', 'ignore') + " "
+                    + str(dt_sg_new_date), "i", "write_also_to_console")
+                time.sleep(1)
+                db.write_log_to_db_a(ac, "automatisch gebucht, bitte pruefen: "
+                    + sendung[14].encode('ascii', 'ignore') + " "
+                    + str(dt_sg_new_date), "n", "write_also_to_console")
+                time.sleep(2)
 
 
 def rock_daily(roboting_sgs):
@@ -421,7 +421,7 @@ def rock_daily(roboting_sgs):
             continue
 
         db.write_log_to_db_a(ac, u"Sendung zum Duplizieren gefunden: "
-                            + sendung[0][14].encode('ascii', 'ignore'),
+                            + sendung[14].encode('ascii', 'ignore'),
                             "t", "write_also_to_console")
 
 if __name__ == "__main__":
