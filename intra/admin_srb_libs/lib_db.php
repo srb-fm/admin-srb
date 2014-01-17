@@ -476,7 +476,7 @@ function db_query_add_item_b( $c_table, $c_fields, $params, $a_values )
 	}
 	ibase_close($db_connect);		
 	if ( !$db_result ) {
-		echo "Error executing: db_query_add_item_b";
+		echo "Error executing: db_query_add_item_b ";
 		exit;
 	}
 	return $db_result;

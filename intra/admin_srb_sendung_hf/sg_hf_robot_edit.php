@@ -149,7 +149,6 @@ if ( $user_rights == "yes" ) {
 	} else { 
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'> VP-Übernahme ";
 	}				
-
 	echo "/ Wiederholung: ".html_dropdown_from_table_1("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", "form_sg_rob_dub", "text_2", rtrim($tbl_row->SG_HF_ROB_DUB_ID));
 	echo "</div></div>\n";
 	echo "<br>";
