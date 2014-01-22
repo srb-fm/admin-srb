@@ -306,6 +306,18 @@ def create_keyword(sendung, roboting_sg, dt_sg_new_date):
     return sg_stichwort
 
 
+def calk_date(sendung, n_days_add):
+    # Datum um x Tage vorzaehlen
+    lib_cm.message_write_to_console(ac, sendung[2].day)
+    lib_cm.message_write_to_console(ac,
+                        sendung[2] + datetime.timedelta(days=+n_days_add))
+    lib_cm.message_write_to_console(ac, ac.time_target_start.date())
+    lib_cm.message_write_to_console(ac,
+                        ac.time_target_start.strftime("%Y-%m-%d %T"))
+    dt_sg_new_date = sendung[2] + datetime.timedelta(days=+n_days_add)
+    return dt_sg_new_date
+
+
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
@@ -318,10 +330,10 @@ def lets_rock():
         return
     log_message = u"Duplizierung woechentlich bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
-    dublikate(roboting_sgs)
+    dublikate(roboting_sgs, 7)
 
 
-def dublikate(roboting_sgs):
+def dublikate(roboting_sgs, n_days_add):
     """dublikating"""
     for roboting_sg in roboting_sgs:
         lib_cm.message_write_to_console(ac, roboting_sg)
@@ -342,15 +354,8 @@ def dublikate(roboting_sgs):
             #lib_cm.message_write_to_console(ac, main_id_sg )
             #lib_cm.message_write_to_console(ac, main_id_sg_cont )
 
-            # Datum um 7 Tage vorzaehlen
-            lib_cm.message_write_to_console(ac, sendung[2].day)
-            lib_cm.message_write_to_console(ac,
-                        sendung[2] + datetime.timedelta(days=+7))
-            lib_cm.message_write_to_console(ac, ac.time_target_start.date())
-            lib_cm.message_write_to_console(ac,
-                        ac.time_target_start.strftime("%Y-%m-%d %T"))
-            dt_sg_new_date = sendung[2] + datetime.timedelta(days=+7)
-
+            # target_date
+            dt_sg_new_date = calk_date(sendung, n_days_add)
             # pruefen ob sendung schon gebucht
             #sendung_dub = search_sg(ac, roboting_sg[0], dt_sg_new_date )
             sendung_dub = search_sg(roboting_sg[0], dt_sg_new_date)
