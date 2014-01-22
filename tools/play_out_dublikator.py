@@ -316,20 +316,13 @@ def lets_rock():
     roboting_sgs = load_roboting_sgs("01")
     if roboting_sgs is None:
         return
-    rock_weekly(roboting_sgs)
-
-    # Sendungen suchen, die bearbeitet werden sollen
-    # daily
-    #roboting_sgs = load_roboting_sgs("02")
-    #if roboting_sgs is None:
-    #    return
-    #rock_daily(roboting_sgs)
-
-
-def rock_weekly(roboting_sgs):
-    """weekly dublikating"""
     log_message = u"Duplizierung woechentlich bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    dublikate(roboting_sgs)
+
+
+def dublikate(roboting_sgs):
+    """dublikating"""
     for roboting_sg in roboting_sgs:
         lib_cm.message_write_to_console(ac, roboting_sg)
         # Sendungen suchen
@@ -377,7 +370,8 @@ def rock_weekly(roboting_sgs):
                 continue
 
             # filename zusammenbauen
-            sg_filename = create_filename(sendung, sg_stichwort, main_id_sg_cont)
+            sg_filename = create_filename(sendung,
+                                            sg_stichwort, main_id_sg_cont)
 
             # values l_data_sg_content aus gefundener sendung zusammenbauen
             l_data_sg_content = [main_id_sg_cont, main_id_sg, sendung[13],
@@ -407,22 +401,6 @@ def rock_weekly(roboting_sgs):
                     + str(dt_sg_new_date), "n", "write_also_to_console")
                 time.sleep(2)
 
-
-def rock_daily(roboting_sgs):
-    """daily dublikating"""
-    log_message = u"Duplizierung taeglich bearbeiten.. "
-    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
-    for roboting_sg in roboting_sgs:
-        lib_cm.message_write_to_console(ac, roboting_sg)
-        # Sendung suchen
-        sendung = load_sg(roboting_sg[0], "02")
-        if sendung is None:
-            lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
-            continue
-
-        db.write_log_to_db_a(ac, u"Sendung zum Duplizieren gefunden: "
-                            + sendung[14].encode('ascii', 'ignore'),
-                            "t", "write_also_to_console")
 
 if __name__ == "__main__":
     db = lib_cm.dbase()
