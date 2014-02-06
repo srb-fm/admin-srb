@@ -77,20 +77,20 @@ class app_config(object):
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
         self.app_debug_mod = "no"
-        #self.app_windows = "yes"
         # zeit fuer sendungensuche: ab jetzt
         #self.time_target = datetime.datetime.now() + datetime.timedelta()
         self.time_target = datetime.datetime.now()
 
 
 def load_prev_sendungen():
-    """In DB nachsehen, ob Sendungen fuer die kommende Stunde vorgesehen sind"""
+    """In DB nachsehen, ob Sendungen ab kommender Stunde vorgesehen sind"""
     lib_cm.message_write_to_console(ac, "load_prev_sendungen")
     # zfill fuellt nullen auf bei einstelliger stundenzahl
 
     c_date_time = (str(ac.time_target.date())
                     + " " + str(ac.time_target.hour).zfill(2))
-    db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND "
+    #db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND "
+    db_tbl_condition = (
         "SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '" + c_date_time + "' "
         "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F'")
 
