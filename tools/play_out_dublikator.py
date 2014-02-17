@@ -84,7 +84,7 @@ class app_config(object):
         # entwicklungsmodus, andere parameter, z.b. bei verzeichnissen
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # das script laeuft mitwochs 9:35 uhr, hier wochenzeitraum einstellen
         self.time_target_start = (datetime.datetime.now()
                             + datetime.timedelta(days=-2)
@@ -122,7 +122,7 @@ def search_sg(sg_titel, t_sg_time):
         log_message = (u"Sendung bereits gebucht mit diesem Titel "
             "zu dieser Zeit: " + sg_titel.encode('ascii', 'ignore')
             + " " + str(t_sg_time))
-    db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
+    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
     return sendung_data
 
 
@@ -323,14 +323,29 @@ def lets_rock():
     print "lets_rock "
     lib_cm.message_write_to_console(ac, u"lets_rock")
 
-    # Sendungen suchen, die bearbeitet werden sollen
     # weekly
+    log_message = u"Duplizierung woechentlich bearbeiten.. "
+    db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     roboting_sgs = load_roboting_sgs("01")
     if roboting_sgs is None:
         return
-    log_message = u"Duplizierung woechentlich bearbeiten.. "
-    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
     dublikate(roboting_sgs, 7)
+
+    # 14 days
+    log_message = u"Duplizierung 14-taegig bearbeiten.. "
+    db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
+    roboting_sgs = load_roboting_sgs("03")
+    if roboting_sgs is None:
+        return
+    dublikate(roboting_sgs, 14)
+
+    # 4 weeks
+    log_message = u"Duplizierung 4-woechig bearbeiten.. "
+    db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
+    roboting_sgs = load_roboting_sgs("02")
+    if roboting_sgs is None:
+        return
+    dublikate(roboting_sgs, 28)
 
 
 def dublikate(roboting_sgs, n_days_add):
