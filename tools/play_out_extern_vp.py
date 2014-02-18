@@ -260,8 +260,7 @@ def check_and_work_on_files(roboting_sgs):
             path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
             # Verschiebung von Datum Erstsendung
             new_date = sendung[0][2] + datetime.timedelta(days=-item[2])
-            log_message = new_date.strftime(d_pattern)
-            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+            lib_cm.message_write_to_console(ac, new_date.strftime(d_pattern))
 
             path_file_source = (path_source + l_path_title[0]
             #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
