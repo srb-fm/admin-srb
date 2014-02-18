@@ -113,7 +113,7 @@ def load_roboting_sgs():
     lib_cm.message_write_to_console(ac,
         u"Sendungen suchen, die bearbeitet werden sollen")
     sendungen_data = db.read_tbl_rows_with_cond(ac, db,
-        "SG_HF_ROBOT", "SG_HF_ROB_TITEL, SG_HF_ROB_FILENAME",
+        "SG_HF_ROBOT", "SG_HF_ROB_TITEL, SG_HF_ROB_FILENAME, SG_HF_ROB_SHIFT",
         "SG_HF_ROB_VP ='T'")
 
     if sendungen_data is None:
@@ -234,8 +234,6 @@ def check_and_work_on_files(roboting_sgs):
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
         titel = item[0]
-        # Pfad-Datei und Titel nach Datums-Muster teilen
-        l_path_title = item[1].split("yyyy_mm_dd")
         # Sendung suchen
         sendung = load_sg(titel)
 
@@ -247,11 +245,27 @@ def check_and_work_on_files(roboting_sgs):
                     + sendung[0][11].encode('ascii', 'ignore'), "t",
                     "write_also_to_console")
 
+        # Pfad-Datei und Titel nach Datums-Muster teilen
+        if item[1].find("yyyy_mm_dd") != -1:
+            l_path_title = item[1].split("yyyy_mm_dd")
+            d_pattern = "%Y_%m_%d"
+        if item[1].find("yyyymmdd") != -1:
+            l_path_title = item[1].split("yyyymmdd")
+            d_pattern = "%Y%m%d"
+        if item[1].find("yyyy-mm-dd") != -1:
+            l_path_title = item[1].split("yyyy-mm-dd")
+            d_pattern = "%Y-%m-%d"
+
         try:
             path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
-            path_file_source = (path_source + l_path_title[0]
-                + sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
+            # Verschiebung von Datum Erstsendung
+            new_date = sendung[0][2] + datetime.timedelta(days=-item[2])
+            log_message = new_date.strftime(d_pattern)
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
+            path_file_source = (path_source + l_path_title[0]
+            #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
+                + new_date.strftime(d_pattern) + l_path_title[1].rstrip())
             path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
 
             # replace sonderzeichen
