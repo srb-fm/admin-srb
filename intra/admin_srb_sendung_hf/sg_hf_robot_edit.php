@@ -46,7 +46,7 @@ if ( $action_ok == "yes" ) {
 
 		case "add":
 			// fields
-			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE, SG_HF_ROB_FILENAME, SG_HF_ROB_VP, SG_HF_ROB_DUB_ID";
+			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE, SG_HF_ROB_FILENAME, SG_HF_ROB_VP, SG_HF_ROB_DUB_ID, SG_HF_ROB_SHIFT";
 			$main_id = db_generator_main_id_load_value();
 			// checkboxen
 			if ( isset( $_POST['form_sg_rob_vp'] ) ) { 
@@ -58,8 +58,8 @@ if ( $action_ok == "yes" ) {
 			$tbl_value_dub = db_query_load_id_by_value("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", $_POST['form_sg_rob_dub']);
 				
     		$a_values = array($main_id, trim($_POST['form_sg_rob_titel']), trim($_POST['form_sg_rob_stichworte']),
-    		trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub);
-  			$insert_ok = db_query_add_item_b("SG_HF_ROBOT", $tbl_fields, "?,?,?,?,?,?", $a_values);
+    		trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub, $_POST['form_sg_rob_shift']);
+  			$insert_ok = db_query_add_item_b("SG_HF_ROBOT", $tbl_fields, "?,?,?,?,?,?,?", $a_values);
 			header("Location: sg_hf_robot_detail.php?action=display&sg_robot_id=".$main_id);
 			break;
 				
@@ -70,7 +70,7 @@ if ( $action_ok == "yes" ) {
 			break;
 			
 		case "update":
-			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, SG_HF_ROB_FILENAME=?, SG_HF_ROB_VP=?, SG_HF_ROB_DUB_ID=?";
+			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, SG_HF_ROB_FILENAME=?, SG_HF_ROB_VP=?, SG_HF_ROB_DUB_ID=?, SG_HF_ROB_SHIFT=?";
 			// checkboxen
 			if ( isset( $_POST['form_sg_rob_vp'] ) ) { 
 				$tbl_value_vp = $_POST['form_sg_rob_vp']; 
@@ -82,8 +82,8 @@ if ( $action_ok == "yes" ) {
 			$tbl_value_dub = db_query_load_id_by_value("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", $_POST['form_sg_rob_dub']);
 			
     		$a_values = array( trim($_POST['form_sg_rob_titel']), trim($_POST['form_sg_rob_stichworte']),
-    		trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub );   					
-    		$update_ok = db_query_update_item_b("SG_HF_ROBOT", $fields_params, "SG_HF_ROB_ID =".$id, $a_values);
+    		trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub, $_POST['form_sg_rob_shift'] );   					
+    		db_query_update_item_b("SG_HF_ROBOT", $fields_params, "SG_HF_ROB_ID =".$id, $a_values);
 			header("Location: sg_hf_robot_detail.php?action=display&sg_robot_id=".$id);
 			break;
 			//endswitch;
@@ -142,15 +142,31 @@ if ( $user_rights == "yes" ) {
 	echo "<input type=\"text\" name='form_sg_rob_filename' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILENAME))."\" >";
 	echo "</div>";
 	echo "<div class='content_row_b_1'>";
-	echo "<div class='content_column_1'>Einstellungen</div>";			
+	echo "<div class='content_column_1'>VP-Übernahme</div>";			
 	echo "<div class='content_column_2'>" ;
 	if ( rtrim($tbl_row->SG_HF_ROB_VP) == "T") {
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' checked='checked' title='Wird übernommen'> VP-Übernahme ";
 	} else { 
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'> VP-Übernahme ";
 	}				
-	echo "/ Wiederholung: ".html_dropdown_from_table_1("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", "form_sg_rob_dub", "text_2", rtrim($tbl_row->SG_HF_ROB_DUB_ID));
 	echo "</div></div>\n";
+	echo "<div class='content_row_a_1'>";
+	echo "<div class='content_column_1'>Wiederholung </div>";
+	echo html_dropdown_from_table_1("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", "form_sg_rob_dub", "text_2", rtrim($tbl_row->SG_HF_ROB_DUB_ID));
+	echo " Verschiebung zw. Erstsendung Lieferant und SRB: ";
+	echo "<select name='form_sg_rob_shift' class='text_2' size='1'>";
+	echo "<option selected='selected'>0</option>";
+	echo "<option >1</option>";
+	echo "<option >2</option>";
+	echo "<option >3</option>";
+	echo "<option >4</option>";
+	echo "<option >5</option>";
+	echo "<option >6</option>";
+	echo "<option >7</option>";
+	echo "</select> bisher: (".rtrim($tbl_row->SG_HF_ROB_SHIFT).")";
+	echo "</div>";
+	
+	
 	echo "<br>";
 	echo "<div class='line'> </div>";			
 	echo "<input type=\"submit\" value=\"Speichern\">";
