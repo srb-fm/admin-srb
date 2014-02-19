@@ -131,15 +131,22 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILENAME. "</div>";
 	echo "</div>\n";
 	echo "<div class='content_row_b_1'>";
-	echo "<div class='content_column_1'>Einstellungen</div>";
+	echo "<div class='content_column_1'>VP-Übernahme</div>";
 	echo "<div class='content_column_2'>" ;
 	if ( rtrim($tbl_row->SG_HF_ROB_VP) == "T") {
-		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' checked='checked' title='Wird übernommen'> VP-Übernahme ";
+		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' checked='checked' title='Wird übernommen'>";
 	} else { 
-		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'> VP-Übernahme ";
+		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'>";
 	}				
-	echo "/ Wiederholung: ".db_query_load_value_by_id("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_ID", $tbl_row->SG_HF_ROB_DUB_ID);
 	echo "</div></div>\n";			
+	
+	echo "<div class='content_row_a_1'>";
+	echo "<div class='content_column_1'>Wiederholung</div>";
+	echo "<div class='content_column_2'>" .db_query_load_value_by_id("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_ID", $tbl_row->SG_HF_ROB_DUB_ID);
+	echo " / Verschiebung zw. Erstsendung Lieferant und SRB: ".$tbl_row->SG_HF_ROB_SHIFT." Tage vor";	
+	echo "</div>";
+	echo "</div>\n";
+	
 	echo "<div class='line_a'> </div>\n";
 			
 	if ( $action == "delete" ) { 
