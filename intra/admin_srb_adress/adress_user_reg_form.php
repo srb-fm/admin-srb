@@ -15,11 +15,17 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	
-// action pruefen	
+// check action	
 if ( isset( $_GET['action'] ) ) {
 	if ( $_GET['action'] == "print" ) {
 		if ( isset( $_GET['ad_id'] ) ) {
-			if ( $_GET['ad_id'] !="" )	{ 
+			$ad_id = $_GET['ad_id'];
+			// check id
+			if ( ! filter_var( $ad_id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
+				$action_ok = "no";
+				$ad_id = "";
+			}
+			if ( $ad_id !="" )	{ 
 				$action_ok = "yes";
 				$c_query_condition = "AD_ID = ".$_GET['ad_id'];	
 			}	
@@ -51,7 +57,8 @@ if ( $action_ok == "yes" ) {
 <body onload="javascript:window.print(); return true;">
  
 <?php 
-if ( $action_ok == "no" ) { 
+if ( $action_ok == "no" ) {
+	echo "Fehler bei Übergabe: ".$action;
 	return;
 }
 if ( !$tbl_row ) { 

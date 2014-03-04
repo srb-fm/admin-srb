@@ -20,6 +20,12 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 if ( isset( $_GET['action'] ) ) {
 	if ( $_GET['action'] == "print" ) {
 		if ( isset( $_GET['ad_id'] ) ) {
+			// check id
+			if ( ! filter_var( $ad_id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
+				$action_ok = "no";
+				$ad_id = "";
+			}			
+			
 			if ( $_GET['ad_id'] !="" ) { 
 				$action_ok = "yes";
 				$c_query_condition = "AD_ID = ".$_GET['ad_id'];	
