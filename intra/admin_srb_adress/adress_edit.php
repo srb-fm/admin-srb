@@ -17,7 +17,7 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
 $action_ok = "no";
 	
-// action pruefen	
+// check action	
 if ( isset( $_GET['action'] ) ) {
 	$action = $_GET['action']; 
 	$action_ok = "yes";
@@ -35,6 +35,13 @@ if ( $action_ok == "yes" ) {
 	if ( isset( $_POST['ad_id'] ) ) {
 		$id = $_POST['ad_id'];
 	}
+
+	// check id
+	if ( ! filter_var( $id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
+		$id = "";
+		$action_ok = "no";
+	}
+
 	if ( $id !="" ) { 
 		switch ( $action ) {
 		case "new":
@@ -241,7 +248,8 @@ echo $message;
 echo "</div>";	
 echo "<div class='content'>";	
 		 
-if ( $action_ok == "no" ) { 
+if ( $action_ok == "no" ) {
+	echo "Fehler bei Übergabe: ".$action;
 	return;
 }
 if ( ! isset($tbl_row->AD_ID )) { 

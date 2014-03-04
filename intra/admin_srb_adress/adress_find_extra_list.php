@@ -27,7 +27,7 @@ $sg_id = "no";
 // fuer den link zu den nächsten satzen wird die skip-anzahl in der url zugrechnet: (ausgabebegrenzung 2) und dann in die abfrage uebernommen (// ausgabebegrenzung 1)
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 	
-// action pruefen	
+// check action	
 if ( isset( $_GET['action'] ) ) { 
 	$action = $_GET['action'];	
 	$action_ok = "yes";
@@ -47,6 +47,11 @@ if ( isset( $_GET['find_limit_skip'] )) {
 // change Sendeveranwortlicher
 if ( isset( $_POST['sg_id'] ) ) {	
 	$sg_id = $_POST['sg_id'];
+}
+
+// check id
+if ( ! filter_var( $sg_id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
+	$sg_id = "no";
 }
 					
 // Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
@@ -174,7 +179,7 @@ if ( $action_ok == "no" ) {
 } 
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
 if ( $user_rights == "yes" ) { 	 
-	if ( $db_result	) {
+	if ( $db_result ) {
 		$z +=1;
 		foreach ( $db_result as $item ) {	
 
@@ -189,7 +194,7 @@ if ( $user_rights == "yes" ) {
 			echo "<div class='content_column_tool_img_1'>";
 					
 			// Sendung direktlinks	
-			if ( rtrim($item['AD_USER_OK_HF']) =="T" ) {
+			if ( rtrim($item['AD_USER_OK_HF'] ) =="T" ) {
 				// change sendeverantwortlicher 
 				if ( $sg_id != "no" ) {
 					echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=edit&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."' ><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Sendeverantwortlichen HF ändern' alt='Sendeverantwortlichen HF ändern'></a>";					
