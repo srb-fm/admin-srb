@@ -25,7 +25,7 @@ if ( isset( $_POST['message'] ) ) {
 
 $action_ok = "no";
 	
-// action prüfen	
+// check action	
 if ( isset( $_GET['action'] ) ) {
 	$action    =    $_GET['action'];	
 	$action_ok = "yes";
@@ -44,8 +44,14 @@ if ( $action_ok == "yes" ) {
 	if ( isset( $_POST['ad_id'] ) ) {
 		$id = $_POST['ad_id'];
 	}
-		
-	// action switchen
+	
+	// check id
+	if ( ! filter_var( $id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
+		$id = "";
+		$action_ok = "no";
+	}
+			
+	// switch action 
 	if ( $id !="" ) { 
 		switch ( $action ){
 
@@ -82,7 +88,7 @@ if ( $action_ok == "yes" ) {
 
 		case "kill":		
 			$message .= "Adresse löschen. ";
-			// prüfen ob bestätigung passt
+			// pruefen ob bestaetigung passt
 			$c_kill = db_query_load_item("USER_SECURITY", 0);
 
 			if ( $_POST['form_kill_code'] == trim($c_kill) ) {
@@ -132,7 +138,8 @@ echo "<div class='head_item_right'>";
 echo $message;
 echo "</div>\n";
 echo "<div class='content'>"; 
-if ( $action_ok == "no" ) { 
+if ( $action_ok == "no" ) {
+	echo "Fehler bei Übergabe: ".$action; 
 	return;
 }
 if ( !$tbl_row ) { 
