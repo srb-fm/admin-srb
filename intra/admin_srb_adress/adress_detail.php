@@ -139,7 +139,7 @@ echo $message;
 echo "</div>\n";
 echo "<div class='content'>"; 
 if ( $action_ok == "no" ) {
-	echo "Fehler bei Übergabe: ".$action; 
+	echo "Fehler bei Übergabe: ".$action;
 	return;
 }
 if ( !$tbl_row ) { 

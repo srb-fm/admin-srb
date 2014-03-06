@@ -29,11 +29,11 @@ $find_kategorie = "no";
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 	
 // action pruefen	
-if ( isset( $_GET['action'] ) ) {	
+if ( isset($_GET['action']) ) {	
 	$action = $_GET['action'];	
 	$action_ok = "yes";
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];
 	$action_ok = "yes";
 }
@@ -43,15 +43,21 @@ if ( $action_ok != "yes" ) {
 }
 	
 // kommt von verleih neues objekt
-if ( isset( $_POST['vl_id'] ) ) { 
+if ( isset($_POST['vl_id']) ) { 
 	$vl_id = $_POST['vl_id'];	
 }
-if ( isset( $_GET['vl_id'] ) ) { 
+if ( isset($_GET['vl_id']) ) { 
 	$vl_id = $_GET['vl_id'];	
 }
-			
+
+// check id
+if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 ))) ) {
+	$vl_id = "";
+	$action_ok = "no";
+}
+		
 // condition_delivery pruefen (	ausgabelimit)
-if ( isset( $_GET['condition'] ) ) {
+if ( isset($_GET['condition']) ) {
 	$c_query_condition = rawurldecode($_GET['condition']);
 	$condition_delivery = "yes";
 }	
@@ -60,11 +66,11 @@ if ( isset( $_GET['condition'] ) ) {
 			
 // limit  ueber limitweiterschaltung
  		
-if ( isset( $_GET['find_limit_skip'] ) ) { 
+if ( isset($_GET['find_limit_skip']) ) { 
 	$find_limit_skip = $_GET['find_limit_skip'];
 }
 // kat listen oder objekt
-if ( isset( $_GET['find_kat'] ) ) { 
+if ( isset($_GET['find_kat']) ) { 
 	$find_kategorie = $_GET['find_kat'];
 }
 		
@@ -73,7 +79,7 @@ if ( $condition_delivery != "yes" ) {
 	// Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 	// also hier nur pruefen in welchem feld was ist
 	
-	if ( isset( $_POST['iv_kat'] ) ) {
+	if ( isset($_POST['iv_kat']) ) {
 		if ( $_POST['iv_kat'] !="") { 
 			$find_kategorie = "yes";
 			$c_field_desc = "IV_KAT_DESC";
@@ -81,21 +87,21 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}	
 	
-	if ( isset( $_POST['iv_objekt'] ) ) {
+	if ( isset($_POST['iv_objekt']) ) {
 		if ( $_POST['iv_objekt'] !="") { 
 			$c_field_desc = "IV_OBJEKT";
 			$c_field_value = $_POST['iv_objekt']; 
 		}
 	}
 
-	if ( isset( $_POST['iv_typ'] ) ) {
+	if ( isset($_POST['iv_typ']) ) {
 		if ( $_POST['iv_typ'] !="") { 
 			$c_field_desc = "IV_TYP";
 			$c_field_value = $_POST['iv_typ']; 
 		}
 	}
 
-	if ( isset( $_POST['iv_hersteller'] ) ) {
+	if ( isset($_POST['iv_hersteller']) ) {
 		if ( $_POST['iv_hersteller'] !="") { 
 			$c_field_desc = "IV_HERSTELLER";
 			$c_field_value = $_POST['iv_hersteller']; 
@@ -105,11 +111,11 @@ if ( $condition_delivery != "yes" ) {
 	// Bedingung pruefen
 	
 	$find_option_ok = "no";
-	if ( isset( $_GET['find_option'] ) ) {
+	if ( isset($_GET['find_option']) ) {
 		$find_option = $_GET['find_option'];
 		$find_option_ok = "yes";
 	}
-	if ( isset( $_POST['find_option'] ) ) {
+	if ( isset($_POST['find_option']) ) {
 		$find_option = $_POST['find_option'];
 		$find_option_ok = "yes";
 	}		
@@ -147,7 +153,7 @@ if ( $condition_delivery != "yes" ) {
 
 			switch ( $find_option ) {
 			case "gesamt":
-			  	$c_query_condition = "upper( IV_OBJEKT ) >= 'A' ORDER BY IV_OBJEKT";
+			  	$c_query_condition = "upper(IV_OBJEKT) >= 'A' ORDER BY IV_OBJEKT";
 				$message_find_string = "Gesamtliste alphabetisch";
 				break;
 						
@@ -165,23 +171,25 @@ if ( $condition_delivery != "yes" ) {
 } // $condition_delivery != "yes"
 	
 
-// ausgabebegrenzung 1
-if ( $find_limit_skip == "no" ) {			
-	if ( $find_kategorie == "no" ) {
-	  	$db_result = db_query_list_items_limit_1("IV_ID, IV_OBJEKT, IV_HERSTELLER, IV_TYP, IV_SPONSOR, IV_VERLIEHEN", "IV_MAIN", $c_query_condition, "FIRST 25");
+if ( $action_ok = "yes" ) {
+	// ausgabebegrenzung 1
+	if ( $find_limit_skip == "no" ) {			
+		if ( $find_kategorie == "no" ) {
+	  		$db_result = db_query_list_items_limit_1("IV_ID, IV_OBJEKT, IV_HERSTELLER, IV_TYP, IV_SPONSOR, IV_VERLIEHEN", "IV_MAIN", $c_query_condition, "FIRST 25");
+		} else {
+			$db_result_kat = db_query_list_items_limit_1("IV_KAT_ID, IV_KAT_DESC", "IV_KATEGORIE", $c_query_condition, "FIRST 25");
+		}
+		$z = 0;
 	} else {
-		$db_result_kat = db_query_list_items_limit_1("IV_KAT_ID, IV_KAT_DESC", "IV_KATEGORIE", $c_query_condition, "FIRST 25");
+		$c_limit = "FIRST 25 SKIP ".$find_limit_skip;
+		if ( $find_kategorie == "no" ) {		
+			$db_result = db_query_list_items_limit_1("IV_ID, IV_OBJEKT, IV_HERSTELLER, IV_TYP, IV_SPONSOR, IV_VERLIEHEN", "IV_MAIN", $c_query_condition, $c_limit);
+		} else {
+			$db_result_kat = db_query_list_items_limit_1("IV_KAT_ID, IV_KAT_DESC", "IV_KATEGORIE", $c_query_condition, $c_limit);
+		}
+		$z = $find_limit_skip;
 	}
-	$z = 0;
-} else {
-	$c_limit = "FIRST 25 SKIP ".$find_limit_skip;
-	if ( $find_kategorie == "no" ) {		
-		$db_result = db_query_list_items_limit_1("IV_ID, IV_OBJEKT, IV_HERSTELLER, IV_TYP, IV_SPONSOR, IV_VERLIEHEN", "IV_MAIN", $c_query_condition, $c_limit);
-	} else {
-		$db_result_kat = db_query_list_items_limit_1("IV_KAT_ID, IV_KAT_DESC", "IV_KATEGORIE", $c_query_condition, $c_limit);
-	}
-	$z = $find_limit_skip;
-} 
+}
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -206,7 +214,8 @@ echo "<div class='head_item_right'>";
 echo $message_find_string."\n"; 
 echo "	</div>";
 echo "<div class='content' id='jq_slide_by_click'>";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == "no" ) {
+	echo "Fehler bei Übergabe: ".$action;
 	return;
 }
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");

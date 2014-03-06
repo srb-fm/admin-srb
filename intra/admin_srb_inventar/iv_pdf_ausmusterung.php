@@ -40,18 +40,28 @@ if ( $action_ok != "yes" ) {
 }
 		
 if ( $action_ok == "yes" ) {
-	if ( isset( $_GET['iv_id'] ) ) {	
+	if ( isset($_GET['iv_id']) ) {	
 		$id = $_GET['iv_id'];
 	}
-	if ( isset( $_POST['iv_id'] ) ) {	
+	if ( isset($_POST['iv_id']) ) {	
 		$id = $_POST['iv_id'];
 	}
+
+	// check id
+	if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 ))) ) {
+		$id = "";
+		$action_ok = "no";
+	}
+}
+
+if ( $action_ok != "yes" ) {
+	$message = "Fehler bei Uebergabe..... ";
+	return; 
+} else {
 	// IV-Daten
 	$tbl_row = db_query_display_item_1("IV_MAIN", "IV_ID = ".$id);	
 	// Userdaten
 	$tbl_row_1 = db_query_display_item_1("USER_DATA", "none");
-} else {
-	return;
 } 
 
 
