@@ -37,9 +37,16 @@ if ( $action_ok == "yes" ) {
 	}
 
 	// check id
-	if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 ))) ) {
-		$id = "";
-		$action_ok = "no";
+	if ( $action == "new" ) { 
+		if ( $id != "0" ) {
+			$id = "";
+			$action_ok = "no";
+		}
+	} else {	
+		if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
+			$id = "";
+			$action_ok = "no";
+		}
 	}
 
 	if ( $id !="" ) { 
