@@ -16,37 +16,37 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
-if ( isset( $_GET['message'] ) ) { 
+if ( isset($_GET['message']) ) { 
 	$message .= $_GET['message'];
 }
-if ( isset( $_POST['message'] ) ) { 
+if ( isset($_POST['message']) ) { 
 	$message .= $_POST['message'];
 }
 
 $action_ok = "no";
 	
 // check action	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action    =    $_GET['action'];	
 	$action_ok = "yes";
 }
 
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action    =    $_POST['action'];
 	$action_ok = "yes";
 }
 			
 if ( $action_ok == "yes" ) {
-	if ( isset( $_GET['ad_id'] ) ) {
+	if ( isset($_GET['ad_id']) ) {
 		$id = $_GET['ad_id'];
 	}
 
-	if ( isset( $_POST['ad_id'] ) ) {
+	if ( isset($_POST['ad_id']) ) {
 		$id = $_POST['ad_id'];
 	}
 	
 	// check id
-	if ( ! filter_var( $id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
+	if ( ! filter_var( $id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 ))) ) {
 		$id = "";
 		$action_ok = "no";
 	}
@@ -139,7 +139,10 @@ echo $message;
 echo "</div>\n";
 echo "<div class='content'>"; 
 if ( $action_ok == "no" ) {
-	echo "Fehler bei Übergabe: ".$action;
+	if ( $action != "kill" ) {
+		echo "Fehler bei Übergabe: ".$action;
+		return;
+	}
 	return;
 }
 if ( !$tbl_row ) { 
