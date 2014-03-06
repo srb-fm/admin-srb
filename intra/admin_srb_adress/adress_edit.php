@@ -37,7 +37,7 @@ if ( $action_ok == "yes" ) {
 	}
 
 	// check id
-	if ( $action == "new" ) { 
+	if ( $action == "new" or $action == "add" ) { 
 		if ( $id != "0" ) {
 			$id = "";
 			$action_ok = "no";
