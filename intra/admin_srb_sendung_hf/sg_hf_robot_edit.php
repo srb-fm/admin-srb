@@ -155,18 +155,17 @@ if ( $user_rights == "yes" ) {
 	echo html_dropdown_from_table_1("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", "form_sg_rob_dub", "text_2", rtrim($tbl_row->SG_HF_ROB_DUB_ID));
 	echo " Verschiebung zw. Erstsendung Lieferant und SRB: ";
 	echo "<select name='form_sg_rob_shift' class='text_2' size='1'>";
-	echo "<option selected='selected'>0</option>";
-	echo "<option >1</option>";
-	echo "<option >2</option>";
-	echo "<option >3</option>";
-	echo "<option >4</option>";
-	echo "<option >5</option>";
-	echo "<option >6</option>";
-	echo "<option >7</option>";
-	echo "</select> bisher: (".rtrim($tbl_row->SG_HF_ROB_SHIFT).")";
+	$i = 0;
+	while ($i <= 7) {
+		if ( $i != rtrim($tbl_row->SG_HF_ROB_SHIFT) ) {
+			echo "<option>".$i."</option>";
+		} else {
+			echo "<option selected='selected'>".$i."</option>";
+		}
+		$i++;
+	}
+	echo "</select>" ;
 	echo "</div>";
-	
-	
 	echo "<br>";
 	echo "<div class='line'> </div>";			
 	echo "<input type=\"submit\" value=\"Speichern\">";
