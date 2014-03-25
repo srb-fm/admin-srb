@@ -326,7 +326,7 @@ def lets_rock():
     # weekly
     log_message = u"Duplizierung woechentlich bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
-    roboting_sgs = load_roboting_sgs("01")
+    roboting_sgs = load_roboting_sgs("w01")
     if roboting_sgs is None:
         return
     dublikate(roboting_sgs, 7)
@@ -334,7 +334,7 @@ def lets_rock():
     # 14 days
     log_message = u"Duplizierung 14-taegig bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
-    roboting_sgs = load_roboting_sgs("03")
+    roboting_sgs = load_roboting_sgs("w02")
     if roboting_sgs is None:
         return
     dublikate(roboting_sgs, 14)
@@ -342,7 +342,7 @@ def lets_rock():
     # 4 weeks
     log_message = u"Duplizierung 4-woechig bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
-    roboting_sgs = load_roboting_sgs("02")
+    roboting_sgs = load_roboting_sgs("m99")
     if roboting_sgs is None:
         return
     dublikate(roboting_sgs, 28)
