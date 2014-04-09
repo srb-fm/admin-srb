@@ -50,6 +50,8 @@ Erich Fromm, Die Revolution der Hoffnung
 import time
 import sys
 import datetime
+from datetime import date
+from calendar import monthrange
 import lib_common_1 as lib_cm
 
 
@@ -71,7 +73,7 @@ class app_config(object):
         self.app_errorslist.append(u"Error 000 "
             "Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(u"Error 001 "
-            "beim Generieren des Stichwortes fuer duplizierte Sendung")
+            "beim Generieren des Stichwortes: ")
         self.app_errorslist.append(u"Error 002 "
             "Duplizierte Sendung konnte nicht gebucht werden ")
         self.app_errorslist.append(u"Error 003 "
@@ -86,6 +88,7 @@ class app_config(object):
         # meldungen auf konsole ausgeben
         self.app_debug_mod = "no"
         # das script laeuft mitwochs 9:35 uhr, hier wochenzeitraum einstellen
+        # montag 0 Uhr bis sonntag 24 Uhr
         self.time_target_start = (datetime.datetime.now()
                             + datetime.timedelta(days=-2)
                             + datetime.timedelta(hours=-9)
@@ -256,8 +259,10 @@ def create_filename(sendung, sg_stichwort, main_id_sg_cont):
 def create_keyword(sendung, roboting_sg, dt_sg_new_date):
     """Stichwort zusammenbauen"""
     try:
-        lib_cm.message_write_to_console(ac, sendung[16])
-        lib_cm.message_write_to_console(ac, roboting_sg[1])
+        lib_cm.message_write_to_console(ac,
+            lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[16]))
+        lib_cm.message_write_to_console(ac,
+            lib_cm.replace_uchar_sonderzeichen_with_latein(roboting_sg[1]))
         # counter suchen und erhoehen
         counter_pos = roboting_sg[1].find("nnn")
         if counter_pos != -1:
@@ -296,11 +301,13 @@ def create_keyword(sendung, roboting_sg, dt_sg_new_date):
         if len(sg_stichwort) > 40:
                 sg_stichwort = sg_stichwort[0:40]
 
-        lib_cm.message_write_to_console(ac, sg_stichwort)
+        lib_cm.message_write_to_console(ac,
+            lib_cm.replace_uchar_sonderzeichen_with_latein(sg_stichwort))
     except Exception, e:
         lib_cm.message_write_to_console(ac,
             "Fehler Stichwort generieren :" + str(e))
-        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+        db.write_log_to_db_a(ac, ac.app_errorslist[1]
+            + lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[16]), "x",
             "write_also_to_console")
         sg_stichwort = None
     return sg_stichwort
@@ -318,6 +325,42 @@ def calk_date(sendung, n_days_add):
     return dt_sg_new_date
 
 
+def calk_date_month(option):
+    """Differenz zu bestimmten Wochentag des kommenden Monats errechnen"""
+    # thanx to
+    # http://code.activestate.com/recipes/425607-findng-the-xth-day-in-a-month/
+    lib_cm.message_write_to_console(ac, ac.time_target_start.date())
+    n_month = ac.time_target_start.month + 1
+    if n_month == 12:
+        n_year = ac.time_target_start.year + 1
+    else:
+        n_year = ac.time_target_start.year
+
+    bom, days = monthrange(n_year, n_month)
+    firstmatch = (int(option[1]) - bom) % 7 + 1
+    try:
+        n_day = xrange(firstmatch, days + 1, 7)[int(option[2])]
+    except Exception, e:
+        lib_cm.message_write_to_console(ac, "Fehler: %s" % str(e))
+        return None
+
+    # differenz von zieldate zu basedate
+    lib_cm.message_write_to_console(ac, "tag monat: " + str(n_day))
+    # Datum des Wochentages als Basis
+    dt_sg_month_date_base = (ac.time_target_start.date()
+                            + datetime.timedelta(days=+int(option[1]) + 1))
+    lib_cm.message_write_to_console(ac, "Base-Date:")
+    lib_cm.message_write_to_console(ac, dt_sg_month_date_base)
+    lib_cm.message_write_to_console(ac, "Target Date:")
+    dt_sg_month_date = date(n_year, n_month, n_day)
+    lib_cm.message_write_to_console(ac, dt_sg_month_date)
+    td_days = dt_sg_month_date - dt_sg_month_date_base
+    #ac.time_target_start.date()
+    lib_cm.message_write_to_console(ac, "Differenz Tage: " + str(td_days.days))
+    # wieder eins drauf rechnen, warum?
+    return td_days.days + 1
+
+
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
@@ -327,25 +370,42 @@ def lets_rock():
     log_message = u"Duplizierung woechentlich bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     roboting_sgs = load_roboting_sgs("w01")
-    if roboting_sgs is None:
-        return
-    dublikate(roboting_sgs, 7)
+    if roboting_sgs is not None:
+        dublikate(roboting_sgs, 7)
 
     # 14 days
     log_message = u"Duplizierung 14-taegig bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     roboting_sgs = load_roboting_sgs("w02")
-    if roboting_sgs is None:
-        return
-    dublikate(roboting_sgs, 14)
+    if roboting_sgs is not None:
+        dublikate(roboting_sgs, 14)
 
     # 4 weeks
     log_message = u"Duplizierung 4-woechig bearbeiten.. "
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     roboting_sgs = load_roboting_sgs("m99")
-    if roboting_sgs is None:
-        return
-    dublikate(roboting_sgs, 28)
+    if roboting_sgs is not None:
+        dublikate(roboting_sgs, 28)
+
+    # x day of month
+    log_message = u"Duplizierung fuer bestimmten Tag des Monats bearbeiten.. "
+    db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
+    options = db.read_tbl_rows_with_cond(ac, db,
+            "SG_HF_ROB_DUB", "SG_HF_ROB_DUB_ID, SG_HF_ROB_DUB_DESC",
+            "SUBSTRING(SG_HF_ROB_DUB_ID FROM 1 FOR 1) = 'm' "
+            + "AND SUBSTRING(SG_HF_ROB_DUB_ID FROM 2 FOR 2) <>'99' "
+            + "ORDER BY SG_HF_ROB_DUB_ID")
+    if options is not None:
+        for item in options:
+            log_message = u"Duplizierung " + item[1]
+            db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
+            lib_cm.message_write_to_console(ac, item)
+            roboting_sgs = load_roboting_sgs(item[0])
+            if roboting_sgs is None:
+                continue
+            n_days = calk_date_month(item[0])
+            if n_days is not None:
+                dublikate(roboting_sgs, n_days)
 
 
 def dublikate(roboting_sgs, n_days_add):
