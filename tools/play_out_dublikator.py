@@ -238,7 +238,7 @@ def delete_failed_sg_in_db(main_id_sg):
 
 
 def create_filename(sendung, sg_stichwort, main_id_sg_cont):
-    """filename zusammenbauen"""
+    """Filename zusammenbauen"""
     if sendung[8].strip() == "03":
         # Vorproduziert oder stream
         if sendung[15][0:7] == "http://":
@@ -314,7 +314,7 @@ def create_keyword(sendung, roboting_sg, dt_sg_new_date):
 
 
 def calk_date(sendung, n_days_add):
-    # Datum um x Tage vorzaehlen
+    """Datum um x Tage vorzaehlen"""
     lib_cm.message_write_to_console(ac, sendung[2].day)
     lib_cm.message_write_to_console(ac,
                         sendung[2] + datetime.timedelta(days=+n_days_add))
@@ -409,7 +409,7 @@ def lets_rock():
 
 
 def dublikate(roboting_sgs, n_days_add):
-    """dublikating"""
+    """Dublikating"""
     for roboting_sg in roboting_sgs:
         lib_cm.message_write_to_console(ac, roboting_sg)
         # Sendungen suchen
