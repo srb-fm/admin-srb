@@ -14,7 +14,7 @@ Copyright (C) Joerg Sorge joergsorge at gooogell
 
 Dieses Script dupliziert perjodische Erst-Sendungen
 (Buchungen in Sendabwicklung)
-die woechentlich gesendet werden.
+die regelmaessig gesendet werden.
 
 
 Dateiname Script: play_out_dublikator.py
@@ -27,14 +27,27 @@ Param 1: On/Off Switch
 
 Fehlerliste:
 Error 000 Parameter-Typ oder Inhalt stimmt nich
-
+Error 001 beim Generieren des Stichwortes
+Error 002 Duplizierte Sendung konnte nicht gebucht werden
+Error 003 beim Loeschen der duplizierten Sendung
 
 Besonderheiten:
-Es werden Sendungen beruecksichtigt, die in der config gefunden werden.
-Nur Sendungen, die in einem woechentlichen Rythmus ausgestrahlt werden,
-koennen von dem Script bearbeitet werden.
+Es werden nur Sendungen beruecksichtigt, die als automatisierte Sendungen
+festgelegt worden sind und
+fuer die in der aktuellen woche eine Buchung vorhanden ist.
 
-Das Script arbeitet einmal woechentlich (Mittwoch Nacht).
+Syntax fuer die Klassifizierung der Intervalle:
+(In der Tabelle SG_HF_ROB_DUB)
+w01 - woechentlich
+w02 - alle 14 Tage
+m99 - monatlich
+m00 - erster Montag des Monats
+m01 - zweiter Montag des Monats
+...
+m10 - erster Dienstag des Monats
+...
+
+Das Script arbeitet einmal woechentlich (Mittwoch Morgen).
 
 In unserer Gesellschaft geht ein Gespenst um,
 das nur wenige deutlich sehen.
@@ -46,6 +59,9 @@ und dem maximalen Konsum verschrieben hat
 und von Computern gesteuert wird.
 Erich Fromm, Die Revolution der Hoffnung
 """
+
+#TODO: Stichwortgenerierung: Zeichen nach Datum und Zaehlern beruecksichtigen?
+#TODO: "live" wird zur Zeit nicht "mit genommen", ergaenzen?
 
 import time
 import sys
