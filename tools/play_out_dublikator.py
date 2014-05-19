@@ -35,6 +35,7 @@ Besonderheiten:
 Es werden nur Sendungen beruecksichtigt, die als automatisierte Sendungen
 festgelegt worden sind und
 fuer die in der aktuellen woche eine Buchung vorhanden ist.
+Die Option 'live' wird auf False gesetzt, falls sie in der Erstsendung True ist.
 
 Syntax fuer die Klassifizierung der Intervalle:
 (In der Tabelle SG_HF_ROB_DUB)
@@ -61,7 +62,6 @@ Erich Fromm, Die Revolution der Hoffnung
 """
 
 #TODO: Stichwortgenerierung: Zeichen nach Datum und Zaehlern beruecksichtigen?
-#TODO: "live" wird zur Zeit nicht "mit genommen", ergaenzen?
 
 import time
 import sys
@@ -488,11 +488,11 @@ def dublikate(roboting_sgs, n_days_add):
                     delete_failed_sg_in_db(main_id_sg)
 
             if db_op_success_cont is not None:
-                db.write_log_to_db_a(ac, "automatisch gebucht, bitte pruefen: "
+                db.write_log_to_db_a(ac, "Gebucht, bitte pruefen: "
                     + sendung[14].encode('ascii', 'ignore') + " "
                     + str(dt_sg_new_date), "i", "write_also_to_console")
                 time.sleep(1)
-                db.write_log_to_db_a(ac, "automatisch gebucht, bitte pruefen: "
+                db.write_log_to_db_a(ac, "Gebucht, bitte pruefen: "
                     + sendung[14].encode('ascii', 'ignore') + " "
                     + str(dt_sg_new_date), "n", "write_also_to_console")
                 time.sleep(2)
