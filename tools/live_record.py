@@ -41,6 +41,8 @@ Param 6: Pfad fuer Recordings
 
 
 Dieses Script wird zeitgesteuert jede Stunde zur 58. Minute ausgefuehrt.
+Das Script live_recording.sh wird jede Stunde zur 59. Minute
+auf dem Streamserver ausgefuehrt.
 
 """
 
