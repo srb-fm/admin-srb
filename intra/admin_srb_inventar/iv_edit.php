@@ -39,10 +39,30 @@ if ( $action_ok == "yes" ) {
 	}
 
 	// check id
-	if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000)) ) ) {
-		$id = "";
-		$action_ok = "no";
-	}
+	switch ( $action ) {
+		case "new":
+			if ( $id != "1" ) {
+				$id = "";
+				$action_ok = "no";
+				}
+		break;
+		
+		case "add":
+			if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
+				if ( $id != "1" ) {
+					$id = "";
+					$action_ok = "no";
+				}
+			}
+		break;
+		
+		default:
+			if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
+				$id = "";
+				$action_ok = "no";
+			}
+		}
+				
 
 	if ( $id !="" ) { 
 		switch ( $action ) {
