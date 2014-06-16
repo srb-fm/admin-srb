@@ -120,9 +120,9 @@ function statistik_sg ()
 	$a_sg_gesamt["Livesendungen"] = db_query_count_rows("SG_HF_MAIN", "SG_HF_SOURCE_ID<>'03'");
 	$a_sg_gesamt["Live aus Studio 1"] = db_query_count_rows("SG_HF_MAIN", "SG_HF_SOURCE_ID='01'");
 	$a_sg_gesamt["Live aus Studio 2"] = db_query_count_rows("SG_HF_MAIN", "SG_HF_SOURCE_ID='02'");
-	$a_sg_gesamt["Infotime-Sendungen"] = db_query_count_rows("SG_HF_MAIN", "SG_HF_FIRST_SG='T' AND SG_HF_INFOTIME='T'");
-	$a_sg_gesamt["Magazin-Sendungen"] = db_query_count_rows("SG_HF_MAIN", "SG_HF_FIRST_SG='T' AND SG_HF_MAGAZINE='T'");
-	$a_sg_gesamt["Normale-Sendungen"] = db_query_count_rows("SG_HF_MAIN", "SG_HF_FIRST_SG='T' AND SG_HF_INFOTIME='F' AND SG_HF_MAGAZINE='F'");
+	$a_sg_gesamt["Infotime-Sendungen (ES)"] = db_query_count_rows("SG_HF_MAIN", "SG_HF_FIRST_SG='T' AND SG_HF_INFOTIME='T'");
+	$a_sg_gesamt["Magazin-Sendungen (ES)"] = db_query_count_rows("SG_HF_MAIN", "SG_HF_FIRST_SG='T' AND SG_HF_MAGAZINE='T'");
+	$a_sg_gesamt["Normale-Sendungen (ES)"] = db_query_count_rows("SG_HF_MAIN", "SG_HF_FIRST_SG='T' AND SG_HF_INFOTIME='F' AND SG_HF_MAGAZINE='F'");
 	// Folgesendungen ermitteln (wenn Sendung laenger als eine Stunde, und deshalb mehrere gebucht sind) 
 	$c_query_condition_sg_only_first_hour = "B.SG_HF_CONT_SG_ID = A.SG_HF_ID AND A.SG_HF_FIRST_SG ='T' order by A.SG_HF_TIME";
 	$db_result_sg_only_first_hour = db_query_list_items_1("A.SG_HF_TIME, B.SG_HF_CONT_TITEL ", "SG_HF_MAIN A, SG_HF_CONTENT B", $c_query_condition_sg_only_first_hour);
