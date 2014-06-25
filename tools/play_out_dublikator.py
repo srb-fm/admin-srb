@@ -61,7 +61,6 @@ und von Computern gesteuert wird.
 Erich Fromm, Die Revolution der Hoffnung
 """
 
-#TODO: Stichwortgenerierung: Zeichen nach Datum und Zaehlern beruecksichtigen?
 
 import time
 import sys
@@ -303,7 +302,11 @@ def create_keyword(sendung, roboting_sg, dt_sg_new_date):
                                 + sendung[16][date_pos + 10:])
         # counter aber kein date vorhanden
         if counter_pos != -1 and date_pos == -1:
-            sg_stichwort = roboting_sg[1][0:counter_pos] + counter_new
+            # durch sendung[16][counter_pos + 3:] wird alles
+            # was in stichwort sonst noch eingetragen
+            # hinten wieder dran gesetzt
+            sg_stichwort = (roboting_sg[1][0:counter_pos] + counter_new
+                                + sendung[16][counter_pos + 3:])
         # counter nicht, aber date vorhanden
         if counter_pos == -1 and date_pos != -1:
             sg_stichwort = (roboting_sg[1][0:date_pos]
