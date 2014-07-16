@@ -174,7 +174,7 @@ class PDF extends FPDF
 
 //Instanciation of inherited class
 $pdf=new PDF();
-$pdf->my_page_title = $message_find_string;
+$pdf->my_page_title = utf8_decode($message_find_string);
 $pdf->AliasNbPages();
 $pdf->AddPage('L');
 $pdf->SetFont('Arial', '', 8);
