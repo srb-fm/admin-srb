@@ -97,7 +97,7 @@ class app_config(object):
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -258,8 +258,6 @@ def check_and_work_on_files(roboting_sgs):
         if item[1].find("ddmmyy") != -1:
             l_path_title = item[1].split("ddmmyy")
             d_pattern = "%d%m%y"
-
-        lib_cm.message_write_to_console(ac, item[1].find("yyyy-mm-dd"))
 
         try:
             path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
