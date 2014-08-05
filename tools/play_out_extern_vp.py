@@ -144,6 +144,26 @@ def load_sg(sg_titel):
     return sendung_data
 
 
+def audio_copy(path_file_source, path_file_dest):
+    """audiofile kopieren"""
+    success_copy = None
+    try:
+        shutil.copy(path_file_source, path_file_dest)
+        db.write_log_to_db_a(ac, u"Audio Vorproduktion: "
+                + path_file_source.encode('ascii', 'ignore'),
+                "v", "write_also_to_console")
+        db.write_log_to_db_a(ac, u"Audio kopiert nach: "
+                + path_file_dest, "c", "write_also_to_console")
+        success_copy = True
+    except Exception, e:
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+        log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
+        lib_cm.message_write_to_console(ac, log_message)
+        db.write_log_to_db(ac, log_message, "x")
+    return success_copy
+
+
 def audio_validate(file_dest):
     """mp3-File validieren"""
     lib_cm.message_write_to_console(ac, u"mp3-File validieren")
@@ -224,6 +244,71 @@ def audio_mp3gain(path_file_dest):
                              + c_source_file, "p", "write_also_to_console")
 
 
+def date_pattern(audio_filename):
+    """Datumsmuster in Dateinamen suchen und wandeln"""
+    if audio_filename.find("yyyy_mm_dd") != -1:
+        l_path_title = audio_filename.split("yyyy_mm_dd")
+        d_pattern = "%Y_%m_%d"
+    if audio_filename.find("yyyymmdd") != -1:
+        l_path_title = audio_filename.split("yyyymmdd")
+        d_pattern = "%Y%m%d"
+    if audio_filename.find("yyyy-mm-dd") != -1:
+        l_path_title = audio_filename.split("yyyy-mm-dd")
+        d_pattern = "%Y-%m-%d"
+    if audio_filename.find("ddmmyy") != -1:
+        l_path_title = audio_filename.split("ddmmyy")
+        d_pattern = "%d%m%y"
+    return d_pattern, l_path_title
+
+
+def filepaths(d_pattern, l_path_title, item, sendung):
+    """Pfade und Dateinamen zusammenbauen"""
+    success_file = True
+    try:
+        path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+        # Verschiebung von Datum Erstsendung
+        new_date = sendung[2] + datetime.timedelta(days=-item[2])
+        lib_cm.message_write_to_console(ac, new_date.strftime(d_pattern))
+
+        path_file_source = (path_source + l_path_title[0]
+        #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
+            + new_date.strftime(d_pattern) + l_path_title[1].rstrip())
+        path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+
+        # replace sonderzeichen
+        # replace_uchar_sonderzeichen_with_latein
+        path_file_dest = (path_dest + str(sendung[8]) + "_"
+            + lib_cm.replace_sonderzeichen_with_latein(sendung[16]) + "_"
+             + lib_cm.replace_sonderzeichen_with_latein(sendung[13])
+        #+ lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[0][13])
+            + ".mp3")
+    except Exception, e:
+        log_message = (ac.app_errorslist[5] + "fuer: "
+            + sendung[11].encode('ascii', 'ignore') + " " + str(e))
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        success_file = None
+
+    lib_cm.message_write_to_console(ac, path_file_source)
+    lib_cm.message_write_to_console(ac, path_file_dest)
+    #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
+
+    if not os.path.isfile(path_file_source):
+        lib_cm.message_write_to_console(ac, u"nicht vorhanden: "
+                    + path_file_dest)
+        db.write_log_to_db_a(ac,
+            u"Audio Vorproduktion noch nicht vorhanden: "
+            + path_file_source, "f", "write_also_to_console")
+        success_file = None
+
+    if os.path.isfile(path_file_dest):
+        lib_cm.message_write_to_console(ac, u"vorhanden: " + path_file_dest)
+        db.write_log_to_db_a(ac,
+            u"Audiodatei fuer Sendung bereits vorhanden: " + path_file_dest,
+            "k", "write_also_to_console")
+        success_file = None
+    return success_file, path_file_source, path_file_dest
+
+
 def check_and_work_on_files(roboting_sgs):
     """
     - Zugehoerige Audios suchen
@@ -235,99 +320,46 @@ def check_and_work_on_files(roboting_sgs):
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
         titel = item[0]
         # Sendung suchen
-        sendung = load_sg(titel)
+        sendungen = load_sg(titel)
 
-        if sendung is None:
+        if sendungen is None:
             lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
             continue
 
-        db.write_log_to_db_a(ac, u"Sendung fuer VP-Uebernahme gefunden: "
-                    + sendung[0][11].encode('ascii', 'ignore'), "t",
+        for sendung in sendungen:
+            db.write_log_to_db_a(ac, u"Sendung fuer VP-Uebernahme gefunden: "
+                    + sendung[11].encode('ascii', 'ignore'), "t",
                     "write_also_to_console")
 
-        # Pfad-Datei und Titel nach Datums-Muster teilen
-        if item[1].find("yyyy_mm_dd") != -1:
-            l_path_title = item[1].split("yyyy_mm_dd")
-            d_pattern = "%Y_%m_%d"
-        if item[1].find("yyyymmdd") != -1:
-            l_path_title = item[1].split("yyyymmdd")
-            d_pattern = "%Y%m%d"
-        if item[1].find("yyyy-mm-dd") != -1:
-            l_path_title = item[1].split("yyyy-mm-dd")
-            d_pattern = "%Y-%m-%d"
-        if item[1].find("ddmmyy") != -1:
-            l_path_title = item[1].split("ddmmyy")
-            d_pattern = "%d%m%y"
+            # Pfad-Datei und Titel nach Datums-Muster teilen
+            d_pattern, l_path_title = date_pattern(item[1])
 
-        try:
-            path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
-            # Verschiebung von Datum Erstsendung
-            new_date = sendung[0][2] + datetime.timedelta(days=-item[2])
-            lib_cm.message_write_to_console(ac, new_date.strftime(d_pattern))
+            # Pfade und Dateinamen zusammenbauen
+            success_file, path_file_source, path_file_dest = filepaths(
+                                    d_pattern, l_path_title, item, sendung)
+            if success_file is None:
+                continue
 
-            path_file_source = (path_source + l_path_title[0]
-            #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
-                + new_date.strftime(d_pattern) + l_path_title[1].rstrip())
-            path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+            # In Play-Out kopieren
+            success_copy = audio_copy(path_file_source, path_file_dest)
+            if success_copy is None:
+                continue
 
-            # replace sonderzeichen
-            # replace_uchar_sonderzeichen_with_latein
-            path_file_dest = (path_dest + str(sendung[0][8]) + "_"
-                + lib_cm.replace_sonderzeichen_with_latein(sendung[0][16]) + "_"
-                 + lib_cm.replace_sonderzeichen_with_latein(sendung[0][13])
-            #+ lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[0][13])
-                + ".mp3")
-        except Exception, e:
-            log_message = (ac.app_errorslist[5] + "fuer: "
-                + sendung[0][11].encode('ascii', 'ignore') + " " + str(e))
-            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-            continue
+            audio_validate(path_file_dest)
+            audio_mp3gain(path_file_dest)
 
-        lib_cm.message_write_to_console(ac, path_file_source)
-        lib_cm.message_write_to_console(ac, path_file_dest)
+            # filename rechts von slash extrahieren
+            if ac.app_windows == "no":
+                filename = path_file_dest[string.rfind(path_file_dest,
+                                                                    "/") + 1:]
+            else:
+                filename = path_file_dest[string.rfind(path_file_dest,
+                                                                "\\") + 1:]
 
-        if not os.path.isfile(path_file_source):
-            lib_cm.message_write_to_console(ac, u"nicht vorhanden: "
-                        + path_file_dest)
-            db.write_log_to_db_a(ac,
-                u"Audio Vorproduktion noch nicht vorhanden: "
-                + path_file_source, "f", "write_also_to_console")
-            continue
-
-        if os.path.isfile(path_file_dest):
-            lib_cm.message_write_to_console(ac, u"vorhanden: " + path_file_dest)
-            db.write_log_to_db_a(ac,
-                u"Audiodatei fuer Sendung bereits vorhanden: " + path_file_dest,
-                "k", "write_also_to_console")
-            continue
-
-        # In Play-Out kopieren
-        try:
-            shutil.copy(path_file_source, path_file_dest)
-            db.write_log_to_db_a(ac, u"Audio Vorproduktion: "
-                    + path_file_source, "v", "write_also_to_console")
-            db.write_log_to_db_a(ac, u"Audio kopiert nach: "
-                    + path_file_dest, "c", "write_also_to_console")
-        except Exception, e:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-                "write_also_to_console")
-            log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
-            lib_cm.message_write_to_console(ac, log_message)
-            db.write_log_to_db(ac, log_message, "x")
-            continue
-
-        audio_validate(path_file_dest)
-        audio_mp3gain(path_file_dest)
-        # filename rechts von slash extrahieren
-        if ac.app_windows == "no":
-            filename = path_file_dest[string.rfind(path_file_dest, "/") + 1:]
-        else:
-            filename = path_file_dest[string.rfind(path_file_dest, "\\") + 1:]
-
-        db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "i",
-            "write_also_to_console")
-        db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "n",
-            "write_also_to_console")
+            db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "i",
+                                                    "write_also_to_console")
+            db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "n",
+                                                    "write_also_to_console")
 
 
 def lets_rock():
