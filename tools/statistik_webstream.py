@@ -89,6 +89,7 @@ import sys
 import string
 import time
 import re
+import datetime
 import lib_common_1 as lib_cm
 
 
@@ -103,25 +104,25 @@ class app_config(object):
         self.app_config = u"ST_Webstream_Config"
         self.app_config_develop = u"ST_Webstream_Config_e"
         # anzahl parameter
-        self.app_config_params_range = 8
+        self.app_config_params_range = 10
         self.app_errorfile = "error_statistik_webstream_hoerer.log"
         self.app_errorslist = []
         self.app_params_type_list = []
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
-        self.app_windows = "yes"
+        self.app_debug_mod = "no"
+        self.app_windows = "no"
         # errorlist
         self.app_errorslist.append(u"000 Parameter-Typ oder "
             "Inhalt stimmt nicht ")
         self.app_errorslist.append(u"001 Webseite Icecast-Streamstatus "
             "kann nicht heruntergeladen werden")
-        self.app_errorslist.append(u"002 Haupt-Abschnitt kann aus "
-            "Icecast-Webseite nicht extrahiert werden. "
-            "Schluesselwort(e) nicht gefunden:")
+        self.app_errorslist.append(u"002 Stream moeglicherweise down - "
+            "(Statistik kann aus "
+            "Icecast-Staus nicht extrahiert werden) ")
         self.app_errorslist.append(u"003 Abschnitt Peaklisteners kann aus "
-            "Icecast-Webseite nicht extrahiert werden. "
+            "Icecast-Status nicht extrahiert werden. "
             "Schluesselwort(e) nicht gefunden:")
         self.app_errorslist.append(u"004 Abschnitt Uptime kann aus "
             "Icecast-Webseite nicht extrahiert werden. "
@@ -139,12 +140,17 @@ class app_config(object):
         self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_int")
         self.action_summary = ""
 
 
 def extract_cut_off(website, match_string_1, match_string_2):
     """ Aus Website wichtigsten Abschnitt extrahieren """
+    lib_cm.message_write_to_console(ac, match_string_1)
     index_begin = string.find(website, match_string_1)
+    #xx = website.replace("ü", "ae")
+    #index_begin = string.find(xx, match_string_1)
     if index_begin == -1:
         cut_off = None
         #log_message = u"Webstreamhoerer: Ausschnitt Beginn nicht gefunden. "
@@ -165,7 +171,7 @@ def extract_cut_off(website, match_string_1, match_string_2):
     return cut_off
 
 
-def extract_peaklisteners(website, match_string, charackters_forwards):
+def extract_listeners(website, match_string, charackters_forwards):
     """Aus Abschnitt der Website peaklisteners ermitteln """
     index_b_ident = string.find(website, match_string)
     if index_b_ident == -1:
@@ -177,7 +183,7 @@ def extract_peaklisteners(website, match_string, charackters_forwards):
                      + int(charackters_forwards))
     index_b_end = index_b_begin + 4
     extract = website[index_b_begin:index_b_end]
-    print "extract:" + extract
+    #print "extract:" + extract
 
     # Zahlen extrahieren
     peaklisteners = re.search(r'[0-9\.]+', extract).group(0)
@@ -244,19 +250,89 @@ def write_listeners_to_db(peaklisteners, sql_time):
     return
 
 
+def check_listeners(listeners_number, listeners_option, sql_time):
+    """ Peaklisteners mit letzter Registratur vergleichen """
+    # anzahl der letzten registrierung
+    reg_listeners = db.read_tbl_row_with_cond(
+        ac, db, "ST_WEB_STREAM_LISTENERS",
+        "FIRST 1 ST_WEB_STREAM_LIS_ID, ST_WEB_STREAM_LIS_NUMBER ",
+        "ST_WEB_STREAM_LIS_OPTION = '" + listeners_option
+                            + "' ORDER BY ST_WEB_STREAM_LIS_ID DESC")
+
+        #"SELECT FIRST 1 ST_WEB_STREAM_LIS_NUMBER FROM ST_WEB_STREAM_LISTENERS "
+        #"ORDER BY ST_WEB_STREAM_LIS_ID DESC")
+    if reg_listeners is None:
+        sql_command = ("INSERT INTO ST_WEB_STREAM_LISTENERS"
+            "(ST_WEB_STREAM_LIS_NUMBER, ST_WEB_STREAM_LIS_OPTION)"
+            " values ('" + listeners_number + "', '" + listeners_option + "')")
+        lib_cm.message_write_to_console(ac, "D-satz neu: " + listeners_number)
+        log_message = (u"Statistik Webstream-Hoerer "
+            "nach neuer Verbindung aktualisiert. Anzahl: " + listeners_number)
+        write_listeners_to_db_1(sql_command, log_message)
+        return
+
+    #print p_listeners[1]
+    #print peaklisteners
+    if int(listeners_number) < int(reg_listeners[1]):
+        #  neuen satz einfuegen
+        sql_command = ("INSERT INTO ST_WEB_STREAM_LISTENERS"
+            "(ST_WEB_STREAM_LIS_NUMBER, ST_WEB_STREAM_LIS_OPTION)"
+            " values ('" + listeners_number + "', '" + listeners_option + "')")
+        lib_cm.message_write_to_console(ac, "D-satz neu: " + listeners_number)
+        log_message = (u"Statistik Webstream-Hoerer "
+            "nach neuer Verbindung aktualisiert. Anzahl: " + listeners_number)
+        write_listeners_to_db_1(sql_command, log_message)
+    elif int(listeners_number) > int(reg_listeners[1]):
+        # updaten
+        sql_command = ("UPDATE ST_WEB_STREAM_LISTENERS "
+            "SET ST_WEB_STREAM_LIS_NUMBER = '" + listeners_number
+            + "' where ST_WEB_STREAM_LIS_ID = " + str(reg_listeners[0]))
+        lib_cm.message_write_to_console(ac, "Datensatz aktualisiert: "
+                                        + listeners_number)
+        log_message = (u"Statistik Webstream-Hoerer "
+            "bei bestehender Verbindung aktualisiert. Anzahl: "
+                + listeners_number)
+        write_listeners_to_db_1(sql_command, log_message)
+    elif int(listeners_number) == int(reg_listeners[1]):
+        # nothing to do
+        log_message = (u"Webstream scheint zu laufen, "
+                "keine Aenderung der " + listeners_option + " Hoererzahl")
+        db.write_log_to_db(ac, log_message, "p")
+    return
+
+
+def write_listeners_to_db_1(sql_command, log_message):
+    """ Listeners in db schreiben """
+    db_op_success = db.exec_sql(ac, db, sql_command)
+    if db_op_success is None:
+        # Error 005 Fehler beim Registireren
+        # der Webstream-Hoerer in der Datenbank
+        err_message = ac.app_errorslist[6]
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
+    else:
+        db.write_log_to_db(ac, log_message, "i")
+    return
+
+
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
     # webseite holen
     lib_cm.message_write_to_console(ac, u"webseite holen:")
     lib_cm.message_write_to_console(ac, db.ac_config_1[1])
-    website = lib_cm.download_website(ac, db, db.ac_config_1[1])
+    #website = lib_cm.download_website(ac, db, db.ac_config_1[1]).replace(
+    #                                        "ü", "ue")
+    # trotz utf-8 deklaration, streamen manche Western-ANSI Meta
+    website = lib_cm.download_website(ac, db, db.ac_config_1[1]).decode(
+                    "iso-8859-1")
     if website is None:
         # Error 001 fehler beim download der seite
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
             "write_also_to_console")
         return
     #print website
+    #print website[:2721]
+    #return
 
     # abschnitt aus webseite extrahieren
     cut_off = extract_cut_off(website, db.ac_config_1[2], db.ac_config_1[3])
@@ -269,7 +345,7 @@ def lets_rock():
         return
 
     # peaklisteners extrahieren
-    peaklisteners = extract_peaklisteners(cut_off,
+    peaklisteners = extract_listeners(cut_off,
                                           db.ac_config_1[4], db.ac_config_1[5])
     if peaklisteners is None:
         # Error 003 Abschnitt Peaklisteners kann aus
@@ -278,33 +354,48 @@ def lets_rock():
                        + " " + db.ac_config_1[5])
         db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
         return
-
+    #return
     # uptime extrahieren
-    t_uptime = extract_time(cut_off, db.ac_config_1[6], db.ac_config_1[7])
-    if t_uptime is None:
+    #t_uptime = extract_time(cut_off, db.ac_config_1[6], db.ac_config_1[7])
+    #if t_uptime is None:
         # Error 004 Abschnitt Uptime kann aus Webseite
         # nicht extrahiert werden. Schluesselwort nicht gefunden:
-        err_message = (ac.app_errorslist[4] + " " + db.ac_config_1[6]
-                       + " " + db.ac_config_1[7])
-        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
-        return
+    #    err_message = (ac.app_errorslist[4] + " " + db.ac_config_1[6]
+    #                   + " " + db.ac_config_1[7])
+    #    db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
+    #    return
 
     # Zeit für datensatz
-    try:
-        sql_time = (str(t_uptime.tm_year) + "-"
-            + str(t_uptime.tm_mon).zfill(2) + "-"
-            + str(t_uptime.tm_mday).zfill(2) + " "
-            + str(t_uptime.tm_hour).zfill(2) + ":"
-            + str(t_uptime.tm_min).zfill(2) + ":"
-            + str(t_uptime.tm_sec).zfill(2))
-        lib_cm.message_write_to_console(ac, sql_time)
-    except Exception:
-        err_message = ac.app_errorslist[5]
-        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
-        return
+    #try:
+    #    sql_time = (str(t_uptime.tm_year) + "-"
+    #        + str(t_uptime.tm_mon).zfill(2) + "-"
+    #        + str(t_uptime.tm_mday).zfill(2) + " "
+    #        + str(t_uptime.tm_hour).zfill(2) + ":"
+    #        + str(t_uptime.tm_min).zfill(2) + ":"
+    #        + str(t_uptime.tm_sec).zfill(2))
+    #    lib_cm.message_write_to_console(ac, sql_time)
+    #except Exception:
+    #    err_message = ac.app_errorslist[5]
+    #    db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
+    #    return
 
     # registrieren
-    write_listeners_to_db(peaklisteners, sql_time)
+    #write_listeners_to_db(peaklisteners, sql_time)
+    check_listeners(peaklisteners, "P",
+        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    # currentlisteners extrahieren
+    currentlisteners = extract_listeners(cut_off,
+                                          db.ac_config_1[8], db.ac_config_1[9])
+    if currentlisteners is None:
+        # Error 003 Abschnitt listeners kann aus
+        # Webseite nicht extrahiert werden. Schluesselwort nicht gefunden:
+        err_message = (ac.app_errorslist[3] + " " + db.ac_config_1[4]
+                       + " " + db.ac_config_1[5])
+        db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
+        return
+    check_listeners(currentlisteners, "C",
+        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+
 
 if __name__ == '__main__':
     db = lib_cm.dbase()
