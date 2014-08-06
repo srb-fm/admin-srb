@@ -44,7 +44,8 @@ if ( $action_ok == "yes" ) {
 	if ( isset( $_POST['ad_id'] ) ) {
 		$id_ad = $_POST['ad_id'];
 	}
-	if ( $id_ad !="" )	{ 
+	//if ( $id_ad !="" )	{
+	if ( filter_var($id_ad, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) { 
 		switch ( $action ) {
 
 		case "new":
@@ -403,8 +404,8 @@ if ( $action_ok == "yes" ) {
 			db_query_update_item_a("AD_MAIN", $tbl_ad_fields_values, "AD_ID =".$_POST['ad_id']);
 			header("Location: sg_hf_detail.php?action=display&sg_id=".$_POST['sg_id']."&error_message=".$error_message);
 			break;
-			//endswitch
-		}
+			
+		} //endswitch
 	} else {
 		$message = "Keine ID. Nichts zu tun..... "; 
 	}
