@@ -1243,6 +1243,7 @@ def extract_filename(ac, path_filename):
     return filename
 
 
-def get_seconds(s):
+def get_seconds_from_tstr(s):
+    """sekunden aus hh:mm:ss ermitteln"""
     l = s.split(':')
     return int(l[0]) * 3600 + int(l[1]) * 60 + int(l[2])

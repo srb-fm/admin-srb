@@ -151,7 +151,7 @@ def log_duration(list_live_sendungen):
         if item[11][0:20] == title:
             lib_cm.message_write_to_console(ac, "if")
             # sum duration
-            duration += lib_cm.get_seconds(item[3])
+            duration += lib_cm.get_seconds_from_tstr(item[3])
             lib_cm.message_write_to_console(ac, duration)
             # logging
             db.write_log_to_db(ac,
