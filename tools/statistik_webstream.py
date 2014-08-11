@@ -279,8 +279,12 @@ def check_listeners(listeners_number, listeners_option, sql_time):
             "(ST_WEB_STREAM_LIS_NUMBER, ST_WEB_STREAM_LIS_OPTION)"
             " values ('" + listeners_number + "', '" + listeners_option + "')")
         lib_cm.message_write_to_console(ac, "D-satz neu: " + listeners_number)
-        log_message = (u"Statistik Webstream-Hoerer "
-            "nach neuer Verbindung aktualisiert. Anzahl: " + listeners_number)
+        if listeners_option == "C":
+            log_message = (u"Webstream-Hoerer aktuell "
+            "aktualisiert. Anzahl: " + listeners_number)
+        else:
+            log_message = (u"Webstream-Hoerer max "
+            "neu registriert. Anzahl: " + listeners_number)
         write_listeners_to_db_1(sql_command, log_message)
     elif int(listeners_number) > int(reg_listeners[1]):
         # updaten
@@ -289,9 +293,12 @@ def check_listeners(listeners_number, listeners_option, sql_time):
             + "' where ST_WEB_STREAM_LIS_ID = " + str(reg_listeners[0]))
         lib_cm.message_write_to_console(ac, "Datensatz aktualisiert: "
                                         + listeners_number)
-        log_message = (u"Statistik Webstream-Hoerer "
-            "bei bestehender Verbindung aktualisiert. Anzahl: "
-                + listeners_number)
+        if listeners_option == "C":
+            log_message = (u"Webstream-Hoerer aktuell "
+            "aktualisiert. Anzahl: " + listeners_number)
+        else:
+            log_message = (u"Webstream-Hoerer max "
+            "aktualisiert. Anzahl: " + listeners_number)
         write_listeners_to_db_1(sql_command, log_message)
     elif int(listeners_number) == int(reg_listeners[1]):
         # nothing to do
