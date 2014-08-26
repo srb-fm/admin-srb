@@ -3,7 +3,17 @@
 # This script is for starting jack_capture
 # to record live-transmittings
 #
-# Prerequisite is a correct running jack/Qjackctrl
+# Firstly, prerequisite is a correct running jack/Qjackctrl.
+#
+# Secondly, it depends on live_record.py. This script is part 
+# of admin-srb.
+#
+# Thirdly, live_record.py is writing the live_recording_conf.sh
+# which live_recording.sh is searching for.
+# 
+# Fourthly must this script executet by cron every hour.
+# e.g.
+# 59 * * * * /home/srb-stream-1/live-record-srb/live_recording.sh && exit # JOB_ID_1
 #
 # Author: Joerg Sorge
 # Distributed under the terms of GNU GPL version 2 or later
