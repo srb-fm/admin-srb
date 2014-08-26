@@ -17,6 +17,12 @@ und registriert sie in einer Config-Datei,
 sodass der Live-Recorder einen Mitschnitt anfertigen kann.
 Der Live-Recorder (jack_capture) laeuft auf dem Streamrechner.
 
+Mitschnitte werden mit der Sendungs-Nummer im log registriert.
+Sendungen, die einmal fuer den Mitschnitt registriert wurden,
+koennen nicht nocheinmal mitgeschnitten werden.
+(Wichtig, falls mal eine Sendung in der Zeit verschoben wird
+und bereits von der ersten Zeit ein Mitschnitt laeuft)
+
 
 Dateiname Script: play_out_reminder.py
 Keine weiteren Einstellungen noetig.
