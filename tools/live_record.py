@@ -17,6 +17,14 @@ und registriert sie in einer Config-Datei,
 sodass der Live-Recorder einen Mitschnitt anfertigen kann.
 Der Live-Recorder (jack_capture) laeuft auf dem Streamrechner.
 
+Ablauf:
+Werden von diesem Script Sendungen zum Mitschneiden in der db gefunden,
+wird die Datei live_recording_conf.sh mit Angaben ueber Dauer, Sendezeit
+Autor und Titel gespeichert.
+Das per cron stuendlich ausgefuehrte live_recording.sh sucht nach
+live_recording_conf.sh um die Aufnahme zu starten.
+
+Hinweis:
 Mitschnitte werden mit der Sendungs-Nummer im log registriert.
 Sendungen, die einmal fuer den Mitschnitt registriert wurden,
 koennen nicht nocheinmal mitgeschnitten werden.
