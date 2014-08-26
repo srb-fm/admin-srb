@@ -11,8 +11,9 @@
 # 2014-03-27
 #
 # config:
-record_config="/home/srb-stream/stream-srb/stream-log/live_recording_conf.sh"
-record_log="/home/srb-stream/stream-srb/stream-log/live_recording.log"
+# $USER variable will not work within a cronjob!!! so full path is needed
+record_config="/home/srb-stream-1/stream-srb/stream-log/live_recording_conf.sh"
+record_log="/home/srb-stream-1/stream-srb/stream-log/live_recording.log"
 
 
 
@@ -24,6 +25,8 @@ function f_check_configfile () {
 	then
 		echo "Configfile not found:">> $record_log
 		echo $record_config>> $record_log
+		echo "Configfile not found.."
+		echo "Let's lay down..."
 		sleep 2
 		exit
 	else
@@ -51,15 +54,22 @@ function f_check_jack () {
 
 
 function f_start_jack_capture () {
-	echo "Starting Jack_Capture..">> $record_log
+	echo "Processing..">> $record_log
+	echo $filename>> $record_log
+	echo "Duration: " $duration>> $record_log
+	echo "Waiting: " $waiting>> $record_log
+	echo "Waiting: " $waiting
 	sleep $waiting
+	echo "Starting Jack_Capture..">> $record_log
+	#export DISPLAY=:0 && gnome-terminal -x
+	#gnome-terminal -x jack_capture --port jamin:out_L --port jamin:out_R -d $r_duration -fn $r_filename
+	#su srb-stream -c jack_capture --port jamin:out_L --port jamin:out_R -d $r_duration -fn $r_filename -dc
 	jack_capture --port jamin:out_L --port jamin:out_R -d $duration -fn $filename -dc 
 }
 
 
-echo `date +%Y-%m-%d-%M`> $record_log
+echo `date +%Y-%m-%d-%H:%M`> $record_log
 echo "Starting Live-Recording..."
-
 f_check_configfile
 f_start_jack_capture
 sleep 2
