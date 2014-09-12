@@ -427,7 +427,7 @@ def delete_files_online():
     zz = 0
     n_anzahl_files_to_delete = n_anzahl_online - int(db.ac_config_1[12])
     if n_anzahl_online > int(db.ac_config_1[12]):
-        log_message = u"Alte Podcasts werden auf dem Server geloescht.."
+        log_message = u"Alte Podcasts auf Server loeschen.."
         lib_cm.message_write_to_console(ac, log_message)
         db.write_log_to_db(ac, log_message, "c")
         for item in files_online_1:
@@ -506,13 +506,13 @@ def lets_rock():
 
         lib_cm.message_write_to_console(ac, podcast_sendung)
 
-    # recoden 2. versuch mit naechstem file
-    podcast_temp_1 = encode_file(podcast_sendung)
-    if podcast_temp_1 is None:
-        # Error 002 Fehler beim Recodieren der mp3-Datei
-        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
-            "write_also_to_console")
-        return
+        # recoden 2. versuch mit naechstem file
+        podcast_temp_1 = encode_file(podcast_sendung)
+        if podcast_temp_1 is None:
+            # Error 002 Fehler beim Recodieren der mp3-Datei
+            db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+                "write_also_to_console")
+            return
 
     # uploaden was noch nicht oben ist
     upload_ok = upload_file(podcast_sendung)
