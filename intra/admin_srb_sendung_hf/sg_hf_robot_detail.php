@@ -128,12 +128,12 @@ if ( $user_rights == "yes" ) {
 	echo "</div>\n";
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Pfad/Dateiname</div>";
-	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILENAME. "</div>";
+	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILENAME_IN. "</div>";
 	echo "</div>\n";
 	echo "<div class='content_row_b_1'>";
 	echo "<div class='content_column_1'>VP-Übernahme</div>";
 	echo "<div class='content_column_2'>" ;
-	if ( rtrim($tbl_row->SG_HF_ROB_VP) == "T") {
+	if ( rtrim($tbl_row->SG_HF_ROB_VP_IN) == "T") {
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' checked='checked' title='Wird übernommen'>";
 	} else { 
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'>";

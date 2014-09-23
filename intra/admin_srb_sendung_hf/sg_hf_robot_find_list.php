@@ -73,7 +73,7 @@ if ( $find_option_ok = "yes" ) {
 		  	$c_query_condition = "upper( SG_HF_ROB_TITEL ) >= 'A' ORDER BY SG_HF_ROB_TITEL";
 			$message_find_string = "Sendung-Automationen Gesamtliste alphabetisch";
 			$tbl =  "SG_HF_ROBOT";						
-			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_VP, SG_HF_ROB_DUB";
+			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_VP_IN, SG_HF_ROB_DUB";
 			break;
 					
 		//endswitch; // $find_option

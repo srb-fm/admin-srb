@@ -46,7 +46,7 @@ if ( $action_ok == "yes" ) {
 
 		case "add":
 			// fields
-			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE, SG_HF_ROB_FILENAME, SG_HF_ROB_VP, SG_HF_ROB_DUB_ID, SG_HF_ROB_SHIFT";
+			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE, SG_HF_ROB_FILENAME_IN, SG_HF_ROB_VP_IN, SG_HF_ROB_DUB_ID, SG_HF_ROB_SHIFT";
 			$main_id = db_generator_main_id_load_value();
 			// checkboxen
 			if ( isset( $_POST['form_sg_rob_vp'] ) ) { 
@@ -70,7 +70,7 @@ if ( $action_ok == "yes" ) {
 			break;
 			
 		case "update":
-			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, SG_HF_ROB_FILENAME=?, SG_HF_ROB_VP=?, SG_HF_ROB_DUB_ID=?, SG_HF_ROB_SHIFT=?";
+			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, SG_HF_ROB_FILENAME_IN=?, SG_HF_ROB_VP_IN=?, SG_HF_ROB_DUB_ID=?, SG_HF_ROB_SHIFT=?";
 			// checkboxen
 			if ( isset( $_POST['form_sg_rob_vp'] ) ) { 
 				$tbl_value_vp = $_POST['form_sg_rob_vp']; 
@@ -139,12 +139,12 @@ if ( $user_rights == "yes" ) {
 	echo "</div>";
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Pfad/Dateiname</div>";
-	echo "<input type=\"text\" name='form_sg_rob_filename' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILENAME))."\" >";
+	echo "<input type=\"text\" name='form_sg_rob_filename' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILENAME_IN))."\" >";
 	echo "</div>";
 	echo "<div class='content_row_b_1'>";
 	echo "<div class='content_column_1'>VP-Übernahme</div>";			
 	echo "<div class='content_column_2'>" ;
-	if ( rtrim($tbl_row->SG_HF_ROB_VP) == "T") {
+	if ( rtrim($tbl_row->SG_HF_ROB_VP_IN) == "T") {
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' checked='checked' title='Wird übernommen'> VP-Übernahme ";
 	} else { 
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'> VP-Übernahme ";

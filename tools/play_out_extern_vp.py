@@ -113,8 +113,9 @@ def load_roboting_sgs():
     lib_cm.message_write_to_console(ac,
         u"Sendungen suchen, die bearbeitet werden sollen")
     sendungen_data = db.read_tbl_rows_with_cond(ac, db,
-        "SG_HF_ROBOT", "SG_HF_ROB_TITEL, SG_HF_ROB_FILENAME, SG_HF_ROB_SHIFT",
-        "SG_HF_ROB_VP ='T'")
+        "SG_HF_ROBOT",
+        "SG_HF_ROB_TITEL, SG_HF_ROB_FILENAME_IN, SG_HF_ROB_SHIFT",
+        "SG_HF_ROB_VP_IN ='T'")
 
     if sendungen_data is None:
         log_message = u"Keine Sendungen fuer Uebernahme als VPs vorgesehen.. "
