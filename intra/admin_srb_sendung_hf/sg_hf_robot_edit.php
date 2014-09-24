@@ -46,20 +46,29 @@ if ( $action_ok == "yes" ) {
 
 		case "add":
 			// fields
-			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE, SG_HF_ROB_FILENAME_IN, SG_HF_ROB_VP_IN, SG_HF_ROB_DUB_ID, SG_HF_ROB_SHIFT";
+			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE, 
+								SG_HF_ROB_FILENAME_IN, SG_HF_ROB_VP_IN, 
+								SG_HF_ROB_DUB_ID, SG_HF_ROB_SHIFT,
+								SG_HF_ROB_FILENAME_OUT, SG_HF_ROB_VP_OUT";
 			$main_id = db_generator_main_id_load_value();
 			// checkboxen
-			if ( isset( $_POST['form_sg_rob_vp'] ) ) { 
+			if ( isset($_POST['form_sg_rob_vp']) ) { 
 				$tbl_value_vp = $_POST['form_sg_rob_vp']; 
 			} else { 
 				$tbl_value_vp = "F" ;
+			}
+			if ( isset($_POST['form_sg_rob_vp_out']) ) { 
+				$tbl_value_vp_out = $_POST['form_sg_rob_vp_out']; 
+			} else { 
+				$tbl_value_vp_out = "F" ;
 			}
 			// lookups
 			$tbl_value_dub = db_query_load_id_by_value("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", $_POST['form_sg_rob_dub']);
 				
     		$a_values = array($main_id, trim($_POST['form_sg_rob_titel']), trim($_POST['form_sg_rob_stichworte']),
-    		trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub, $_POST['form_sg_rob_shift']);
-  			$insert_ok = db_query_add_item_b("SG_HF_ROBOT", $tbl_fields, "?,?,?,?,?,?,?", $a_values);
+    			trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub, $_POST['form_sg_rob_shift'],
+    			trim($_POST['form_sg_rob_filename_out']), $tbl_value_vp_out);
+  			$insert_ok = db_query_add_item_b("SG_HF_ROBOT", $tbl_fields, "?,?,?,?,?,?,?,?,?", $a_values);
 			header("Location: sg_hf_robot_detail.php?action=display&sg_robot_id=".$main_id);
 			break;
 				
@@ -70,19 +79,27 @@ if ( $action_ok == "yes" ) {
 			break;
 			
 		case "update":
-			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, SG_HF_ROB_FILENAME_IN=?, SG_HF_ROB_VP_IN=?, SG_HF_ROB_DUB_ID=?, SG_HF_ROB_SHIFT=?";
+			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, 
+									SG_HF_ROB_FILENAME_IN=?, SG_HF_ROB_VP_IN=?, 
+									SG_HF_ROB_DUB_ID=?, SG_HF_ROB_SHIFT=?,
+									SG_HF_ROB_FILENAME_OUT=?, SG_HF_ROB_VP_OUT=?";
 			// checkboxen
-			if ( isset( $_POST['form_sg_rob_vp'] ) ) { 
+			if ( isset($_POST['form_sg_rob_vp']) ) { 
 				$tbl_value_vp = $_POST['form_sg_rob_vp']; 
 			} else { 
 				$tbl_value_vp = "F" ;
 			}
-
+			if ( isset($_POST['form_sg_rob_vp_out']) ) { 
+				$tbl_value_vp_out = $_POST['form_sg_rob_vp_out']; 
+			} else { 
+				$tbl_value_vp_out = "F" ;
+			}
 			// lookups
 			$tbl_value_dub = db_query_load_id_by_value("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", $_POST['form_sg_rob_dub']);
 			
     		$a_values = array( trim($_POST['form_sg_rob_titel']), trim($_POST['form_sg_rob_stichworte']),
-    		trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub, $_POST['form_sg_rob_shift'] );   					
+    			trim($_POST['form_sg_rob_filename']), $tbl_value_vp, $tbl_value_dub, $_POST['form_sg_rob_shift'], 
+    			trim($_POST['form_sg_rob_filename_out']), $tbl_value_vp_out);   					
     		db_query_update_item_b("SG_HF_ROBOT", $fields_params, "SG_HF_ROB_ID =".$id, $a_values);
 			header("Location: sg_hf_robot_detail.php?action=display&sg_robot_id=".$id);
 			break;
@@ -137,11 +154,8 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_1'>Stichworte</div>";
 	echo "<input type=\"text\" name='form_sg_rob_stichworte' class='text_1' maxlength='40' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_STICHWORTE))."\">";
 	echo "</div>";
+
 	echo "<div class='content_row_a_1'>";
-	echo "<div class='content_column_1'>Pfad/Dateiname</div>";
-	echo "<input type=\"text\" name='form_sg_rob_filename' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILENAME_IN))."\" >";
-	echo "</div>";
-	echo "<div class='content_row_b_1'>";
 	echo "<div class='content_column_1'>VP-Übernahme</div>";			
 	echo "<div class='content_column_2'>" ;
 	if ( rtrim($tbl_row->SG_HF_ROB_VP_IN) == "T") {
@@ -150,8 +164,14 @@ if ( $user_rights == "yes" ) {
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'> VP-Übernahme ";
 	}				
 	echo "</div></div>\n";
+	
+	echo "<div class='content_row_b_1'>";
+	echo "<div class='content_column_1'>Pfad/Dateiname <b>von</b> extern</div>";
+	echo "<input type=\"text\" name='form_sg_rob_filename' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILENAME_IN))."\" >";
+	echo "</div>";
+
 	echo "<div class='content_row_a_1'>";
-	echo "<div class='content_column_1'>Wiederholung </div>";
+	echo "<div class='content_column_1'>Duplizierung </div>";
 	echo html_dropdown_from_table_1("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", "form_sg_rob_dub", "text_2", rtrim($tbl_row->SG_HF_ROB_DUB_ID));
 	echo " Verschiebung zw. Erstsendung Lieferant und SRB: ";
 	echo "<select name='form_sg_rob_shift' class='text_2' size='1'>";
@@ -166,6 +186,22 @@ if ( $user_rights == "yes" ) {
 	}
 	echo "</select>" ;
 	echo "</div>";
+	
+	echo "<div class='content_row_b_1'>";
+	echo "<div class='content_column_1'>VP <b>nach</b> extern</div>";			
+	echo "<div class='content_column_2'>" ;
+	if ( rtrim($tbl_row->SG_HF_ROB_VP_OUT) == "T") {
+		echo "<input type='checkbox' name='form_sg_rob_vp_out' value='T' checked='checked' title='Wird zur Verfügung gestellt'> VP nach extern ";
+	} else { 
+		echo "<input type='checkbox' name='form_sg_rob_vp_out' value='T' title='Wird nicht zur Verfügung gestellt'> VP nach extern ";
+	}				
+	echo "</div></div>\n";
+	
+	echo "<div class='content_row_a_1'>";
+	echo "<div class='content_column_1'>Pfad/Dateiname nach extern</div>";
+	echo "<input type=\"text\" name='form_sg_rob_filename_out' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILENAME_OUT))."\" >";
+	echo "</div>";
+	
 	echo "<br>";
 	echo "<div class='line'> </div>";			
 	echo "<input type=\"submit\" value=\"Speichern\">";

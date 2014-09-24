@@ -126,12 +126,9 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_1'>Stichworte</div>";
 	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_STICHWORTE.  "</div>";
 	echo "</div>\n";
+	
 	echo "<div class='content_row_a_1'>";
-	echo "<div class='content_column_1'>Pfad/Dateiname</div>";
-	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILENAME_IN. "</div>";
-	echo "</div>\n";
-	echo "<div class='content_row_b_1'>";
-	echo "<div class='content_column_1'>VP-Übernahme</div>";
+	echo "<div class='content_column_1'>VP-Übernahme von extern</div>";
 	echo "<div class='content_column_2'>" ;
 	if ( rtrim($tbl_row->SG_HF_ROB_VP_IN) == "T") {
 		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' checked='checked' title='Wird übernommen'>";
@@ -140,11 +137,31 @@ if ( $user_rights == "yes" ) {
 	}				
 	echo "</div></div>\n";			
 	
+	echo "<div class='content_row_b_1'>";
+	echo "<div class='content_column_1'>Pfad/Dateiname von extern</div>";
+	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILENAME_IN. "</div>";
+	echo "</div>\n";
+	
 	echo "<div class='content_row_a_1'>";
-	echo "<div class='content_column_1'>Wiederholung</div>";
+	echo "<div class='content_column_1'>Duplizierung</div>";
 	echo "<div class='content_column_2'>" .db_query_load_value_by_id("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_ID", $tbl_row->SG_HF_ROB_DUB_ID);
 	echo " / Verschiebung zw. Erstsendung Lieferant und SRB: ".$tbl_row->SG_HF_ROB_SHIFT." Tage vor";	
 	echo "</div>";
+	echo "</div>\n";
+	
+	echo "<div class='content_row_b_1'>";
+	echo "<div class='content_column_1'>VP nach extern</div>";
+	echo "<div class='content_column_2'>" ;
+	if ( rtrim($tbl_row->SG_HF_ROB_VP_OUT) == "T") {
+		echo "<input type='checkbox' name='form_sg_rob_vp_out' value='T' checked='checked' title='Wird zur Verfügung gestellt'>";
+	} else { 
+		echo "<input type='checkbox' name='form_sg_rob_vp_out' value='T' title='Wird nicht zur Verfügung gestellt'>";
+	}				
+	echo "</div></div>\n";			
+	
+	echo "<div class='content_row_a_1'>";
+	echo "<div class='content_column_1'>Pfad/Dateiname nach extern</div>";
+	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILENAME_OUT. "</div>";
 	echo "</div>\n";
 	
 	echo "<div class='line_a'> </div>\n";
