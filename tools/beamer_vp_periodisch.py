@@ -33,10 +33,11 @@ Error 005 Fehler beim Generieren des Dateinamens
 Parameterliste:
 Param 1: Pfad vom Server zu Playout-Sendung
 Param 2: Tage zurueck loeschen alter Dateien in Cloud
-Param 3: Pfad vom Server zu Dropbox-Hauptordner
-Param 4: Alternative Cloud
+Param 3: Kuerzel Sender
+Param 4: Pfad vom Server zu Dropbox-Hauptordner
 
-Ausfuehrung: jede Stunde zur Minute 45
+
+Ausfuehrung: jede Stunde zur Minute 12
 
 
 """
@@ -114,9 +115,7 @@ def load_roboting_sgs():
 def load_sg(sg_titel):
     """Erstsendung suchen"""
     lib_cm.message_write_to_console(ac, u"Sendung suchen")
-    #db_tbl_condition = ("A.SG_HF_FIRST_SG ='T' "
     db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
-    #    "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
         + str(ac.time_target.date()) + "' " + "AND B.SG_HF_CONT_TITEL='"
         + sg_titel + "' ")
     sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_b(ac,
@@ -157,7 +156,7 @@ def write_to_info_file(path_file_dest, item, sendung):
     success_write = True
     db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
     try:
-        db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
+        #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
         path_text_file_dest = os.path.splitext(path_file_dest)[0] + ".txt"
         f_info_txt = open(path_text_file_dest, 'w')
         db.write_log_to_db_a(ac, u"Info-Text schreiben " + path_file_dest,
@@ -283,7 +282,7 @@ def lets_rock():
     if roboting_sgs is None:
         return
 
-    # pruefen was noch nicht in cloud ist und kopieren und meta
+    # pruefen was noch nicht in cloud ist, kopieren und meta schreiben
     check_and_work_on_files(roboting_sgs)
     return
 
