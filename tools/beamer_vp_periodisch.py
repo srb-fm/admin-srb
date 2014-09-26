@@ -43,7 +43,6 @@ Ausfuehrung: jede Stunde zur Minute 45
 
 import sys
 import os
-import string
 import datetime
 import shutil
 import lib_common_1 as lib_cm
@@ -60,7 +59,7 @@ class app_config(object):
         self.app_config = u"Beamer_VP_period"
         self.app_config_develop = u"Beamer_VP_period_e"
         # anzahl parameter
-        self.app_config_params_range = 4
+        self.app_config_params_range = 5
         self.app_errorfile = "error_beamer_vp_periodisch.log"
         # errorlist
         self.app_errorslist = []
@@ -78,6 +77,7 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
 
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
@@ -152,29 +152,51 @@ def audio_copy(path_file_source, path_file_dest):
     return success_copy
 
 
+def write_to_info_file(path_file_dest, item, sendung):
+    """info-file schreiben"""
+    success_write = True
+    db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
+    try:
+        db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
+        path_text_file_dest = os.path.splitext(path_file_dest)[0] + ".txt"
+        f_info_txt = open(path_text_file_dest, 'w')
+        db.write_log_to_db_a(ac, u"Info-Text schreiben " + path_file_dest,
+                "v", "write_also_to_console")
+    except IOError as (errno, strerror):
+        log_message = ("write_to_file_record_params: I/O error({0}): {1}"
+                        .format(errno, strerror) + ": " + path_file_dest)
+        db.write_log_to_db(ac, log_message, "x")
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+                                             "write_also_to_console")
+        success_write = None
+    else:
+        # filename rechts von slash extrahieren
+        filename = lib_cm.extract_filename(ac, path_file_dest)
+
+        f_info_txt.write("Titel: " + sendung[11].encode('ascii', 'ignore')
+                        + "\r\n")
+        f_info_txt.write("Autor: " + sendung[15].encode('ascii', 'ignore')
+                            + " " + sendung[16].encode('ascii', 'ignore')
+                            + "\r\n")
+        f_info_txt.write("Dateiname: " + filename + "\r\n")
+        f_info_txt.write("Interne ID: " + sendung[12][0:7] + "\r\n")
+        f_info_txt.write("Info: ")
+        f_info_txt.close
+    return success_write
+
+
 def filepaths(item, sendung):
     """Pfade und Dateinamen zusammenbauen"""
     success_file = True
     try:
         path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
-        # Verschiebung von Datum Erstsendung
-        #new_date = sendung[2] + datetime.timedelta(days=-item[2])
-        #lib_cm.message_write_to_console(ac, new_date.strftime(d_pattern))
-
         path_file_source = (path_source + sendung[12])
-        #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
-            #+ new_date.strftime(d_pattern) + l_path_title[1].rstrip())
-        path_dest = lib_cm.check_slashes(ac, db.ac_config_1[3])
-        path_cloud = lib_cm.check_slashes(ac, item[1])
 
-        # replace sonderzeichen
-        # replace_uchar_sonderzeichen_with_latein
-        path_file_dest = (path_dest + path_cloud + str(sendung[12]))
-        # + "_"
-        #    + lib_cm.replace_sonderzeichen_with_latein(sendung[16]) + "_"
-        #     + lib_cm.replace_sonderzeichen_with_latein(sendung[13])
-        #+ lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[0][13])
-        #    + ".mp3")
+        path_dest = lib_cm.check_slashes(ac, db.ac_config_1[4])
+        path_cloud = lib_cm.check_slashes(ac, item[1])
+        filename_dest = (sendung[2].strftime('%Y_%m_%d') + "_"
+            + db.ac_config_1[3] + str(sendung[12][7:]))
+        path_file_dest = (path_dest + path_cloud + filename_dest)
     except Exception, e:
         log_message = (ac.app_errorslist[5] + "fuer: "
             + sendung[11].encode('ascii', 'ignore') + " " + str(e))
@@ -189,14 +211,15 @@ def filepaths(item, sendung):
         lib_cm.message_write_to_console(ac, u"nicht vorhanden: "
                     + path_file_dest)
         db.write_log_to_db_a(ac,
-            u"Audio Vorproduktion fuer extern noch nicht vorhanden: "
-            + path_file_source, "f", "write_also_to_console")
+            u"Vorproduktion fuer extern noch nicht in Play_Out vorhanden: "
+            + sendung[12], "f", "write_also_to_console")
         success_file = None
 
     if os.path.isfile(path_file_dest):
         lib_cm.message_write_to_console(ac, u"vorhanden: " + path_file_dest)
         db.write_log_to_db_a(ac,
-            u"Vorproduktion fuer extern bereits vorhanden: " + path_file_dest,
+            u"Vorproduktion fuer extern in Cloud bereits vorhanden: "
+            + filename_dest,
             "k", "write_also_to_console")
         success_file = None
     return success_file, path_file_source, path_file_dest
@@ -235,13 +258,14 @@ def check_and_work_on_files(roboting_sgs):
             if success_copy is None:
                 continue
 
+            # info-txt-Datei
+            success_write = write_to_info_file(path_file_dest, item, sendung)
+            if success_write is None:
+                # probs mit datei
+                continue
+
             # filename rechts von slash extrahieren
-            if ac.app_windows == "no":
-                filename = path_file_dest[string.rfind(path_file_dest,
-                                                                    "/") + 1:]
-            else:
-                filename = path_file_dest[string.rfind(path_file_dest,
-                                                                "\\") + 1:]
+            filename = lib_cm.extract_filename(ac, path_file_dest)
 
             db.write_log_to_db_a(ac,
                 "VP nach extern bearbeitet: " + filename, "i",
