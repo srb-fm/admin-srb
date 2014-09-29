@@ -86,6 +86,8 @@ if ( $action_ok == "yes" ) {
 				
 			// On_Air zurueckschalten				
 			$tbl_row_sg->SG_HF_ON_AIR = "F";
+			// nicht fuer austausch				
+			$tbl_row_sg->SG_HF_VP_OUT = "F";
 			// Dateiname leeren wenn kein http-stream
 			if ( substr($tbl_row_sg->SG_HF_CONT_FILENAME, 0, 4) != "http") {
 				$tbl_row_sg->SG_HF_CONT_FILENAME = "";
@@ -93,7 +95,8 @@ if ( $action_ok == "yes" ) {
 			break;
 				
 		case "repeat_add":
-			$tbl_fields_sg = "SG_HF_ID, SG_HF_CONTENT_ID, SG_HF_TIME, SG_HF_SOURCE_ID, SG_HF_INFOTIME,  SG_HF_MAGAZINE, SG_HF_PODCAST, ";
+			$tbl_fields_sg = "SG_HF_ID, SG_HF_CONTENT_ID, SG_HF_TIME, SG_HF_SOURCE_ID, ";
+			$tbl_fields_sg .="SG_HF_INFOTIME, SG_HF_MAGAZINE, SG_HF_PODCAST, SG_HF_VP_OUT,";
 			$tbl_fields_sg .= "SG_HF_REPEAT_PROTO, SG_HF_FIRST_SG, SG_HF_ON_AIR, SG_HF_DURATION ";
 
 			// check or load values 
@@ -116,6 +119,11 @@ if ( $action_ok == "yes" ) {
 			}
 			if ( isset( $_POST['form_sg_podcast'] ) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_podcast']."', "; 
+			} else { 
+				$tbl_values_sg .= "'F', " ;
+			}
+			if ( isset($_POST['form_sg_vp_out']) ) { 
+				$tbl_values_sg .= "'".$_POST['form_sg_vp_out']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
@@ -172,7 +180,8 @@ if ( $action_ok == "yes" ) {
 		case "add":
 			// Sg_main
 			// fields
-			$tbl_fields_sg = "SG_HF_ID, SG_HF_CONTENT_ID, SG_HF_TIME, SG_HF_SOURCE_ID, SG_HF_INFOTIME,  SG_HF_MAGAZINE, SG_HF_PODCAST, SG_HF_REPEAT_PROTO, ";
+			$tbl_fields_sg = "SG_HF_ID, SG_HF_CONTENT_ID, SG_HF_TIME, SG_HF_SOURCE_ID, ";
+			$tbl_fields_sg .= "SG_HF_INFOTIME,  SG_HF_MAGAZINE, SG_HF_PODCAST, SG_HF_VP_OUT, SG_HF_REPEAT_PROTO, ";
 			$tbl_fields_sg .= "SG_HF_LIVE, SG_HF_FIRST_SG, SG_HF_ON_AIR, SG_HF_DURATION ";
 
 			// check or load values 
@@ -196,6 +205,11 @@ if ( $action_ok == "yes" ) {
 			}
 			if ( isset( $_POST['form_sg_podcast'] ) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_podcast']."', "; 
+			} else { 
+				$tbl_values_sg .= "'F', " ;
+			}
+			if ( isset( $_POST['form_sg_vp_out'] ) ) { 
+				$tbl_values_sg .= "'".$_POST['form_sg_vp_out']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
@@ -338,10 +352,15 @@ if ( $action_ok == "yes" ) {
 			} else { 
 				$tbl_fields_values_sg .= "SG_HF_MAGAZINE='F', " ;
 			}
-			if ( isset( $_POST['form_sg_podcast'] )) { 
+			if ( isset($_POST['form_sg_podcast']) ) { 
 				$tbl_fields_values_sg .= "SG_HF_PODCAST='".$_POST['form_sg_podcast']."', "; 
 			} else { 
 				$tbl_fields_values_sg .= "SG_HF_PODCAST='F', " ;
+			}
+			if ( isset($_POST['form_sg_vp_out']) ) { 
+				$tbl_fields_values_sg .= "SG_HF_VP_OUT='".$_POST['form_sg_vp_out']."', "; 
+			} else { 
+				$tbl_fields_values_sg .= "SG_HF_VP_OUT='F', " ;
 			}
 			if ( isset( $_POST['form_sg_on_air'] )) { 
 				$tbl_fields_values_sg .= "SG_HF_ON_AIR='".$_POST['form_sg_on_air']."', "; 
@@ -578,6 +597,12 @@ if ( $user_rights == "yes" ) {
 		echo "<input type='checkbox' name='form_sg_podcast' value='T' title='Podcast'>Podcast ";
 	}
 
+	if ( rtrim($tbl_row_sg->SG_HF_VP_OUT) == "T" ) {
+		echo "<input type='checkbox' name='form_sg_vp_out' value='T' checked='checked' title='VP extern zur Verfügung stellen'>VP-Out ";
+	} else { 
+		echo "<input type='checkbox' name='form_sg_vp_out' value='T' title='VP extern zur Verfügung stellen'>VP-Out ";
+	}
+	
 	if ( rtrim($tbl_row_sg->SG_HF_FIRST_SG) != "T") {
 		if ( rtrim($tbl_row_sg->SG_HF_REPEAT_PROTO) == "T") {
 			echo "<input type='checkbox' name='form_sg_repeat_proto' value='T' checked='checked' title='Wiederholung von Audio-Protokoll\n Wenn dies aktiv, wird das Audioprotokoll in Play-Out kopiert'>WH Proto ";

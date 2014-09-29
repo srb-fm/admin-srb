@@ -302,6 +302,11 @@ if ( $user_rights == "yes" ) {
 	} else { 
 		echo "<input type='checkbox' name='form_sg_podcast' value='T' title='Podcast'>Podcast ";
 	}
+	if ( rtrim($tbl_row_sg->SG_HF_VP_OUT) == "T" ) {
+		echo "<input type='checkbox' name='form_sg_vp_out' value='T' checked='checked' title='VP extern zur Verfügung stellen'>VP-Out ";
+	} else { 
+		echo "<input type='checkbox' name='form_sg_vp_out' value='T' title='VP extern zur Verfügung stellen'>VP-Out ";
+	}
 	if ( rtrim($tbl_row_sg->SG_HF_FIRST_SG) != "T" ) {
 		if ( rtrim($tbl_row_sg->SG_HF_REPEAT_PROTO) == "T" ) {
 			echo "<input type='checkbox' name='form_sg_repeat_proto' value='T' checked='checked' title='Wiederholung von Audio-Protokoll\n Wenn dies aktiv, wird das Audioprotokoll in Play-Out kopiert'>WH Proto ";
