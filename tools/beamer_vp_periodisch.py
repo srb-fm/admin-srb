@@ -3,7 +3,7 @@
 # pylint: disable-msg=C0103
 
 """
-Vorproduktion extern bereitstellen
+Vorproduktion periodisch extern bereitstellen
 Autor: Joerg Sorge
 Org: SRB - Das Buergerradio
 www.srb.fm
@@ -20,7 +20,7 @@ Festgelegt sind die Sendungen in der Tabelle SG_HF_ROBOT.
 
 Dateiname Script: beamer_vp_periodisch.py
 Schluesselwort fuer Einstellungen: Beamer_VP_period
-Benoetigt: lib_common.py im gleichen Verzeichnis
+Benoetigt: lib_common_1.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
 
@@ -113,7 +113,7 @@ def load_roboting_sgs():
 
 
 def load_sg(sg_titel):
-    """Erstsendung suchen"""
+    """Sendung suchen"""
     lib_cm.message_write_to_console(ac, u"Sendung suchen")
     db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
         + str(ac.time_target.date()) + "' " + "AND B.SG_HF_CONT_TITEL='"
