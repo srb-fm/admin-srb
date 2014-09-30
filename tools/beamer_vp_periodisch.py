@@ -116,8 +116,8 @@ def load_sg(sg_titel):
     """Sendung suchen"""
     lib_cm.message_write_to_console(ac, u"Sendung suchen")
     db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
-        + str(ac.time_target.date()) + "' " + "AND B.SG_HF_CONT_TITEL='"
-        + sg_titel + "' ")
+        + str(ac.time_target.date()) + "' " + "AND A.SG_HF_FIRST_SG='T' "
+        + "AND B.SG_HF_CONT_TITEL='" + sg_titel + "' ")
     sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_b(ac,
                     db, db_tbl_condition)
 
