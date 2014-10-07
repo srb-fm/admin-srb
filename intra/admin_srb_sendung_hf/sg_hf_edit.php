@@ -63,7 +63,9 @@ if ( $action_ok == "yes" ) {
 			$form_input_type = "repeat_add"; //form action einstellen
 			$tbl_row_ad = db_query_display_item_1("AD_MAIN", "AD_ID = " .$id_ad);
 			$tbl_row_sg = db_query_sg_display_item_1($_GET['sg_id']);
-				
+			
+			// kann kein first sein				
+			$tbl_row_sg->SG_HF_FIRST_SG = "F";	
 			// On_Air zurueckschalten				
 			$tbl_row_sg->SG_HF_ON_AIR = "F";
 			// in der Regel ist eine wh vorproduziert				
