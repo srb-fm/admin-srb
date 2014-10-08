@@ -25,11 +25,11 @@ $condition_delivery = "no";
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 	
 // action pruefen	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action'] ) ) {
 	$action = $_GET['action'];	
 	$action_ok = "yes";
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action'] ) ) { 
 	$action = $_POST['action']; 
 	$action_ok = "yes";
 }
@@ -39,7 +39,7 @@ if ( $action_ok != "yes" ) {
 }
 			
 // condition_delivery pruefen (	ausgabelimit)
-if ( isset( $_GET['condition'] ) ) {
+if ( isset($_GET['condition'] ) ) {
 	$c_query_condition = rawurldecode($_GET['condition']);
 	$condition_delivery = "yes";
 }	
@@ -47,7 +47,7 @@ if ( isset( $_GET['condition'] ) ) {
 // ausgabebegrenzung			
 // limit  ueber limitweiterschaltung
 
-if ( isset( $_GET['find_limit_skip'] ) ) { 
+if ( isset($_GET['find_limit_skip'] ) ) { 
 	$find_limit_skip = $_GET['find_limit_skip'];
 }
 		
@@ -56,90 +56,90 @@ if ( $condition_delivery != "yes" ) {
 	// Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 	// also hier nur pruefen in welchem feld was ist
 	
-	if ( isset( $_POST['sg_titel'] ) ) {
-		if ( $_POST['sg_titel'] !="") { 
+	if ( isset($_POST['sg_titel'] ) ) {
+		if ( $_POST['sg_titel'] !="" ) { 
 			$c_field_desc = "SG_HF_CONT_TITEL";
 			$c_field_value = $_POST['sg_titel']; 
 		}
 	}
 
-	if ( isset( $_POST['sg_untertitel'] ) ) {
+	if ( isset($_POST['sg_untertitel'] ) ) {
 		if ( $_POST['sg_untertitel'] !="") { 
 			$c_field_desc = "SG_HF_CONT_UNTERTITEL";
 			$c_field_value = $_POST['sg_untertitel']; 
 		}
 	}
 
-	if ( isset( $_POST['sg_stichwort'] ) ) {
+	if ( isset($_POST['sg_stichwort'] ) ) {
 		if ( $_POST['sg_stichwort'] !="") { 
 			$c_field_desc = "SG_HF_CONT_STICHWORTE";
 			$c_field_value = $_POST['sg_stichwort']; 
 		}
 	}
 	
-	if ( isset( $_POST['sg_regieanweisung'] ) ) {
+	if ( isset($_POST['sg_regieanweisung'] ) ) {
 		if ( $_POST['sg_regieanweisung'] !="") { 
 			$c_field_desc = "SG_HF_CONT_REGIEANWEISUNG";
 			$c_field_value = $_POST['sg_regieanweisung']; 
 		}
 	}
 	
-	if ( isset( $_POST['sg_dateiname'] ) ) {
+	if ( isset($_POST['sg_dateiname'] ) ) {
 		if ( $_POST['sg_dateiname'] !="") { 
 			$c_field_desc = "SG_HF_CONT_FILENAME";
 			$c_field_value = $_POST['sg_dateiname']; 
 		}
 	}
 
-	if ( isset( $_POST['sg_genre'] ) ) {
+	if ( isset($_POST['sg_genre'] ) ) {
 		if ( $_POST['sg_genre'] !="") { 
 			$c_field_desc = "SG_HF_CONT_GENRE_ID";
 			$c_field_value = db_query_load_id_by_value("SG_GENRE", "SG_GENRE_DESC", $_POST['sg_genre']);
 
-			if ( $c_field_value =="") {
+			if ( $c_field_value =="" ) {
 				$action_ok = "no";
 				$message .= "Gengre nicht gefunden... "; 	
 			}
 		}
 	}
 	
-	if ( isset( $_POST['sg_quelle'] ) ) {
+	if ( isset($_POST['sg_quelle'] ) ) {
 		if ( $_POST['sg_quelle'] !="") { 
 			$c_field_desc = "A.SG_HF_SOURCE_ID";
 			$c_field_value = db_query_load_id_by_value("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", $_POST['sg_quelle']);
 
-			if ( $c_field_value =="") {
+			if ( $c_field_value =="" ) {
 				$action_ok = "no";
 				$message .= "Quelle nicht gefunden... "; 	
 			}
 		}
 	}
 		
-	if ( isset( $_POST['sg_datum'] ) ) {
-		if ( $_POST['sg_datum'] !="") { 
+	if ( isset($_POST['sg_datum'] ) ) {
+		if ( $_POST['sg_datum'] !="" ) { 
 			$c_field_desc = "A.SG_HF_TIME";
 			$c_field_value = get_date_format_sql($_POST['sg_datum']); 
 		}
 	}
 
-	if ( isset( $_POST['sg_magazin'] ) ) {
-		if ( $_POST['sg_magazin'] !="") { 
+	if ( isset($_POST['sg_magazin'] ) ) {
+		if ( $_POST['sg_magazin'] !="" ) { 
 			$find_option = "exact";
 			$c_field_desc = "A.SG_HF_MAGAZINE";
 			$c_field_value = $_POST['sg_magazin']; 
 		}
 	}
 			
-	if ( isset( $_POST['sg_live'] ) ) {
-		if ( $_POST['sg_live'] !="") { 
+	if ( isset($_POST['sg_live'] ) ) {
+		if ( $_POST['sg_live'] !="" ) { 
 			$find_option = "exact";
 			$c_field_desc = "A.SG_HF_LIVE";
 			$c_field_value = $_POST['sg_live']; 
 		}
 	}
 	
-	if ( isset( $_POST['sg_cont_id'] ) ) {
-		if ( $_POST['sg_cont_id'] !="") { 
+	if ( isset($_POST['sg_cont_id'] ) ) {
+		if ( $_POST['sg_cont_id'] !="" ) { 
 			$c_field_desc = "A.SG_HF_CONT_ID";
 			$c_field_value = $_POST['sg_cont_id']; 
 		}
@@ -148,11 +148,11 @@ if ( $condition_delivery != "yes" ) {
 		
 	// Bedingung pruefen	
 	$find_option_ok = "no";
-	if ( isset( $_GET['find_option'] ) ) {	
+	if ( isset($_GET['find_option'] ) ) {	
 		$find_option = $_GET['find_option'];
 		$find_option_ok = "yes";
 	}
-	if ( isset( $_POST['find_option'] ) ) { 
+	if ( isset($_POST['find_option'] ) ) { 
 		$find_option = $_POST['find_option']; 	
 		$find_option_ok = "yes";
 	}		
@@ -486,6 +486,7 @@ if ( $user_rights == "yes" ) {
 				echo "<br>".$item['SG_HF_CONT_REGIEANWEISUNG'];
 			}
 			echo "<br> Länge: ".$item['SG_HF_DURATION'];
+			echo "<br>  <a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$item['SG_HF_ID']."&amp;ad_id=".$item['SG_HF_CONT_AD_ID']."' target='_blank'>Sendeanmeldung drucken</a> ";
 			echo "</div>\n";					
 		}
 	}

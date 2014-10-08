@@ -340,6 +340,7 @@ if ( $user_rights == "yes" ) {
 				echo $item['AD_VORNAME']." ".$item['AD_NAME']."<br>";				
 				echo $item['SG_HF_CONT_FILENAME']."<br>";
 				echo "Länge: ".$item['SG_HF_DURATION'];
+				echo "<br>  <a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$item['SG_HF_ID']."&amp;ad_id=".$item['SG_HF_CONT_AD_ID']."' target='_blank'>Sendeanmeldung drucken</a> ";
 				echo "</div>\n";					
 		}
 	}
