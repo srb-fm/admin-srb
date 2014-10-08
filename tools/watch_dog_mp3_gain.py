@@ -80,7 +80,7 @@ class app_config(object):
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
 
@@ -100,7 +100,8 @@ def audio_mp3gain(path_file):
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
         log_message = ac.app_errorslist[1] + u": %s" % str(e)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, log_message,
+                                "x", "write_also_to_console")
         return
 
     lib_cm.message_write_to_console(ac, u"returncode 0")
@@ -115,12 +116,13 @@ def audio_mp3gain(path_file):
     lib_cm.message_write_to_console(ac, mp3gain_output_1)
     # wenn gefunden, position, sonst -1
     if mp3gain_output != -1 and mp3gain_output_1 != -1:
-        log_message = u"mp3gain angepasst: " + c_source_file
+        log_message = u"mp3gain angepasst: " + c_source_file.decode('cp1252')
         db.write_log_to_db(ac, log_message, "k")
         lib_cm.message_write_to_console(ac, "ok")
     else:
         db.write_log_to_db_a(ac, u"mp3gain offenbar nicht noetig: "
-                             + c_source_file, "p", "write_also_to_console")
+                             + c_source_file.decode('cp1252'),
+                             "p", "write_also_to_console")
 
 
 def lets_rock():
