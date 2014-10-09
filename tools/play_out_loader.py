@@ -664,6 +664,7 @@ def write_to_file_switch_params():
         f_switch.write(data_audio_switch[2])
         f_switch.write("Parameter fuer Sendequellenumschalter:"
                                         " hh:mm #Quell-Nr. am Switch\r\n")
+        f_switch.close
         # WICHTIG: der log_text wird von play_out_logging gesucht
         # um die audio_switch_prameter zu finden
         log_message = (u"Datei für Sendequellenumschalter geschrieben: "
@@ -672,7 +673,6 @@ def write_to_file_switch_params():
         ac.action_summary = (u"Sendequellen: "
                  + ac.po_switch[0] + ac.po_switch[1] + ac.po_switch[2])
         db.write_log_to_db(ac, ac.action_summary, "i")
-        f_switch.close
 
 
 def read_zeitansage():
