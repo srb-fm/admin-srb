@@ -166,10 +166,8 @@ def beam_prev_sendungen(list_preview_sendungen):
         db.write_log_to_db(ac, u"web-script:" + web, "x")
         return None
     else:
-        db.write_log_to_db(ac, u"Sendungen fuer Programmvorschau ab "
-            + str(ac.time_target.hour).zfill(2) + " Uhr uebertragen: "
-            + str(z) + u" Stueck", "i")
-
+        db.write_log_to_db(ac, u"Programmvorschau ab "
+            + str(ac.time_target.hour).zfill(2) + " Uhr uebertragen", "i")
     return str(z)
 
 
