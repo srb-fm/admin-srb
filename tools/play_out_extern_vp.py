@@ -31,6 +31,7 @@ Error 002 beim mp3-Validator:
 Error 003 bei mp3gain:
 Error 004 Fehler beim Loeschen der mp3validator-bak-Datei
 Error 005 Fehler beim Generieren des Dateinamens:
+Error 006 Fehler beim Datums-Muster
 
 Parameterliste:
 Param 1: Pfad vom Server zu Dropbox-Hauptordner
@@ -86,6 +87,8 @@ class app_config(object):
             "Fehler beim Loeschen der mp3validator-bak-Datei")
         self.app_errorslist.append(u"Error 005 "
             "Fehler beim Generieren des Dateinamens ")
+        self.app_errorslist.append(u"Error 006 "
+            "Fehler beim Datums-Muster: ")
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -248,6 +251,7 @@ def audio_mp3gain(path_file_dest):
 
 def date_pattern(audio_filename):
     """Datumsmuster in Dateinamen suchen und wandeln"""
+    d_pattern = None
     if audio_filename.find("yyyy_mm_dd") != -1:
         l_path_title = audio_filename.split("yyyy_mm_dd")
         d_pattern = "%Y_%m_%d"
@@ -260,6 +264,10 @@ def date_pattern(audio_filename):
     if audio_filename.find("ddmmyy") != -1:
         l_path_title = audio_filename.split("ddmmyy")
         d_pattern = "%d%m%y"
+
+    if d_pattern is None:
+        log_message = (ac.app_errorslist[6] + audio_filename)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
     return d_pattern, l_path_title
 
 
@@ -335,6 +343,8 @@ def check_and_work_on_files(roboting_sgs):
 
             # Pfad-Datei und Titel nach Datums-Muster teilen
             d_pattern, l_path_title = date_pattern(item[1])
+            if d_pattern is None:
+                continue
 
             # Pfade und Dateinamen zusammenbauen
             success_file, path_file_source, path_file_dest = filepaths(
