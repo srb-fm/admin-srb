@@ -252,6 +252,7 @@ def audio_mp3gain(path_file_dest):
 def date_pattern(audio_filename):
     """Datumsmuster in Dateinamen suchen und wandeln"""
     d_pattern = None
+    l_path_title = None
     if audio_filename.find("yyyy_mm_dd") != -1:
         l_path_title = audio_filename.split("yyyy_mm_dd")
         d_pattern = "%Y_%m_%d"
