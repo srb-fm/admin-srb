@@ -12,8 +12,10 @@
 source ~/srb-tools/backup_media_play_out_conf.sh
 
 echo "Backup aus play_out Sendung"
-rsync -r -t -v -s --delete --log-file=backup_media_play_out_sg.log $media_play_out_sendung $media_backup_sendung
+#rsync -r -t -v -s --delete --log-file=backup_media_play_out_sg.log $media_play_out_sendung $media_backup_sendung
+rsync -r -t -v -s --delete --log-file=$path_file_log_sg $media_play_out_sendung $media_backup_sendung
 echo "Backup aus play_out Infotime"
-rsync -r -t -v -s --delete --log-file=backup_media_play_out_it.log $media_play_out_infotime $media_backup_infotime
+#rsync -r -t -v -s --delete --log-file=backup_media_play_out_it.log $media_play_out_infotime $media_backup_infotime
+rsync -r -t -v -s --delete --log-file=$path_file_log_it $media_play_out_infotime $media_backup_infotime
 echo "Genug fuer heute..."
 exit

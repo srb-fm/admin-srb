@@ -2,7 +2,8 @@
 
 # Config fuer backup
 # Source and destinationfolders
-
+path_file_log_sg="Destpath/backup_media_archiv_sg.log"
+path_file_log_it="Destpath/backup_media_archiv_it.log"
 media_play_out_sendung="Sourcepath/Sendung"
 media_play_out_infotime="Sourcepath/Infotime"
 media_backup_sendung="Backuppath/Sendung"

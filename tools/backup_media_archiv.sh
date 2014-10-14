@@ -15,8 +15,10 @@ source ~/srb-tools/backup_media_archiv_conf.sh
 
 
 echo "Backup aus Archiv Infotime"
-rsync -r -t -v -s --log-file=backup_media_archiv_sg.log $media_archiv_sendung $media_backup_sendung
+#rsync -r -t -v -s --log-file=backup_media_archiv_sg.log $media_archiv_sendung $media_backup_sendung
+rsync -r -t -v -s --log-file=$path_file_log_sg $media_archiv_sendung $media_backup_sendung
 echo "Backup aus Archiv Sendung"
-rsync -r -t -v -s --log-file=backup_media_archiv_it.log $media_archiv_infotime $media_backup_infotime
+#rsync -r -t -v -s --log-file=backup_media_archiv_it.log $media_archiv_infotime $media_backup_infotime
+rsync -r -t -v -s --log-file=$path_file_log_it $media_archiv_infotime $media_backup_infotime
 echo "Genug fue heute..."
 exit
