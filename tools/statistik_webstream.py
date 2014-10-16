@@ -120,7 +120,7 @@ class app_config(object):
             "kann nicht heruntergeladen werden")
         self.app_errorslist.append(u"002 Stream moeglicherweise down - "
             "(Statistik kann aus "
-            "Icecast-Staus nicht extrahiert werden) ")
+            "Icecast-Status nicht extrahiert werden) ")
         self.app_errorslist.append(u"003 Abschnitt Peaklisteners kann aus "
             "Icecast-Status nicht extrahiert werden. "
             "Schluesselwort(e) nicht gefunden:")
