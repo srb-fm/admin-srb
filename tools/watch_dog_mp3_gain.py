@@ -69,7 +69,7 @@ class app_config(object):
         self.app_errorslist.append(u"Error 001 "
             "bei mp3gain:")
         self.app_errorslist.append(u"Error 002 "
-            "Fehler beim Kopieren der bearbeiteten Datei ")
+            "Fehler beim Kopieren nach mp3Gaining: ")
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -158,21 +158,22 @@ def lets_rock():
 
         # verschieben
         path_file_dest = path_dest + item
-        try:
-            shutil.move(path_file_source, path_file_dest)
-        except Exception, e:
-            db.write_log_to_db_a(ac, ac.app_errorslist[2],
-                "x", "write_also_to_console")
-            log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
-            lib_cm.message_write_to_console(ac, log_message)
-            db.write_log_to_db(ac, log_message, "x")
-            continue
 
         # filename rechts von slash extrahieren
         if ac.app_windows == "no":
             filename = path_file_dest[string.rfind(path_file_dest, "/") + 1:]
         else:
             filename = path_file_dest[string.rfind(path_file_dest, "\\") + 1:]
+
+        try:
+            shutil.move(path_file_source, path_file_dest)
+        except Exception, e:
+            db.write_log_to_db_a(ac, ac.app_errorslist[2] + filename,
+                "x", "write_also_to_console")
+            log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
+            lib_cm.message_write_to_console(ac, log_message)
+            db.write_log_to_db(ac, log_message, "x")
+            continue
 
         db.write_log_to_db_a(ac, u"Audio mit mp3gain bearbeitet und kopiert: "
             + filename, "i", "write_also_to_console")
