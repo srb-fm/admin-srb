@@ -112,18 +112,18 @@ class app_config(object):
         self.app_errorfile = "error_play_out_logging.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
-            "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
-            "Sende-Quelle kann aus Datenbank nicht ermittelt werden ")
-        self.app_errorslist.append(u"Error 002 "
+        self.app_errorslist.append(u"Parameter-Typ "
+            "oder Inhalt stimmt nicht ")
+        self.app_errorslist.append(u"Sende-Quelle "
+            "kann aus Datenbank nicht ermittelt werden ")
+        self.app_errorslist.append(u""
             "Play-Out-Log-Datei kann nicht gelesen werden")
-        self.app_errorslist.append(u"Error 003 Webserver fuer PlayOut-Logging"
+        self.app_errorslist.append(u"Webserver fuer PlayOut-Logging"
             " lieferte bei Uebertragung Fehler zurueck")
-        self.app_errorslist.append(u"Error 004 "
-            "Webserver fuer PlayOut-Logging nicht erreichbar")
-        self.app_errorslist.append(u"Error 005 "
-            "Externes PlayOut-Logging ausgesetzt, Webserver nicht erreichbar")
+        self.app_errorslist.append(u"Webserver "
+            "fuer PlayOut-Logging nicht erreichbar")
+        self.app_errorslist.append(u"Externes PlayOut-Logging ausgesetzt, "
+            "Webserver nicht erreichbar")
         # meldungen auf konsole ausgeben oder nicht: "no"
         self.app_debug_mod = "no"
         # anzahl parameter list 0
