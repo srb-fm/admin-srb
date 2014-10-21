@@ -95,6 +95,22 @@ class app_config(object):
         self.time_target = datetime.datetime.now()
 
 
+def load_manuskript(sendung):
+    """Manuskript suchen"""
+    lib_cm.message_write_to_console(ac, u"Manuskript suchen")
+    manuskript_data = db.read_tbl_row_with_cond(ac, db,
+        "SG_MANUSKRIPT",
+        "SG_MK_TEXT",
+        "SG_MK_SG_CONT_ID =" + str(sendung[1]))
+
+    if manuskript_data is None:
+        log_message = u"Kein Manuskript fuer externe VP gefunden.. "
+        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+        return manuskript_data
+
+    return manuskript_data
+
+
 def load_roboting_sgs():
     """Sendungen suchen, die bearbeitet werden sollen"""
     lib_cm.message_write_to_console(ac,
@@ -154,7 +170,11 @@ def audio_copy(path_file_source, path_file_dest):
 def write_to_info_file(path_file_dest, item, sendung):
     """info-file schreiben"""
     success_write = True
-    db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
+    manuskript_data = load_manuskript(sendung)
+    if manuskript_data is not None:
+        manuskript_text = lib_cm.simple_cleanup_html(manuskript_data[0])
+
+    #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
     try:
         #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
         path_text_file_dest = os.path.splitext(path_file_dest)[0] + ".txt"
@@ -172,14 +192,17 @@ def write_to_info_file(path_file_dest, item, sendung):
         # filename rechts von slash extrahieren
         filename = lib_cm.extract_filename(ac, path_file_dest)
 
-        f_info_txt.write("Titel: " + sendung[11].encode('ascii', 'ignore')
+        f_info_txt.write("Titel: " + sendung[11].encode('utf-8')
                         + "\r\n")
-        f_info_txt.write("Autor: " + sendung[15].encode('ascii', 'ignore')
-                            + " " + sendung[16].encode('ascii', 'ignore')
+        f_info_txt.write("Autor: " + sendung[15].encode('utf-8')
+                            + " " + sendung[16].encode('utf-8')
                             + "\r\n")
         f_info_txt.write("Dateiname: " + filename + "\r\n")
         f_info_txt.write("Interne ID: " + sendung[12][0:7] + "\r\n")
-        f_info_txt.write("Info: ")
+
+        if manuskript_data is not None:
+            f_info_txt.write("Info/ Manuskript: " + "\r\n")
+            f_info_txt.write(manuskript_text.encode('utf-8'))
         f_info_txt.close
     return success_write
 
