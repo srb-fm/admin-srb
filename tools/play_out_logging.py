@@ -115,7 +115,7 @@ class app_config(object):
         self.app_errorslist.append(u"Parameter-Typ "
             "oder Inhalt stimmt nicht ")
         self.app_errorslist.append(u"Sende-Quelle "
-            "kann aus Datenbank nicht ermittelt werden ")
+            "kann fuer PlayOut-Logging nicht aus Datenbank ermittelt werden ")
         self.app_errorslist.append(u""
             "Play-Out-Log-Datei kann nicht gelesen werden")
         self.app_errorslist.append(u"Webserver fuer PlayOut-Logging"
