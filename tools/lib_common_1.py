@@ -1083,6 +1083,15 @@ def replace_uchar_sonderzeichen_with_latein(my_string):
     return x
 
 
+def simple_cleanup_html(html_string):
+    """Replace html-tags with nothing"""
+    x = html_string.replace("<p>", "")
+    x = x.replace("</p>", "")
+    x = x.replace("<b>", "")
+    x = x.replace("</b>", "")
+    return x
+
+
 def read_file_first_line(ac, db, filename):
     """Erste Zeile einer Datei lesen"""
     message_write_to_console(ac, u"read_file_first_line " + filename)
