@@ -114,12 +114,25 @@ def load_manuskript(sendung):
     return manuskript_data
 
 
-def load_sg():
+def load_sg(sg_option):
     """Sendung suchen"""
-    lib_cm.message_write_to_console(ac, u"Sendung suchen")
-    db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
+
+    if sg_option == "IT":
+        db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
         + str(ac.time_target.date()) + "' " + "AND A.SG_HF_FIRST_SG='T' "
+        + "AND A.SG_HF_INFOTIME='T'" + "AND A.SG_HF_VP_OUT='T'")
+
+    if sg_option == "MAG":
+        db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
+        + str(ac.time_target.date()) + "' " + "AND A.SG_HF_FIRST_SG='T' "
+        + "AND A.SG_HF_MAGAZINE='T'" + "AND A.SG_HF_VP_OUT='T'")
+
+    if sg_option == "SG":
+        db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
+        + str(ac.time_target.date()) + "' " + "AND A.SG_HF_FIRST_SG='T' "
+        + "AND A.SG_HF_INFOTIME='F'" + "AND A.SG_HF_MAGAZINE='F'"
         + "AND A.SG_HF_VP_OUT='T'")
+
     sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_b(ac,
                     db, db_tbl_condition)
 
@@ -191,11 +204,11 @@ def write_to_info_file(path_file_dest, sendung):
     return success_write
 
 
-def filepaths(sendung):
+def filepaths(sendung, path_audio):
     """Pfade und Dateinamen zusammenbauen"""
     success_file = True
     try:
-        path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+        path_source = lib_cm.check_slashes(ac, path_audio)
         path_file_source = (path_source + sendung[12])
 
         path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
@@ -230,7 +243,7 @@ def filepaths(sendung):
     return success_file, path_file_source, path_file_dest
 
 
-def check_and_work_on_files(sendungen):
+def check_and_work_on_files(sendungen, path_audio):
     """
     - Zugehoerige Audios suchen
     - wenn vorhanden, bearbeiten
@@ -244,7 +257,7 @@ def check_and_work_on_files(sendungen):
 
         # Pfade und Dateinamen zusammenbauen
         success_file, path_file_source, path_file_dest = filepaths(
-                                     sendung)
+                                     sendung, path_audio)
         if success_file is None:
             continue
 
@@ -273,13 +286,23 @@ def check_and_work_on_files(sendungen):
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
-    # Sendungen suchen, die bearbeitet werden sollen
-    sendungen = load_sg()
-    if sendungen is None:
-        return
+    log_message = u"Infotime bearbeiten.."
+    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    sendungen = load_sg("IT")
+    if sendungen is not None:
+        check_and_work_on_files(sendungen, db.ac_config_1[1])
 
-    # pruefen was noch nicht in cloud ist, kopieren und meta schreiben
-    check_and_work_on_files(sendungen)
+    log_message = u"Magazin bearbeiten.."
+    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    sendungen = load_sg("MAG")
+    if sendungen is not None:
+        check_and_work_on_files(sendungen, db.ac_config_1[1])
+
+    log_message = u"Sendung bearbeiten.."
+    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    sendungen = load_sg("SG")
+    if sendungen is not None:
+        check_and_work_on_files(sendungen, db.ac_config_1[2])
     return
 
 
