@@ -554,7 +554,7 @@ def write_to_file_playlist(path_filename,
             f_playlist.write(path_mediafile + item + "\r\n")
             action_msg = "Sendung: " + item
 
-        log_message = "In Playlist aufgenommen: " + item
+        log_message = "Playlist Sendung: " + item
         db.write_log_to_db(ac, log_message, "k")
         db.write_log_to_db(ac, action_msg, "i")
         z += 1
@@ -585,7 +585,7 @@ def write_to_file_playlist_it(path_filename, list_sendung_filename):
         f_playlist.write(item + "\r\n")
         action_msg = "Infotime: " + ntpath.basename(item)
 
-        log_message = "In Playlist aufgenommen: " + item
+        log_message = "Playlist Infotime: " + item
         db.write_log_to_db(ac, log_message, "k")
 
         # Einige Eintraege fuer Info-Meldung uebergehen
@@ -624,7 +624,7 @@ def write_to_file_playlist_mg(path_file_pl, file_mg):
     path_file_mg = path_mg + file_mg
     f_playlist.write(path_file_mg + "\r\n")
     f_playlist.close
-    log_message = "In Magazin-Playlist aufgenommen: " + file_mg
+    log_message = "Playlist Magazin: " + file_mg
     db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
     log_message = "Magazin: " + file_mg
     db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
