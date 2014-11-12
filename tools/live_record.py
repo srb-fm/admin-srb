@@ -158,12 +158,11 @@ def check_recording(sg_id):
 def log_duration(list_live_sendungen):
     """Logging der Recordings und Laenge der Live-Sendungen ermitteln """
     duration = 0
-    title = list_live_sendungen[0][11][0:20]
-    lib_cm.message_write_to_console(ac, "title " + title)
+    title = list_live_sendungen[0][11]
+    #lib_cm.message_write_to_console(ac, "title " + title)
     for item in list_live_sendungen:
-        lib_cm.message_write_to_console(ac, item[11][0:20])
-        if item[11][0:20] == title:
-            lib_cm.message_write_to_console(ac, "if")
+        #lib_cm.message_write_to_console(ac, item[11][0:30])
+        if item[11] == title:
             # sum duration
             duration += lib_cm.get_seconds_from_tstr(item[3])
             lib_cm.message_write_to_console(ac, duration)
@@ -177,7 +176,6 @@ def log_duration(list_live_sendungen):
             db.write_log_to_db(ac, u"Live-Sendung: " + str(item[0]), "t")
         else:
             break
-        title = item[11][0:20]
     return duration
 
 
