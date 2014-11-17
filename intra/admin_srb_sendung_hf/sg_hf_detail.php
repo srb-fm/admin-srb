@@ -30,7 +30,16 @@ if ( isset( $_GET['error_message'] ) ) {
 if ( isset( $_POST['error_message'] ) ) { 
 	$error_message .= $_POST['error_message'];
 }
-	
+if ( isset( $_GET['po_filename'] ) ) { 
+	$po_filename = $_GET['po_filename'];
+}
+if ( isset( $_GET['po_it'] ) ) { 
+	$po_it = $_GET['po_it'];
+}
+if ( isset( $_GET['po_mg'] ) ) { 
+	$po_mg = $_GET['po_mg'];
+}
+
 $action_ok = "no";
 // Dateipruefung ja/nein
 $file_exist_check = "yes";
@@ -158,8 +167,18 @@ if ( $action_ok == "yes" ) {
 			}
 			break;
 
-			//endswitch;
-		}
+		case "play_out":
+			$message .= "Sendung ausspielen. ";
+			// choose play-out-path
+			$po_path = "Play_Out_Sendung"; 
+			if ( $po_it == "T" or $po_mg == "T" ) {
+				$po_path = "Play_Out_Infotime";
+			}
+			// load access mpc
+			$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config'");
+			$cmd = $tbl_row_mpd_config->USER_SP_PARAM_2." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_3." add ".$po_path."/".$po_filename;
+			$message .= shell_exec($cmd); 
+		}//endswitch;
 	}
 } else {
 	$message .= "Keine Anweisung. Nichts zu tun..... "; 
@@ -470,6 +489,7 @@ if ( $user_rights == "yes" ) {
 			}
 		}
 		echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."' target='_blank'>Drucken</a> ";
+		echo "<a href='sg_hf_detail.php?action=play_out&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;po_it=".rtrim($tbl_row_sg->SG_HF_INFOTIME)."&amp;po_mg=".rtrim($tbl_row_sg->SG_HF_MAGAZINE)."&amp;po_filename=".rtrim($tbl_row_sg->SG_HF_CONT_FILENAME)."' >Play-Out</a> ";
 	} else {
 		echo "<a title='Keine Berechtigung'>Bearbeiten</a> ";
 		echo "<a title='Keine Berechtigung'>Wiederholen</a> ";			
