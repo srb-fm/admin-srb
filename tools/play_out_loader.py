@@ -518,11 +518,12 @@ def prepare_pl_broadcast(minute_start, list_result):
         db.write_log_to_db_a(ac, log_message, "e", "write_also_to_console")
         db.write_log_to_db(ac, "Sendung live: " + "".join(list_result[4]), "i")
     else:
-        write_to_file_playlist(path_filename, list_result[0], list_result[1])
+        write_to_file_playlist(
+            path_filename, list_result[0], list_result[1], minute_start)
 
 
-def write_to_file_playlist(path_filename,
-                         list_sendung_filename, list_sendung_duration):
+def write_to_file_playlist(
+    path_filename, list_sendung_filename, list_sendung_duration, minute_start):
     """Playlist Sendung schreiben"""
     try:
         if (ac.app_windows == "yes"):
@@ -554,7 +555,7 @@ def write_to_file_playlist(path_filename,
             f_playlist.write(path_mediafile + item + "\r\n")
             action_msg = "Sendung: " + item
 
-        log_message = "Playlist Sendung: " + item
+        log_message = "Playlist Sendung: " + str(minute_start) + item
         db.write_log_to_db(ac, log_message, "k")
         db.write_log_to_db(ac, action_msg, "i")
         z += 1
