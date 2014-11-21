@@ -555,7 +555,7 @@ def write_to_file_playlist(
             f_playlist.write(path_mediafile + item + "\r\n")
             action_msg = "Sendung: " + item
 
-        log_message = "Playlist Sendung: " + str(minute_start) + item
+        log_message = "Playlist Sendung " + str(minute_start) + ": " + item
         db.write_log_to_db(ac, log_message, "k")
         db.write_log_to_db(ac, action_msg, "i")
         z += 1
