@@ -150,9 +150,8 @@ def prepare_mpd_0(time_now, minute_start):
                     msg_2 = msg_2 + pl_item + "\n"
                     mpd.exec_command("add", pl_item)
                 else:
-                    msg_2 = msg_2 + item[2][18:] + "\n"
-                    pl_item = pl_path + item[2][18:]
-                    mpd.exec_command("add", pl_item)
+                    msg_2 = msg_2 + item[2][21:] + "\n"
+                    mpd.exec_command("add", item[2][21:])
 
             if ac.play_out_infotime is True:
                 ac.play_out_infotime = False
@@ -198,8 +197,14 @@ class my_form(Frame):
         self.text_label.config(text="Play-Out-Schedule Nr: "
                 + str(ac.app_counter))
         if ac.app_msg_1 is not None:
-            self.textBox.delete('1.0', '1.end')
+            self.textBox.delete('1.0', '2.end')
             self.textBox.insert(END, ac.app_msg_1 + "\n")
+            self.textBox.see(END)
+            lines = int(self.textBox.index('end-1c').split('.')[0])
+            #lines = self.textBox.index('end-1c')
+            #self.textBox.insert(END, str(lines) + "\n")
+            if lines > 40:
+                self.textBox.delete('1.0', '20.end')
             ac.app_msg_1 = None
 
         if ac.app_msg_2 is not None:
@@ -220,11 +225,11 @@ class my_form(Frame):
         minute_start = 0
 
         # prepare play_out
-        if time_now.minute == 6:
+        if time_now.minute == 59:
             prepare_mpd_0(time_now, minute_start)
 
         # now play minute 0
-        if time_now.minute == 0:
+        if time_now.minute == 59:
             if time_now.second == 1:
                 if ac.play_out_items is not None:
                     ac.app_msg_1 = "Playing..."
