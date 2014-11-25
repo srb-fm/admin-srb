@@ -162,8 +162,10 @@ class app_config(object):
             "beim Lesen der Laenge von Instrumentals")
         self.app_errorslist.append(u"Error 013 "
             "beim Loeschen der Magazin-Playlist")
-        # Playlist lauft unter Windows
-        self.pl_win = "yes"
+        # mAirlist-Playlist running under Windows
+        self.pl_win_mairlist = "yes"
+        # mpd-Playlist running under Windows
+        self.pl_win_mpd = "no"
         # IT senden
         self.po_it = None
         # Mags senden
@@ -203,9 +205,12 @@ def load_extended_params():
         app_params_type_list_mairlist.append("p_string")
         app_params_type_list_mairlist.append("p_string")
         app_params_type_list_mairlist.append("p_string")
+        app_params_type_list_mairlist.append("p_string")
+        app_params_type_list_mairlist.append("p_string")
+        app_params_type_list_mairlist.append("p_string")
         # Erweiterte Params pruefen
         param_check_mairlist = lib_cm.params_check_a(
-                        ac, db, 6,
+                        ac, db, 9,
                         app_params_type_list_mairlist,
                         db.ac_config_playlist)
         if param_check_mairlist is None:
@@ -541,23 +546,29 @@ def write_to_file_playlist(
         return
 
     path_mediafile = lib_cm.check_slashes_a(ac,
-                             db.ac_config_playlist[3], ac.pl_win)
-
+                             db.ac_config_playlist[3], ac.pl_win_mairlist)
+    path_mediafile_mpd = lib_cm.check_slashes_a(ac,
+                             db.ac_config_playlist[8], ac.pl_win_mpd)
     z = 0
     action_msg = ""
+    log_message_pl = ""
     for item in list_sendung_filename:
         if item[0:7] == "http://":
             f_playlist.write("#mAirList STREAM "
                  + str(list_sendung_duration[z]) + " [] " + item + "\r\n")
             action_msg = "Sendung: " + item[8:-1]
+            log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
+                    + item)
         else:
             # pfad voranstellen
             f_playlist.write(path_mediafile + item + "\r\n")
             action_msg = "Sendung: " + item
+            log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
+                    + path_mediafile_mpd + item)
 
-        log_message = "Playlist Sendung " + str(minute_start) + ": " + item
-        db.write_log_to_db(ac, log_message, "k")
+        log_message = "Sendung " + str(minute_start) + ": " + item
         db.write_log_to_db(ac, action_msg, "i")
+        db.write_log_to_db(ac, log_message_pl, "k")
         z += 1
     f_playlist.close
 
@@ -621,7 +632,7 @@ def write_to_file_playlist_mg(path_file_pl, file_mg):
         return
 
     path_mg = lib_cm.check_slashes_a(ac,
-                         db.ac_config_playlist[2], ac.pl_win)
+                         db.ac_config_playlist[2], ac.pl_win_mairlist)
     path_file_mg = path_mg + file_mg
     f_playlist.write(path_file_mg + "\r\n")
     f_playlist.close
@@ -683,10 +694,10 @@ def read_zeitansage():
                     + str(ac.time_target.hour).zfill(2))
     # Pfad von mAirlist zu Zeitansage
     path_zeitansage_po = (lib_cm.check_slashes_a(ac,
-                         db.ac_config_zeitansage[3], ac.pl_win)
+                         db.ac_config_zeitansage[3], ac.pl_win_mairlist)
                     + str(ac.time_target.hour).zfill(2))
     path_zeitansage_po = (lib_cm.check_slashes_a(ac,
-                             path_zeitansage_po, ac.pl_win))
+                             path_zeitansage_po, ac.pl_win_mairlist))
     # Zeitansage zu passender Zeit per Zufall aus Pool holen
     file_zeitansage = lib_cm.read_random_file_from_dir(ac, db, path_zeitansage)
     if file_zeitansage is None:
@@ -703,9 +714,9 @@ def read_jingle():
     path_jingle = (lib_cm.check_slashes(ac, db.ac_config_it_paths[2]))
     # Pfad von mAirlist zu Jingle
     path_jingle_po = (lib_cm.check_slashes_a(ac,
-                         db.ac_config_it_paths[4], ac.pl_win))
+                         db.ac_config_it_paths[4], ac.pl_win_mairlist))
     path_jingle_po = (lib_cm.check_slashes_a(ac,
-                                     path_jingle_po, ac.pl_win))
+                                     path_jingle_po, ac.pl_win_mairlist))
     # Jingle per Zufall aus Pool holen
     file_jingle = lib_cm.read_random_file_from_dir(ac, db, path_jingle)
     if file_jingle is None:
@@ -759,7 +770,7 @@ def read_infotime():
 
     # Pfad von mAirlist zu InfoTime
     path_it_po = lib_cm.check_slashes_a(ac,
-                             db.ac_config_it_paths[3], ac.pl_win)
+                             db.ac_config_it_paths[3], ac.pl_win_mairlist)
 
     # Filenames mit Path in List
     for item in list_result[0]:
@@ -773,7 +784,7 @@ def read_instrumental():
     path_instrumental = lib_cm.check_slashes(ac, db.ac_config_it_paths[5])
     # Pfad von mAirlist zu Instrumentals
     path_instrumental_po = (lib_cm.check_slashes_a(ac,
-                             db.ac_config_it_paths[6], ac.pl_win))
+                             db.ac_config_it_paths[6], ac.pl_win_mairlist))
     # fuer Gesamtlaenge
     duration_minute_instr = 0
     duration_minute_target = int(db.ac_config_times[4]) - ac.po_it_duration
@@ -860,7 +871,7 @@ def prepare_pl_infotime():
     # Dies hier und nicht in read_zeitansage
     # weil der Fader auch bei deaktivierter Zeitansage rein soll
     path_fader = lib_cm.check_slashes_a(ac,
-                             db.ac_config_zeitansage[3], ac.pl_win)
+                             db.ac_config_zeitansage[3], ac.pl_win_mairlist)
     path_file_fader = path_fader + db.ac_config_zeitansage[2]
     ac.po_it_pl.insert(0, path_file_fader)
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
