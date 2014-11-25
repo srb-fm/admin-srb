@@ -196,22 +196,22 @@ def load_extended_params():
     db.ac_config_playlist = db.params_load_1a(ac, db, "PO_Playlists")
     if db.ac_config_playlist is not None:
         # Erweiterte Paramsliste anlegen
-        app_params_type_list_mairlist = []
+        app_params_type_list_playlist = []
         # Erweiterte Params-Type-List,
         # Typ entsprechend der Params-Liste in der Config
-        app_params_type_list_mairlist.append("p_string")
-        app_params_type_list_mairlist.append("p_string")
-        app_params_type_list_mairlist.append("p_string")
-        app_params_type_list_mairlist.append("p_string")
-        app_params_type_list_mairlist.append("p_string")
-        app_params_type_list_mairlist.append("p_string")
-        app_params_type_list_mairlist.append("p_string")
-        app_params_type_list_mairlist.append("p_string")
-        app_params_type_list_mairlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
         # Erweiterte Params pruefen
         param_check_mairlist = lib_cm.params_check_a(
                         ac, db, 9,
-                        app_params_type_list_mairlist,
+                        app_params_type_list_playlist,
                         db.ac_config_playlist)
         if param_check_mairlist is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
@@ -615,7 +615,7 @@ def write_to_file_playlist_it(path_filename, list_sendung_filename):
 
 
 def write_to_file_playlist_mg(path_file_pl, file_mg):
-    """Playlist Magazin schreiben"""
+    """write Playlist Magazin"""
     try:
         if (ac.app_windows == "yes"):
             f_playlist = codecs.open(path_file_pl, 'w', "iso-8859-1")
@@ -633,10 +633,12 @@ def write_to_file_playlist_mg(path_file_pl, file_mg):
 
     path_mg = lib_cm.check_slashes_a(ac,
                          db.ac_config_playlist[2], ac.pl_win_mairlist)
+    path_mg_mpd = lib_cm.check_slashes_a(ac,
+                         db.ac_config_playlist[7], ac.pl_win_mpd)
     path_file_mg = path_mg + file_mg
     f_playlist.write(path_file_mg + "\r\n")
     f_playlist.close
-    log_message = "Playlist Magazin: " + path_file_mg
+    log_message = "Playlist Magazin: " + path_mg_mpd + file_mg
     db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
     log_message = "Magazin: " + file_mg
     db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
@@ -1102,7 +1104,6 @@ if __name__ == "__main__":
     db = lib_cm.dbase()
     ac = app_config()
     print  "lets_work: " + ac.app_desc
-    # losgehts
     db.write_log_to_db(ac, ac.app_desc + " gestartet", "a")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
