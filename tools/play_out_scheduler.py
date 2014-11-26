@@ -194,22 +194,19 @@ def prepare_mpd_5x(time_now, minute_start):
     """prepare mpd for another playtimes"""
     msg_1 = None
     msg_2 = None
-    if time_now.second == 1:
-        # connect for loop at minute 5x
-        mpd.connect()
-        # update mpd-db
-        msg_1 = "Update MPD-DB..."
-        mpd.exec_command("update", None)
 
     if time_now.second == 30:
-        # for minute 0
         ac.play_out_items = load_play_out_items(
                         minute_start, "Playlist Sendung " + minute_start)
 
         if ac.play_out_items is not None:
-            msg_1 = "Load Items from DB..." + "\n"
+            msg_1 = ("Load Items for Minute"
+                                + minute_start + " from DB..." + "\n")
             for item in ac.play_out_items:
-                msg_1 = msg_1 + item[2][18:] + "\n"
+                msg_1 = msg_1 + item[2][21:] + "\n"
+                log_message = ("Sendung vorbereitet: " + item[2][21:])
+                db.write_log_to_db_a(ac,
+                            log_message, "t", "write_also_to_console")
         else:
             msg_1 = "No Items from DB...nothing to do" + "\n"
 
@@ -217,11 +214,13 @@ def prepare_mpd_5x(time_now, minute_start):
         if ac.play_out_items is not None:
             msg_1 = "Add Items to Playlist..."
             msg_2 = ""
+            mpd.connect()
             # cropping playlist-items
             mpd.exec_command("crop", None)
             for item in ac.play_out_items:
                 msg_2 = msg_2 + item[2][21:] + "\n"
                 mpd.exec_command("add", item[2][21:])
+            mpd.disconnect()
         else:
             msg_1 = None
 
@@ -240,21 +239,22 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
                     minute_start, "Playlist Magazin " + str(mg_number))
 
         if ac.play_out_items is not None:
-            msg_1 = "Load Magazine-Items from DB..." + "\n"
+            msg_1 = ("Load Magazine-Item "
+                            + str(mg_number) + " from DB..." + "\n")
             msg_1 = msg_1 + ac.play_out_items[0][2][20:] + "\n"
             log_message = ("Magazin vorbereitet: "
                                         + ac.play_out_items[0][2][20:])
         else:
-            msg_1 = "No Magazine-Items from DB...nothing to do" + "\n"
+            msg_1 = "No Magazine-Item from DB...nothing to do" + "\n"
             log_message = ("Play-Out Magazin: nicht vorgesehen")
 
-        db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
+        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
     if time_now.second == 59:
         # schedule items for player
         if ac.play_out_items is not None:
             mpd.connect()
-            msg_1 = "Add Magazine-Items to Playlist..."
+            msg_1 = "Add Magazine-Item " + str(mg_number) + "to Playlist..."
             msg_2 = ""
             # cropping playlist-items
             mpd.exec_command("crop", None)
@@ -263,11 +263,10 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
             mpd.exec_command("add", ac.play_out_items[0][2][20:])
             mpd.disconnect()
             log_message = ("Play-Out Magazin: " + ac.play_out_items[0][2][20:])
+            db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
         else:
             msg_1 = None
-            log_message = ("Play-Out Magazin: nicht vorgesehen")
 
-        db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
     ac.app_msg_1 = msg_1
     ac.app_msg_2 = msg_2
 
@@ -327,13 +326,10 @@ class my_form(Frame):
 
     def lets_rock(self):
         """mainfunction"""
-        #print db.config_extended
         #lib_cm.message_write_to_console(ac, u"lets rock")
         time_now = datetime.datetime.now()
         ac.app_counter += 1
         minute_start = db.ac_config_times[3]
-        # config-minute - 2
-        #minute_start = 0
 
         # prepare play_out top of the hour
         if time_now.minute == 58:
@@ -348,8 +344,8 @@ class my_form(Frame):
                 #mpd.disconnect()
 
             if time_now.second == 59:
-                # disconnect at the end of loop for minute 0
-                #mpd.disconnect()
+                # disconnect at the end of loop for top of the hour
+                mpd.disconnect()
                 # free for next run
                 ac.play_out_items = None
 
@@ -358,10 +354,15 @@ class my_form(Frame):
         minute_start = db.ac_config_times[5]
         # config-minute -2
 
+        #if time_now.minute == 4:
+        if time_now.minute == int(db.ac_config_times[4]) - 2:
+            minute_start = db.ac_config_times[4]
+            prepare_mpd_5x(time_now, minute_start)
+
         #if time_now.minute == 28:
         if time_now.minute == int(db.ac_config_times[5]) - 2:
+            minute_start = db.ac_config_times[5]
             prepare_mpd_5x(time_now, minute_start)
-            mpd.disconnect()
 
         # schedule magazines
         if time_now.minute == 14:
