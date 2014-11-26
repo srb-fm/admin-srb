@@ -182,6 +182,7 @@ class app_config(object):
         self.po_switch.append("03")
         # Liste Infotime-Items
         self.po_it_pl = []
+        self.po_it_pl_mpd = []
         # Laenge InfoTime
         self.po_it_duration = 0
         # aktuelle Stunde
@@ -259,11 +260,11 @@ def load_extended_params():
         app_params_type_list_times.append("p_string")
         app_params_type_list_times.append("p_string")
         # Erweiterte Params pruefen
-        param_check_it_paths = lib_cm.params_check_a(
+        param_check_times = lib_cm.params_check_a(
                         ac, db, 8,
                         app_params_type_list_times,
                         db.ac_config_times)
-        if param_check_it_paths is None:
+        if param_check_times is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[3], "x",
             "write_also_to_console")
             return None
