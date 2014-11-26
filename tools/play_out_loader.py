@@ -614,7 +614,7 @@ def write_to_file_playlist_it(path_filename, list_sendung_filename):
     f_playlist.close
 
 
-def write_to_file_playlist_mg(path_file_pl, file_mg):
+def write_to_file_playlist_mg(path_file_pl, file_mg, mg_number):
     """write Playlist Magazin"""
     try:
         if (ac.app_windows == "yes"):
@@ -638,7 +638,8 @@ def write_to_file_playlist_mg(path_file_pl, file_mg):
     path_file_mg = path_mg + file_mg
     f_playlist.write(path_file_mg + "\r\n")
     f_playlist.close
-    log_message = "Playlist Magazin: " + path_mg_mpd + file_mg
+    log_message = ("Playlist Magazin " + str(mg_number) + ": "
+                                    + path_mg_mpd + file_mg)
     db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
     log_message = "Magazin: " + file_mg
     db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
@@ -973,7 +974,7 @@ def rock_magazin():
             if ac.po_mg[zz - 1] is True:
                 path_file_pl = (db.ac_config_playlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                write_to_file_playlist_mg(path_file_pl, item)
+                write_to_file_playlist_mg(path_file_pl, item, zz)
             else:
                 log_message = (u"Magazinbeitrag "
                      + str(zz) + u" fällt wegen Normalsendung aus")
@@ -996,7 +997,7 @@ def rock_magazin():
                     if ac.po_mg[zz - 1] is True:
                         path_file_pl = (db.ac_config_playlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                        write_to_file_playlist_mg(path_file_pl, item)
+                        write_to_file_playlist_mg(path_file_pl, item, zz)
                     else:
                         log_message = (u"Magazinbeitrag "
                                  + str(zz) + u" fällt wegen Normalsendung aus")
@@ -1012,7 +1013,7 @@ def rock_magazin():
                     if ac.po_mg[zz - 1] is True:
                         path_file_pl = (db.ac_config_playlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                        write_to_file_playlist_mg(path_file_pl, item)
+                        write_to_file_playlist_mg(path_file_pl, item, zz)
                     else:
                         log_message = (u"Magazinbeitrag "
                                  + str(zz) + u" fällt wegen Normalsendung aus")
@@ -1048,7 +1049,7 @@ def rock_magazin():
             if ac.po_mg[zz - 1] is True:
                 path_file_pl = (db.ac_config_playlist[1]
                                     + "_magazine_0" + str(zz) + ".m3u")
-                write_to_file_playlist_mg(path_file_pl, item)
+                write_to_file_playlist_mg(path_file_pl, item, zz)
             else:
                 log_message = (u"Magazinbeitrag "
                                  + str(zz) + u" fällt wegen Normalsendung aus")
