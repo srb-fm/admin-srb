@@ -282,11 +282,11 @@ def load_extended_params():
         app_params_type_list_zeitansage.append("p_string")
         app_params_type_list_zeitansage.append("p_string")
         # Erweiterte Params pruefen
-        param_check_it_paths = lib_cm.params_check_a(
+        param_check_zeitansage = lib_cm.params_check_a(
                         ac, db, 4,
                         app_params_type_list_zeitansage,
                         db.ac_config_zeitansage)
-        if param_check_it_paths is None:
+        if param_check_zeitansage is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[4], "x",
             "write_also_to_console")
             return None
@@ -301,11 +301,11 @@ def load_extended_params():
         # Typ entsprechend der Params-Liste in der Config
         app_params_type_list_audioswitch.append("p_string")
         # Erweiterte Params pruefen
-        param_check_it_paths = lib_cm.params_check_a(
+        param_check_audioswitch = lib_cm.params_check_a(
                         ac, db, 1,
                         app_params_type_list_audioswitch,
                         db.ac_config_audioswitch)
-        if param_check_it_paths is None:
+        if param_check_audioswitch is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[5], "x",
             "write_also_to_console")
             return None
