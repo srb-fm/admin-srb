@@ -284,9 +284,10 @@ def load_extended_params():
         app_params_type_list_zeitansage.append("p_string")
         app_params_type_list_zeitansage.append("p_string")
         app_params_type_list_zeitansage.append("p_string")
+        app_params_type_list_zeitansage.append("p_string")
         # Erweiterte Params pruefen
         param_check_zeitansage = lib_cm.params_check_a(
-                        ac, db, 4,
+                        ac, db, 5,
                         app_params_type_list_zeitansage,
                         db.ac_config_zeitansage)
         if param_check_zeitansage is None:
@@ -577,7 +578,8 @@ def write_to_file_playlist(
     f_playlist.close
 
 
-def write_to_file_playlist_it(path_filename, list_sendung_filename):
+#def write_to_file_playlist_it(path_filename, list_sendung_filename):
+def write_to_file_playlist_it(path_filename):
     """Playlist InfoTime schreiben"""
     try:
         if (ac.app_windows == "yes"):
@@ -596,7 +598,8 @@ def write_to_file_playlist_it(path_filename, list_sendung_filename):
 
     z = 0
     action_msg = ""
-    for item in list_sendung_filename:
+    #for item in list_sendung_filename:
+    for item in ac.po_it_pl:
         # Win Zeilenumbruch hinten dran
         f_playlist.write(item + "\r\n")
         action_msg = "Infotime: " + ntpath.basename(item)
@@ -877,13 +880,21 @@ def prepare_pl_infotime():
     # Fader an den Anfang
     # Dies hier und nicht in read_zeitansage
     # weil der Fader auch bei deaktivierter Zeitansage rein soll
+    # mairlist
     path_fader = lib_cm.check_slashes_a(ac,
                              db.ac_config_zeitansage[3], ac.pl_win_mairlist)
     path_file_fader = path_fader + db.ac_config_zeitansage[2]
     ac.po_it_pl.insert(0, path_file_fader)
+    # mpd
+    path_fader_mpd = lib_cm.check_slashes_a(ac,
+                             db.ac_config_zeitansage[5], ac.pl_win_mpd)
+    path_file_fader_mpd = path_fader_mpd + db.ac_config_zeitansage[2]
+    ac.po_it_pl_mpd.insert(0, path_file_fader_mpd)
+
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
     path_filename = db.ac_config_playlist[1] + "_00.m3u"
-    write_to_file_playlist_it(path_filename, ac.po_it_pl)
+    #write_to_file_playlist_it(path_filename, ac.po_it_pl)
+    write_to_file_playlist_it(path_filename)
 
 
 def rock_infotime():
