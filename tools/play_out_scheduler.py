@@ -159,11 +159,11 @@ def prepare_mpd_0(time_now, minute_start):
             msg_1 = "Load Items for top of the hour from DB..." + "\n"
             for item in ac.play_out_items:
                 if ac.play_out_infotime is True:
-                    msg_1 = msg_1 + item[2][22:] + "\n"
+                    msg_1 = msg_1 + item[2][19:] + "\n"
                 else:
                     msg_1 = msg_1 + item[2][18:] + "\n"
         else:
-            msg_1 = "No Items for top of the hour from DB...nothing to do" + "\n"
+            msg_1 = "No Items for top of the hour from DB.nothing to do" + "\n"
 
     if time_now.second == 59:
         if ac.play_out_items is not None:
@@ -173,12 +173,10 @@ def prepare_mpd_0(time_now, minute_start):
             mpd.exec_command("crop", None)
             for item in ac.play_out_items:
                 if ac.play_out_infotime is True:
-                    pl_item = item[2][22:].replace('\\', '/')
-                    msg_2 = msg_2 + pl_item + "\n"
-                    mpd.exec_command("add", pl_item)
+                    msg_2 = msg_2 + item[2][19:] + "\n"
+                    mpd.exec_command("add", item[2][19:])
                 else:
                     msg_2 = msg_2 + item[2][21:] + "\n"
-                    #pl_item = item[2][21:].replace('\\', '/')
                     mpd.exec_command("add", item[2][21:])
 
             if ac.play_out_infotime is True:
@@ -200,7 +198,7 @@ def prepare_mpd_5x(time_now, minute_start):
                         minute_start, "Playlist Sendung " + minute_start)
 
         if ac.play_out_items is not None:
-            msg_1 = ("Load Items for Minute"
+            msg_1 = ("Load Items for Minute "
                                 + minute_start + " from DB..." + "\n")
             for item in ac.play_out_items:
                 msg_1 = msg_1 + item[2][21:] + "\n"
@@ -208,7 +206,8 @@ def prepare_mpd_5x(time_now, minute_start):
                 db.write_log_to_db_a(ac,
                             log_message, "t", "write_also_to_console")
         else:
-            msg_1 = "No Items from DB...nothing to do" + "\n"
+            msg_1 = ("No Items for Minute "
+                    + minute_start + " from DB...nothing to do" + "\n")
 
     if time_now.second == 59:
         if ac.play_out_items is not None:
@@ -254,7 +253,7 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
         # schedule items for player
         if ac.play_out_items is not None:
             mpd.connect()
-            msg_1 = "Add Magazine-Item " + str(mg_number) + "to Playlist..."
+            msg_1 = "Add Magazine-Item " + str(mg_number) + " to Playlist..."
             msg_2 = ""
             # cropping playlist-items
             mpd.exec_command("crop", None)
@@ -349,16 +348,24 @@ class my_form(Frame):
                 # free for next run
                 ac.play_out_items = None
 
-        # prepare play_out 30
-        #minute_start = 30
-        minute_start = db.ac_config_times[5]
-        # config-minute -2
-
+        # prepare play_out 5x
         #if time_now.minute == 4:
         if time_now.minute == int(db.ac_config_times[4]) - 2:
             minute_start = db.ac_config_times[4]
             prepare_mpd_5x(time_now, minute_start)
 
+        # now play 5x
+        if time_now.minute == int(db.ac_config_times[4]):
+            if time_now.second == 0:
+                if ac.play_out_items is not None:
+                    ac.app_msg_1 = "Playing..."
+                    mpd.exec_command("next", None)
+            if time_now.second == 59:
+                mpd.disconnect()
+                # free for next run
+                ac.play_out_items = None
+
+        # prepare play_out 30x
         #if time_now.minute == 28:
         if time_now.minute == int(db.ac_config_times[5]) - 2:
             minute_start = db.ac_config_times[5]
