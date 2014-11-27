@@ -596,12 +596,35 @@ def write_to_file_playlist_it(path_filename):
                                              "write_also_to_console")
         return
 
+    # mairlist
     z = 0
     action_msg = ""
     #for item in list_sendung_filename:
+
     for item in ac.po_it_pl:
         # Win Zeilenumbruch hinten dran
         f_playlist.write(item + "\r\n")
+        action_msg = "Infotime: " + ntpath.basename(item)
+
+        #log_message = "Playlist Infotime: " + item
+        #db.write_log_to_db(ac, log_message, "k")
+
+        # Einige Eintraege fuer Info-Meldung uebergehen
+        waste = None
+        if string.find(action_msg, "Zeitansage") != -1:
+            waste = True
+        if string.find(action_msg, "SRB_Jingles") != -1:
+            waste = True
+        if string.find(action_msg, "Instrumental") != -1:
+            waste = True
+        if waste is None:
+            db.write_log_to_db(ac, action_msg, "i")
+        z += 1
+    f_playlist.close
+
+    # mpd
+    action_msg = ""
+    for item in ac.po_it_pl_mpd:
         action_msg = "Infotime: " + ntpath.basename(item)
 
         log_message = "Playlist Infotime: " + item
@@ -617,8 +640,7 @@ def write_to_file_playlist_it(path_filename):
             waste = True
         if waste is None:
             db.write_log_to_db(ac, action_msg, "i")
-        z += 1
-    f_playlist.close
+        #z += 1
 
 
 def write_to_file_playlist_mg(path_file_pl, file_mg, mg_number):
@@ -708,14 +730,24 @@ def read_zeitansage():
                     + str(ac.time_target.hour).zfill(2))
     path_zeitansage_po = (lib_cm.check_slashes_a(ac,
                              path_zeitansage_po, ac.pl_win_mairlist))
+    # Pfad von mpd zu Zeitansage
+    path_zeitansage_po_mpd = (lib_cm.check_slashes_a(ac,
+                         db.ac_config_zeitansage[5], ac.pl_win_mpd)
+                    + str(ac.time_target.hour).zfill(2))
+    path_zeitansage_po_mpd = (lib_cm.check_slashes_a(ac,
+                             path_zeitansage_po_mpd, ac.pl_win_mpd))
     # Zeitansage zu passender Zeit per Zufall aus Pool holen
     file_zeitansage = lib_cm.read_random_file_from_dir(ac, db, path_zeitansage)
     if file_zeitansage is None:
         db.write_log_to_db_a(ac, ac.app_errorslist[9], "x",
                                              "write_also_to_console")
     else:
+        # mairlist
         ac.po_it_pl.append(path_zeitansage_po + file_zeitansage)
         lib_cm.message_write_to_console(ac, ac.po_it_pl)
+        # mpd
+        ac.po_it_pl_mpd.append(path_zeitansage_po_mpd + file_zeitansage)
+        lib_cm.message_write_to_console(ac, ac.po_it_pl_mpd)
 
 
 def read_jingle():
@@ -727,6 +759,11 @@ def read_jingle():
                          db.ac_config_it_paths[4], ac.pl_win_mairlist))
     path_jingle_po = (lib_cm.check_slashes_a(ac,
                                      path_jingle_po, ac.pl_win_mairlist))
+    # Pfad von mpd zu Jingle
+    path_jingle_po_mpd = (lib_cm.check_slashes_a(ac,
+                         db.ac_config_it_paths[8], ac.pl_win_mpd))
+    path_jingle_po_mpd = (lib_cm.check_slashes_a(ac,
+                                     path_jingle_po_mpd, ac.pl_win_mpd))
     # Jingle per Zufall aus Pool holen
     file_jingle = lib_cm.read_random_file_from_dir(ac, db, path_jingle)
     if file_jingle is None:
@@ -735,10 +772,16 @@ def read_jingle():
     else:
         if db.ac_config_1[1] == "on":
             # wenn Zeitansage, dann danach einsortieren
+            # mairlist
             ac.po_it_pl.insert(1, path_jingle_po + file_jingle)
+            # mpd
+            ac.po_it_pl_mpd.insert(1, path_jingle_po_mpd + file_jingle)
         else:
+            # mairlsit
             ac.po_it_pl.insert(0, path_jingle_po + file_jingle)
-        lib_cm.message_write_to_console(ac, ac.po_it_pl)
+            # mpd
+            ac.po_it_pl_mpd.insert(0, path_jingle_po_mpd + file_jingle)
+        lib_cm.message_write_to_console(ac, ac.po_it_pl_mpd)
 
 
 def read_infotime():
@@ -781,10 +824,15 @@ def read_infotime():
     # Pfad von mAirlist zu InfoTime
     path_it_po = lib_cm.check_slashes_a(ac,
                              db.ac_config_it_paths[3], ac.pl_win_mairlist)
-
+    # Pfad von mpd zu InfoTime
+    path_it_po_mpd = lib_cm.check_slashes_a(ac,
+                             db.ac_config_it_paths[7], ac.pl_win_mpd)
     # Filenames mit Path in List
     for item in list_result[0]:
+        # mairlist
         ac.po_it_pl.append(path_it_po + item)
+        # mpd
+        ac.po_it_pl_mpd.append(path_it_po_mpd + item)
     return True
 
 
@@ -795,6 +843,9 @@ def read_instrumental():
     # Pfad von mAirlist zu Instrumentals
     path_instrumental_po = (lib_cm.check_slashes_a(ac,
                              db.ac_config_it_paths[6], ac.pl_win_mairlist))
+    # Pfad von mpd zu Instrumentals
+    path_instrumental_po_mpd = (lib_cm.check_slashes_a(ac,
+                             db.ac_config_it_paths[9], ac.pl_win_mpd))
     # fuer Gesamtlaenge
     duration_minute_instr = 0
     duration_minute_target = int(db.ac_config_times[4]) - ac.po_it_duration
@@ -809,9 +860,12 @@ def read_instrumental():
             db.write_log_to_db_a(ac, ac.app_errorslist[11], "x",
                                              "write_also_to_console")
         else:
+            # mairlist
             ac.po_it_pl.append(path_instrumental_po + file_instrumental)
             lib_cm.message_write_to_console(ac, ac.po_it_pl)
-
+            # mpd
+            ac.po_it_pl_mpd.append(path_instrumental_po_mpd + file_instrumental)
+            lib_cm.message_write_to_console(ac, ac.po_it_pl_mpd)
         try:
             audio_instrumental = MP3(path_instrumental + file_instrumental)
             duration_minute_instr += audio_instrumental.info.length / 60
