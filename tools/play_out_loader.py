@@ -233,9 +233,12 @@ def load_extended_params():
         app_params_type_list_it_paths.append("p_string")
         app_params_type_list_it_paths.append("p_string")
         app_params_type_list_it_paths.append("p_string")
+        app_params_type_list_it_paths.append("p_string")
+        app_params_type_list_it_paths.append("p_string")
+        app_params_type_list_it_paths.append("p_string")
         # Erweiterte Params pruefen
         param_check_it_paths = lib_cm.params_check_a(
-                        ac, db, 6,
+                        ac, db, 9,
                         app_params_type_list_it_paths,
                         db.ac_config_it_paths)
         if param_check_it_paths is None:
