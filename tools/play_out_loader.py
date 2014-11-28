@@ -180,8 +180,9 @@ class app_config(object):
         self.po_switch.append("03")
         self.po_switch.append("03")
         self.po_switch.append("03")
-        # Liste Infotime-Items
+        # List for mAirlist-playlist Infotime-Items
         self.po_it_pl = []
+        # List for mpd-playlist Infotime-Items
         self.po_it_pl_mpd = []
         # Laenge InfoTime
         self.po_it_duration = 0
@@ -350,7 +351,7 @@ def load_broadcast(minute_start, minute_end):
         lib_cm.message_write_to_console(ac, list_result)
         return list_result
 
-    # in List schreiben
+    # write in list
     log_message = (u"Sendungen vorhanden für: " + str(ac.time_target.date())
                      + " " + str(ac.time_target.hour) + ":" + minute_start)
     db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
@@ -361,7 +362,7 @@ def load_broadcast(minute_start, minute_end):
         ss = row[3][6:8]
 
         int_sum_duration = (int(hh) * 60 * 60) + (int(mm) * 60) + int(ss)
-        # list mit filename und sekunden
+        # list with filename and seconds
         list_sendung_filename.append(row[12])
         list_sendung_source.append(row[7])
         list_sendung_duration.append(int_sum_duration)
@@ -395,13 +396,13 @@ def load_infotime(sende_stunde_start):
                  + str(ac.time_target.date()) + " " + str(ac.time_target.hour))
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
         list_sendung_filename.append("nix")
-        #list_result mit Laenge IT 0 Minuten:
+        #list_result with lenght IT 0 minutes:
         list_result = [list_sendung_filename, 0, int_sum_duration]
         lib_cm.message_write_to_console(ac, "load_infotime list_result: ")
         lib_cm.message_write_to_console(ac, list_result)
         return list_result
 
-    # in List schreiben
+    # write in list
     log_message = (u"IT-Sendungen vorhanden für: " + str(ac.time_target.date())
                      + " " + str(ac.time_target.hour))
     db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
@@ -413,7 +414,7 @@ def load_infotime(sende_stunde_start):
         ss = row[3][6:8]
 
         int_sum_duration = (int(hh) * 60 * 60) + (int(mm) * 60) + int(ss)
-        # list mit filename und sekunden
+        # list with filename and seconds
         list_sendung_filename.append(row[12])
         list_sendung_duration.append(int_sum_duration)
 
@@ -427,7 +428,7 @@ def load_infotime(sende_stunde_start):
 
 def rock_sendung(minute_start, minute_end):
     """SENDUNGEN sammeln"""
-    # Sendungen aus db holen
+    # load broadcast from db
     lib_cm.message_write_to_console(ac, minute_start + minute_end)
     list_result = load_broadcast(minute_start, minute_end)
     # Infotime ist in app-config deaktiviert
@@ -509,7 +510,7 @@ def prepare_pl_broadcast(minute_start, list_result):
         nZ_po_switch = 2
         path_filename = db.ac_config_playlist[1] + "_30.m3u"
 
-    # Playlist loeschen
+    # delete mAirlist-Playlist
     lib_cm.message_write_to_console(ac, path_filename)
     delete_pl_ok = lib_cm.erase_file_a(ac, db, path_filename,
         u"Playlist geloescht ")
@@ -578,7 +579,6 @@ def write_to_file_playlist(
     f_playlist.close
 
 
-#def write_to_file_playlist_it(path_filename, list_sendung_filename):
 def write_to_file_playlist_it(path_filename):
     """Playlist InfoTime schreiben"""
     try:
@@ -597,7 +597,7 @@ def write_to_file_playlist_it(path_filename):
         return
 
     # mairlist
-    z = 0
+    #z = 0
     action_msg = ""
     #for item in list_sendung_filename:
 
@@ -606,20 +606,6 @@ def write_to_file_playlist_it(path_filename):
         f_playlist.write(item + "\r\n")
         action_msg = "Infotime: " + ntpath.basename(item)
 
-        #log_message = "Playlist Infotime: " + item
-        #db.write_log_to_db(ac, log_message, "k")
-
-        # Einige Eintraege fuer Info-Meldung uebergehen
-        waste = None
-        if string.find(action_msg, "Zeitansage") != -1:
-            waste = True
-        if string.find(action_msg, "SRB_Jingles") != -1:
-            waste = True
-        if string.find(action_msg, "Instrumental") != -1:
-            waste = True
-        if waste is None:
-            db.write_log_to_db(ac, action_msg, "i")
-        z += 1
     f_playlist.close
 
     # mpd
