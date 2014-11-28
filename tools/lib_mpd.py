@@ -24,17 +24,14 @@ def mpc_client(command):
     return p
 
 
-class PollerError(Exception):
+class RunError(Exception):
     """Fatal error in poller."""
 
 
 class myMPD(object):
     def __init__(self):
-        #self._host = host
         self._host = mpd_config.mpd_host
-        #self._port = port
         self._port = mpd_config.mpd_port
-        #self._password = password
         self._password = mpd_config.mpd_pw
         self._client = MPDClient()
 
@@ -44,7 +41,7 @@ class myMPD(object):
         # Catch socket errors
         except IOError as err:
             errno, strerror = err
-            raise PollerError("Could not connect to '%s': %s" %
+            raise RunError("Could not connect to '%s': %s" %
                               (self._host, strerror))
 
         # Catch all other possible errors
@@ -52,7 +49,11 @@ class myMPD(object):
         # be, but we don't know how to handle them here, so treat them as if
         # they are instead of ignoring them.
         except MPDError as e:
-            raise PollerError("Could not connect to '%s': %s" %
+            if e == "Already connected":
+                print e
+                pass
+            else:
+                raise RunError("Could not connect to '%s': %s" %
                               (self._host, e))
 
         if self._password:
@@ -61,13 +62,13 @@ class myMPD(object):
 
             # Catch errors with the password command (e.g., wrong password)
             except CommandError as e:
-                raise PollerError("Could not connect to '%s': "
+                raise RunError("Could not connect to '%s': "
                                   "password commmand failed: %s" %
                                   (self._host, e))
 
             # Catch all other possible errors
             except (MPDError, IOError) as e:
-                raise PollerError("Could not connect to '%s': "
+                raise RunError("Could not connect to '%s': "
                                   "error with password command: %s" %
                                   (self._host, e))
 
@@ -92,21 +93,22 @@ class myMPD(object):
     def exec_command(self, command, value):
         result = None
         try:
-            #self.connect()
-            #song = self._client.currentsong()
             if command == "update":
                 result = self._client.update()
             if command == "song":
                 result = self._client.currentsong()
+            if command == "status":
+                result = self._client.status()
             if command == "crop":
                 result = mpc_client("crop")
             if command == "add":
                 result = self._client.add(value)
             if command == "next":
                 result = mpc_client("next")
-            #self.disconnect()
+            if command == "seek":
+                result = self._client.seek(value)
 
-        # Couldn't get the current song, so try reconnecting and retrying
+        # Couldn't get the current cmd, so try reconnecting and retrying
         except (MPDError, IOError):
             # No error handling required here
             # Our disconnect function catches all exceptions, and therefore
@@ -117,14 +119,13 @@ class myMPD(object):
                 self.connect()
 
             # Reconnecting failed
-            except PollerError as e:
-                raise PollerError("Reconnecting failed: %s" % e)
+            except RunError as e:
+                raise RunError("Reconnecting failed: %s" % e)
 
             #try:
-
             # Failed again, just give up
             #except (MPDError, IOError) as e:
-            #    raise PollerError("Couldn't retrieve current song: %s" % e)
+            #    raise RunError("Couldn't retrieve current song: %s" % e)
 
         # Hurray!  We got the current song without any errors!
         print "Res_mpd:"

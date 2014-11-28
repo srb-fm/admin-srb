@@ -21,9 +21,8 @@ Copyright (C) Joerg Sorge joergsorge at ggooogl
 from Tkinter import Frame, Label, NW, END
 from ScrolledText import ScrolledText
 import sys
-import string
-import re
 import datetime
+import string
 import lib_common_1 as lib_cm
 import lib_mpd as lib_mp
 
@@ -76,6 +75,7 @@ class app_config(object):
         self.play_out_infotime = False
         self.app_msg_1 = None
         self.app_msg_2 = None
+        self.music_play_list = []
 
 
 def load_extended_params():
@@ -106,7 +106,7 @@ def load_extended_params():
 
 
 def load_play_out_items(minute_start, broadcast_type):
-    if minute_start == 0:
+    if int(minute_start) == 0:
         # be save to not loading items from prev hour
         time_back = (datetime.datetime.now()
             + datetime.timedelta(seconds=- 3560))
@@ -165,6 +165,15 @@ def prepare_mpd_0(time_now, minute_start):
         else:
             msg_1 = "No Items for top of the hour from DB.nothing to do" + "\n"
 
+    if time_now.second == 55:
+        if ac.play_out_items is not None:
+            current_song = mpd.exec_command("song", None)
+            if "file" in current_song:
+                print current_song["file"]
+            current_status = mpd.exec_command("status", None)
+            if "time" in current_status:
+                print current_status["time"]
+
     if time_now.second == 59:
         if ac.play_out_items is not None:
             msg_1 = "Add Items for top of the hour to Playlist..."
@@ -209,6 +218,19 @@ def prepare_mpd_5x(time_now, minute_start):
             msg_1 = ("No Items for Minute "
                     + minute_start + " from DB...nothing to do" + "\n")
 
+    if time_now.second == 55:
+        if ac.play_out_items is not None:
+            mpd.connect()
+            current_song = mpd.exec_command("song", None)
+            if "file" in current_song:
+                print current_song["file"]
+            current_status = mpd.exec_command("status", None)
+            if "time" in current_status:
+                print current_status["time"]
+                index_ = string.find(current_status["time"], ":")
+                print current_status["time"][0:index_]
+            mpd.disconnect()
+
     if time_now.second == 59:
         if ac.play_out_items is not None:
             msg_1 = "Add Items to Playlist..."
@@ -244,7 +266,8 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
             log_message = ("Magazin vorbereitet: "
                                         + ac.play_out_items[0][2][20:])
         else:
-            msg_1 = "No Magazine-Item from DB...nothing to do" + "\n"
+            msg_1 = ("No Magazine-Item " + str(mg_number)
+                                + " from DB...nothing to do" + "\n")
             log_message = ("Play-Out Magazin: nicht vorgesehen")
 
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
@@ -268,6 +291,10 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
 
     ac.app_msg_1 = msg_1
     ac.app_msg_2 = msg_2
+
+
+def prepare_music_playlist():
+    "create music playlist"
 
 
 class my_form(Frame):
@@ -378,6 +405,10 @@ class my_form(Frame):
             prepare_mpd_magazine(time_now, minute_start, 2)
         if time_now.minute == 44:
             prepare_mpd_magazine(time_now, minute_start, 3)
+
+        # load music
+        #if time_now.minute == 50:
+        #    prepare_music_playlist()
 
         self.display_scheduling()
 
