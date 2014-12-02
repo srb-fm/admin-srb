@@ -129,7 +129,7 @@ def load_actions(c_time_back):
         if item_log_last == item_log_current:
             #TODO: funktioniert das wirklich?
             db.write_log_to_db(ac,
-                ac.app_desc + " doppelte Meldung" + item_log_last, "x")
+                ac.app_desc + " doppelte Meldung: " + item_log_last, "x")
             continue
         lib_cm.message_write_to_console(ac, item_log_current)
         tweet_log(item_log_current)
