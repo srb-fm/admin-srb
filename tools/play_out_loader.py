@@ -168,7 +168,7 @@ class app_config(object):
         self.pl_win_mpd = "no"
         # IT senden
         self.po_it = None
-        # Mags senden
+        # Magazines play-out
         self.po_mg = []
         self.po_mg.append(True)
         self.po_mg.append(True)
@@ -184,7 +184,7 @@ class app_config(object):
         self.po_it_pl = []
         # List for mpd-playlist Infotime-Items
         self.po_it_pl_mpd = []
-        # Laenge InfoTime
+        # Duration of InfoTime
         self.po_it_duration = 0
         # aktuelle Stunde
         #self.time_target = datetime.datetime.now()
@@ -408,7 +408,6 @@ def load_infotime(sende_stunde_start):
     db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
     for row in sendung_data:
-        #print row
         hh = row[3][0:2]
         mm = row[3][3:5]
         ss = row[3][6:8]
@@ -597,9 +596,8 @@ def write_to_file_playlist_it(path_filename):
         return
 
     # mairlist
-    #z = 0
     action_msg = ""
-    #for item in list_sendung_filename:
+    # for item in list_sendung_filename:
 
     for item in ac.po_it_pl:
         # Win Zeilenumbruch hinten dran
@@ -626,7 +624,6 @@ def write_to_file_playlist_it(path_filename):
             waste = True
         if waste is None:
             db.write_log_to_db(ac, action_msg, "i")
-        #z += 1
 
 
 def write_to_file_playlist_mg(path_file_pl, file_mg, mg_number):
