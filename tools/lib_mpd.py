@@ -103,6 +103,8 @@ class myMPD(object):
                 result = mpc_client("crop")
             if command == "add":
                 result = self._client.add(value)
+            if command == "crossfade":
+                result = self._client.crossfade(value)
             if command == "next":
                 result = mpc_client("next")
             if command == "seek":
@@ -128,6 +130,6 @@ class myMPD(object):
             #    raise RunError("Couldn't retrieve current song: %s" % e)
 
         # Hurray!  We got the current song without any errors!
-        print "Res_mpd:"
+        print "Res_mpd: " + command
         print result
         return result
