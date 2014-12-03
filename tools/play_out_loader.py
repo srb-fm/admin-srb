@@ -195,7 +195,7 @@ class app_config(object):
 def load_extended_params():
     """Erweiterte Params laden"""
     # mairlist
-    db.ac_config_playlist = db.params_load_1a(ac, db, "PO_Playlists")
+    db.ac_config_playlist = db.params_load_1a(ac, db, "PO_Playlists_1")
     if db.ac_config_playlist is not None:
         # Erweiterte Paramsliste anlegen
         app_params_type_list_playlist = []
@@ -501,13 +501,13 @@ def prepare_pl_broadcast(minute_start, list_result):
 
     if minute_start == "00":
         nZ_po_switch = 0
-        path_filename = db.ac_config_playlist[1] + "_00.m3u"
+        path_filename = db.ac_config_playlist[5] + "_00.m3u"
     if minute_start > "00" and minute_start < "30":
         nZ_po_switch = 1
-        path_filename = db.ac_config_playlist[1] + "_" + minute_start + ".m3u"
+        path_filename = db.ac_config_playlist[5] + "_" + minute_start + ".m3u"
     if minute_start == "30":
         nZ_po_switch = 2
-        path_filename = db.ac_config_playlist[1] + "_30.m3u"
+        path_filename = db.ac_config_playlist[5] + "_30.m3u"
 
     # delete mAirlist-Playlist
     lib_cm.message_write_to_console(ac, path_filename)
@@ -551,9 +551,9 @@ def write_to_file_playlist(
         return
 
     path_mediafile = lib_cm.check_slashes_a(ac,
-                             db.ac_config_playlist[3], ac.pl_win_mairlist)
+                             db.ac_config_playlist[7], ac.pl_win_mairlist)
     path_mediafile_mpd = lib_cm.check_slashes_a(ac,
-                             db.ac_config_playlist[8], ac.pl_win_mpd)
+                             db.ac_config_playlist[2], ac.pl_win_mpd)
     z = 0
     action_msg = ""
     log_message_pl = ""
@@ -644,9 +644,9 @@ def write_to_file_playlist_mg(path_file_pl, file_mg, mg_number):
         return
 
     path_mg = lib_cm.check_slashes_a(ac,
-                         db.ac_config_playlist[2], ac.pl_win_mairlist)
+                         db.ac_config_playlist[6], ac.pl_win_mairlist)
     path_mg_mpd = lib_cm.check_slashes_a(ac,
-                         db.ac_config_playlist[7], ac.pl_win_mpd)
+                         db.ac_config_playlist[1], ac.pl_win_mpd)
     path_file_mg = path_mg + file_mg
     f_playlist.write(path_file_mg + "\r\n")
     f_playlist.close
@@ -929,7 +929,7 @@ def prepare_pl_infotime():
     ac.po_it_pl_mpd.insert(0, path_file_fader_mpd)
 
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
-    path_filename = db.ac_config_playlist[1] + "_00.m3u"
+    path_filename = db.ac_config_playlist[5] + "_00.m3u"
     #write_to_file_playlist_it(path_filename, ac.po_it_pl)
     write_to_file_playlist_it(path_filename)
 
@@ -978,7 +978,7 @@ def rock_magazin():
     # Alle PL loeschen
     mag_z = [1, 2, 3]
     for i in mag_z:
-        path_pl_file = (db.ac_config_playlist[1]
+        path_pl_file = (db.ac_config_playlist[5]
                                 + "_magazine_0" + str(i) + ".m3u")
         lib_cm.message_write_to_console(ac, path_pl_file)
         delete_pl_ok = lib_cm.erase_file_a(ac, db, path_pl_file,
@@ -1024,7 +1024,7 @@ def rock_magazin():
         for item in list_result[0]:
             #sendung = item
             if ac.po_mg[zz - 1] is True:
-                path_file_pl = (db.ac_config_playlist[1]
+                path_file_pl = (db.ac_config_playlist[5]
                                     + "_magazine_0" + str(zz) + ".m3u")
                 write_to_file_playlist_mg(path_file_pl, item, zz)
             else:
@@ -1047,7 +1047,7 @@ def rock_magazin():
             for index, item in enumerate(list_sendung):
                 if index < 3:
                     if ac.po_mg[zz - 1] is True:
-                        path_file_pl = (db.ac_config_playlist[1]
+                        path_file_pl = (db.ac_config_playlist[5]
                                     + "_magazine_0" + str(zz) + ".m3u")
                         write_to_file_playlist_mg(path_file_pl, item, zz)
                     else:
@@ -1063,7 +1063,7 @@ def rock_magazin():
             for index, item in enumerate(list_sendung):
                 if index > 2:
                     if ac.po_mg[zz - 1] is True:
-                        path_file_pl = (db.ac_config_playlist[1]
+                        path_file_pl = (db.ac_config_playlist[5]
                                     + "_magazine_0" + str(zz) + ".m3u")
                         write_to_file_playlist_mg(path_file_pl, item, zz)
                     else:
@@ -1099,7 +1099,7 @@ def rock_magazin():
                                              "write_also_to_console")
         for index, item in enumerate(list_sendung_mag):
             if ac.po_mg[zz - 1] is True:
-                path_file_pl = (db.ac_config_playlist[1]
+                path_file_pl = (db.ac_config_playlist[5]
                                     + "_magazine_0" + str(zz) + ".m3u")
                 write_to_file_playlist_mg(path_file_pl, item, zz)
             else:
