@@ -4,7 +4,7 @@
 # based on the example of Joerg Thalheim
 # https://github.com/Mic92/python-mpd2
 
-from mpd import MPDClient, MPDError, CommandError
+from mpd import MPDClient, MPDError, CommandError, ConnectionError
 import subprocess
 import mpd_config
 
@@ -25,7 +25,8 @@ def mpc_client(command):
 
 
 class RunError(Exception):
-    """Fatal error in poller."""
+    """Fatal error """
+    pass
 
 
 class myMPD(object):
@@ -44,16 +45,17 @@ class myMPD(object):
             raise RunError("Could not connect to '%s': %s" %
                               (self._host, strerror))
 
+        except ConnectionError as e:
+            print "mpdconerr"
+            print e
+            pass
+
         # Catch all other possible errors
         # ConnectionError and ProtocolError are always fatal.  Others may not
         # be, but we don't know how to handle them here, so treat them as if
         # they are instead of ignoring them.
         except MPDError as e:
-            if e == "Already connected":
-                print e
-                pass
-            else:
-                raise RunError("Could not connect to '%s': %s" %
+            raise RunError("Could not connect to '%s': %s" %
                               (self._host, e))
 
         if self._password:
@@ -99,16 +101,27 @@ class myMPD(object):
                 result = self._client.currentsong()
             if command == "status":
                 result = self._client.status()
-            if command == "crop":
-                result = mpc_client("crop")
             if command == "add":
                 result = self._client.add(value)
+            if command == "consume":
+                result = self._client.consume(value)
             if command == "crossfade":
                 result = self._client.crossfade(value)
-            if command == "next":
-                result = mpc_client("next")
             if command == "seek":
                 result = self._client.seek(value)
+            if command == "repeat":
+                result = self._client.repeat(value)
+            if command == "random":
+                result = self._client.random(value)
+            if command == "single":
+                result = self._client.single(value)
+            if command == "replay_gain_mode":
+                result = self._client.replay_gain_mode(value)
+            if command == "next":
+                result = self._client.next()
+            # via mpc-client
+            if command == "crop":
+                result = mpc_client("crop")
 
         # Couldn't get the current cmd, so try reconnecting and retrying
         except (MPDError, IOError):
@@ -124,12 +137,6 @@ class myMPD(object):
             except RunError as e:
                 raise RunError("Reconnecting failed: %s" % e)
 
-            #try:
-            # Failed again, just give up
-            #except (MPDError, IOError) as e:
-            #    raise RunError("Couldn't retrieve current song: %s" % e)
-
-        # Hurray!  We got the current song without any errors!
         print "Res_mpd: " + command
         print result
         return result
