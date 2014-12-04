@@ -999,15 +999,16 @@ def rock_infotime():
 def rock_magazin():
     """Magazin abarbeiten"""
     # Alle PL loeschen
-    mag_z = [1, 2, 3]
-    for i in mag_z:
-        path_pl_file = (db.ac_config_playlist[5]
+    if db.ac_config_playlist[4] == "on":
+        mag_z = [1, 2, 3]
+        for i in mag_z:
+            path_pl_file = (db.ac_config_playlist[5]
                                 + "_magazine_0" + str(i) + ".m3u")
-        lib_cm.message_write_to_console(ac, path_pl_file)
-        delete_pl_ok = lib_cm.erase_file_a(ac, db, path_pl_file,
+            lib_cm.message_write_to_console(ac, path_pl_file)
+            delete_pl_ok = lib_cm.erase_file_a(ac, db, path_pl_file,
                                         u"Playlist geloescht ")
-        if delete_pl_ok is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[13], "x",
+            if delete_pl_ok is None:
+                db.write_log_to_db_a(ac, ac.app_errorslist[13], "x",
                                              "write_also_to_console")
     # Einstellungen
     if db.ac_config_1[6] == "off":
