@@ -62,6 +62,10 @@ class myMPD(object):
             try:
                 self._client.password(self._password)
 
+            except ConnectionError as e:
+                print "mpdconerr1"
+                print e
+                pass
             # Catch errors with the password command (e.g., wrong password)
             except CommandError as e:
                 raise RunError("Could not connect to '%s': "
@@ -119,6 +123,8 @@ class myMPD(object):
                 result = self._client.replay_gain_mode(value)
             if command == "next":
                 result = self._client.next()
+            if command == "setvol":
+                result = self._client.setvol(value)
             # via mpc-client
             if command == "crop":
                 result = mpc_client("crop")

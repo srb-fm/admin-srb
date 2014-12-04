@@ -73,6 +73,7 @@ class app_config(object):
         self.play_out_items = None
         self.play_out_items_mag = None
         self.play_out_infotime = False
+        self.song_time_elapsed = None
         self.app_msg_1 = None
         self.app_msg_2 = None
         self.music_play_list = []
@@ -155,6 +156,34 @@ def load_play_out_items(minute_start, broadcast_type):
     return log_data
 
 
+def check_mpd_stat(option):
+    """read mpd and song-status"""
+    current_status = mpd.exec_command("status", None)
+    if option is not None:
+        if option == "time_remain":
+            if "time" in current_status:
+                lib_cm.message_write_to_console(ac, current_status["time"])
+                index = string.find(current_status["time"], ":")
+                seconds_remain = (int(current_status["time"][index + 1:]) -
+                                int(current_status["time"][0:index]))
+                return seconds_remain
+    else:
+        return current_status
+
+
+def check_mpd_song(option):
+    """read song-status"""
+    current_song = mpd.exec_command("song", None)
+    if option is not None:
+        if option == "time_elapsed":
+            if "time" in current_status:
+                lib_cm.message_write_to_console(ac, current_status["time"])
+                index = string.find(":", current_status["time"])
+                return current_status["time"][0:index]
+    else:
+        return current_song
+
+
 def prepare_mpd_0(time_now, minute_start):
     """prepare mpd for top of the hour"""
     msg_1 = None
@@ -183,19 +212,11 @@ def prepare_mpd_0(time_now, minute_start):
 
     if time_now.second == 45:
         if ac.play_out_items is not None:
+            mpd.connect()
             msg_1 = "Setting crossfade to 3s"
             mpd.exec_command("crossfade", 3)
 
-    if time_now.second == 50:
-        if ac.play_out_items is not None:
-            current_song = mpd.exec_command("song", None)
-            if "file" in current_song:
-                print current_song["file"]
-            current_status = mpd.exec_command("status", None)
-            if "time" in current_status:
-                print current_status["time"]
-
-    if time_now.second == 55:
+    if time_now.second == 56:
         if ac.play_out_items is not None:
             msg_1 = "Add Items for top of the hour to Playlist..."
             msg_2 = ""
@@ -211,6 +232,11 @@ def prepare_mpd_0(time_now, minute_start):
 
             if ac.play_out_infotime is True:
                 ac.play_out_infotime = False
+            ac.song_time_elapsed = check_mpd_stat("time_remain")
+            log_message = ("Aktueller Titel noch "
+                                + str(ac.song_time_elapsed) + "Sekunden")
+            db.write_log_to_db_a(ac, log_message, "t",
+                                             "write_also_to_console")
         else:
             msg_1 = None
 
@@ -218,8 +244,16 @@ def prepare_mpd_0(time_now, minute_start):
     if time_now.second == 59:
         if ac.play_out_items is not None:
             ac.app_msg_1 = "Playing..."
-            mpd.exec_command("next", None)
+            if ac.song_time_elapsed >= 4:
+                mpd.exec_command("next", None)
+                ac.song_time_elapsed = None
+                db.write_log_to_db_a(ac, "Play next", "t",
+                                             "write_also_to_console")
+            else:
+                db.write_log_to_db_a(ac, "Play continue", "t",
+                                             "write_also_to_console")
         push_music_playlist()
+        mpd.disconnect()
 
     ac.app_msg_1 = msg_1
     ac.app_msg_2 = msg_2
@@ -263,7 +297,7 @@ def prepare_mpd_5x(time_now, minute_start):
                 index_ = string.find(current_status["time"], ":")
                 print current_status["time"][0:index_]
 
-    if time_now.second == 58:
+    if time_now.second == 56:
         if ac.play_out_items is not None:
             msg_1 = "Add Items to Playlist..."
             msg_2 = ""
@@ -276,14 +310,27 @@ def prepare_mpd_5x(time_now, minute_start):
             if minute_start > 5:
                 # delete the first items from music-playlist
                 del ac.music_play_list[:8]
+            ac.song_time_elapsed = check_mpd_stat("time_remain")
+            log_message = ("Aktueller Titel noch "
+                                + str(ac.song_time_elapsed) + "Sekunden")
+            db.write_log_to_db_a(ac, log_message, "t",
+                                             "write_also_to_console")
         else:
             msg_1 = None
 
     if time_now.second == 59:
         if ac.play_out_items is not None:
             ac.app_msg_1 = "Playing..."
-            mpd.exec_command("next", None)
-    push_music_playlist()
+            if ac.song_time_elapsed >= 4:
+                mpd.exec_command("next", None)
+                ac.song_time_elapsed = None
+                db.write_log_to_db_a(ac, "Play next", "t",
+                                             "write_also_to_console")
+            else:
+                db.write_log_to_db_a(ac, "Play continue", "t",
+                                             "write_also_to_console")
+            push_music_playlist()
+            mpd.disconnect()
 
     ac.app_msg_1 = msg_1
     ac.app_msg_2 = msg_2
@@ -303,7 +350,7 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
             msg_1 = ("Load Magazine-Item "
                             + str(mg_number) + " from DB..." + "\n")
             msg_1 = msg_1 + ac.play_out_items_mag[0][2][20:] + "\n"
-            log_message = ("Magazin vorbereitet: " + str(mg_number) +
+            log_message = ("Magazin vorbereitet: " + str(mg_number)
                                         + ac.play_out_items_mag[0][2][20:])
         else:
             msg_1 = ("No Magazine-Item " + str(mg_number)
@@ -393,7 +440,7 @@ def create_music_playlist():
 def mpd_setup():
     """basic config of mpd"""
     mpd.connect()
-    mpd.exec_command("crossfade", 1)
+    mpd.exec_command("crossfade", 2)
     mpd.exec_command("consume", "0")
     mpd.exec_command("repeat", "1")
     mpd.exec_command("random", "0")
@@ -456,6 +503,14 @@ class my_form(Frame):
 
     def lets_rock(self):
         """mainfunction"""
+        #mpd.connect()
+        #check_mpd_stat(None)
+        #song_time = check_mpd_stat("time_remain")
+        #print song_time
+        #mpd.exec_command("setvol", 5)
+        #check_mpd_stat(None)
+        #mpd.disconnect()
+        #return
         if ac.app_counter == 2:
             mpd_setup()
             create_music_playlist()
@@ -472,6 +527,7 @@ class my_form(Frame):
                 mpd.connect()
                 ac.app_msg_1 = "Update MPD-DB..."
                 mpd.exec_command("update", None)
+                mpd.disconnect()
 
         # prepare and play_out top of the hour
         if time_now.minute == 59:
@@ -481,6 +537,7 @@ class my_form(Frame):
         if time_now.minute == 1:
             if time_now.second == 2:
                 # reset crossfade
+                mpd.connect()
                 mpd.exec_command("crossfade", 1)
                 # disconnect at the end of loop for top of the hour
                 mpd.disconnect()
@@ -493,18 +550,12 @@ class my_form(Frame):
             minute_start = db.ac_config_times[4]
             prepare_mpd_5x(time_now, minute_start)
 
-        # now play 5x 1.
-        #if time_now.minute == int(db.ac_config_times[4]) - 1:
-        #    if time_now.second == 59:
-        #        if ac.play_out_items is not None:
-        #            ac.app_msg_1 = "Playing..."
-        #           mpd.exec_command("next", None)
-
         # cleaning up 5x 1.
         if time_now.minute == int(db.ac_config_times[4]) + 1:
             if time_now.second == 2:
                 if ac.play_out_items is not None:
                     # reset crossfade
+                    mpd.connect()
                     mpd.exec_command("crossfade", 1)
                     # disconnect at the end of loop for top of the hour
                     mpd.disconnect()
@@ -513,27 +564,20 @@ class my_form(Frame):
 
         # prepare play_out 5x 2.
         # if time_now.minute == 28:
-        if time_now.minute == int(db.ac_config_times[5]) - 2:
+        if time_now.minute == int(db.ac_config_times[5]) - 1:
             minute_start = db.ac_config_times[5]
             prepare_mpd_5x(time_now, minute_start)
 
-        # now play 5x 2.
-        if time_now.minute == int(db.ac_config_times[5]):
-            if time_now.second == 0:
+        # cleaning up 5x 2.
+        if time_now.minute == int(db.ac_config_times[5]) + 1:
+            if time_now.second == 2:
                 if ac.play_out_items is not None:
-                    ac.app_msg_1 = "Playing..."
-                    mpd.exec_command("next", None)
-                    # reset crossfade
+                    mpd.connect()
                     mpd.exec_command("crossfade", 1)
                     # disconnect at the end of loop for top of the hour
                     mpd.disconnect()
                     # free for next run
                     ac.play_out_items = None
-
-        # cleaning up 5x 2.
-        #if time_now.minute == int(db.ac_config_times[4]) + 1:
-        #    if time_now.second == 2:
-        #        if ac.play_out_items is not None:
 
         # schedule magazines
         if time_now.minute == 14:
