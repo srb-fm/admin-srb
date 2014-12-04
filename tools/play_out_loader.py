@@ -508,18 +508,19 @@ def prepare_pl_broadcast(minute_start, list_result):
         path_filename = db.ac_config_playlist[5] + "_30.m3u"
 
     # delete mAirlist-Playlist
-    lib_cm.message_write_to_console(ac, path_filename)
-    delete_pl_ok = lib_cm.erase_file_a(ac, db, path_filename,
-        u"Playlist geloescht ")
-    if delete_pl_ok is None:
-        db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
+    if db.ac_config_playlist[4] == "on":
+        lib_cm.message_write_to_console(ac, path_filename)
+        delete_pl_ok = lib_cm.erase_file_a(ac, db, path_filename,
+            u"Playlist geloescht ")
+        if delete_pl_ok is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
                                              "write_also_to_console")
-    if list_result[0][0] == "nix":
-        log_message = "Keine normale Sendung! keine PL schreiben!"
-        lib_cm.message_write_to_console(ac, log_message)
-        return
+        if list_result[0][0] == "nix":
+            log_message = "Keine normale Sendung! keine PL schreiben!"
+            lib_cm.message_write_to_console(ac, log_message)
+            return
 
-    # PL nur schreiben wenn auch pl benoetigt wird
+    # PL write only if nessecary
     if len(list_result[0]) == 1 and ac.po_switch[nZ_po_switch] != "03":
         log_message = (u"Sendung nicht via Play-Out,"
                 " keine PL geschrieben: " + "".join(list_result[4]))
