@@ -30,13 +30,14 @@ P4 Infotime on/off
 P5 Instrumental on/off
 P6 Magazin on/off
 
-Von PO_mAirList_PL:
-Param_1: Präfix pl-Datei fuer play_out_load.py
-Param_2: Pfad HF_Media Infotime fuer mAirlist
-Param_3: Pfad HF_Media_Sendung fuer mAirlist
-Param_4: Pfad/Datei Playlist Instrumentals fuer play_out_load.py
-Param_5: Pfad Instrumentals fuer play_out_load.py
-Param_6: Pfad Instrumentals fuer mAirlist
+Von PO_Playlists:
+Param_1: Pfad Playlsit mpd Infotime
+Param_2: Pfad Playlsit mpd Sendung
+Param_3: Pfad Playlsit mpd Rotation
+Param_4: Switch mAirlist playlist (schreiben oder nicht schreiben)
+Param_5: Pfad und Praefix pl-Datei fuer play_out_load.py
+Param_6: Pfad HF_Media Infotime mAirlist
+Param_7: Pfad HF_Media_Sendung fuer mAirlist
 
 Von PO_Info_Time_Config_Paths:
 Param 1: LW:\Pfad\Dateiname - Playlist für mAirList
@@ -637,7 +638,6 @@ def write_playlist_it(path_filename):
     for item in ac.po_it_pl:
         # Win Zeilenumbruch hinten dran
         f_playlist.write(item + "\r\n")
-        #action_msg = "Infotime: " + ntpath.basename(item)
 
     f_playlist.close
 
