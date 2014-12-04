@@ -528,11 +528,11 @@ def prepare_pl_broadcast(minute_start, list_result):
         db.write_log_to_db_a(ac, log_message, "e", "write_also_to_console")
         db.write_log_to_db(ac, "Sendung live: " + "".join(list_result[4]), "i")
     else:
-        write_to_file_playlist(
+        write_playlist(
             path_filename, list_result[0], list_result[1], minute_start)
 
 
-def write_to_file_playlist(
+def write_playlist(
     path_filename, list_sendung_filename, list_sendung_duration, minute_start):
     """Playlist Sendung schreiben"""
     try:
@@ -561,12 +561,35 @@ def write_to_file_playlist(
         if item[0:7] == "http://":
             f_playlist.write("#mAirList STREAM "
                  + str(list_sendung_duration[z]) + " [] " + item + "\r\n")
+            #action_msg = "Sendung: " + item[8:-1]
+            #log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
+            #        + item)
+        else:
+            # pfad voranstellen
+            f_playlist.write(path_mediafile + item + "\r\n")
+            #action_msg = "Sendung: " + item
+            #log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
+            #        + path_mediafile_mpd + item)
+
+        #log_message = "Sendung " + str(minute_start) + ": " + item
+        #db.write_log_to_db(ac, action_msg, "i")
+        #db.write_log_to_db(ac, log_message_pl, "k")
+        z += 1
+    f_playlist.close
+
+    z = 0
+    action_msg = ""
+    log_message_pl = ""
+    for item in list_sendung_filename:
+        if item[0:7] == "http://":
+            #f_playlist.write("#mAirList STREAM "
+            #     + str(list_sendung_duration[z]) + " [] " + item + "\r\n")
             action_msg = "Sendung: " + item[8:-1]
             log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
                     + item)
         else:
             # pfad voranstellen
-            f_playlist.write(path_mediafile + item + "\r\n")
+            #f_playlist.write(path_mediafile + item + "\r\n")
             action_msg = "Sendung: " + item
             log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
                     + path_mediafile_mpd + item)
@@ -575,7 +598,6 @@ def write_to_file_playlist(
         db.write_log_to_db(ac, action_msg, "i")
         db.write_log_to_db(ac, log_message_pl, "k")
         z += 1
-    f_playlist.close
 
 
 def write_to_file_playlist_it(path_filename):
