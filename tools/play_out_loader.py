@@ -591,35 +591,8 @@ def write_playlist(
     f_playlist.close
 
 
-
-def write_to_file_playlist_it(path_filename):
-    """Playlist InfoTime schreiben"""
-    try:
-        if (ac.app_windows == "yes"):
-            f_playlist = codecs.open(path_filename, 'w', "iso-8859-1")
-        else:
-            f_playlist = codecs.open(path_filename, 'w', "utf-8")
-
-    except IOError as (errno, strerror):
-        log_message = ("write_to_file_playlist_infotime: I/O error({0}): {1}"
-        .format(errno, strerror) + ": "
-         + path_filename.encode('ascii', 'ignore'))
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        db.write_log_to_db_a(ac, ac.app_errorslist[7], "x",
-                                             "write_also_to_console")
-        return
-
-    # mairlist
-    action_msg = ""
-    # for item in list_sendung_filename:
-
-    for item in ac.po_it_pl:
-        # Win Zeilenumbruch hinten dran
-        f_playlist.write(item + "\r\n")
-        action_msg = "Infotime: " + ntpath.basename(item)
-
-    f_playlist.close
-
+def write_playlist_it(path_filename):
+    """Write Playlist InfoTime"""
     # mpd
     action_msg = ""
     for item in ac.po_it_pl_mpd:
@@ -638,6 +611,34 @@ def write_to_file_playlist_it(path_filename):
             waste = True
         if waste is None:
             db.write_log_to_db(ac, action_msg, "i")
+
+    if db.ac_config_playlist[4] != "on":
+        log_message = ("mAirlist-Playlist ist deaktiviert.."
+                            + "keine Playlist geschrieben!")
+        db.write_log_to_db(ac, log_message, "e")
+        return
+    try:
+        if (ac.app_windows == "yes"):
+            f_playlist = codecs.open(path_filename, 'w', "iso-8859-1")
+        else:
+            f_playlist = codecs.open(path_filename, 'w', "utf-8")
+
+    except IOError as (errno, strerror):
+        log_message = ("write_to_file_playlist_infotime: I/O error({0}): {1}"
+        .format(errno, strerror) + ": "
+         + path_filename.encode('ascii', 'ignore'))
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, ac.app_errorslist[7], "x",
+                                             "write_also_to_console")
+        return
+
+    # mairlist
+    for item in ac.po_it_pl:
+        # Win Zeilenumbruch hinten dran
+        f_playlist.write(item + "\r\n")
+        #action_msg = "Infotime: " + ntpath.basename(item)
+
+    f_playlist.close
 
 
 def write_to_file_playlist_mg(path_file_pl, file_mg, mg_number):
@@ -944,8 +945,7 @@ def prepare_pl_infotime():
 
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
     path_filename = db.ac_config_playlist[5] + "_00.m3u"
-    #write_to_file_playlist_it(path_filename, ac.po_it_pl)
-    write_to_file_playlist_it(path_filename)
+    write_playlist_it(path_filename)
 
 
 def rock_infotime():
