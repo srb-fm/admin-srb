@@ -208,11 +208,9 @@ def load_extended_params():
         app_params_type_list_playlist.append("p_string")
         app_params_type_list_playlist.append("p_string")
         app_params_type_list_playlist.append("p_string")
-        app_params_type_list_playlist.append("p_string")
-        app_params_type_list_playlist.append("p_string")
         # Erweiterte Params pruefen
         param_check_mairlist = lib_cm.params_check_a(
-                        ac, db, 9,
+                        ac, db, 7,
                         app_params_type_list_playlist,
                         db.ac_config_playlist)
         if param_check_mairlist is None:
@@ -534,7 +532,34 @@ def prepare_pl_broadcast(minute_start, list_result):
 
 def write_playlist(
     path_filename, list_sendung_filename, list_sendung_duration, minute_start):
-    """Playlist Sendung schreiben"""
+    """Write Playlist"""
+    path_mediafile_mpd = lib_cm.check_slashes_a(ac,
+                             db.ac_config_playlist[2], ac.pl_win_mpd)
+    z = 0
+    action_msg = ""
+    log_message_pl = ""
+    for item in list_sendung_filename:
+        if item[0:7] == "http://":
+            action_msg = "Sendung: " + item[8:-1]
+            log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
+                    + item)
+        else:
+            action_msg = "Sendung: " + item
+            log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
+                    + path_mediafile_mpd + item)
+
+        log_message = "Sendung " + str(minute_start) + ": " + item
+        db.write_log_to_db(ac, action_msg, "i")
+        db.write_log_to_db(ac, log_message_pl, "k")
+        z += 1
+
+    # mAirlist
+    if db.ac_config_playlist[4] != "on":
+        log_message = ("mAirlist-Playlist ist deaktiviert.."
+                            + "keine Playlist geschrieben!")
+        db.write_log_to_db(ac, log_message, "e")
+        return
+
     try:
         if (ac.app_windows == "yes"):
             f_playlist = codecs.open(path_filename, 'w', "iso-8859-1")
@@ -552,8 +577,6 @@ def write_playlist(
 
     path_mediafile = lib_cm.check_slashes_a(ac,
                              db.ac_config_playlist[7], ac.pl_win_mairlist)
-    path_mediafile_mpd = lib_cm.check_slashes_a(ac,
-                             db.ac_config_playlist[2], ac.pl_win_mpd)
     z = 0
     action_msg = ""
     log_message_pl = ""
@@ -561,43 +584,12 @@ def write_playlist(
         if item[0:7] == "http://":
             f_playlist.write("#mAirList STREAM "
                  + str(list_sendung_duration[z]) + " [] " + item + "\r\n")
-            #action_msg = "Sendung: " + item[8:-1]
-            #log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
-            #        + item)
         else:
             # pfad voranstellen
             f_playlist.write(path_mediafile + item + "\r\n")
-            #action_msg = "Sendung: " + item
-            #log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
-            #        + path_mediafile_mpd + item)
-
-        #log_message = "Sendung " + str(minute_start) + ": " + item
-        #db.write_log_to_db(ac, action_msg, "i")
-        #db.write_log_to_db(ac, log_message_pl, "k")
         z += 1
     f_playlist.close
 
-    z = 0
-    action_msg = ""
-    log_message_pl = ""
-    for item in list_sendung_filename:
-        if item[0:7] == "http://":
-            #f_playlist.write("#mAirList STREAM "
-            #     + str(list_sendung_duration[z]) + " [] " + item + "\r\n")
-            action_msg = "Sendung: " + item[8:-1]
-            log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
-                    + item)
-        else:
-            # pfad voranstellen
-            #f_playlist.write(path_mediafile + item + "\r\n")
-            action_msg = "Sendung: " + item
-            log_message_pl = ("Playlist Sendung " + str(minute_start) + ": "
-                    + path_mediafile_mpd + item)
-
-        log_message = "Sendung " + str(minute_start) + ": " + item
-        db.write_log_to_db(ac, action_msg, "i")
-        db.write_log_to_db(ac, log_message_pl, "k")
-        z += 1
 
 
 def write_to_file_playlist_it(path_filename):
