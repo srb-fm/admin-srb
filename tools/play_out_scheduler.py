@@ -242,6 +242,7 @@ def prepare_mpd_0(time_now, minute_start):
             msg_1 = "Add Items for top of the hour to Playlist..."
             msg_2 = ""
             # load current song
+            mpd.connect()
             current_song_file = check_mpd_song("file")
             # cropping playlist-items
             mpd.exec_command("crop", None)
@@ -324,6 +325,7 @@ def prepare_mpd_5x(time_now, minute_start):
             msg_1 = "Add Items to Playlist..."
             msg_2 = ""
             # load current song
+            mpd.connect()
             current_song_file = check_mpd_song("file")
             # cropping playlist-items
             mpd.exec_command("crop", None)
