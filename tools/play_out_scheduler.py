@@ -262,11 +262,15 @@ def prepare_mpd_0(time_now, minute_start):
                         ac.app_msg_1 = "Playing current continue..."
                         db.write_log_to_db_a(ac, "Play current continue", "t",
                                              "write_also_to_console")
+                        log_message = "Nahtloses Play-Out: " + item[2][21:]
+                        db.write_log_to_db(ac, log_message, "i")
                     else:
                         mpd.exec_command("add", item[2][21:])
                         db.write_log_to_db_a(ac, "Sendung play-out: "
                                 + item[2][21:], "t",
                                              "write_also_to_console")
+                        log_message = "Play-Out: " + item[2][21:]
+                        db.write_log_to_db(ac, log_message, "i")
 
             if ac.play_out_infotime is True:
                 db.write_log_to_db_a(ac, "Infotime vorbereitet ", "t",
@@ -337,11 +341,15 @@ def prepare_mpd_5x(time_now, minute_start):
                     ac.app_msg_1 = "Playing current continue..."
                     db.write_log_to_db_a(ac, "Play current continue", "t",
                                              "write_also_to_console")
+                    log_message = "Nahtloses Play-Out: " + item[2][21:]
+                    db.write_log_to_db(ac, log_message, "i")
                 else:
                     mpd.exec_command("add", item[2][21:])
                     db.write_log_to_db_a(ac, "Sendung play-out: "
                                 + item[2][21:], "t",
                                              "write_also_to_console")
+                    log_message = "Play-Out: " + item[2][21:]
+                    db.write_log_to_db(ac, log_message, "i")
 
             # add music
             if minute_start > 5:
@@ -414,7 +422,7 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
             mpd.disconnect()
             log_message = ("Play-Out Magazin: "
                                         + ac.play_out_items_mag[0][2][20:])
-            db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
+            db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
         else:
             msg_1 = None
 
