@@ -435,7 +435,7 @@ class dbase(object):
 
         except Exception, e:
             self.db_con.close()
-            log_message = "read_tbl_row_with_cond_ad Error: %s" % str(e)
+            log_message = "read_tbl_row_with_cond Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
         else:
@@ -478,7 +478,7 @@ class dbase(object):
 
         except Exception, e:
             self.db_con.close()
-            log_message = u"read_tbl_rows_with_cond_ad Error: %s" % str(e)
+            log_message = u"read_tbl_rows_with_cond Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
         else:
