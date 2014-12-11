@@ -28,6 +28,7 @@ from mutagen.mp3 import MP3
 import sys
 import datetime
 import string
+import random
 import lib_common_1 as lib_cm
 import lib_mpd as lib_mp
 
@@ -267,11 +268,8 @@ def prepare_mpd_0(time_now, minute_start):
                         db.write_log_to_db(ac, log_message, "i")
                     else:
                         mpd.exec_command("add", item[2][21:])
-                        db.write_log_to_db_a(ac, "Sendung play-out: "
-                                + item[2][21:], "t",
-                                             "write_also_to_console")
-                        log_message = "Play-Out: " + item[2][21:]
-                        db.write_log_to_db(ac, log_message, "i")
+                        db.write_log_to_db_a(ac, "Gleich: "
+                                + item[2][21:], "i", "write_also_to_console")
 
             if ac.play_out_infotime is True:
                 db.write_log_to_db_a(ac, "Infotime vorbereitet ", "t",
@@ -346,11 +344,8 @@ def prepare_mpd_5x(time_now, minute_start):
                     db.write_log_to_db(ac, log_message, "i")
                 else:
                     mpd.exec_command("add", item[2][21:])
-                    db.write_log_to_db_a(ac, "Sendung play-out: "
-                                + item[2][21:], "t",
-                                             "write_also_to_console")
-                    log_message = "Play-Out: " + item[2][21:]
-                    db.write_log_to_db(ac, log_message, "i")
+                    db.write_log_to_db_a(ac, "Gleich: "
+                                + item[2][21:], "i", "write_also_to_console")
 
             # add music
             if minute_start > 5:
@@ -436,7 +431,7 @@ def push_music_playlist():
         mpd.exec_command("add", item)
 
 
-def load_alternate_music_playlists():
+def load_music_sources_alternate():
     """load alternate playlists"""
     playlists_alterante = None
     if db.ac_config_rotation[4] == "on":
@@ -451,40 +446,147 @@ def load_alternate_music_playlists():
                 "USER_SPECIALS", fields_rotation,
                 "USER_SP_SPECIAL LIKE 'PO_Rotation_alternate_%'")
         if playlists_alterante is None:
-            db.write_log_to_db(ac,
-                        "Alternative Musik-Playlist nicht gefunden", "e")
+            db.write_log_to_db_a(ac,
+                        "Alternative Musik-Playlist nicht gefunden", "e",
+                        "write_also_to_console")
     return playlists_alterante
 
 
-def check_alternate_playlist(playlists_alterante):
+def load_music_sources_extra():
+    """load extra music source"""
+    playlists_extra = None
+    if db.ac_config_rotation[5] == "on":
+        # search for extra Music-Source
+        fields_rotation = ("USER_SP_PARAM_1, USER_SP_PARAM_2, "
+                + "USER_SP_PARAM_3, USER_SP_PARAM_4, "
+                + "USER_SP_PARAM_5, USER_SP_PARAM_6, "
+                + "USER_SP_PARAM_7, USER_SP_PARAM_8, "
+                + "USER_SP_PARAM_9, USER_SP_PARAM_10, "
+                + "USER_SP_PARAM_11, USER_SP_PARAM_12")
+        playlists_extra = db.read_tbl_rows_with_cond(ac, db,
+                "USER_SPECIALS", fields_rotation,
+                "USER_SP_SPECIAL LIKE 'PO_Rotation_extra_%'")
+        if playlists_extra is None:
+            db.write_log_to_db_a(ac,
+                        "Extra Musik-Quelle nicht gefunden", "e",
+                        "write_also_to_console")
+    return playlists_extra
+
+
+def check_music_sources_alt(music_sources):
     """look if alternate playlist is for using now"""
-    path_playlist_alternate = None
-    for item in playlists_alterante:
+    path_music_sources = None
+    using_now = None
+    for item in music_sources:
         if item[1] != "on":
             continue
-        if int(item[2]) != datetime.datetime.today().weekday():
+        if len(item[2]) > 1:
+            print "more options come here"
+        else:
+            if int(item[2]) != datetime.datetime.today().weekday():
+                # if 8, it means every day will using this source
+                if int(item[2]) != 8:
+                    continue
+            hour_begin = item[3][0:2]
+            hour_end = item[3][3:5]
+            #print hour_begin
+            #print hour_end
+            time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
+            dt_hour = time_target.hour
+            #print dt_hour
+            if dt_hour >= int(hour_begin) and dt_hour < int(hour_end):
+                using_now = True
+
+        if using_now is True:
+            path_music_sources = item[4]
+            db.write_log_to_db_a(ac, "Rotation alternativ: " + item[0], "i",
+                                             "write_also_to_console")
+    return path_music_sources
+
+
+def work_on_extra_music_sources(music_sources):
+    """look if extra playlist is for using now"""
+    using_now = None
+    for item in music_sources:
+        if item[1] != "on":
             continue
-        hour_begin = item[3][0:2]
-        hour_end = item[3][3:5]
-        #print hour_begin
-        #print hour_end
-        time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
-        dt_hour = time_target.hour
-        #print dt_hour
-        if dt_hour >= int(hour_begin) and dt_hour <= int(hour_end):
-            path_playlist_alternate = item[4]
-            db.write_log_to_db_a(ac, "Rotation Alternativ: " + item[0], "i",
+        if len(item[2]) > 1:
+            print "more options come here"
+        else:
+            if int(item[2]) != datetime.datetime.today().weekday():
+                # if 8, it means every day will using this source
+                if int(item[2]) != 8:
+                    continue
+            hour_begin = item[3][0:2]
+            hour_end = item[3][3:5]
+            #print hour_begin
+            #print hour_end
+            time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
+            dt_hour = time_target.hour
+            #print dt_hour
+            if dt_hour >= int(hour_begin) and dt_hour < int(hour_end):
+                using_now = True
+
+        if using_now is True:
+            path_extra_music = item[4]
+            load_extra_music(path_extra_music)
+            db.write_log_to_db_a(ac, "Rotation extra: " + item[0], "i",
                                              "write_also_to_console")
 
-    return path_playlist_alternate
+
+def load_extra_music(path_extra_music):
+    "add extra music to playlist"
+    # Path from play_out_scheduler to Rotation
+    main_path_rotation = lib_cm.check_slashes(ac, db.ac_config_rotation[1])
+    path_rotation_music = main_path_rotation + lib_cm.check_slashes(
+                                            ac, path_extra_music)
+    # Path from mpd to Rotation
+    path_rotation_music_mpd = (lib_cm.check_slashes_a(ac,
+                             path_extra_music, "no"))
+
+    # Duration of playlist
+    duration_minute_music = 0
+    duration_minute_target = 6
+
+    # Collect Music
+    while (duration_minute_music < duration_minute_target):
+        if ac.music_play_list_error >= 5:
+            db.write_log_to_db(ac,
+                    "Musik-Playlist extra Erstellung abgebrochen", "x")
+            ac.music_play_list_error = 0
+            return
+        file_rotation = lib_cm.read_random_file_from_dir(ac,
+                                         db, path_rotation_music)
+        if file_rotation is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[3], "x",
+                                             "write_also_to_console")
+            ac.music_play_list_error += 1
+            continue
+        else:
+            ac.music_play_list.append(path_rotation_music_mpd + file_rotation)
+            lib_cm.message_write_to_console(ac, ac.music_play_list)
+        try:
+            audio_rotation_music = MP3(path_rotation_music + file_rotation)
+            duration_minute_music += audio_rotation_music.info.length / 60
+        except Exception, e:
+            err_message = "Error by reading duration: %s" % str(e)
+            lib_cm.message_write_to_console(ac, err_message)
+            db.write_log_to_db_a(ac, ac.app_errorslist[4], "x",
+                                             "write_also_to_console")
+        #lib_cm.message_write_to_console(ac, "Duration Music")
+        #lib_cm.message_write_to_console(ac,
+        #                    str(audio_rotation_music.info.length))
+    db.write_log_to_db(ac,
+                "Musik-Playlist extra fuer Rotation vorbereitet", "k")
+    ac.app_msg_1 = "Music-extra-Playlist createt..."
 
 
 def create_music_playlist():
     "create music playlist"
     # Standard or alternate
-    playlists_alterante = load_alternate_music_playlists()
-    if playlists_alterante is not None:
-        path_playlist_alternate = check_alternate_playlist(playlists_alterante)
+    music_sources_alt = load_music_sources_alternate()
+    if music_sources_alt is not None:
+        path_playlist_alternate = check_music_sources_alt(music_sources_alt)
     else:
         path_playlist_alternate = None
 
@@ -520,6 +622,7 @@ def create_music_playlist():
     while (duration_minute_music < duration_minute_target):
         if ac.music_play_list_error >= 5:
             db.write_log_to_db(ac, "Musik-Playlist Erstellung abgebrochen", "x")
+            ac.music_play_list_error = 0
             return
         file_rotation = lib_cm.read_random_file_from_dir(ac,
                                          db, path_rotation_music)
@@ -542,7 +645,6 @@ def create_music_playlist():
         #lib_cm.message_write_to_console(ac, "Duration Music")
         #lib_cm.message_write_to_console(ac,
         #                    str(audio_rotation_music.info.length))
-    db.write_log_to_db(ac, "Musik-Playlist fuer Rotation vorbereitet", "k")
     db.write_log_to_db(ac, "Musik-Playlist fuer Rotation vorbereitet", "i")
     ac.app_msg_1 = "Music-Playlist createt..."
 
@@ -613,9 +715,13 @@ class my_form(Frame):
 
     def lets_rock(self):
         """mainfunction"""
-        #playlists_alterante = load_alternate_music_playlists()
-        #if playlists_alterante is not None:
-        #    check_alternate_playlist(playlists_alterante)
+        #music_sources_extra = load_music_sources_extra()
+        #if music_sources_extra is not None:
+        #    work_on_extra_music_sources(music_sources_extra)
+        #return
+        #music_sources_alt = load_music_sources_alternate()
+        #if music_sources_alt is not None:
+        #    path_playlist_alternate = check_music_sources_alt(music_sources_alt)
         #return
         #mpd.connect()
         #check_mpd_stat(None)
@@ -629,7 +735,6 @@ class my_form(Frame):
         if ac.app_counter == 2:
             mpd_setup()
             create_music_playlist()
-            #self.display_scheduling()
 
         #lib_cm.message_write_to_console(ac, u"lets rock")
         time_now = datetime.datetime.now()
@@ -692,6 +797,11 @@ class my_form(Frame):
         if time_now.minute == 50:
             if time_now.second == 30:
                 create_music_playlist()
+                music_sources_extra = load_music_sources_extra()
+                if music_sources_extra is not None:
+                    work_on_extra_music_sources(music_sources_extra)
+                    # shuffling music-playlist
+                    random.shuffle(ac.music_play_list)
 
         self.display_scheduling()
 
