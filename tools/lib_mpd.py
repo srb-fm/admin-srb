@@ -99,6 +99,8 @@ class myMPD(object):
     def exec_command(self, command, value):
         result = None
         try:
+            if command == "play":
+                result = self._client.play()
             if command == "update":
                 result = self._client.update()
             if command == "song":
