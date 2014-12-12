@@ -658,6 +658,7 @@ def mpd_setup():
     mpd.exec_command("random", db.ac_config_1[8])
     mpd.exec_command("single", db.ac_config_1[9])
     mpd.exec_command("replay_gain_mode", db.ac_config_1[10])
+    mpd.exec_command("play", None)
     mpd.disconnect()
 
 
