@@ -196,9 +196,9 @@ def check_mpd_song(option):
 def play_out():
     """play out"""
     print "play_out"
-    if ac.song_time_elapsed >= 4:
+    if ac.song_time_elapsed > 4:
         mpd.exec_command("next", None)
-        mpd.exec_command("vol", "100")
+        mpd_fade_in()
         ac.song_time_elapsed = None
         ac.app_msg_1 = "Playing next..."
         db.write_log_to_db_a(ac, "Play next", "t",
@@ -206,6 +206,7 @@ def play_out():
     elif ac.song_time_elapsed < -10:
         # it seems like a stream
         mpd.exec_command("next", None)
+        mpd_fade_in()
         ac.song_time_elapsed = None
         ac.app_msg_1 = "Playing next..."
         db.write_log_to_db_a(ac, "Play next", "t",
@@ -287,10 +288,8 @@ def prepare_mpd_0(time_now, minute_start):
             db.write_log_to_db_a(ac, log_message, "t",
                                              "write_also_to_console")
             # fade
-            if ac.song_time_elapsed >= 4 or ac.song_time_elapsed < -10:
+            if ac.song_time_elapsed > 4 or ac.song_time_elapsed < -10:
                 mpd_fade_out()
-                db.write_log_to_db_a(ac, "Fade out", "t",
-                                             "write_also_to_console")
         else:
             msg_1 = None
 
@@ -368,7 +367,7 @@ def prepare_mpd_5x(time_now, minute_start):
             db.write_log_to_db_a(ac, log_message, "t",
                                              "write_also_to_console")
             # fade
-            if ac.song_time_elapsed >= 4 or ac.song_time_elapsed < -10:
+            if ac.song_time_elapsed > 4 or ac.song_time_elapsed < -10:
                 mpd_fade_out()
                 db.write_log_to_db_a(ac, "Fade out", "t",
                                              "write_also_to_console")
@@ -612,8 +611,8 @@ def create_music_playlist():
         # Path from mpd to Rotation
         path_rotation_music_mpd = (lib_cm.check_slashes_a(ac,
                              db.ac_config_rotation[2], "no"))
-        db.write_log_to_db_a(ac, "Rotation Standard ", "i",
-                                             "write_also_to_console")
+        #db.write_log_to_db_a(ac, "Rotation Standard ", "i",
+        #                                     "write_also_to_console")
     else:
         # Alternate
         # Path from play_out_scheduler to Rotation
@@ -663,7 +662,7 @@ def create_music_playlist():
 
 
 def mpd_fade_in():
-    """set player-volume 10 100%"""
+    """fade player-volume to 100%"""
     mpd.exec_command("vol", "15")
     sleep(0.100)
     mpd.exec_command("vol", "20")
@@ -681,12 +680,11 @@ def mpd_fade_in():
     mpd.exec_command("vol", "85")
     sleep(0.100)
     mpd.exec_command("vol", "100")
+    db.write_log_to_db_a(ac, "Fade in", "t", "write_also_to_console")
 
 
 def mpd_fade_out():
-    #timeout_start = time.time()
-    #timeout = 2  # [seconds]
-    #while time.time() < timeout_start + timeout:
+    """fade player-volume to 0%"""
     mpd.exec_command("vol", "-5")
     sleep(0.100)
     mpd.exec_command("vol", "-10")
@@ -704,6 +702,7 @@ def mpd_fade_out():
     mpd.exec_command("vol", "-10")
     sleep(0.100)
     mpd.exec_command("vol", "-10")
+    db.write_log_to_db_a(ac, "Fade out", "t", "write_also_to_console")
 
 
 def mpd_setup():
