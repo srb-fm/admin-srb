@@ -25,6 +25,8 @@ Parameterliste:
 from Tkinter import Frame, Label, NW, END
 from ScrolledText import ScrolledText
 from mutagen.mp3 import MP3
+#import time
+from time import sleep
 import sys
 import datetime
 import string
@@ -196,6 +198,7 @@ def play_out():
     print "play_out"
     if ac.song_time_elapsed >= 4:
         mpd.exec_command("next", None)
+        mpd.exec_command("vol", "100")
         ac.song_time_elapsed = None
         ac.app_msg_1 = "Playing next..."
         db.write_log_to_db_a(ac, "Play next", "t",
@@ -283,6 +286,11 @@ def prepare_mpd_0(time_now, minute_start):
                                 + str(ac.song_time_elapsed) + " Sekunden")
             db.write_log_to_db_a(ac, log_message, "t",
                                              "write_also_to_console")
+            # fade
+            if ac.song_time_elapsed >= 4 or ac.song_time_elapsed < -10:
+                mpd_fade_out()
+                db.write_log_to_db_a(ac, "Fade out", "t",
+                                             "write_also_to_console")
         else:
             msg_1 = None
 
@@ -358,6 +366,11 @@ def prepare_mpd_5x(time_now, minute_start):
                                 + current_song_file + " noch "
                                 + str(ac.song_time_elapsed) + " Sekunden")
             db.write_log_to_db_a(ac, log_message, "t",
+                                             "write_also_to_console")
+            # fade
+            if ac.song_time_elapsed >= 4 or ac.song_time_elapsed < -10:
+                mpd_fade_out()
+                db.write_log_to_db_a(ac, "Fade out", "t",
                                              "write_also_to_console")
         else:
             msg_1 = None
@@ -649,6 +662,50 @@ def create_music_playlist():
     ac.app_msg_1 = "Music-Playlist createt..."
 
 
+def mpd_fade_in():
+    """set player-volume 10 100%"""
+    mpd.exec_command("vol", "15")
+    sleep(0.100)
+    mpd.exec_command("vol", "20")
+    sleep(0.100)
+    mpd.exec_command("vol", "35")
+    sleep(0.100)
+    mpd.exec_command("vol", "45")
+    sleep(0.100)
+    mpd.exec_command("vol", "55")
+    sleep(0.100)
+    mpd.exec_command("vol", "60")
+    sleep(0.100)
+    mpd.exec_command("vol", "75")
+    sleep(0.100)
+    mpd.exec_command("vol", "85")
+    sleep(0.100)
+    mpd.exec_command("vol", "100")
+
+
+def mpd_fade_out():
+    #timeout_start = time.time()
+    #timeout = 2  # [seconds]
+    #while time.time() < timeout_start + timeout:
+    mpd.exec_command("vol", "-5")
+    sleep(0.100)
+    mpd.exec_command("vol", "-10")
+    sleep(0.100)
+    mpd.exec_command("vol", "-15")
+    sleep(0.100)
+    mpd.exec_command("vol", "-10")
+    sleep(0.100)
+    mpd.exec_command("vol", "-10")
+    sleep(0.100)
+    mpd.exec_command("vol", "-15")
+    sleep(0.100)
+    mpd.exec_command("vol", "-15")
+    sleep(0.100)
+    mpd.exec_command("vol", "-10")
+    sleep(0.100)
+    mpd.exec_command("vol", "-10")
+
+
 def mpd_setup():
     """basic config of mpd"""
     mpd.connect()
@@ -659,6 +716,7 @@ def mpd_setup():
     mpd.exec_command("single", db.ac_config_1[9])
     mpd.exec_command("replay_gain_mode", db.ac_config_1[10])
     mpd.exec_command("play", None)
+    mpd_fade_in()
     mpd.disconnect()
 
 
@@ -716,6 +774,8 @@ class my_form(Frame):
 
     def lets_rock(self):
         """mainfunction"""
+        #mpd_fade_out()
+        #return
         #music_sources_extra = load_music_sources_extra()
         #if music_sources_extra is not None:
         #    work_on_extra_music_sources(music_sources_extra)

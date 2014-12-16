@@ -9,11 +9,20 @@ import subprocess
 import mpd_config
 
 
-def mpc_client(command):
+def mpc_client(command, value):
+
     mpd_server = mpd_config.mpd_pw + "@" + mpd_config.mpd_host
-    p = subprocess.Popen(["/usr/bin/mpc",
+    if value is None:
+        p = subprocess.Popen(["/usr/bin/mpc",
                             "-h", mpd_server, "-p", mpd_config.mpd_port,
                         command],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE).communicate()
+    else:
+        print value
+        p = subprocess.Popen(["/usr/bin/mpc",
+                            "-h", mpd_server, "-p", mpd_config.mpd_port,
+                        command, value],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE).communicate()
     print p
@@ -129,7 +138,9 @@ class myMPD(object):
                 result = self._client.setvol(value)
             # via mpc-client
             if command == "crop":
-                result = mpc_client("crop")
+                result = mpc_client("crop", value)
+            if command == "vol":
+                result = mpc_client("volume", value)
 
         # Couldn't get the current cmd, so try reconnecting and retrying
         except (MPDError, IOError):
