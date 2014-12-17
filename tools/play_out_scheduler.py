@@ -25,7 +25,6 @@ Parameterliste:
 from Tkinter import Frame, Label, NW, END
 from ScrolledText import ScrolledText
 from mutagen.mp3 import MP3
-#import time
 from time import sleep
 import sys
 import datetime
@@ -38,7 +37,7 @@ import lib_mpd as lib_mp
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "022"
         self.app_desc = u"Play Out Scheduler"
@@ -59,11 +58,11 @@ class app_config(object):
             "in Rotations-Verzeichnis nicht lesbar")
         self.app_errorslist.append(u"Laenge der Musik-Datei "
             "nicht ermittelbar")
-        # meldungen auf konsole ausgeben oder nicht: "no"
+        # display debugmessages on console or no: "no"
         self.app_debug_mod = "yes"
-        # anzahl parameter list 0
+        # number of params 0
         self.app_config_params_range = 10
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -138,7 +137,7 @@ def load_extended_params():
 
 
 def load_play_out_items(minute_start, broadcast_type):
-    """load items from db"""
+    """load items for transmitting from db"""
     if int(minute_start) == 0:
         # be save to not loading items from prev hour
         time_back = (datetime.datetime.now()
@@ -177,6 +176,14 @@ def check_mpd_stat(option):
                 seconds_remain = (int(current_status["time"][index + 1:]) -
                                 int(current_status["time"][0:index]))
                 return seconds_remain
+        if option == "status":
+            if "state" in current_status:
+                print "sss"
+                lib_cm.message_write_to_console(ac, current_status["state"])
+                index = string.find(current_status["state"], ":")
+                mpd_state = current_status["state"][index + 1:]
+                return mpd_state
+
     else:
         return current_status
 
@@ -189,6 +196,12 @@ def check_mpd_song(option):
             if "file" in current_song:
                 lib_cm.message_write_to_console(ac, current_song["file"])
                 return current_song["file"]
+            else:
+                err_message = ("Dateiname nicht ermittelbar."
+                        + "Vielleicht wird zur Zeit kein Titel abgespielt...")
+                db.write_log_to_db_a(ac, err_message, "x",
+                                             "write_also_to_console")
+                return "no-file.mp3"
     else:
         return current_song
 
@@ -288,8 +301,11 @@ def prepare_mpd_0(time_now, minute_start):
             db.write_log_to_db_a(ac, log_message, "t",
                                              "write_also_to_console")
             # fade
-            if ac.song_time_elapsed > 4 or ac.song_time_elapsed < -10:
-                mpd_fade_out()
+            if ac.play_out_current_continue is not True:
+                if ac.song_time_elapsed > 4:
+                    mpd_fade_out()
+                if ac.song_time_elapsed < - 10:
+                    mpd_fade_out()
         else:
             msg_1 = None
 
@@ -367,10 +383,11 @@ def prepare_mpd_5x(time_now, minute_start):
             db.write_log_to_db_a(ac, log_message, "t",
                                              "write_also_to_console")
             # fade
-            if ac.song_time_elapsed > 4 or ac.song_time_elapsed < -10:
-                mpd_fade_out()
-                db.write_log_to_db_a(ac, "Fade out", "t",
-                                             "write_also_to_console")
+            if ac.play_out_current_continue is not True:
+                if ac.song_time_elapsed > 4:
+                    mpd_fade_out()
+                if ac.song_time_elapsed < - 10:
+                    mpd_fade_out()
         else:
             msg_1 = None
 
@@ -714,8 +731,10 @@ def mpd_setup():
     mpd.exec_command("random", db.ac_config_1[8])
     mpd.exec_command("single", db.ac_config_1[9])
     mpd.exec_command("replay_gain_mode", db.ac_config_1[10])
-    mpd.exec_command("play", None)
-    mpd_fade_in()
+    current_status = check_mpd_stat("status")
+    if current_status != "play":
+        mpd.exec_command("play", None)
+        mpd_fade_in()
     mpd.disconnect()
 
 
@@ -773,24 +792,10 @@ class my_form(Frame):
 
     def lets_rock(self):
         """mainfunction"""
-        #mpd_fade_out()
-        #return
-        #music_sources_extra = load_music_sources_extra()
-        #if music_sources_extra is not None:
-        #    work_on_extra_music_sources(music_sources_extra)
-        #return
-        #music_sources_alt = load_music_sources_alternate()
-        #if music_sources_alt is not None:
-        #    path_playlist_alternate = check_music_sources_alt(music_sources_alt)
-        #return
         #mpd.connect()
-        #check_mpd_stat(None)
-        #song_file = check_mpd_song("file")
-        #song_time = check_mpd_stat("time_remain")
-        #print song_file
-        #mpd.exec_command("setvol", 5)
-        #check_mpd_stat(None)
+        #current_status = check_mpd_stat("status")
         #mpd.disconnect()
+        #print current_status
         #return
         if ac.app_counter == 2:
             mpd_setup()
