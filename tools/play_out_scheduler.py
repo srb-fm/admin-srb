@@ -438,7 +438,7 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
             mpd.exec_command("add", ac.play_out_items_mag[0][2][20:])
             # delete the first items from music-playlist
             if mg_number == 1:
-                del ac.music_play_list[:4]
+                del ac.music_play_list[:5]
             if mg_number == 2:
                 del ac.music_play_list[:3]
             if mg_number == 3:
