@@ -206,7 +206,6 @@ if ( $find_option_ok = "yes" ) {
 		case "magazine_date":
 			$displ_dateform = "yes";
 			$d_date_dest = date('Y-m-d');
-			$d_word = date('Y-m-d', mktime(0, 0, 0, $m, $d, $j));
 			// Pruefen ob Datum uebergeben, sonst aktuelles nehmen
 			if ( isset( $_POST['form_k_datum'] ) ) {
 				if ( $_POST['form_k_datum'] != "" ) {
@@ -214,14 +213,14 @@ if ( $find_option_ok = "yes" ) {
 					$j = substr($d_date_dest, 0, 4);
 					$m = substr($d_date_dest, 5, 2);
 					$d = substr($d_date_dest, 8, 2);
-					$d_date_dest = date('Y-m-d', mktime(0, 0, 0, $m, $d, $j));
-					$d_word = date('Y-m-d', mktime(0, 0, 0, $m, $d, $j));
+					$d_date_dest = date('Y-m-d', mktime(0, 0, 0, $m, $d, $j));	
 				}
 			}
 			// wenn von plan_update
 			if ( isset( $_GET['form_k_datum'] ) ) {	
 				$d_date_dest = $_GET['form_k_datum'];
 			}
+			$d_word = date('l', strtotime($d_date_dest));
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_MAGAZINE = 'T' AND SG_HF_INFOTIME = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_date_dest."' ORDER BY SG_HF_TIME";
 			$message_find_string = "Magazin nach Datum - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_date_dest)." - ES und WH ";
 			$option = "magazin";
