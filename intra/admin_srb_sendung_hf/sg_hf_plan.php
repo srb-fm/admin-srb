@@ -291,14 +291,13 @@ if ( $user_rights == "yes" ) {
 	$sum_duration = 0;
 	$c_date ="";
 	// Auswahl datum
-	echo "<form name='form0' action='sg_hf_plan.php' method='POST' onsubmit='return chk_formular()' enctype='application/x-www-form-urlencoded'>";
-	echo "<input type='hidden' name='action' value='".$action."'>\n";
-	echo "<input type='hidden' name='find_option' value='".$find_option."'>\n";
-	
 	if ( $displ_dateform == "yes" ) {
+		echo "<form name='form0' action='sg_hf_plan.php' method='POST' onsubmit='return chk_formular()' enctype='application/x-www-form-urlencoded'>";
+		echo "<input type='hidden' name='action' value='".$action."'>\n";
+		echo "<input type='hidden' name='find_option' value='".$find_option."'>\n";
 		echo "Datum: <input type='TEXT' id='datepicker' name='form_k_datum' value='' size='10' maxlength='10'>";
+		echo "<input type='submit' value='Anzeigen'></form><br>";
 	}
-	echo "<input type='submit' value='Anzeigen'></form><br>";
 	
 	echo "<br>";
 	echo "<table id='table_sg_plan' cellspacing='0' cellpadding='5'>";
