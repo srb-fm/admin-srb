@@ -100,6 +100,7 @@
 		<a href="../../admin_srb_sendung_hf/sg_hf_plan.php?action=list&amp;find_option=magazine_after_tomorrow" class="c_box">Magazin übermorgen</a>		
 		<a href="../../admin_srb_sendung_hf/sg_hf_plan.php?action=list&amp;find_option=magazine_after_after_tomorrow" class="c_box">Magazin über-übermorgen</a>
 		<a href="../../admin_srb_sendung_hf/sg_hf_plan.php?action=list&amp;find_option=magazine_four_days" class="c_box">Magazin 4 Tage vor</a>
+		<a href="../../admin_srb_sendung_hf/sg_hf_plan.php?action=list&amp;find_option=magazine_date" class="c_box">Magazin nach Datum</a>
 	</div>
 	
 	<p class="menu_head">Sendungen</p>

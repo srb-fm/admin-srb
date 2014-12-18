@@ -17,6 +17,7 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
 $option = "";
+$displ_dateform = "no";
 
 // action pruefen	
 $action_ok = "no";
@@ -201,7 +202,30 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Magazin 4 Tage vor - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_a_tomorrow)." - ES und WH ";
 			$option = "magazin";
 			break;
-				
+		
+		case "magazine_date":
+			$displ_dateform = "yes";
+			$d_date_dest = date('Y-m-d');
+			$d_word = date('Y-m-d', mktime(0, 0, 0, $m, $d, $j));
+			// Pruefen ob Datum uebergeben, sonst aktuelles nehmen
+			if ( isset( $_POST['form_k_datum'] ) ) {
+				if ( $_POST['form_k_datum'] != "" ) {
+					$d_date_dest = get_date_format_sql($_POST['form_k_datum']);
+					$j = substr($d_date_dest, 0, 4);
+					$m = substr($d_date_dest, 5, 2);
+					$d = substr($d_date_dest, 8, 2);
+					$d_date_dest = date('Y-m-d', mktime(0, 0, 0, $m, $d, $j));
+					$d_word = date('Y-m-d', mktime(0, 0, 0, $m, $d, $j));
+				}
+			}
+			// wenn von plan_update
+			if ( isset( $_GET['form_k_datum'] ) ) {	
+				$d_date_dest = $_GET['form_k_datum'];
+			}
+			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_MAGAZINE = 'T' AND SG_HF_INFOTIME = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".$d_date_dest."' ORDER BY SG_HF_TIME";
+			$message_find_string = "Magazin nach Datum - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_date_dest)." - ES und WH ";
+			$option = "magazin";
+			break;		
 			//endswitch;
 		}
 		break;
@@ -266,6 +290,16 @@ if ( $user_rights == "yes" ) {
 	$z = 0;
 	$sum_duration = 0;
 	$c_date ="";
+	// Auswahl datum
+	echo "<form name='form0' action='sg_hf_plan.php' method='POST' onsubmit='return chk_formular()' enctype='application/x-www-form-urlencoded'>";
+	echo "<input type='hidden' name='action' value='".$action."'>\n";
+	echo "<input type='hidden' name='find_option' value='".$find_option."'>\n";
+	
+	if ( $displ_dateform == "yes" ) {
+		echo "Datum: <input type='TEXT' id='datepicker' name='form_k_datum' value='' size='10' maxlength='10'>";
+	}
+	echo "<input type='submit' value='Anzeigen'></form><br>";
+	
 	echo "<br>";
 	echo "<table id='table_sg_plan' cellspacing='0' cellpadding='5'>";
 	if ( $db_result	) {			
@@ -277,7 +311,7 @@ if ( $user_rights == "yes" ) {
 			} else {
 				echo "<tr id='sg_id_".$item['SG_HF_ID']."' class='content_row_b_1'><td class='text_1'> ".substr($item['SG_HF_TIME'], 11, 8)." </td><td class='text_1'>".$item['SG_HF_DURATION']."</td><td class='text_2'>".substr($item['SG_HF_CONT_TITEL'], 0, 35)." - ".substr($item['AD_NAME'], 0, 15)."</td></tr>\n";
 			}
-			// für uebergabe an update:
+			// fuer uebergabe an update:
 			$c_date = substr($item['SG_HF_TIME'], 0, 10);
 		}
 	}	

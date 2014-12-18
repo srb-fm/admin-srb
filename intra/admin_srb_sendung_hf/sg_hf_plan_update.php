@@ -90,7 +90,9 @@ if ( $action_ok == "yes" ) {
 			db_query_update_item_a("SG_HF_MAIN", $tbl_fields_values_sg, "SG_HF_ID =".substr($table_sg_plan[$i], 6));	
 		}
 					
-		header("Location: sg_hf_plan.php?action=list&find_option=".$_POST['find_option']);
+		#header("Location: sg_hf_plan.php?action=list&find_option=".$_POST['find_option']);
+		#echo "Location: sg_hf_plan.php?action=list&find_option=".$_POST['find_option']."&form_k_datum=".$_POST['sendungen_date'];
+		header("Location: sg_hf_plan.php?action=list&find_option=".$_POST['find_option']."&form_k_datum=".$_POST['sendungen_date']);
 		break;	
 		//endswitch;
 	}
