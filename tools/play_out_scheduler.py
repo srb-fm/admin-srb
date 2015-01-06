@@ -58,6 +58,8 @@ class app_config(object):
             "in Rotations-Verzeichnis nicht lesbar")
         self.app_errorslist.append(u"Laenge der Musik-Datei "
             "nicht ermittelbar")
+        self.app_errorslist.append(u"MPD-Setup fehlgeschlagen")
+        self.app_errorslist.append(u"Update MPD-DB fehlgeschlagen")
         # display debugmessages on console or no: "no"
         self.app_debug_mod = "yes"
         # number of params 0
@@ -167,7 +169,7 @@ def load_play_out_items(minute_start, broadcast_type):
 
 def check_mpd_stat(option):
     """read mpd and song-status"""
-    current_status = mpd.exec_command("status", None)
+    current_status = mpd.exec_command(db, ac, "status", None)
     if option is not None:
         if option == "time_remain":
             if "time" in current_status:
@@ -190,7 +192,7 @@ def check_mpd_stat(option):
 
 def check_mpd_song(option):
     """read song-status"""
-    current_song = mpd.exec_command("song", None)
+    current_song = mpd.exec_command(db, ac, "song", None)
     if option is not None:
         if option == "file":
             if "file" in current_song:
@@ -210,7 +212,7 @@ def play_out():
     """play out"""
     print "play_out"
     if ac.song_time_elapsed > 4:
-        mpd.exec_command("next", None)
+        mpd.exec_command(db, ac, "next", None)
         mpd_fade_in()
         ac.song_time_elapsed = None
         ac.app_msg_1 = "Playing next..."
@@ -218,7 +220,7 @@ def play_out():
                                              "write_also_to_console")
     elif ac.song_time_elapsed < -10:
         # it seems like a stream
-        mpd.exec_command("next", None)
+        mpd.exec_command(db, ac, "next", None)
         mpd_fade_in()
         ac.song_time_elapsed = None
         ac.app_msg_1 = "Playing next..."
@@ -264,12 +266,12 @@ def prepare_mpd_0(time_now, minute_start):
             mpd.connect(db, ac)
             current_song_file = check_mpd_song("file")
             # cropping playlist-items
-            mpd.exec_command("crop", None)
+            mpd.exec_command(db, ac, "crop", None)
             # add items to playlist
             for item in ac.play_out_items:
                 if ac.play_out_infotime is True:
                     msg_2 = msg_2 + item[2][19:] + "\n"
-                    mpd.exec_command("add", item[2][19:])
+                    mpd.exec_command(db, ac, "add", item[2][19:])
                 else:
                     msg_2 = msg_2 + item[2][21:] + "\n"
                     # trying seamless play
@@ -284,7 +286,7 @@ def prepare_mpd_0(time_now, minute_start):
                         log_message = "OnAir seamless: " + item[2][21:]
                         db.write_log_to_db(ac, log_message, "i")
                     else:
-                        mpd.exec_command("add", item[2][21:])
+                        mpd.exec_command(db, ac, "add", item[2][21:])
                         db.write_log_to_db_a(ac, "OnAir next: "
                                 + item[2][21:], "i", "write_also_to_console")
 
@@ -354,7 +356,7 @@ def prepare_mpd_5x(time_now, minute_start):
             mpd.connect(db, ac)
             current_song_file = check_mpd_song("file")
             # cropping playlist-items
-            mpd.exec_command("crop", None)
+            mpd.exec_command(db, ac, "crop", None)
             # add items to playlist
             for item in ac.play_out_items:
                 msg_2 = msg_2 + item[2][21:] + "\n"
@@ -366,7 +368,7 @@ def prepare_mpd_5x(time_now, minute_start):
                     log_message = "OnAir semless: " + item[2][21:]
                     db.write_log_to_db(ac, log_message, "i")
                 else:
-                    mpd.exec_command("add", item[2][21:])
+                    mpd.exec_command(db, ac, "add", item[2][21:])
                     db.write_log_to_db_a(ac, "OnAir next: "
                                 + item[2][21:], "i", "write_also_to_console")
 
@@ -432,10 +434,10 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
             msg_1 = "Add Magazine-Item " + str(mg_number) + " to Playlist..."
             msg_2 = ""
             # cropping playlist-items
-            mpd.exec_command("crop", None)
+            mpd.exec_command(db, ac, "crop", None)
             msg_2 = msg_2 + ac.play_out_items_mag[0][2][20:] + "\n"
             # adding playlist-item
-            mpd.exec_command("add", ac.play_out_items_mag[0][2][20:])
+            mpd.exec_command(db, ac, "add", ac.play_out_items_mag[0][2][20:])
             # delete the first items from music-playlist
             if mg_number == 1:
                 del ac.music_play_list[:5]
@@ -457,7 +459,7 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
 
 def push_music_playlist():
     for item in ac.music_play_list:
-        mpd.exec_command("add", item)
+        mpd.exec_command(db, ac, "add", item)
 
 
 def load_music_sources_alternate():
@@ -674,68 +676,78 @@ def create_music_playlist():
         #lib_cm.message_write_to_console(ac, "Duration Music")
         #lib_cm.message_write_to_console(ac,
         #                    str(audio_rotation_music.info.length))
-    db.write_log_to_db(ac, "Musik-Playlist fuer Rotation vorbereitet", "i")
-    ac.app_msg_1 = "Music-Playlist createt..."
+    db.write_log_to_db(ac, "Musik-Playlist Rotation vorbereitet", "i")
+    if ac.app_msg_1 is not None:
+        # append msg by first run
+        ac.app_msg_1 = ac.app_msg_1 + "Music-Playlist createt..."
+    else:
+        ac.app_msg_1 = "Music-Playlist createt..."
 
 
 def mpd_fade_in():
     """fade player-volume to 100%"""
-    mpd.exec_command("vol", "15")
+    mpd.exec_command(db, ac, "vol", "15")
     sleep(0.100)
-    mpd.exec_command("vol", "20")
+    mpd.exec_command(db, ac, "vol", "20")
     sleep(0.100)
-    mpd.exec_command("vol", "35")
+    mpd.exec_command(db, ac, "vol", "35")
     sleep(0.100)
-    mpd.exec_command("vol", "45")
+    mpd.exec_command(db, ac, "vol", "45")
     sleep(0.100)
-    mpd.exec_command("vol", "55")
+    mpd.exec_command(db, ac, "vol", "55")
     sleep(0.100)
-    mpd.exec_command("vol", "60")
+    mpd.exec_command(db, ac, "vol", "60")
     sleep(0.100)
-    mpd.exec_command("vol", "75")
+    mpd.exec_command(db, ac, "vol", "75")
     sleep(0.100)
-    mpd.exec_command("vol", "85")
+    mpd.exec_command(db, ac, "vol", "85")
     sleep(0.100)
-    mpd.exec_command("vol", "100")
+    mpd.exec_command(db, ac, "vol", "100")
     db.write_log_to_db_a(ac, "Fade in", "t", "write_also_to_console")
 
 
 def mpd_fade_out():
     """fade player-volume to 0%"""
-    mpd.exec_command("vol", "-5")
+    mpd.exec_command(db, ac, "vol", "-5")
     sleep(0.100)
-    mpd.exec_command("vol", "-10")
+    mpd.exec_command(db, ac, "vol", "-10")
     sleep(0.100)
-    mpd.exec_command("vol", "-15")
+    mpd.exec_command(db, ac, "vol", "-15")
     sleep(0.100)
-    mpd.exec_command("vol", "-10")
+    mpd.exec_command(db, ac, "vol", "-10")
     sleep(0.100)
-    mpd.exec_command("vol", "-10")
+    mpd.exec_command(db, ac, "vol", "-10")
     sleep(0.100)
-    mpd.exec_command("vol", "-15")
+    mpd.exec_command(db, ac, "vol", "-15")
     sleep(0.100)
-    mpd.exec_command("vol", "-15")
+    mpd.exec_command(db, ac, "vol", "-15")
     sleep(0.100)
-    mpd.exec_command("vol", "-10")
+    mpd.exec_command(db, ac, "vol", "-10")
     sleep(0.100)
-    mpd.exec_command("vol", "-10")
+    mpd.exec_command(db, ac, "vol", "-10")
     db.write_log_to_db_a(ac, "Fade out", "t", "write_also_to_console")
 
 
 def mpd_setup():
     """basic config of mpd"""
-    mpd.connect(db, ac)
-    mpd.exec_command("crossfade", db.ac_config_1[5])
-    mpd.exec_command("consume", db.ac_config_1[6])
-    mpd.exec_command("repeat", db.ac_config_1[7])
-    mpd.exec_command("random", db.ac_config_1[8])
-    mpd.exec_command("single", db.ac_config_1[9])
-    mpd.exec_command("replay_gain_mode", db.ac_config_1[10])
+    mpd_result = mpd.connect(db, ac)
+    if mpd_result is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[5], "x",
+                                                    "write_also_to_console")
+        return
+    mpd.exec_command(db, ac, "crossfade", db.ac_config_1[5])
+    mpd.exec_command(db, ac, "consume", db.ac_config_1[6])
+    mpd.exec_command(db, ac, "repeat", db.ac_config_1[7])
+    mpd.exec_command(db, ac, "random", db.ac_config_1[8])
+    mpd.exec_command(db, ac, "single", db.ac_config_1[9])
+    mpd.exec_command(db, ac, "replay_gain_mode", db.ac_config_1[10])
     current_status = check_mpd_stat("status")
     if current_status != "play":
-        mpd.exec_command("play", None)
+        mpd.exec_command(db, ac, "play", None)
         mpd_fade_in()
     mpd.disconnect()
+    ac.app_msg_1 = "MPD Setup..." + "\n"
+    db.write_log_to_db(ac, "MPD Setup durchgefuehrt", "k")
 
 
 class my_form(Frame):
@@ -752,7 +764,7 @@ class my_form(Frame):
             height=1, width=80, text="Actions")
         self.text_label_1.pack()
 
-        self.textBox = ScrolledText(self, height=5, width=80)
+        self.textBox = ScrolledText(self, height=10, width=80)
         self.textBox.pack()
         self.textBox.insert(END, "Waiting for first Action\n")
 
@@ -760,14 +772,14 @@ class my_form(Frame):
             height=1, width=80, text="Playlist")
         self.text_label_2.pack()
 
-        self.textBox1 = ScrolledText(self, height=10, width=80)
+        self.textBox1 = ScrolledText(self, height=5, width=80)
         self.textBox1.pack()
         self.textBox1.insert(END, "...and the End\n")
 
         # registering callback
         self.listenID = self.after(500, self.lets_rock)
 
-    def display_scheduling(self):
+    def run_scheduling(self):
         """Display Schedule in Form"""
         self.text_label.config(text="Play-Out-Schedule Nr: "
                 + str(ac.app_counter))
@@ -778,7 +790,7 @@ class my_form(Frame):
             lines = int(self.textBox.index('end-1c').split('.')[0])
             #lines = self.textBox.index('end-1c')
             #self.textBox.insert(END, str(lines) + "\n")
-            if lines > 40:
+            if lines > 50:
                 self.textBox.delete('1.0', '20.end')
             ac.app_msg_1 = None
 
@@ -808,10 +820,14 @@ class my_form(Frame):
         if time_now.minute == 58:
             if time_now.second == 2:
                 # update mpd-db
-                mpd.connect(db, ac)
-                ac.app_msg_1 = "Update MPD-DB..."
-                mpd.exec_command("update", None)
-                mpd.disconnect()
+                mpd_result = mpd.connect(db, ac)
+                if mpd_result is not None:
+                    ac.app_msg_1 = "Update MPD-DB..."
+                    mpd.exec_command(db, ac, "update", None)
+                    mpd.disconnect()
+                else:
+                    db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
+                                                    "write_also_to_console")
 
         # prepare and play_out top of the hour
         if time_now.minute == 59:
@@ -867,7 +883,7 @@ class my_form(Frame):
                     # shuffling music-playlist
                     random.shuffle(ac.music_play_list)
 
-        self.display_scheduling()
+        self.run_scheduling()
 
 
 if __name__ == "__main__":
