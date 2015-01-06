@@ -45,47 +45,57 @@ class myMPD(object):
         self._password = mpd_config.mpd_pw
         self._client = MPDClient()
 
-    def connect(self):
+    def connect(self, db, ac):
         try:
             self._client.connect(self._host, self._port)
+            return True
         # Catch socket errors
         except IOError as err:
             errno, strerror = err
-            raise RunError("Could not connect to '%s': %s" %
-                              (self._host, strerror))
+            db.write_log_to_db_a(ac, "MPD-Error:'%s': %s" %
+                    (self._host, strerror), "x", "write_also_to_console")
 
         except ConnectionError as e:
-            print "mpdconerr"
-            print e
-            pass
+            db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+                                             "write_also_to_console")
+            return None
 
         # Catch all other possible errors
         # ConnectionError and ProtocolError are always fatal.  Others may not
         # be, but we don't know how to handle them here, so treat them as if
         # they are instead of ignoring them.
         except MPDError as e:
-            raise RunError("Could not connect to '%s': %s" %
-                              (self._host, e))
+            #raise RunError("Could not connect to '%s': %s" %
+            #                  (self._host, e))
+            db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+                                             "write_also_to_console")
+            return None
 
         if self._password:
             try:
                 self._client.password(self._password)
-
+                return True
             except ConnectionError as e:
-                print "mpdconerr1"
-                print e
-                pass
+                db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+                                             "write_also_to_console")
+                return None
             # Catch errors with the password command (e.g., wrong password)
             except CommandError as e:
-                raise RunError("Could not connect to '%s': "
-                                  "password commmand failed: %s" %
-                                  (self._host, e))
+                #raise RunError("Could not connect to '%s': "
+                #                  "password commmand failed: %s" %
+                #                  (self._host, e))
+                #db.write_log_to_db_a(ac, "MPD-PW-Error: %s" % str(e), "x",
+                #                             "write_also_to_console")
+                return None
 
             # Catch all other possible errors
             except (MPDError, IOError) as e:
-                raise RunError("Could not connect to '%s': "
-                                  "error with password command: %s" %
-                                  (self._host, e))
+                #raise RunError("Could not connect to '%s': "
+                #                  "error with password command: %s" %
+                #                  (self._host, e))
+                db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+                                             "write_also_to_console")
+            return None
 
     def disconnect(self):
         # Try to tell MPD we're closing the connection first
@@ -141,21 +151,15 @@ class myMPD(object):
                 result = mpc_client("crop", value)
             if command == "vol":
                 result = mpc_client("volume", value)
+            return result
 
         # Couldn't get the current cmd, so try reconnecting and retrying
         except (MPDError, IOError):
             # No error handling required here
             # Our disconnect function catches all exceptions, and therefore
             # should never raise any.
+            db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+                                             "write_also_to_console")
+
             self.disconnect()
-
-            try:
-                self.connect()
-
-            # Reconnecting failed
-            except RunError as e:
-                raise RunError("Reconnecting failed: %s" % e)
-
-        print "Res_mpd: " + command
-        print result
-        return result
+            return None
