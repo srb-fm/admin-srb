@@ -9,27 +9,26 @@ import subprocess
 import mpd_config
 
 
-def mpc_client(command, value):
-
+def mpc_client(db, ac, command, value):
+    """execute mpd-commands via mpc-client"""
     mpd_server = mpd_config.mpd_pw + "@" + mpd_config.mpd_host
-    if value is None:
-        p = subprocess.Popen(["/usr/bin/mpc",
+    try:
+        if value is None:
+            p = subprocess.Popen(["/usr/bin/mpc",
                             "-h", mpd_server, "-p", mpd_config.mpd_port,
                         command],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE).communicate()
-    else:
-        print value
-        p = subprocess.Popen(["/usr/bin/mpc",
+        else:
+            p = subprocess.Popen(["/usr/bin/mpc",
                             "-h", mpd_server, "-p", mpd_config.mpd_port,
                         command, value],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE).communicate()
-    print p
-    #lib_cm.message_write_to_console(ac, u"returncode 0")
-    #lib_cm.message_write_to_console(ac, p[0])
-    #lib_cm.message_write_to_console(ac, u"returncode 1")
-    #lib_cm.message_write_to_console(ac, p[1])
+    except Exception, e:
+        db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+                                             "write_also_to_console")
+        return None
     return p
 
 
@@ -115,7 +114,7 @@ class myMPD(object):
         except (MPDError, IOError):
             self._client = MPDClient()
 
-    def exec_command(self, command, value):
+    def exec_command(self, db, ac, command, value):
         result = None
         try:
             if command == "play":
@@ -148,18 +147,17 @@ class myMPD(object):
                 result = self._client.setvol(value)
             # via mpc-client
             if command == "crop":
-                result = mpc_client("crop", value)
+                result = mpc_client(db, ac, "crop", value)
             if command == "vol":
-                result = mpc_client("volume", value)
+                result = mpc_client(db, ac, "volume", value)
             return result
 
         # Couldn't get the current cmd, so try reconnecting and retrying
-        except (MPDError, IOError):
+        except (MPDError, IOError) as e:
             # No error handling required here
             # Our disconnect function catches all exceptions, and therefore
             # should never raise any.
             db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
                                              "write_also_to_console")
-
             self.disconnect()
             return None
