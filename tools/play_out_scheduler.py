@@ -261,7 +261,7 @@ def prepare_mpd_0(time_now, minute_start):
             msg_1 = "Add Items for top of the hour to Playlist..."
             msg_2 = ""
             # load current song
-            mpd.connect()
+            mpd.connect(db, ac)
             current_song_file = check_mpd_song("file")
             # cropping playlist-items
             mpd.exec_command("crop", None)
@@ -281,11 +281,11 @@ def prepare_mpd_0(time_now, minute_start):
                         ac.app_msg_1 = "Playing current continue..."
                         db.write_log_to_db_a(ac, "Play current continue", "t",
                                              "write_also_to_console")
-                        log_message = "Nahtloses Play-Out: " + item[2][21:]
+                        log_message = "OnAir seamless: " + item[2][21:]
                         db.write_log_to_db(ac, log_message, "i")
                     else:
                         mpd.exec_command("add", item[2][21:])
-                        db.write_log_to_db_a(ac, "Gleich: "
+                        db.write_log_to_db_a(ac, "OnAir next: "
                                 + item[2][21:], "i", "write_also_to_console")
 
             if ac.play_out_infotime is True:
@@ -351,7 +351,7 @@ def prepare_mpd_5x(time_now, minute_start):
             msg_1 = "Add Items to Playlist..."
             msg_2 = ""
             # load current song
-            mpd.connect()
+            mpd.connect(db, ac)
             current_song_file = check_mpd_song("file")
             # cropping playlist-items
             mpd.exec_command("crop", None)
@@ -363,11 +363,11 @@ def prepare_mpd_5x(time_now, minute_start):
                     ac.app_msg_1 = "Playing current continue..."
                     db.write_log_to_db_a(ac, "Play current continue", "t",
                                              "write_also_to_console")
-                    log_message = "Nahtloses Play-Out: " + item[2][21:]
+                    log_message = "OnAir semless: " + item[2][21:]
                     db.write_log_to_db(ac, log_message, "i")
                 else:
                     mpd.exec_command("add", item[2][21:])
-                    db.write_log_to_db_a(ac, "Gleich: "
+                    db.write_log_to_db_a(ac, "OnAir next: "
                                 + item[2][21:], "i", "write_also_to_console")
 
             # add music
@@ -428,7 +428,7 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
     if time_now.second == 59:
         # schedule items for player
         if ac.play_out_items_mag is not None:
-            mpd.connect()
+            mpd.connect(db, ac)
             msg_1 = "Add Magazine-Item " + str(mg_number) + " to Playlist..."
             msg_2 = ""
             # cropping playlist-items
@@ -445,7 +445,7 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
                 del ac.music_play_list[:3]
             push_music_playlist()
             mpd.disconnect()
-            log_message = ("Play-Out Magazin: "
+            log_message = ("OnAir Magazine next: "
                                         + ac.play_out_items_mag[0][2][20:])
             db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
         else:
@@ -724,7 +724,7 @@ def mpd_fade_out():
 
 def mpd_setup():
     """basic config of mpd"""
-    mpd.connect()
+    mpd.connect(db, ac)
     mpd.exec_command("crossfade", db.ac_config_1[5])
     mpd.exec_command("consume", db.ac_config_1[6])
     mpd.exec_command("repeat", db.ac_config_1[7])
@@ -792,11 +792,10 @@ class my_form(Frame):
 
     def lets_rock(self):
         """mainfunction"""
-        #mpd.connect()
-        #current_status = check_mpd_stat("status")
-        #mpd.disconnect()
-        #print current_status
+        #mpd.connect(db, ac)
+        #mpd.connect(db, ac)
         #return
+
         if ac.app_counter == 2:
             mpd_setup()
             create_music_playlist()
@@ -809,7 +808,7 @@ class my_form(Frame):
         if time_now.minute == 58:
             if time_now.second == 2:
                 # update mpd-db
-                mpd.connect()
+                mpd.connect(db, ac)
                 ac.app_msg_1 = "Update MPD-DB..."
                 mpd.exec_command("update", None)
                 mpd.disconnect()
