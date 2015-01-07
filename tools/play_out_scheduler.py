@@ -58,8 +58,16 @@ class app_config(object):
             "in Rotations-Verzeichnis nicht lesbar")
         self.app_errorslist.append(u"Laenge der Musik-Datei "
             "nicht ermittelbar")
-        self.app_errorslist.append(u"MPD-Setup fehlgeschlagen")
-        self.app_errorslist.append(u"Update MPD-DB fehlgeschlagen")
+        self.app_errorslist.append(u"MPD-Setup fehlgeschlagen, "
+                                                "kein connect zu MPD")
+        self.app_errorslist.append(u"Update MPD-DB fehlgeschlagen, "
+                                                "kein connect zu MPD")
+        self.app_errorslist.append(u"Play-Out-Vorbereitung "
+                                    "fuer volle Stunde fehlgeschlagen, "
+                                                "kein connect zu MPD")
+        self.app_errorslist.append(u"Play-Out-Vorbereitung "
+                                    "fuer Minute x fehlgeschlagen, "
+                                                "kein connect zu MPD")
         # display debugmessages on console or no: "no"
         self.app_debug_mod = "yes"
         # number of params 0
@@ -263,7 +271,12 @@ def prepare_mpd_0(time_now, minute_start):
             msg_1 = "Add Items for top of the hour to Playlist..."
             msg_2 = ""
             # load current song
-            mpd.connect(db, ac)
+            mpd_result = mpd.connect(db, ac)
+            if mpd_result is None:
+                db.write_log_to_db_a(ac, ac.app_errorslist[7], "x",
+                                                    "write_also_to_console")
+                ac.app_msg_1 = "No mpd-connect, prepaere_mpd"
+                return
             current_song_file = check_mpd_song("file")
             # cropping playlist-items
             mpd.exec_command(db, ac, "crop", None)
@@ -353,7 +366,12 @@ def prepare_mpd_5x(time_now, minute_start):
             msg_1 = "Add Items to Playlist..."
             msg_2 = ""
             # load current song
-            mpd.connect(db, ac)
+            mpd_result = mpd.connect(db, ac)
+            if mpd_result is None:
+                db.write_log_to_db_a(ac, ac.app_errorslist[8], "x",
+                                                    "write_also_to_console")
+                ac.app_msg_1 = "No mpd-connect, prepaere_mpd"
+                return
             current_song_file = check_mpd_song("file")
             # cropping playlist-items
             mpd.exec_command(db, ac, "crop", None)
