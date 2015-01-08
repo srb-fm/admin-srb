@@ -68,6 +68,8 @@ class app_config(object):
         self.app_errorslist.append(u"Play-Out-Vorbereitung "
                                     "fuer Minute x fehlgeschlagen, "
                                                 "kein connect zu MPD")
+        self.app_errorslist.append(u"MPD-Status kann nicht ermittelt werden")
+        self.app_errorslist.append(u"MPD-Song kann nicht ermittelt werden")
         # display debugmessages on console or no: "no"
         self.app_debug_mod = "yes"
         # number of params 0
@@ -178,6 +180,11 @@ def load_play_out_items(minute_start, broadcast_type):
 def check_mpd_stat(option):
     """read mpd and song-status"""
     current_status = mpd.exec_command(db, ac, "status", None)
+    if current_status is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[9], "x",
+                                                    "write_also_to_console")
+        ac.app_msg_1 = "mpd-error status"
+        return
     if option is not None:
         if option == "time_remain":
             if "time" in current_status:
@@ -201,6 +208,11 @@ def check_mpd_stat(option):
 def check_mpd_song(option):
     """read song-status"""
     current_song = mpd.exec_command(db, ac, "song", None)
+    if current_song is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
+                                                    "write_also_to_console")
+        ac.app_msg_1 = "mpd-error song"
+        return
     if option is not None:
         if option == "file":
             if "file" in current_song:
