@@ -195,7 +195,6 @@ def check_mpd_stat(option):
                 return seconds_remain
         if option == "status":
             if "state" in current_status:
-                print "sss"
                 lib_cm.message_write_to_console(ac, current_status["state"])
                 index = string.find(current_status["state"], ":")
                 mpd_state = current_status["state"][index + 1:]
@@ -550,11 +549,9 @@ def check_music_sources_alt(music_sources):
                     continue
             hour_begin = item[3][0:2]
             hour_end = item[3][3:5]
-            #print hour_begin
-            #print hour_end
             time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
             dt_hour = time_target.hour
-            #print dt_hour
+
             if dt_hour >= int(hour_begin) and dt_hour < int(hour_end):
                 using_now = True
 
@@ -580,11 +577,9 @@ def work_on_extra_music_sources(music_sources):
                     continue
             hour_begin = item[3][0:2]
             hour_end = item[3][3:5]
-            #print hour_begin
-            #print hour_end
             time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
             dt_hour = time_target.hour
-            #print dt_hour
+
             if dt_hour >= int(hour_begin) and dt_hour < int(hour_end):
                 using_now = True
 
