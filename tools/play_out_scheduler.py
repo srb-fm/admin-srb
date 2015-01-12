@@ -101,6 +101,7 @@ class app_config(object):
 
 
 def load_extended_params():
+    ext_params_ok = True
     # Times
     db.ac_config_times = db.params_load_1a(ac, db, "PO_Time_Config_1")
     if db.ac_config_times is not None:
@@ -123,7 +124,12 @@ def load_extended_params():
         if param_check_time_config is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
             "write_also_to_console")
-            return None
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+
+    if ext_params_ok is None:
+        return ext_params_ok
 
     # Rotation
     db.ac_config_rotation = db.params_load_1a(ac, db, "PO_Rotation")
@@ -144,8 +150,10 @@ def load_extended_params():
         if param_check_rotation_config is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
             "write_also_to_console")
-            return None
-    return "ok"
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+    return ext_params_ok
 
 
 def load_play_out_items(minute_start, broadcast_type):
