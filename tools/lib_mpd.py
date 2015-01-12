@@ -51,11 +51,11 @@ class myMPD(object):
         # Catch socket errors
         except IOError as err:
             errno, strerror = err
-            db.write_log_to_db_a(ac, "MPD-Error:'%s': %s" %
+            db.write_log_to_db_a(ac, "MPD-IO-Error:'%s': %s" %
                     (self._host, strerror), "x", "write_also_to_console")
 
         except ConnectionError as e:
-            db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+            db.write_log_to_db_a(ac, "MPD-Conn-Error 1: %s" % str(e), "x",
                                              "write_also_to_console")
             return None
 
@@ -66,7 +66,7 @@ class myMPD(object):
         except MPDError as e:
             #raise RunError("Could not connect to '%s': %s" %
             #                  (self._host, e))
-            db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+            db.write_log_to_db_a(ac, "MPD-Error-1: %s" % str(e), "x",
                                              "write_also_to_console")
             return None
 
@@ -75,7 +75,7 @@ class myMPD(object):
                 self._client.password(self._password)
                 return True
             except ConnectionError as e:
-                db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+                db.write_log_to_db_a(ac, "MPD-Conn-Error 2: %s" % str(e), "x",
                                              "write_also_to_console")
                 return None
             # Catch errors with the password command (e.g., wrong password)
@@ -92,7 +92,7 @@ class myMPD(object):
                 #raise RunError("Could not connect to '%s': "
                 #                  "error with password command: %s" %
                 #                  (self._host, e))
-                db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+                db.write_log_to_db_a(ac, "MPD-Error-2: %s" % str(e), "x",
                                              "write_also_to_console")
             return None
 
@@ -157,7 +157,7 @@ class myMPD(object):
             # No error handling required here
             # Our disconnect function catches all exceptions, and therefore
             # should never raise any.
-            db.write_log_to_db_a(ac, "MPD-Error: %s" % str(e), "x",
+            db.write_log_to_db_a(ac, "MPD-Error-3: %s" % str(e), "x",
                                              "write_also_to_console")
             self.disconnect()
             return None
