@@ -147,6 +147,36 @@ class app_config(object):
         self.log_title = None
 
 
+def load_extended_params():
+    # Times
+    ext_params_ok = True
+    db.ac_config_times = db.params_load_1a(ac, db, "PO_Time_Config_1")
+    if db.ac_config_times is not None:
+        # create extended Paramslist
+        app_params_type_list_times = []
+        # Types of extended-List
+        app_params_type_list_times.append("p_string")
+        app_params_type_list_times.append("p_string")
+        app_params_type_list_times.append("p_string")
+        app_params_type_list_times.append("p_string")
+        app_params_type_list_times.append("p_string")
+        app_params_type_list_times.append("p_string")
+        app_params_type_list_times.append("p_string")
+        app_params_type_list_times.append("p_string")
+        # check extended Params
+        param_check_time_config = lib_cm.params_check_a(
+                        ac, db, 8,
+                        app_params_type_list_times,
+                        db.ac_config_times)
+        if param_check_time_config is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+    return ext_params_ok
+
+
 def extract_from_stuff_after_match(stuff, match_string):
     """Aus String Abschnitt extrahieren was nach match_string kommt """
     index_trenner = string.find(stuff, match_string)
@@ -594,8 +624,11 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         if param_check is not None:
             # Haupt-Params ok: weiter
-            param_check_counter += 1
-            #print "ok"
+            load_extended_params_ok = load_extended_params()
+            if load_extended_params_ok is not None:
+                #TODO: hier weiter ext. Params
+                param_check_counter += 1
+                print "ok"
 
     # Erweiterte Params laden
     db.ac_config_2 = db.params_load_1a(ac, db, "PO_Time_Config_1")
@@ -624,7 +657,7 @@ if __name__ == "__main__":
         db.config_extended = (list(db.ac_config_1[:ac.app_config_params_range])
                             + list(db.ac_config_2[:7]))
         #print db.config_extended
-        #print db.config_extended[2]
+        print db.config_extended[2]
         mything = my_form()
         mything.master.title("Play-Out-Logging und Play-Out-Load-Web")
         mything.mainloop()
