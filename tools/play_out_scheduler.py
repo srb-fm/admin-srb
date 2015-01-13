@@ -17,7 +17,41 @@ This script provides playlistitems for mpd.
 The items are taken from the work of play_out_loader.py in the log-table.
 
 Parameterliste:
+Dieses Script bereitet für den MPD die Auszuspielenden Audiodateien
+oder zu streamende URLs vor.
+Es fragt zu festgelegten Zeiten die durch den play_out_loader.py
+vorbereiteten Eintraege ab (Sendebuchungen). Damit wird eine Wartschlange
+mit Audiodateien erzeugt. Ausserdem werden aus einem Musikpool Musikdateien
+fuer eine Warteschlange vorbereitet.
 
+Zu den festgelegten Zeiten erhaelt mpd ein play-command
+um die vorbereiteten Sendungen auszuspielen. Festegelegte Zeiten sind:
+    Volle Stunde (top of the hour) (fest)
+    z.B. 5 Minuten nach voller Stunde (variabel ueber Einst. PO_Time_Config)
+    z.B. 30 Minuten nach voller Stunde (variabel ueber Einst. PO_Time_Config)
+
+Soll z.B. zur vollen Stunde eine neue Sendung beginnen,
+und der gerade abgespielte Titel noch laenger als 3 Sekunden laufen,
+wird dieser ausgeblendet, ansonsten wird die neue Sendung danach eingeordnet
+und ausgespielt.
+
+Soll zur vollen Stunde eine Stream-URL gepsielt werden,
+und laeuft gerade ein Stream mit der gleichen URL, so erfolgt kein reconnect
+zum URL.
+
+Beim Start des Scripts werden definierte Standard-Einstellungen an mpd
+uebertragen und ein play-command abgesetzt um im Notfall schnell wiedergeben zu
+können.
+
+Fuer den Regelbetrieb (Start ueber qjackctrl) muss der Debugmod ausgeschaltet
+sein: self.app_debug_mod = "no"
+
+Die Musikrotation wird jeweils 10 Minuten vior der vollen Stunde vorbereitet.
+Dazu werden Musikdateien mittels Zufallsgenaerator aus dem vordefinierten
+Verzeichnis geladen. Diese Haupt-Playlist kann durch weitere Musik aus anderen
+Pools ergaenzt werden. Es koennen Wochentag und Stundenabschnitte
+definiert werden an und in denen diese Extra oder Alternativen Playlists
+erzeugt werden sollen.
 
 """
 
@@ -237,7 +271,6 @@ def check_mpd_song(option):
 
 def play_out():
     """play out"""
-    print "play_out"
     if ac.song_time_elapsed > 4:
         mpd.exec_command(db, ac, "next", None)
         mpd_fade_in()
