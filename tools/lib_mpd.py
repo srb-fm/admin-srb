@@ -159,5 +159,11 @@ class myMPD(object):
             # should never raise any.
             db.write_log_to_db_a(ac, "MPD-Error-3: %s" % str(e), "x",
                                              "write_also_to_console")
-            self.disconnect()
+            db.write_log_to_db_a(ac, "MPD-E-3 cmd-value: " + value, "x",
+                                             "write_also_to_console")
+            if str(e) == "Not connected":
+                self.connect(db, ac)
+                self.exec_command(db, ac, command, value)
+            else:
+                self.disconnect()
             return None
