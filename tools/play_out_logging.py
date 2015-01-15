@@ -459,17 +459,20 @@ class my_form(Frame):
 
         # 2. Quelle der aktuellen Sendezeit zuordnen
         #if time_now.minute < 5:
-        #if time_now.minute < int(db.config_extended[15]):
-        if time_now.minute < int(db.config_extended[13]):
+        #if time_now.minute < int(db.config_extended[13]):
+        if time_now.minute < int(db.ac_config_times[3]):
             source_id = source_params[0:2]
 
         #if time_now.minute >=5 <30:
-        if (time_now.minute >= int(db.config_extended[13])
-            < int(db.config_extended[14])):
+        #if (time_now.minute >= int(db.config_extended[13])
+            #< int(db.config_extended[14])):
+        if (time_now.minute >= int(db.ac_config_times[3])
+            < int(db.ac_config_times[4])):
             source_id = source_params[2:4]
 
         #if time_now.minute >=30:
-        if time_now.minute >= int(db.config_extended[14]):
+        #if time_now.minute >= int(db.config_extended[14]):
+        if time_now.minute >= int(db.ac_config_times[4]):
             source_id = source_params[4:6]
 
         lib_cm.message_write_to_console(ac, source_id)
@@ -657,7 +660,7 @@ if __name__ == "__main__":
         db.config_extended = (list(db.ac_config_1[:ac.app_config_params_range])
                             + list(db.ac_config_2[:7]))
         #print db.config_extended
-        print db.config_extended[2]
+        #print db.config_extended[2]
         mything = my_form()
         mything.master.title("Play-Out-Logging und Play-Out-Load-Web")
         mything.mainloop()
