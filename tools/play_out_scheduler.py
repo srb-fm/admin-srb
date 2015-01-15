@@ -53,6 +53,72 @@ Pools ergaenzt werden. Es koennen Wochentag und Stundenabschnitte
 definiert werden an und in denen diese Extra oder Alternativen Playlists
 erzeugt werden sollen.
 
+
+Der Ablauf ist an bestimmte Zeiten im Stundenverlauf gebunden:
+Minute 58:
+    Update MPD-DB
+Minute 59:
+    Vorbereitung und play out top of the hour
+Minute x (5):
+    Vorbereitung und play out erste variable Zeit, z.B. 5 nach Um
+Minute x (30):
+    Vorbereitung und play out zweite variable Zeit, z.B. 30 nach Um
+Minute 14, 31, 44:
+    Vorbereitung und play out Magazin-Beitraege
+Minute 50:
+    Musikrotation vorbereiten
+
+Liste der moeglichen Haupt-Fehlermeldungen:
+E 00 Parameter-Typ oder Inhalt stimmt nicht
+E 01 Parameter-Typ oder Inhalt stimmt nicht: PO_Time_Config
+E 02 Parameter-Typ oder Inhalt stimmt nicht: PO_Rotation
+E 03 Musik-Datei in Rotations-Verzeichnis nicht lesbar
+E 04 Laenge der Musik-Datei nicht ermittelbar
+E 05 MPD-Setup fehlgeschlagen, kein connect zu MPD
+E 06 Update MPD-DB fehlgeschlagen, kein connect zu MPD
+E 07 Play-Out-Vorbereitung fuer volle Stunde fehlgeschlagen, kein connect zu MPD
+E 08 Play-Out-Vorbereitung fuer Minute x fehlgeschlagen, kein connect zu MPD
+E 09 MPD-Status kann nicht ermittelt werden
+E 10 MPD-Song kann nicht ermittelt werden
+
+Parameterliste:
+P 01 Pfad zu mpd
+P 02 Pfad zu mpc
+P 03 IP mpd
+P 04 PW mpd
+P 05 Crossfade in Sekunden
+P 06 Playlist Consume 1/0
+P 07 repeat 1/0
+P 08 random 0/1
+P 09 single 1/0
+P 10 replay_gain_mode: track/album
+
+PO_Time_Config_1:
+P 01 Beginn Tagesstunde Infotime und Magazin
+P 02 Ende Tagesstunde Infotime und Magazin
+P 03 Beginn normale Sendung 1 oder Beginn Info-Time
+(kann in der Regel nur 00 sein!!!)
+P 04 Beginn normale Sendung 2 (Ende Info-Time)
+P 05 Beginne normale Sendung 3
+P 06 Interval (Abstand) der Magazin-Beitraege in Minuten (zweistellig)
+P 07 Beginn Infotime Serie B (stunde zweistellig)
+P 08 Interval (Abstand) der Infotime-Beitraege in Sekunden (zweistellig)
+
+PO_Rotation:
+P 01 Haupt-Pfad mpd-db
+P 02 Pfad Musik
+P 03 Pfad Instrumental
+P 04 Alternative Musik-Quelle benutzen on/off
+P 05 Extra (zusätzliche) Musik-Quelle benutzen on/off
+
+Das Script laeuft mit graphischer Oberflaeche staendig.
+
+Alles ist vorherbestimmt, Anfang wie Ende, durch Kräfte,
+über die wir keine Gewalt haben. Es ist vorherbestimmt
+für Insekt nicht anders wie für Stern. Die menschlichen Wesen,
+Pflanzen oder der Staub, wir alle tanzen nach einer geheimnisvollen Melodie,
+die ein unsichtbarer Spieler in den Fernen des Weltalls anstimmt.
+Albert Einstein
 """
 
 
@@ -79,7 +145,7 @@ class app_config(object):
         self.app_config_develop = u"PO_Scheduler_Config_e"
         self.app_develop = "no"
         self.app_windows = "no"
-        self.app_errorfile = "error_play_out_sceduler.log"
+        self.app_errorfile = "error_play_out_scheduler.log"
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(u"Parameter-Typ "
@@ -105,6 +171,7 @@ class app_config(object):
         self.app_errorslist.append(u"MPD-Status kann nicht ermittelt werden")
         self.app_errorslist.append(u"MPD-Song kann nicht ermittelt werden")
         # display debugmessages on console or no: "no"
+        # for normal usage set to no!!!!!!
         self.app_debug_mod = "yes"
         # number of params 0
         self.app_config_params_range = 10
@@ -135,6 +202,7 @@ class app_config(object):
 
 
 def load_extended_params():
+    """load extended params"""
     ext_params_ok = True
     # Times
     db.ac_config_times = db.params_load_1a(ac, db, "PO_Time_Config_1")
@@ -208,7 +276,6 @@ def load_play_out_items(minute_start, broadcast_type):
     db_tbl_condition = (
             "SUBSTRING( A.USER_LOG_TIME FROM 1 FOR 19) >= '"
             + c_time_back
-            #+ "' AND A.USER_LOG_ACTION LIKE 'In Playlist aufgenommen:%' "
             + "' AND A.USER_LOG_ACTION LIKE '" + broadcast_type + "%' "
             + " ORDER BY A.USER_LOG_ID")
 
@@ -870,15 +937,11 @@ class my_form(Frame):
 
     def lets_rock(self):
         """mainfunction"""
-        #mpd.connect(db, ac)
-        #mpd.connect(db, ac)
-        #return
 
         if ac.app_counter == 2:
             mpd_setup()
             create_music_playlist()
 
-        #lib_cm.message_write_to_console(ac, u"lets rock")
         time_now = datetime.datetime.now()
         ac.app_counter += 1
         minute_start = db.ac_config_times[3]
