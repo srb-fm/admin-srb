@@ -18,6 +18,7 @@ __init__.py
 admin_srb_conf.php
 db_config.py
 _db_config.py
+mpd_config.py
 *conf.sh
 
 # with paths or special conigs
