@@ -113,7 +113,7 @@ class app_config(object):
         # app_config
         self.app_id = "009"
         self.app_desc = "play_out_loader"
-        # Entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # Developmod (other parameter, e.g. paths)
         self.app_develop = "no"
         # Meldungen auf konsole ausgeben
         # muss auf no gestellt werden wenn run per chronjob!
@@ -188,9 +188,9 @@ class app_config(object):
         # Duration of InfoTime
         self.po_it_duration = 0
         # aktuelle Stunde
-        #self.time_target = datetime.datetime.now()
+        self.time_target = datetime.datetime.now()
         # kommende stunde
-        self.time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
+        #self.time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
 
 
 def load_extended_params():
