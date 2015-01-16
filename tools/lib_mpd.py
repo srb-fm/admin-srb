@@ -159,9 +159,12 @@ class myMPD(object):
             # should never raise any.
             db.write_log_to_db_a(ac, "MPD-Error-3: %s" % str(e), "x",
                                              "write_also_to_console")
-            db.write_log_to_db_a(ac, "MPD-E-3 cmd-value: " + value, "x",
+            if value is not None:
+                db.write_log_to_db_a(ac, "MPD-E-3 cmd-value: " + value, "x",
                                              "write_also_to_console")
             if str(e) == "Not connected":
+                db.write_log_to_db_a(ac, "MPD-E-3: try reconnect", "x",
+                                             "write_also_to_console")
                 self.connect(db, ac)
                 self.exec_command(db, ac, command, value)
             else:
