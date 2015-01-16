@@ -243,10 +243,14 @@ def load_extended_params():
         app_params_type_list_rotation.append("p_string")
         app_params_type_list_rotation.append("p_string")
         app_params_type_list_rotation.append("p_string")
+        app_params_type_list_rotation.append("p_string")
+        app_params_type_list_rotation.append("p_string")
+        app_params_type_list_rotation.append("p_int")
+        app_params_type_list_rotation.append("p_int")
 
         # check extended Params
         param_check_rotation_config = lib_cm.params_check_a(
-                        ac, db, 4,
+                        ac, db, 8,
                         app_params_type_list_rotation,
                         db.ac_config_rotation)
         if param_check_rotation_config is None:
