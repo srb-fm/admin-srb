@@ -236,8 +236,8 @@ def upload_data_prepare():
         'pc': ac.log_start,
         'pd': c_autor,
         'pe': c_title,
-        'pf': db.config_extended[6],
-        'pg': db.config_extended[7]}
+        'pf': db.ac_config_1[6],
+        'pg': db.ac_config_1[7]}
 
     # urlencode kann fehler werfen,
     # wenn sonderzeichen nicht encodet werden können
@@ -251,16 +251,16 @@ def upload_data_prepare():
         data_upload = {'pa': 'hinein',
             'pb': ac.log_start,
             'pc': ac.log_start,
-            'pd': db.config_extended[3],
-            'pe': db.config_extended[4],
-            'pf': db.config_extended[6],
-            'pg': db.config_extended[7]}
+            'pd': db.ac_config_1[3],
+            'pe': db.ac_config_1[4],
+            'pf': db.ac_config_1[6],
+            'pg': db.ac_config_1[7]}
 
         lib_cm.message_write_to_console(ac, u"data_upload"
                 + c_autor + " " + c_title)
         data_upload_encoded = urllib.urlencode(data_upload)
 
-    web = lib_cm.upload_data(ac, db, db.config_extended[5], data_upload_encoded)
+    web = lib_cm.upload_data(ac, db, db.ac_config_1[5], data_upload_encoded)
     if web is None:
         db.write_log_to_db_a(ac, ac.app_errorslist[4], "x",
             "write_also_to_console")
@@ -409,19 +409,19 @@ class my_form(Frame):
         if log_meldung_1 is not None:
             self.text_label.config(text="Play-Out-Logging Nr: "
                 + str(ac.app_counter) + "  / Interval von "
-                + str(int(db.config_extended[2])) + " Sekunden")
+                + str(int(db.ac_config_1[2])) + " Sekunden")
             self.textBox.delete('1.0', '3.end')
             self.textBox.insert(END, log_meldung_1 + "\n")
 
         if log_meldung_2 is not None:
             self.text_label.config(text="Play-Out-Logging Nr: "
                 + str(ac.app_counter) + "  / Interval von "
-                + str(int(db.config_extended[2])) + " Sekunden")
+                + str(int(db.ac_config_1[2])) + " Sekunden")
             self.textBox1.delete('1.0', '8.end')
             self.textBox1.insert(END, log_meldung_2 + "\n")
 
         self.listenID = self.after(
-                        int(db.config_extended[2]) * 1000, self.lets_rock)
+                        int(db.ac_config_1[2]) * 1000, self.lets_rock)
         return
 
     def lets_rock(self):
@@ -479,9 +479,9 @@ class my_form(Frame):
 
         # Dateinamen der mAirlist-Logdatei zusammenbauen
         if source_id == "03":
-            file_mairlist_log = db.config_extended[1] + "_" + source_id + ".log"
+            file_mairlist_log = db.ac_config_1[1] + "_" + source_id + ".log"
         else:
-            file_mairlist_log = db.config_extended[8] + "_" + source_id + ".log"
+            file_mairlist_log = db.ac_config_1[8] + "_" + source_id + ".log"
         lib_cm.message_write_to_console(ac, file_mairlist_log)
 
         # 3. Pruefen ob Quelle Aussenuebertragung, VP oder Studios
@@ -547,8 +547,8 @@ class my_form(Frame):
                     # Ausfall-Meldung nur einmal uebertragen
                     ac.log_start = (str(time_now.date()) + " "
                         + str(time_now.time())[0:8])
-                    ac.log_author = db.config_extended[3]
-                    ac.log_title = db.config_extended[4]
+                    ac.log_author = db.ac_config_1[3]
+                    ac.log_title = db.ac_config_1[4]
                     web = upload_data_prepare()
                     if web is not None:
                         self.display_logging(log_meldung_1, web)
@@ -582,10 +582,10 @@ class my_form(Frame):
         if ac.log_author is None:
             ac.log_start = (str(time_now.date()) + " "
                 + str(time_now.time())[0:8])
-            ac.log_author = db.config_extended[3]
+            ac.log_author = db.ac_config_1[3]
 
         if ac.log_title is None:
-            ac.log_title = db.config_extended[4]
+            ac.log_title = db.ac_config_1[4]
 
         # Bezeichnung der Quelle holen
         log_source_desc = db.read_tbl_row_with_cond(ac,
@@ -605,8 +605,8 @@ class my_form(Frame):
         else:
             ac.log_start = (str(time_now.date()) + " "
                 + str(time_now.time())[0:8])
-            ac.log_author = db.config_extended[3]
-            ac.log_title = db.config_extended[4]
+            ac.log_author = db.ac_config_1[3]
+            ac.log_title = db.ac_config_1[4]
             log_meldung_1 = ac.app_errorslist[4] + " \n"
             self.display_logging(log_meldung_1, None)
         return
