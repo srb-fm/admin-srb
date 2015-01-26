@@ -620,7 +620,7 @@ if __name__ == "__main__":
     db.write_log_to_db(ac, ac.app_desc + u" gestartet", "a")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
-    param_check_counter = 0
+    #param_check_counter = 0
 
     if db.ac_config_1 is not None:
         # Haupt-Params pruefen
@@ -630,40 +630,12 @@ if __name__ == "__main__":
             load_extended_params_ok = load_extended_params()
             if load_extended_params_ok is not None:
                 #TODO: hier weiter ext. Params
-                param_check_counter += 1
-                print "ok"
+                #param_check_counter += 1
+                #print "ok"
 
-    # Erweiterte Params laden
-    db.ac_config_2 = db.params_load_1a(ac, db, "PO_Time_Config_1")
-    if db.ac_config_2 is not None:
-        # Erweiterte Paramsliste anlegen
-        app_params_type_list_2 = []
-        # Erweiterte Params-Type-List,
-        # Typ entsprechend der Params-Liste in der Config
-        app_params_type_list_2.append("p_string")
-        app_params_type_list_2.append("p_int")
-        app_params_type_list_2.append("p_int")
-        app_params_type_list_2.append("p_int")
-        app_params_type_list_2.append("p_int")
-        app_params_type_list_2.append("p_int")
-        app_params_type_list_2.append("p_int")
-        # Erweiterte Params pruefen
-        param_check_3 = lib_cm.params_check_a(ac,
-                    db, 7, app_params_type_list_2, db.ac_config_2)
-        if param_check_3 is not None:
-           # Erweiterte Params ok: weiter
-            param_check_counter += 1
-
-    if param_check_counter == 2:
-        # Params aus Param-Tuples (Haupt und erweitert)
-        # zu einer neuen Parameterliste zusammenbauen
-        db.config_extended = (list(db.ac_config_1[:ac.app_config_params_range])
-                            + list(db.ac_config_2[:7]))
-        #print db.config_extended
-        #print db.config_extended[2]
-        mything = my_form()
-        mything.master.title("Play-Out-Logging und Play-Out-Load-Web")
-        mything.mainloop()
+                mything = my_form()
+                mything.master.title("Play-Out-Logging und Play-Out-Load-Web")
+                mything.mainloop()
 
     # fertsch
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
