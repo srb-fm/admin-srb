@@ -157,16 +157,19 @@ class myMPD(object):
             # No error handling required here
             # Our disconnect function catches all exceptions, and therefore
             # should never raise any.
-            db.write_log_to_db_a(ac, "MPD-Error-3: %s" % str(e), "x",
-                                             "write_also_to_console")
+            error_msg = "MPD-Error-3: %s" % str(e)
+
             if value is not None:
-                db.write_log_to_db_a(ac, "MPD-E-3 cmd-value: " + value, "x",
-                                             "write_also_to_console")
+                error_msg = error_msg + ", cmd: " + value
+                #db.write_log_to_db_a(ac, "MPD-E-3 cmd-value: " + value, "x",
+                #                             "write_also_to_console")
             if str(e) == "Not connected":
-                db.write_log_to_db_a(ac, "MPD-E-3: try reconnect", "x",
-                                             "write_also_to_console")
+                error_msg = error_msg + ", try recon.:"
+                db.write_log_to_db_a(ac, error_msg, "x",
+                                                "write_also_to_console")
                 self.connect(db, ac)
                 self.exec_command(db, ac, command, value)
             else:
-                self.disconnect()
+                db.write_log_to_db_a(ac, error_msg, "x",
+                                                "write_also_to_console")
             return None
