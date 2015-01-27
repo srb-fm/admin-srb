@@ -714,7 +714,7 @@ def load_extra_music(path_extra_music):
 
     # Duration of playlist
     duration_minute_music = 0
-    duration_minute_target = 6
+    duration_minute_target = int(db.ac_config_rotation[7])  # 6
 
     # Collect Music
     while (duration_minute_music < duration_minute_target):
@@ -781,7 +781,7 @@ def create_music_playlist():
 
     # Duration of playlist
     duration_minute_music = 0
-    duration_minute_target = 90
+    duration_minute_target = int(db.ac_config_rotation[6])  # 90
 
     # delete all items in playlist
     del ac.music_play_list[:]
