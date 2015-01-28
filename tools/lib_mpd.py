@@ -32,6 +32,24 @@ def mpc_client(db, ac, command, value):
     return p
 
 
+def run_cmd(db, ac, command, value):
+    """execute commands via os"""
+    try:
+        if value is None:
+            p = subprocess.Popen([command],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE).communicate()
+        else:
+            p = subprocess.Popen([command, value],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE).communicate()
+    except Exception, e:
+        db.write_log_to_db_a(ac, "CMD-Error: %s" % str(e), "x",
+                                             "write_also_to_console")
+        return None
+    return p
+
+
 class RunError(Exception):
     """Fatal error """
     pass
@@ -150,6 +168,11 @@ class myMPD(object):
                 result = mpc_client(db, ac, "crop", value)
             if command == "vol":
                 result = mpc_client(db, ac, "volume", value)
+            # via os
+            if command == "reload-1":
+                result = run_cmd(db, ac, "killall", value)
+            if command == "reload-2":
+                result = run_cmd(db, ac, "mpd", value)
             return result
 
         # Couldn't get the current cmd, so try reconnecting and retrying
