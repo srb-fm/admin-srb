@@ -174,7 +174,7 @@ class app_config(object):
         # for normal usage set to no!!!!!!
         self.app_debug_mod = "yes"
         # number of params 0
-        self.app_config_params_range = 10
+        self.app_config_params_range = 11
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -183,6 +183,7 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -1015,6 +1016,18 @@ class my_form(Frame):
                     work_on_extra_music_sources(music_sources_extra)
                     # shuffling music-playlist
                     random.shuffle(ac.music_play_list)
+
+        # reload mpd
+        # this is for freeing mpd.log to rotate them
+        if time_now.hour == 4:
+            if time_now.minute == 40:
+                if time_now.second == 10:
+                    mpd.exec_command(db, ac, "reload-1", "mpd")
+                if time_now.second == 20:
+                    mpd.exec_command(db, ac, "reload-2", db.ac_config_1[11])
+                if time_now.second == 30:
+                    mpd_setup()
+                    create_music_playlist()
 
         self.run_scheduling()
 
