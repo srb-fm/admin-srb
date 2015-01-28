@@ -125,9 +125,9 @@ class app_config(object):
         self.app_errorslist.append(u"Externes PlayOut-Logging ausgesetzt, "
             "Webserver nicht erreichbar")
         # meldungen auf konsole ausgeben oder nicht: "no"
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # anzahl parameter list 0
-        self.app_config_params_range = 9
+        self.app_config_params_range = 10
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -136,6 +136,7 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_url")
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -175,6 +176,71 @@ def load_extended_params():
     else:
         ext_params_ok = None
     return ext_params_ok
+
+
+def check_mairlist_log(self, source_id, time_now, log_data):
+    """load data from marilistlogfile"""
+
+    # Dateinamen der mAirlist-Logdatei zusammenbauen
+    if source_id == "03":
+        file_mairlist_log = db.ac_config_1[1] + "_" + source_id + ".log"
+    else:
+        file_mairlist_log = db.ac_config_1[8] + "_" + source_id + ".log"
+    lib_cm.message_write_to_console(ac, file_mairlist_log)
+
+    # Daten aus mAirlist_Logdatei holen
+    mairlist_log_data = lib_cm.read_file_first_line(ac,
+                            db, file_mairlist_log)
+    lib_cm.message_write_to_console(ac, mairlist_log_data)
+    if mairlist_log_data is None:
+        # Fehler beim Lesen des Logfiles
+        ac.error_counter_read_log_file += 1
+        log_meldung_1 = ac.app_errorslist[1] + " \n"
+        if ac.error_counter_read_log_file == 1:
+            # Error-Meldung nur einmal registrieren
+            db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+                    "write_also_to_console")
+            # Ausfall-Meldung nur einmal uebertragen
+            ac.log_start = (str(time_now.date()) + " "
+                                     + str(time_now.time())[0:8])
+            ac.log_author = db.ac_config_1[3]
+            ac.log_title = db.ac_config_1[4]
+            web = upload_data_prepare()
+            if web is not None:
+                self.display_logging(log_meldung_1, web)
+            else:
+                self.display_logging(log_meldung_1, None)
+        else:
+            self.display_logging(log_meldung_1, None)
+        return None
+    else:
+        ac.error_counter_read_log_file = 0
+
+    # bei direktem Vergleich des Inhalts der Logdatei
+    # (mairlist_log_data) funktioniert folgender
+    # if-Vergleich nicht aussserhalb der ide, deshalb in vari
+    mairlist_log_time = mairlist_log_data[6:25]
+    if ac.log_start == mairlist_log_time:
+        # Keine Aenderung des gespielten Titels, also wieder zurueck
+        log_meldung_1 = ("Keine Aenderung in mAirlist-Log... \n" +
+                   ac.log_start + " - " + ac.log_author + " - " + ac.log_title)
+        self.display_logging(log_meldung_1, None)
+        return None
+    else:
+        # 4. Daten aus Logfiles oder db ermitteln
+        ac.log_start = mairlist_log_data[6:25]
+        log_data = mairlist_log_data
+        # Ermitteln ob gebuchte Sendung, oder Musik
+        log_author_title = work_on_data_from_logfile(time_now, log_data)
+        ac.log_author = log_author_title[0]
+        ac.log_title = log_author_title[1]
+        return "changed"
+
+
+def check_mpd_log(self, time_now, log_data):
+    """load data from mpd"""
+    # 1. file ermitteln
+    # 2. if id dann aus db holen, sonst tags
 
 
 def extract_from_stuff_after_match(stuff, match_string):
@@ -459,30 +525,19 @@ class my_form(Frame):
 
         # 2. Quelle der aktuellen Sendezeit zuordnen
         #if time_now.minute < 5:
-        #if time_now.minute < int(db.config_extended[13]):
         if time_now.minute < int(db.ac_config_times[3]):
             source_id = source_params[0:2]
 
         #if time_now.minute >=5 <30:
-        #if (time_now.minute >= int(db.config_extended[13])
-            #< int(db.config_extended[14])):
         if (time_now.minute >= int(db.ac_config_times[3])
             < int(db.ac_config_times[4])):
             source_id = source_params[2:4]
 
         #if time_now.minute >=30:
-        #if time_now.minute >= int(db.config_extended[14]):
         if time_now.minute >= int(db.ac_config_times[4]):
             source_id = source_params[4:6]
 
         lib_cm.message_write_to_console(ac, source_id)
-
-        # Dateinamen der mAirlist-Logdatei zusammenbauen
-        if source_id == "03":
-            file_mairlist_log = db.ac_config_1[1] + "_" + source_id + ".log"
-        else:
-            file_mairlist_log = db.ac_config_1[8] + "_" + source_id + ".log"
-        lib_cm.message_write_to_console(ac, file_mairlist_log)
 
         # 3. Pruefen ob Quelle Aussenuebertragung, VP oder Studios
         # Bei Aussenuebertragung stehen keine Logfiles zur Verfuegung,
@@ -533,51 +588,15 @@ class my_form(Frame):
             lib_cm.message_write_to_console(ac,
                 u"Sendung aus Studios, Playout oder Internetstream")
             # Daten aus mAirlist_Logdatei holen
-            mairlist_log_data = lib_cm.read_file_first_line(ac,
-                            db, file_mairlist_log)
-            lib_cm.message_write_to_console(ac, mairlist_log_data)
-            if mairlist_log_data is None:
-                # Fehler beim Lesen des Logfiles
-                ac.error_counter_read_log_file += 1
-                log_meldung_1 = ac.app_errorslist[1] + " \n"
-                if ac.error_counter_read_log_file == 1:
-                    # Error-Meldung nur einmal registrieren
-                    db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
-                    "write_also_to_console")
-                    # Ausfall-Meldung nur einmal uebertragen
-                    ac.log_start = (str(time_now.date()) + " "
-                        + str(time_now.time())[0:8])
-                    ac.log_author = db.ac_config_1[3]
-                    ac.log_title = db.ac_config_1[4]
-                    web = upload_data_prepare()
-                    if web is not None:
-                        self.display_logging(log_meldung_1, web)
-                    else:
-                        self.display_logging(log_meldung_1, None)
-                else:
-                    self.display_logging(log_meldung_1, None)
-                return
-            else:
-                ac.error_counter_read_log_file = 0
 
-            # bei direktem Vergleich des Inhalts der Logdatei
-            # (mairlist_log_data) funktioniert folgender
-            # if-Vergleich nicht aussserhalb der ide, deshalb in vari
-            mairlist_log_time = mairlist_log_data[6:25]
-            if ac.log_start == mairlist_log_time:
-                # Keine Aenderung des gespielten Titels, also wieder zurueck
-                log_meldung_1 = ("Keine Aenderung... \n" +
-                   ac.log_start + " - " + ac.log_author + " - " + ac.log_title)
-                self.display_logging(log_meldung_1, None)
+            # if mairlist
+            if db.ac_config_1[9] == "mairlist":
+                log_changed = check_mairlist_log(self, source_id,
+                                                    time_now, log_data)
+            if db.ac_config_1[9] == "mpd":
+                log_changed = check_mpd_log(self, time_now, log_data)
+            if log_changed is None:
                 return
-            else:
-                # 4. Daten aus Logfiles oder db ermitteln
-                ac.log_start = mairlist_log_data[6:25]
-                log_data = mairlist_log_data
-                # Ermitteln ob gebuchte Sendung, oder Musik
-                log_author_title = work_on_data_from_logfile(time_now, log_data)
-                ac.log_author = log_author_title[0]
-                ac.log_title = log_author_title[1]
 
         if ac.log_author is None:
             ac.log_start = (str(time_now.date()) + " "
@@ -629,10 +648,6 @@ if __name__ == "__main__":
             # Haupt-Params ok: weiter
             load_extended_params_ok = load_extended_params()
             if load_extended_params_ok is not None:
-                #TODO: hier weiter ext. Params
-                #param_check_counter += 1
-                #print "ok"
-
                 mything = my_form()
                 mything.master.title("Play-Out-Logging und Play-Out-Load-Web")
                 mything.mainloop()
