@@ -276,7 +276,7 @@ def check_mairlist_log(self, source_id, time_now, log_data):
         log_author_title = work_on_data_from_logfile(time_now, log_data)
         ac.log_author = log_author_title[0]
         ac.log_title = log_author_title[1]
-        return "changed"
+        return True
 
 
 def logging_source_ext(self, source_id, time_now):
@@ -595,8 +595,8 @@ class my_form(Frame):
         # Bei Aussenuebertragung stehen keine Logfiles zur Verfuegung,
         # Sendung muesste in db zu finden sein
         if source_id == "05":
-            log_changed = logging_source_ext(self, source_id, time_now)
-            if log_changed is None:
+            log_changed_ext = logging_source_ext(self, source_id, time_now)
+            if log_changed_ext is None:
                 return
         else:
             # else source_id == "05":
@@ -606,68 +606,16 @@ class my_form(Frame):
             # Daten aus mAirlist_Logdatei holen
 
             # if mairlist
-            #if db.ac_config_1[9] == "mairlist":
-            #    log_changed = check_mairlist_log(self, source_id,
-            #                                        time_now, log_data)
+            if db.ac_config_1[9] == "mairlist":
+                log_changed = check_mairlist_log(self, source_id,
+                                                    time_now, log_data)
+                if log_changed is None:
+                    return
+
             #if db.ac_config_1[9] == "mpd":
             #    log_changed = check_mpd_log(self, time_now, log_data)
             #if log_changed is None:
             #    return
-
-            # Dateinamen der mAirlist-Logdatei zusammenbauen
-            if source_id == "03":
-                file_mairlist_log = db.ac_config_1[1] + "_" + source_id + ".log"
-            else:
-                file_mairlist_log = db.ac_config_1[8] + "_" + source_id + ".log"
-            lib_cm.message_write_to_console(ac, file_mairlist_log)
-
-            # Daten aus mAirlist_Logdatei holen
-            mairlist_log_data = lib_cm.read_file_first_line(ac,
-                            db, file_mairlist_log)
-            lib_cm.message_write_to_console(ac, mairlist_log_data)
-            if mairlist_log_data is None:
-                # Fehler beim Lesen des Logfiles
-                ac.error_counter_read_log_file += 1
-                log_meldung_1 = ac.app_errorslist[1] + " \n"
-                if ac.error_counter_read_log_file == 1:
-                    # Error-Meldung nur einmal registrieren
-                    db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
-                    "write_also_to_console")
-                    # Ausfall-Meldung nur einmal uebertragen
-                    ac.log_start = (str(time_now.date()) + " "
-                                     + str(time_now.time())[0:8])
-                    ac.log_author = db.ac_config_1[3]
-                    ac.log_title = db.ac_config_1[4]
-                    web = upload_data_prepare()
-                    if web is not None:
-                        self.display_logging(log_meldung_1, web)
-                    else:
-                        self.display_logging(log_meldung_1, None)
-                else:
-                    self.display_logging(log_meldung_1, None)
-                return  # None
-            else:
-                ac.error_counter_read_log_file = 0
-
-            # bei direktem Vergleich des Inhalts der Logdatei
-            # (mairlist_log_data) funktioniert folgender
-            # if-Vergleich nicht aussserhalb der ide, deshalb in vari
-            mairlist_log_time = mairlist_log_data[6:25]
-            if ac.log_start == mairlist_log_time:
-                # Keine Aenderung des gespielten Titels, also wieder zurueck
-                log_meldung_1 = ("Keine Aenderung in mAirlist-Log... \n" +
-                   ac.log_start + " - " + ac.log_author + " - " + ac.log_title)
-                self.display_logging(log_meldung_1, None)
-                return  # None
-            else:
-                # 4. Daten aus Logfiles oder db ermitteln
-                ac.log_start = mairlist_log_data[6:25]
-                log_data = mairlist_log_data
-                # Ermitteln ob gebuchte Sendung, oder Musik
-                log_author_title = work_on_data_from_logfile(time_now, log_data)
-                ac.log_author = log_author_title[0]
-                ac.log_title = log_author_title[1]
-                #return "changed"
 
         if ac.log_author is None:
             ac.log_start = (str(time_now.date()) + " "
