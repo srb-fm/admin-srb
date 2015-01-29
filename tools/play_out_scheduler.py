@@ -1023,9 +1023,10 @@ class my_form(Frame):
             if time_now.minute == 40:
                 if time_now.second == 10:
                     mpd.exec_command(db, ac, "reload-1", "mpd")
-                if time_now.second == 20:
+                if time_now.second == 15:
                     mpd.exec_command(db, ac, "reload-2", db.ac_config_1[11])
-                if time_now.second == 30:
+                    db.write_log_to_db(ac, "MPD - neu gestartet", "k")
+                if time_now.second == 25:
                     mpd_setup()
                     create_music_playlist()
 
