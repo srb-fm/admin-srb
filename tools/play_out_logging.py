@@ -125,7 +125,7 @@ class app_config(object):
         self.app_errorslist.append(u"Externes PlayOut-Logging ausgesetzt, "
             "Webserver nicht erreichbar")
         # meldungen auf konsole ausgeben oder nicht: "no"
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # anzahl parameter list 0
         self.app_config_params_range = 10
         # params-type-list, typ entsprechend der params-liste in der config
@@ -194,6 +194,7 @@ def check_source(self, c_time, time_now):
                 "write_also_to_console")
         log_meldung_1 = ac.app_errorslist[1] + "\n"
         self.display_logging(log_meldung_1, None)
+        #lib_cm.message_write_to_console(ac, "whoooow")
         return None
     else:
         lib_cm.message_write_to_console(ac, source_log)
@@ -276,6 +277,49 @@ def check_mairlist_log(self, source_id, time_now, log_data):
         ac.log_author = log_author_title[0]
         ac.log_title = log_author_title[1]
         return "changed"
+
+
+def logging_source_ext(self, source_id, time_now):
+    """logging for extern source e.g ISDN"""
+    lib_cm.message_write_to_console(ac, u"ISDN-Uebertragung")
+    # Sendestunde ermitteln, anpassen
+    if time_now.hour < 10:
+        c_hour = "0" + str(time_now.hour)
+    else:
+        c_hour = str(time_now.hour)
+    # Daten aus db holen
+    db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
+                "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '"
+                + str(time_now.date()) + "' "
+                "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '"
+                + c_hour + "' AND A.SG_HF_SOURCE_ID ='"
+                + source_id + "'")
+    sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac,
+                            db, db_tbl_condition)
+    if sendung_data is not None:
+        if ac.log_start == str(sendung_data[2]):
+            # Startzeit der Sendung (SG_HF_TIME)
+            # ist gleich der im vorigen Durchlauf ermittelten Sendung,
+            # also laeuft sie noch, keine Aenderung
+            lib_cm.message_write_to_console(ac,
+                        u"ISDN-Uebertragung laeuft noch")
+            log_meldung_1 = ("Keine Aenderung... \n" +
+            ac.log_start + " - " + ac.log_author + " - " + ac.log_title)
+            self.display_logging(log_meldung_1, None)
+            return None
+        else:
+            # Daten der Sendung fuer Vergleich
+            # bei naechstem Durchlauf einlesen
+            ac.log_start = str(sendung_data[2])
+            ac.log_author = sendung_data[12] + " " + sendung_data[13]
+            ac.log_title = sendung_data[9]
+    else:
+        lib_cm.message_write_to_console(ac,
+            u"ISDN-Uebertragung, Sendung nicht in DB gefunden")
+        # Spaeter mit Vorbelegung aus Einstellungen fuellen
+        ac.log_author = None
+        ac.log_title = None
+    return True
 
 
 def check_mpd_log(self, time_now, log_data):
@@ -551,45 +595,9 @@ class my_form(Frame):
         # Bei Aussenuebertragung stehen keine Logfiles zur Verfuegung,
         # Sendung muesste in db zu finden sein
         if source_id == "05":
-            lib_cm.message_write_to_console(ac, u"ISDN-Uebertragung")
-            # Sendestunde ermitteln, anpassen
-            if time_now.hour < 10:
-                c_hour = "0" + str(time_now.hour)
-            else:
-                c_hour = str(time_now.hour)
-            # Daten aus db holen
-            db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
-                "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '"
-                + str(time_now.date()) + "' "
-                "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '"
-                + c_hour + "' AND A.SG_HF_SOURCE_ID ='"
-                + source_id + "'")
-            sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac,
-                            db, db_tbl_condition)
-            if sendung_data is not None:
-                if ac.log_start == str(sendung_data[2]):
-                    # Startzeit der Sendung (SG_HF_TIME)
-                    # ist gleich der im vorigen Durchlauf ermittelten Sendung,
-                    # also laeuft sie noch, keine Aenderung
-                    lib_cm.message_write_to_console(ac,
-                        u"ISDN-Uebertragung laeuft noch")
-                    log_meldung_1 = ("Keine Aenderung... \n" +
-                    ac.log_start + " - " + ac.log_author + " - " + ac.log_title)
-                    self.display_logging(log_meldung_1, None)
-                    return
-                else:
-                    # Daten der Sendung fuer Vergleich
-                    # bei naechstem Durchlauf einlesen
-                    ac.log_start = str(sendung_data[2])
-                    ac.log_author = sendung_data[12] + " " + sendung_data[13]
-                    ac.log_title = sendung_data[9]
-            else:
-                lib_cm.message_write_to_console(ac,
-                    u"ISDN-Uebertragung, Sendung nicht in DB gefunden")
-                # Spaeter mit Vorbelegung aus Einstellungen fuellen
-                ac.log_author = None
-                ac.log_title = None
-
+            log_changed = logging_source_ext(self, source_id, time_now)
+            if log_changed is None:
+                return
         else:
             # else source_id == "05":
             # Daten aus Logfiles holen bzw. aus db
