@@ -646,6 +646,22 @@ def load_music_sources_extra():
     return playlists_extra
 
 
+def check_day_options_of_music_sources(music_source_options):
+    """check if music-souce is for using now"""
+    if len(music_source_options[2]) > 1:
+        # single number means single day
+        # more means e.g. 23: day 2 and 3 of week
+        if len(music_source_options[2]) == 2:
+            # two different days
+            print "more options come here"
+    else:
+        if int(music_source_options[2]) != datetime.datetime.today().weekday():
+            # if 8, it means every day will using this source
+            if int(music_source_options[2]) != 8:
+                return None
+    return True
+
+
 def check_music_sources_alt(music_sources):
     """look if alternate playlist is for using now"""
     path_music_sources = None
@@ -653,20 +669,17 @@ def check_music_sources_alt(music_sources):
     for item in music_sources:
         if item[1] != "on":
             continue
-        if len(item[2]) > 1:
-            print "more options come here"
-        else:
-            if int(item[2]) != datetime.datetime.today().weekday():
-                # if 8, it means every day will using this source
-                if int(item[2]) != 8:
-                    continue
-            hour_begin = item[3][0:2]
-            hour_end = item[3][3:5]
-            time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
-            dt_hour = time_target.hour
+        day_now = check_day_options_of_music_sources(item)
+        if day_now is None:
+            continue
 
-            if dt_hour >= int(hour_begin) and dt_hour < int(hour_end):
-                using_now = True
+        hour_begin = item[3][0:2]
+        hour_end = item[3][3:5]
+        time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
+        dt_hour = time_target.hour
+
+        if dt_hour >= int(hour_begin) and dt_hour < int(hour_end):
+            using_now = True
 
         if using_now is True:
             path_music_sources = item[4]
@@ -681,20 +694,17 @@ def work_on_extra_music_sources(music_sources):
     for item in music_sources:
         if item[1] != "on":
             continue
-        if len(item[2]) > 1:
-            print "more options come here"
-        else:
-            if int(item[2]) != datetime.datetime.today().weekday():
-                # if 8, it means every day will using this source
-                if int(item[2]) != 8:
-                    continue
-            hour_begin = item[3][0:2]
-            hour_end = item[3][3:5]
-            time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
-            dt_hour = time_target.hour
+        day_now = check_day_options_of_music_sources(item)
+        if day_now is None:
+            continue
 
-            if dt_hour >= int(hour_begin) and dt_hour < int(hour_end):
-                using_now = True
+        hour_begin = item[3][0:2]
+        hour_end = item[3][3:5]
+        time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
+        dt_hour = time_target.hour
+
+        if dt_hour >= int(hour_begin) and dt_hour < int(hour_end):
+            using_now = True
 
         if using_now is True:
             path_extra_music = item[4]
