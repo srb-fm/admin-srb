@@ -125,7 +125,7 @@ class app_config(object):
         self.app_errorslist.append(u"Externes PlayOut-Logging ausgesetzt, "
             "Webserver nicht erreichbar")
         # meldungen auf konsole ausgeben oder nicht: "no"
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # anzahl parameter list 0
         self.app_config_params_range = 10
         # params-type-list, typ entsprechend der params-liste in der config
@@ -176,6 +176,47 @@ def load_extended_params():
     else:
         ext_params_ok = None
     return ext_params_ok
+
+
+def check_source(self, c_time, time_now):
+    """detect sources and assig transmittimes """
+    # source-switch-from user_logs
+    source_log = db.read_tbl_row_with_cond_log(ac, db,
+            "USER_LOGS", "USER_LOG_ACTION, USER_LOG_TIME",
+            u"USER_LOG_ACTION LIKE "
+            u"'Datei für Sendequellenumschalter geschrieben:%' "
+            + u"AND SUBSTRING( USER_LOG_TIME FROM 1 FOR 13) ='"
+            + c_time + "' ORDER BY USER_LOG_TIME DESC")
+    # ATT: log_text, that we here search for is written by play_out_load
+
+    if source_log is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+                "write_also_to_console")
+        log_meldung_1 = ac.app_errorslist[1] + "\n"
+        self.display_logging(log_meldung_1, None)
+        return None
+    else:
+        lib_cm.message_write_to_console(ac, source_log)
+        source_params = source_log[0][46:52]
+
+    lib_cm.message_write_to_console(ac, source_params)
+
+    # 2. Quelle der aktuellen Sendezeit zuordnen
+    #if time_now.minute < 5:
+    if time_now.minute < int(db.ac_config_times[3]):
+            source_id = source_params[0:2]
+
+    #if time_now.minute >=5 <30:
+    if (time_now.minute >= int(db.ac_config_times[3])
+            < int(db.ac_config_times[4])):
+        source_id = source_params[2:4]
+
+    #if time_now.minute >=30:
+    if time_now.minute >= int(db.ac_config_times[4]):
+            source_id = source_params[4:6]
+
+    lib_cm.message_write_to_console(ac, source_id)
+    return source_id
 
 
 def check_mairlist_log(self, source_id, time_now, log_data):
@@ -500,44 +541,11 @@ class my_form(Frame):
         c_time = time_back.strftime("%Y-%m-%d %H")
         lib_cm.message_write_to_console(ac, c_time)
 
-        # 1. Quellen ermitteln
-        # Quellen-Switch-Stellungen aus user_logs lesen
-        source_log = db.read_tbl_row_with_cond_log(ac, db,
-            "USER_LOGS", "USER_LOG_ACTION, USER_LOG_TIME",
-            u"USER_LOG_ACTION LIKE "
-            u"'Datei für Sendequellenumschalter geschrieben:%' "
-            + u"AND SUBSTRING( USER_LOG_TIME FROM 1 FOR 13) ='"
-            + c_time + "' ORDER BY USER_LOG_TIME DESC")
-        # WICHTIG:  Der log_text nach dem hier gesucht wird,
-        # wird von play_out_load geschrieben
-
-        if source_log is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-                "write_also_to_console")
-            log_meldung_1 = ac.app_errorslist[1] + "\n"
-            self.display_logging(log_meldung_1, None)
+        # 1. load sources
+        # 2. assign sources transmittime
+        source_id = check_source(self, c_time, time_now)
+        if source_id is None:
             return
-        else:
-            lib_cm.message_write_to_console(ac, source_log)
-            source_params = source_log[0][46:52]
-
-        lib_cm.message_write_to_console(ac, source_params)
-
-        # 2. Quelle der aktuellen Sendezeit zuordnen
-        #if time_now.minute < 5:
-        if time_now.minute < int(db.ac_config_times[3]):
-            source_id = source_params[0:2]
-
-        #if time_now.minute >=5 <30:
-        if (time_now.minute >= int(db.ac_config_times[3])
-            < int(db.ac_config_times[4])):
-            source_id = source_params[2:4]
-
-        #if time_now.minute >=30:
-        if time_now.minute >= int(db.ac_config_times[4]):
-            source_id = source_params[4:6]
-
-        lib_cm.message_write_to_console(ac, source_id)
 
         # 3. Pruefen ob Quelle Aussenuebertragung, VP oder Studios
         # Bei Aussenuebertragung stehen keine Logfiles zur Verfuegung,
@@ -590,13 +598,68 @@ class my_form(Frame):
             # Daten aus mAirlist_Logdatei holen
 
             # if mairlist
-            if db.ac_config_1[9] == "mairlist":
-                log_changed = check_mairlist_log(self, source_id,
-                                                    time_now, log_data)
-            if db.ac_config_1[9] == "mpd":
-                log_changed = check_mpd_log(self, time_now, log_data)
-            if log_changed is None:
-                return
+            #if db.ac_config_1[9] == "mairlist":
+            #    log_changed = check_mairlist_log(self, source_id,
+            #                                        time_now, log_data)
+            #if db.ac_config_1[9] == "mpd":
+            #    log_changed = check_mpd_log(self, time_now, log_data)
+            #if log_changed is None:
+            #    return
+
+            # Dateinamen der mAirlist-Logdatei zusammenbauen
+            if source_id == "03":
+                file_mairlist_log = db.ac_config_1[1] + "_" + source_id + ".log"
+            else:
+                file_mairlist_log = db.ac_config_1[8] + "_" + source_id + ".log"
+            lib_cm.message_write_to_console(ac, file_mairlist_log)
+
+            # Daten aus mAirlist_Logdatei holen
+            mairlist_log_data = lib_cm.read_file_first_line(ac,
+                            db, file_mairlist_log)
+            lib_cm.message_write_to_console(ac, mairlist_log_data)
+            if mairlist_log_data is None:
+                # Fehler beim Lesen des Logfiles
+                ac.error_counter_read_log_file += 1
+                log_meldung_1 = ac.app_errorslist[1] + " \n"
+                if ac.error_counter_read_log_file == 1:
+                    # Error-Meldung nur einmal registrieren
+                    db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+                    "write_also_to_console")
+                    # Ausfall-Meldung nur einmal uebertragen
+                    ac.log_start = (str(time_now.date()) + " "
+                                     + str(time_now.time())[0:8])
+                    ac.log_author = db.ac_config_1[3]
+                    ac.log_title = db.ac_config_1[4]
+                    web = upload_data_prepare()
+                    if web is not None:
+                        self.display_logging(log_meldung_1, web)
+                    else:
+                        self.display_logging(log_meldung_1, None)
+                else:
+                    self.display_logging(log_meldung_1, None)
+                return  # None
+            else:
+                ac.error_counter_read_log_file = 0
+
+            # bei direktem Vergleich des Inhalts der Logdatei
+            # (mairlist_log_data) funktioniert folgender
+            # if-Vergleich nicht aussserhalb der ide, deshalb in vari
+            mairlist_log_time = mairlist_log_data[6:25]
+            if ac.log_start == mairlist_log_time:
+                # Keine Aenderung des gespielten Titels, also wieder zurueck
+                log_meldung_1 = ("Keine Aenderung in mAirlist-Log... \n" +
+                   ac.log_start + " - " + ac.log_author + " - " + ac.log_title)
+                self.display_logging(log_meldung_1, None)
+                return  # None
+            else:
+                # 4. Daten aus Logfiles oder db ermitteln
+                ac.log_start = mairlist_log_data[6:25]
+                log_data = mairlist_log_data
+                # Ermitteln ob gebuchte Sendung, oder Musik
+                log_author_title = work_on_data_from_logfile(time_now, log_data)
+                ac.log_author = log_author_title[0]
+                ac.log_title = log_author_title[1]
+                #return "changed"
 
         if ac.log_author is None:
             ac.log_start = (str(time_now.date()) + " "
