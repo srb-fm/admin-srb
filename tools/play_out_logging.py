@@ -95,7 +95,9 @@ import string
 import re
 import datetime
 import urllib
+import ntpath
 import lib_common_1 as lib_cm
+import lib_mpd as lib_mp
 
 
 class app_config(object):
@@ -124,6 +126,9 @@ class app_config(object):
             "fuer PlayOut-Logging nicht erreichbar")
         self.app_errorslist.append(u"Externes PlayOut-Logging ausgesetzt, "
             "Webserver nicht erreichbar")
+        self.app_errorslist.append(u"Fehler bei MPD-Connect")
+        self.app_errorslist.append(u"Fehler bei MPD-Song-Abfrage")
+        self.app_errorslist.append(u"Fehler bei MPD-Status-Abfrage")
         # meldungen auf konsole ausgeben oder nicht: "no"
         self.app_debug_mod = "yes"
         # anzahl parameter list 0
@@ -146,6 +151,7 @@ class app_config(object):
         self.log_start = None
         self.log_author = None
         self.log_title = None
+        self.log_songid = None
 
 
 def load_extended_params():
@@ -176,6 +182,32 @@ def load_extended_params():
     else:
         ext_params_ok = None
     return ext_params_ok
+
+
+def check_mpd_song(option):
+    """read song-status"""
+    current_song = mpd.exec_command(db, ac, "song", None)
+    print current_song
+    current_status = mpd.exec_command(db, ac, "status", None)
+    print current_status
+    if current_song is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
+                                                    "write_also_to_console")
+        #ac.app_msg_1 = "mpd-error song"
+        return
+    if option is not None:
+        if option == "file":
+            if "file" in current_song:
+                lib_cm.message_write_to_console(ac, current_song["file"])
+                return current_song["file"]
+            else:
+                err_message = ("Dateiname nicht ermittelbar."
+                        + "Vielleicht wird zur Zeit kein Titel abgespielt...")
+                db.write_log_to_db_a(ac, err_message, "x",
+                                             "write_also_to_console")
+                return "no-file.mp3"
+    else:
+        return current_song
 
 
 def check_source(self, c_time, time_now):
@@ -324,8 +356,43 @@ def logging_source_ext(self, source_id, time_now):
 
 def check_mpd_log(self, time_now, log_data):
     """load data from mpd"""
-    # 1. file ermitteln
+    # 1. playing file ermitteln
     # 2. if id dann aus db holen, sonst tags
+    # load current song
+    mpd_result = mpd.connect(db, ac)
+    if mpd_result is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
+                                                    "write_also_to_console")
+        return None
+    current_song = mpd.exec_command(db, ac, "song", None)
+    print current_song
+    if current_song is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[7], "x",
+                                                    "write_also_to_console")
+        mpd.disconnect()
+        return None
+
+    current_status = mpd.exec_command(db, ac, "status", None)
+    print current_status
+    if current_status is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[8], "x",
+                                                    "write_also_to_console")
+        mpd.disconnect()
+        return None
+
+    mpd.disconnect()
+
+    if "id" in current_song:
+        lib_cm.message_write_to_console(ac, current_song["id"])
+        if current_song["id"] != ac.log_songid:
+            log_author_title = work_on_data_from_logfile(time_now, current_song)
+            ac.log_author = log_author_title[0]
+            ac.log_title = log_author_title[1]
+            return True
+        else:
+            return None
+    else:
+        return None
 
 
 def extract_from_stuff_after_match(stuff, match_string):
@@ -429,10 +496,27 @@ def upload_data_prepare():
 def work_on_data_from_logfile(time_now, log_data):
     """Daten aus mAirlist-Logfile extrahieren"""
     lib_cm.message_write_to_console(ac, u"work_on_data_from_logfile")
-    #log_start = extract_from_stuff(log_data, "start=", 6, "&author=", 0)
-    log_author = extract_from_stuff(log_data, "&author=", 8, "&title=", 0)
-    log_title = extract_from_stuff(log_data, "&title=", 7, "&file=", 0)
-    log_filename = extract_from_stuff_after_match(log_data, "&file=")
+    test = "mpd"
+    #if db.ac_config_1[9] == "mairlist":
+    if test == "mairlist":
+        log_author = extract_from_stuff(log_data, "&author=", 8, "&title=", 0)
+        log_title = extract_from_stuff(log_data, "&title=", 7, "&file=", 0)
+        log_filename = extract_from_stuff_after_match(log_data, "&file=")
+
+    #if db.ac_config_1[9] == "mpd":
+    if test == "mpd":
+        if "title" in log_data:
+            log_title = log_data["title"]
+        else:
+            log_title = ""
+        if "file" in log_data:
+            log_filename = ntpath.basename(log_data["file"])
+        else:
+            log_filename = ""
+        if "artist" in log_data:
+            log_author = log_data["artist"]
+        else:
+            log_author = ""
 
     sendung_data = None
     sendung_data_search_for_id_only = "no"
@@ -598,24 +682,36 @@ class my_form(Frame):
             log_changed_ext = logging_source_ext(self, source_id, time_now)
             if log_changed_ext is None:
                 return
-        else:
+
+        if source_id == "01" or source_id == "02":
+            # Daten aus Logfiles holen bzw. aus db
+            lib_cm.message_write_to_console(ac, u"Sendung aus Studio")
+            log_changed = check_mairlist_log(self, source_id,
+                                                    time_now, log_data)
+            if log_changed is None:
+                return
+
+        if source_id == "03":
             # else source_id == "05":
             # Daten aus Logfiles holen bzw. aus db
             lib_cm.message_write_to_console(ac,
-                u"Sendung aus Studios, Playout oder Internetstream")
+                u"Sendung via Playout oder Internetstream")
             # Daten aus mAirlist_Logdatei holen
 
             # if mairlist
-            if db.ac_config_1[9] == "mairlist":
-                log_changed = check_mairlist_log(self, source_id,
-                                                    time_now, log_data)
-                if log_changed is None:
-                    return
+            #if db.ac_config_1[9] == "mairlist":
+            #    log_changed = check_mairlist_log(self, source_id,
+            #                                        time_now, log_data)
+            #    if log_changed is None:
+            #        return
 
             #if db.ac_config_1[9] == "mpd":
-            #    log_changed = check_mpd_log(self, time_now, log_data)
-            #if log_changed is None:
-            #    return
+            log_changed = check_mpd_log(self, time_now, log_data)
+            #return
+            if log_changed is None:
+                return
+            print ac.log_author
+            print ac.log_title
 
         if ac.log_author is None:
             ac.log_start = (str(time_now.date()) + " "
@@ -654,11 +750,11 @@ if __name__ == "__main__":
     print "play_out_logging start"
     db = lib_cm.dbase()
     ac = app_config()
+    mpd = lib_mp.myMPD()
     # losgehts
     db.write_log_to_db(ac, ac.app_desc + u" gestartet", "a")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
-    #param_check_counter = 0
 
     if db.ac_config_1 is not None:
         # Haupt-Params pruefen
