@@ -651,9 +651,16 @@ def check_day_options_of_music_sources(music_source_options):
     if len(music_source_options[2]) > 1:
         # single number means single day
         # more means e.g. 23: day 2 and 3 of week
-        if len(music_source_options[2]) == 2:
+        #if len(music_source_options[2]) == 2:
             # two different days
-            print "more options come here"
+            #print "more options come here"
+        found_current_day = None
+        for day in music_source_options[2]:
+            if int(day) == datetime.datetime.today().weekday():
+                found_current_day = True
+
+        if found_current_day is None:
+            return None
     else:
         if int(music_source_options[2]) != datetime.datetime.today().weekday():
             # if 8, it means every day will using this source
