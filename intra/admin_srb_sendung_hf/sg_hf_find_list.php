@@ -140,7 +140,7 @@ if ( $condition_delivery != "yes" ) {
 	
 	if ( isset($_POST['sg_cont_id'] ) ) {
 		if ( $_POST['sg_cont_id'] !="" ) { 
-			$c_field_desc = "A.SG_HF_CONT_ID";
+			$c_field_desc = "A.SG_HF_CONTENT_ID";
 			$c_field_value = $_POST['sg_cont_id']; 
 		}
 	}
