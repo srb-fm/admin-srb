@@ -184,32 +184,6 @@ def load_extended_params():
     return ext_params_ok
 
 
-def check_mpd_song(option):
-    """read song-status"""
-    current_song = mpd.exec_command(db, ac, "song", None)
-    print current_song
-    current_status = mpd.exec_command(db, ac, "status", None)
-    print current_status
-    if current_song is None:
-        db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
-                                                    "write_also_to_console")
-        #ac.app_msg_1 = "mpd-error song"
-        return
-    if option is not None:
-        if option == "file":
-            if "file" in current_song:
-                lib_cm.message_write_to_console(ac, current_song["file"])
-                return current_song["file"]
-            else:
-                err_message = ("Dateiname nicht ermittelbar."
-                        + "Vielleicht wird zur Zeit kein Titel abgespielt...")
-                db.write_log_to_db_a(ac, err_message, "x",
-                                             "write_also_to_console")
-                return "no-file.mp3"
-    else:
-        return current_song
-
-
 def check_source(self, c_time, time_now):
     """detect sources and assig transmittimes """
     # source-switch-from user_logs
@@ -363,6 +337,7 @@ def check_mpd_log(self, time_now, log_data):
     if mpd_result is None:
         db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
                                                     "write_also_to_console")
+        self.display_logging("No MPD-Connect", None)
         return None
     current_song = mpd.exec_command(db, ac, "song", None)
     print current_song
@@ -370,29 +345,36 @@ def check_mpd_log(self, time_now, log_data):
         db.write_log_to_db_a(ac, ac.app_errorslist[7], "x",
                                                     "write_also_to_console")
         mpd.disconnect()
+        self.display_logging("Aktueller Song nicht von MPD ermittelbar", None)
         return None
 
-    current_status = mpd.exec_command(db, ac, "status", None)
-    print current_status
-    if current_status is None:
-        db.write_log_to_db_a(ac, ac.app_errorslist[8], "x",
-                                                    "write_also_to_console")
-        mpd.disconnect()
-        return None
+    #current_status = mpd.exec_command(db, ac, "status", None)
+    #print current_status
+    #if current_status is None:
+    #    db.write_log_to_db_a(ac, ac.app_errorslist[8], "x",
+    #                                                "write_also_to_console")
+    #    mpd.disconnect()
+    #    return None
 
     mpd.disconnect()
 
-    if "id" in current_song:
-        lib_cm.message_write_to_console(ac, current_song["id"])
-        if current_song["id"] != ac.log_songid:
-            log_author_title = work_on_data_from_logfile(time_now, current_song)
-            ac.log_author = log_author_title[0]
-            ac.log_title = log_author_title[1]
-            return True
-        else:
-            return None
-    else:
+    if "id" not in current_song:
+        self.display_logging("Aktuelle id von MPD nicht ermittelbar", None)
         return None
+
+    lib_cm.message_write_to_console(ac, current_song["id"])
+    if current_song["id"] == ac.log_songid:
+        log_meldung_1 = ("Keine Aenderung des MPD-Status... \n" +
+                                ac.log_author + " - " + ac.log_title)
+        self.display_logging(log_meldung_1, None)
+        return None
+    else:
+        log_author_title = work_on_data_from_logfile(time_now, current_song)
+        ac.log_author = log_author_title[0]
+        ac.log_title = log_author_title[1]
+        ac.log_songid = current_song["id"]
+        ac.log_start = (str(time_now.date()) + " " + str(time_now.time())[0:8])
+        return True
 
 
 def extract_from_stuff_after_match(stuff, match_string):
@@ -508,7 +490,7 @@ def work_on_data_from_logfile(time_now, log_data):
         if "title" in log_data:
             log_title = log_data["title"]
         else:
-            log_title = ""
+            log_title = db.ac_config_1[4]
         if "file" in log_data:
             log_filename = ntpath.basename(log_data["file"])
         else:
@@ -516,7 +498,7 @@ def work_on_data_from_logfile(time_now, log_data):
         if "artist" in log_data:
             log_author = log_data["artist"]
         else:
-            log_author = ""
+            log_author = db.ac_config_1[3]
 
     sendung_data = None
     sendung_data_search_for_id_only = "no"
@@ -575,7 +557,7 @@ def work_on_data_from_logfile(time_now, log_data):
         lib_cm.message_write_to_console(ac, log_author + " - " + log_title)
     else:
         lib_cm.message_write_to_console(ac, u"nix in db gefunden")
-        # prüfen ob autor und titel in logdatei vorhanden
+        # pruefen ob autor und titel in logdatei vorhanden
         author_title_ok = "no"
         if  log_author != "":
             author_title_ok = "yes"
