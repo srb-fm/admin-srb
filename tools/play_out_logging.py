@@ -503,9 +503,16 @@ def work_on_data_from_logfile(time_now, log_data):
     sendung_data = None
     sendung_data_search_for_id_only = "no"
 
+    via_inet = None
     # Falls Uebernahme per Inetstream, erkennbar an http
-    if log_title[0:7] == "http://":
+    if log_title[0:7] == "http://" and db.ac_config_1[9] == "mairlist":
         lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream")
+        via_inet = True
+    if log_filename[0:7] == "http://" and db.ac_config_1[9] == "mpd":
+        lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream")
+        via_inet = True
+
+    if via_inet is True:
         # Sendestunde ermitteln, anpassen
         if time_now.hour < 10:
             c_hour = "0" + str(time_now.hour)
