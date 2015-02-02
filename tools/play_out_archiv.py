@@ -99,7 +99,7 @@ class app_config(object):
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         self.app_windows = "no"
 
 
@@ -377,10 +377,14 @@ def erase_files_from_play_out_prepare(sendung_art):
                 #db.write_log_to_db( ac, log_message, "t" )
                 erase_files_from_play_out(files_sendung_source,
                     path_sendung_source, path_sendung_dest, item, sendung_art)
+                erase_files_from_play_out_old_year(files_sendung_source,
+                    path_sendung_source, path_sendung_dest, item, sendung_art)
         else:
             #log_message = "Dateien loeschen von: " + path_sendung_source
             #db.write_log_to_db( ac, log_message, "t" )
             erase_files_from_play_out(files_sendung_source,
+                path_sendung_source, path_sendung_dest, item, sendung_art)
+            erase_files_from_play_out_old_year(files_sendung_source,
                 path_sendung_source, path_sendung_dest, item, sendung_art)
 
     return "ok"
@@ -485,6 +489,125 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
     log_message = (u"Dateien archiviert: " + sendung_art + " - "
         + dir_year + " - " + str(x)
         + u" - Sendungen in Play_Out geloescht: " + str(z))
+    db.write_log_to_db(ac, log_message, "k")
+    if z != 0:
+        db.write_log_to_db(ac, log_message, "i")
+    return
+
+
+def erase_files_from_play_out_old_year(files_sendung_source,
+            path_sendung_source, path_sendung_dest, dir_year, sendung_art):
+    """Dateien vorangegangener Jahre in Play-Out loeschen, Durchfuehrung"""
+    lib_cm.message_write_to_console(ac, u"erase_files_from_play_out_old_year")
+    # Zeiten
+    lib_cm.message_write_to_console(ac, db.ac_config_1[6])
+    date_back = (datetime.datetime.now()
+                 + datetime.timedelta(days=- int(db.ac_config_1[6])))
+    #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
+    lib_cm.message_write_to_console(ac, db.ac_config_1[7])
+    nr_of_files_to_archive = int(db.ac_config_1[7])
+
+    # pfad anpassen
+    path_sendung_dest += lib_cm.check_slashes(ac, dir_year)
+    log_message = (u"In Folgejahren gesendete Dateien von " +
+                    dir_year + u" loeschen aus: " + path_sendung_source)
+    db.write_log_to_db(ac, log_message, "v")
+
+    try:
+        files_sendung_dest = os.listdir(path_sendung_dest)
+    except Exception, e:
+        log_message = u"read_files_from_dir Error: %s" % str(e)
+        lib_cm.message_write_to_console(ac, log_message)
+        db.write_log_to_db(ac, log_message, "x")
+        return
+
+    # items aus sendungen liste rausholen, wenn nix dann eben nix
+    x = 0
+    y = 0
+    z = 0
+
+    # gemeinsamkeiten, also die dateien in neue liste, die in beiden drinne sind
+    files_sendung = (list(
+        set(files_sendung_source).intersection(set(files_sendung_dest))))
+
+    # jetzt mit liste weiter, die alle files enthaelt,
+    # die in source UND destination
+    # damit kann nur geloescht werden, was bereits archiviert ist
+    for item in files_sendung:
+        # srb-dateiname, erkennbar an 7stelliger zahl am anfang
+
+        if re.match("\d{7,}", item) is None:
+            continue
+
+        # check for oldest
+        db_tbl_limit = "FIRST 1"
+        db_tbl_condition = "B.SG_HF_CONT_ID = '" + item[0:7] + "' "
+        db_tbl_order = "A.SG_HF_TIME"
+        sendung_data = db.read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(
+                    ac, db, db_tbl_limit, db_tbl_condition, db_tbl_order)
+        # check for youngest
+        db_tbl_order = "A.SG_HF_TIME DESCENDING"
+        sendung_data_yo = db.read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(
+                    ac, db, db_tbl_limit, db_tbl_condition, db_tbl_order)
+
+        if sendung_data is None:
+            lib_cm.message_write_to_console(ac, "nix")
+            continue
+
+        for row in sendung_data:
+            y += 1
+            #print row
+            sendung_year = row[2].year
+            sendung_date = row[2]
+            lib_cm.message_write_to_console(ac, sendung_date)
+            lib_cm.message_write_to_console(ac, item)
+
+            sendung_year_yo = sendung_data_yo[0][2].year
+            lib_cm.message_write_to_console(ac, "year-youngest:")
+            lib_cm.message_write_to_console(ac, sendung_year_yo)
+            # nur
+
+            if sendung_date < date_back and sendung_year == int(dir_year):
+                if row[13].strip() == "05":
+                    # Jingle SRB (05) nicht loeschen
+                    lib_cm.message_write_to_console(ac, u"loeschen: " + row[12])
+                    lib_cm.message_write_to_console(ac,
+                        u"Jingle, nicht loeschen")
+                    continue
+                if sendung_year_yo == datetime.datetime.now().year:
+                    lib_cm.message_write_to_console(ac,
+                        u"Im aktuellen Jahr gesendet, nicht loeschen")
+                    continue
+
+                file_source = path_sendung_source + item
+
+                try:
+                    os.remove(file_source)
+                    log_message = u"geloescht: " + item
+                    db.write_log_to_db(ac, log_message, "e")
+                    z += 1
+                    # nicht nochmal bei WH loeschen,
+                    # braucme nich, nur ein satz wird geholt (der juengste)
+                    # break
+                except Exception, e:
+                    log_message = u"erase_files_fom_dir Error: %s" % str(e)
+                    lib_cm.message_write_to_console(ac, log_message)
+                    db.write_log_to_db(ac, log_message, "x")
+
+            else:
+                lib_cm.message_write_to_console(ac,
+                u"Sendedatum liegt vor Archivdatum, noch nicht loeschen ...")
+
+        x += 1
+        if z >= nr_of_files_to_archive:
+            break
+
+    lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(x))
+    lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y))
+    lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(z))
+    log_message = (u"Dateien v. Vorjahr archiviert: " + sendung_art + " - "
+        + dir_year + " - " + str(x)
+        + u" - Sendungen v. Vorjahr in Play_Out geloescht: " + str(z))
     db.write_log_to_db(ac, log_message, "k")
     if z != 0:
         db.write_log_to_db(ac, log_message, "i")
