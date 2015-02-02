@@ -492,7 +492,10 @@ def work_on_data_from_logfile(time_now, log_data):
         else:
             log_title = db.ac_config_1[4]
         if "file" in log_data:
-            log_filename = ntpath.basename(log_data["file"])
+            if log_data["file"][0:7] == "http://":
+                log_filename = log_data["file"]
+            else:
+                log_filename = ntpath.basename(log_data["file"])
         else:
             log_filename = ""
         if "artist" in log_data:
@@ -504,13 +507,17 @@ def work_on_data_from_logfile(time_now, log_data):
     sendung_data_search_for_id_only = "no"
 
     via_inet = None
+    stream_url = ""
     # Falls Uebernahme per Inetstream, erkennbar an http
     if log_title[0:7] == "http://" and db.ac_config_1[9] == "mairlist":
         lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream")
         via_inet = True
-    if log_filename[0:7] == "http://" and db.ac_config_1[9] == "mpd":
+        stream_url = log_title
+    if log_filename[0:7] == "http://" and test == "mpd":
+    #if log_filename[0:7] == "http://" and db.ac_config_1[9] == "mpd":
         lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream")
         via_inet = True
+        stream_url = log_filename
 
     if via_inet is True:
         # Sendestunde ermitteln, anpassen
@@ -524,7 +531,7 @@ def work_on_data_from_logfile(time_now, log_data):
             + str(time_now.date()) + "' "
             "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '"
             + c_hour + "' AND B.SG_HF_CONT_FILENAME ='"
-            + log_title + "'")
+            + stream_url + "'")
         # daten aus db holen
         sendung_data = db.read_tbl_row_sg_cont_ad_with_cond(ac,
                 db, db_tbl_condition)
