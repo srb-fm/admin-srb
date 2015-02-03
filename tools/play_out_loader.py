@@ -866,6 +866,7 @@ def read_instrumental():
         if file_instrumental is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[11], "x",
                                              "write_also_to_console")
+            continue
         else:
             # mairlist
             ac.po_it_pl.append(path_instrumental_po + file_instrumental)
