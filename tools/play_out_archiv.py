@@ -453,27 +453,26 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
             lib_cm.message_write_to_console(ac, item)
             # nur
             if sendung_date < date_back and sendung_year == int(dir_year):
-                if row[13].strip() != "05":
+                if row[13].strip() == "05":
                     # Jingle SRB (05) nicht loeschen
                     lib_cm.message_write_to_console(ac, u"loeschen: " + row[12])
-                    file_source = path_sendung_source + item
-
-                    try:
-                        os.remove(file_source)
-                        log_message = u"geloescht: " + item
-                        db.write_log_to_db(ac, log_message, "e")
-                        z += 1
-                        # nicht nochmal bei WH loeschen,
-                        # braucme nich, nur ein satz wird geholt (der juengste)
-                        # break
-                    except Exception, e:
-                        log_message = u"erase_files_fom_dir Error: %s" % str(e)
-                        lib_cm.message_write_to_console(ac, log_message)
-                        db.write_log_to_db(ac, log_message, "x")
-
-                else:
                     lib_cm.message_write_to_console(ac,
-                        u"Jingle, nicht loeschen")
+                                             u"Jingle, nicht loeschen")
+                    continue
+
+                file_source = path_sendung_source + item
+                try:
+                    os.remove(file_source)
+                    log_message = u"geloescht: " + item
+                    db.write_log_to_db(ac, log_message, "e")
+                    z += 1
+                    # nicht nochmal bei WH loeschen,
+                    # braucme nich, nur ein satz wird geholt (der juengste)
+                    # break
+                except Exception, e:
+                    log_message = u"erase_files_fom_dir Error: %s" % str(e)
+                    lib_cm.message_write_to_console(ac, log_message)
+                    db.write_log_to_db(ac, log_message, "x")
 
             else:
                 lib_cm.message_write_to_console(ac,
@@ -486,7 +485,7 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
     lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(x))
     lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y))
     lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(z))
-    log_message = (u"Dateien archiviert: " + sendung_art + " - "
+    log_message = (u"Dateien bearbeitet: " + sendung_art + " - "
         + dir_year + " - " + str(x)
         + u" - Sendungen in Play_Out geloescht: " + str(z))
     db.write_log_to_db(ac, log_message, "k")
@@ -605,7 +604,7 @@ def erase_files_from_play_out_old_year(files_sendung_source,
     lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(x))
     lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y))
     lib_cm.message_write_to_console(ac, u"dateien geloescht: " + str(z))
-    log_message = (u"Dateien v. Vorjahr archiviert: " + sendung_art + " - "
+    log_message = (u"Dateien v. Folgejahr bearbeitet: " + sendung_art + " - "
         + dir_year + " - " + str(x)
         + u" - Sendungen v. Vorjahr in Play_Out geloescht: " + str(z))
     db.write_log_to_db(ac, log_message, "k")
