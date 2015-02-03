@@ -187,10 +187,10 @@ class app_config(object):
         self.po_it_pl_mpd = []
         # Duration of InfoTime
         self.po_it_duration = 0
-        # aktuelle Stunde
-        self.time_target = datetime.datetime.now()
-        # kommende stunde
-        #self.time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
+        # for aktuelle Stunde
+        #self.time_target = datetime.datetime.now()
+        # for kommende stunde
+        self.time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
 
 
 def load_extended_params():
