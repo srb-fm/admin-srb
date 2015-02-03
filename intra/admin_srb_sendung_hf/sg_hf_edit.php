@@ -44,7 +44,7 @@ if ( $action_ok == "yes" ) {
 	if ( isset( $_POST['ad_id'] ) ) {
 		$id_ad = $_POST['ad_id'];
 	}
-	//if ( $id_ad !="" )	{
+
 	if ( filter_var($id_ad, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) { 
 		switch ( $action ) {
 
@@ -652,9 +652,11 @@ if ( $user_rights == "yes" ) {
 	echo "<div id='save_button'>";
 	echo "<div style='float: left'><input type='submit' value='Speichern' ></div>"; 
 	if ( $action == "edit" ) { 
-		if ( $file_exist == "yes" ) {					
-			echo "<div style='float: left'><input type='checkbox' name='form_sg_read_audio_length' id='check_id3' value='T'> und Hoerdauer/ ID3-Tags abgleichen <input type='button' value='Sendezeit prüfen' onClick='check_free_time()' ></div>";
-			echo "<div id='check_gain' style='display: none'><input type='checkbox' name='form_sg_mp3gain' value='T'> und mp3Gain abgleichen</div>";
+		if ( $file_exist == "yes" ) {
+			if ( substr($tbl_row_sg->SG_HF_CONT_FILENAME, 0, 7) != "http://" ) {
+				echo "<div style='float: left'><input type='checkbox' name='form_sg_read_audio_length' id='check_id3' value='T'> und Hoerdauer/ ID3-Tags abgleichen <input type='button' value='Sendezeit prüfen' onClick='check_free_time()' ></div>";
+				echo "<div id='check_gain' style='display: none'><input type='checkbox' name='form_sg_mp3gain' value='T'> und mp3Gain abgleichen</div>";
+			}
 		}
 	}
 	echo "</div>";
