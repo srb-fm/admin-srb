@@ -145,7 +145,7 @@ if ( $action_ok == "yes" ) {
 				
 		case "kill_es":		
 			$message .= "Erstsendung löschen. ";
-			// pruefen ob bestätigung passt
+			// pruefen ob bestaetigung passt
 			$c_kill = db_query_load_item("USER_SECURITY", 0);
 
 			if ( $_POST['form_kill_code'] == trim($c_kill) ) {
@@ -168,16 +168,34 @@ if ( $action_ok == "yes" ) {
 			break;
 
 		case "play_out":
-			$message .= "Sendung ausspielen. ";
-			// choose play-out-path
-			$po_path = "Play_Out_Sendung"; 
-			if ( $po_it == "T" or $po_mg == "T" ) {
-				$po_path = "Play_Out_Infotime";
+			$message .= "Sendung ausspielen? ";
+			$play_now = "T";
+			break;
+		
+		case "play_now":
+			// pruefen ob bestaetigung passt
+			$c_play = db_query_load_item("USER_SECURITY", 0);
+
+			if ( $_POST['form_play_code'] == trim($c_play) ) {
+				if ( isset( $_POST['po_filename'] ) ) { 
+					$po_filename = $_POST['po_filename'];
+				}
+			
+				$message .= "Sendung ausspielen... ";
+				// choose play-out-path
+				$po_path = "Play_Out_Sendung"; 
+				if ( $po_it == "T" or $po_mg == "T" ) {
+					$po_path = "Play_Out_Infotime";
+				}
+				// load access mpc
+				$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config'");
+				$cmd = $tbl_row_mpd_config->USER_SP_PARAM_2." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_3." add ".$po_path."/".$po_filename;
+				$message .= shell_exec($cmd); 
+			} else {
+				$message .= "Keine Playberechtigung!";
 			}
-			// load access mpc
-			$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config'");
-			$cmd = $tbl_row_mpd_config->USER_SP_PARAM_2." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_3." add ".$po_path."/".$po_filename;
-			$message .= shell_exec($cmd); 
+			break;
+		
 		}//endswitch;
 	}
 } else {
@@ -469,6 +487,23 @@ if ( $user_rights == "yes" ) {
 			echo "<input type='hidden' name='sg_id' value=".$tbl_row_sg->SG_HF_ID.">";	
 			echo "<input type='password' name='form_kill_code' class='text_a_1' value=''>"; 
 			echo "<input type='submit' class='b_1' value='Jetzt löschen'></form><div class='space_line_1'> </div></div>";
+		}
+	}
+	
+	// play-out
+	if ( $action == "play_out" ) { 
+		if ($play_now == "T" ) {
+			echo "<script>";
+			echo '$( "#dialog-form" ).dialog( "open" )';
+			echo "</script>";
+			echo "<div id='dialog-form' title='Play-Out dieser Sendung bestätigen'>";
+			echo "Nach Bestätigung durch Berechtigungscode wird die Sendung zur aktuellen Play-Out-Warteschlange zugefügt!<p>";
+			echo "<form action='sg_hf_detail.php' method='POST' enctype='application/x-www-form-urlencoded'>\n";
+			echo "<input type='hidden' name='action' value='play_now'>";
+			echo "<input type='hidden' name='sg_id' value=".$tbl_row_sg->SG_HF_ID.">";	
+			echo "<input type='hidden' name='po_filename' value=".rtrim($tbl_row_sg->SG_HF_CONT_FILENAME).">";	
+			echo "<input type='password' name='form_play_code' class='text_a_1' value=''>"; 
+			echo "<input type='submit' class='b_1' value='Jetzt ausspielen'></form><div class='space_line_1'> </div></div>";
 		}
 	}
 
