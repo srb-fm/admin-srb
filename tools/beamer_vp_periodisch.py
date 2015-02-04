@@ -28,13 +28,14 @@ Fehlerliste:
 Error 000 Parameter-Typ oder Inhalt stimmt nich
 Error 001 Fehler beim Kopieren der Vorproduktion in Cloud
 Error 002 Fehler beim Kopieren der Meta-Datei in Cloud
-Error 005 Fehler beim Generieren des Dateinamens
+Error 003 Fehler beim Generieren des Dateinamens
 
 Parameterliste:
-Param 1: Pfad vom Server zu Playout-Sendung
-Param 2: Tage zurueck loeschen alter Dateien in Cloud
-Param 3: Kuerzel Sender
-Param 4: Pfad vom Server zu Dropbox-Hauptordner
+Param 1: Pfad vom Server zu Playout-IT/MAG
+Param 2: Pfad vom Server zu Playout-Sendung
+Param 3: Tage zurueck loeschen alter Dateien in Cloud
+Param 4: Kuerzel Sender
+Param 5: Pfad vom Server zu Dropbox-Hauptordner
 
 
 Ausfuehrung: jede Stunde zur Minute 12
@@ -75,6 +76,7 @@ class app_config(object):
 
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
@@ -185,7 +187,7 @@ def write_to_info_file(path_file_dest, item, sendung):
         log_message = ("write_to_file_record_params: I/O error({0}): {1}"
                         .format(errno, strerror) + ": " + path_file_dest)
         db.write_log_to_db(ac, log_message, "x")
-        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
                                              "write_also_to_console")
         success_write = None
     else:
@@ -211,16 +213,20 @@ def filepaths(item, sendung):
     """Pfade und Dateinamen zusammenbauen"""
     success_file = True
     try:
-        path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+        if sendung[4].strip() == "T" or sendung[5].strip() == "T":
+            # IT or MAG
+            path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+        else:
+            path_source = lib_cm.check_slashes(ac, db.ac_config_1[2])
         path_file_source = (path_source + sendung[12])
 
-        path_dest = lib_cm.check_slashes(ac, db.ac_config_1[4])
+        path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
         path_cloud = lib_cm.check_slashes(ac, item[1])
         filename_dest = (sendung[2].strftime('%Y_%m_%d') + "_"
-            + db.ac_config_1[3] + str(sendung[12][7:]))
+            + db.ac_config_1[4] + str(sendung[12][7:]))
         path_file_dest = (path_dest + path_cloud + filename_dest)
     except Exception, e:
-        log_message = (ac.app_errorslist[5] + "fuer: "
+        log_message = (ac.app_errorslist[3] + "fuer: "
             + sendung[11].encode('ascii', 'ignore') + " " + str(e))
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         success_file = None
