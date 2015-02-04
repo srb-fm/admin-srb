@@ -280,7 +280,7 @@ def check_mairlist_log(self, source_id, time_now, log_data):
         ac.log_start = mairlist_log_data[6:25]
         log_data = mairlist_log_data
         # Ermitteln ob gebuchte Sendung, oder Musik
-        log_author_title = work_on_data_from_log(time_now, log_data)
+        log_author_title = work_on_data_from_log(time_now, log_data, "mairlist")
         ac.log_author = log_author_title[0]
         ac.log_title = log_author_title[1]
         return True
@@ -370,7 +370,7 @@ def check_mpd_log(self, time_now, log_data):
         self.display_logging(log_meldung_1, None)
         return None
     else:
-        log_author_title = work_on_data_from_log(time_now, current_song)
+        log_author_title = work_on_data_from_log(time_now, current_song, "mpd")
         ac.log_author = log_author_title[0]
         ac.log_title = log_author_title[1]
         ac.log_songid = current_song["id"]
@@ -477,17 +477,15 @@ def upload_data_prepare():
     return web
 
 
-def work_on_data_from_log(time_now, log_data):
+def work_on_data_from_log(time_now, log_data, load_from):
     """Daten aus mAirlist-Logfile extrahieren"""
     lib_cm.message_write_to_console(ac, u"work_on_data_from_log")
-    #test = "mpd"
-    if db.ac_config_1[9] == "mairlist":
-    #if test == "mairlist":
+    if load_from == "mairlist":
         log_author = extract_from_stuff(log_data, "&author=", 8, "&title=", 0)
         log_title = extract_from_stuff(log_data, "&title=", 7, "&file=", 0)
         log_filename = extract_from_stuff_after_match(log_data, "&file=")
 
-    if db.ac_config_1[9] == "mpd":
+    if load_from == "mpd":
         lib_cm.message_write_to_console(ac, u"mpd")
     #if test == "mpd":
         if "title" in log_data:
@@ -584,7 +582,7 @@ def work_on_data_from_log(time_now, log_data):
             author_title_ok = "yes"
 
         if author_title_ok == "yes":
-            if db.ac_config_1[9] == "mairlist":
+            if load_from == "mairlist":
                 # author und titel in logdatei
                 lib_cm.message_write_to_console(ac,
                                     u"daten_aus_mAirList_logfile")
@@ -701,15 +699,15 @@ class my_form(Frame):
             # Daten aus mAirlist_Logdatei holen
 
             # if mairlist
-            #if db.ac_config_1[9] == "mairlist":
-            #    log_changed = check_mairlist_log(self, source_id,
-            #                                        time_now, log_data)
-            #    if log_changed is None:
-            #        return
+            if db.ac_config_1[9] == "mairlist":
+                log_changed = check_mairlist_log(self, source_id,
+                                                    time_now, log_data)
+                if log_changed is None:
+                    return
 
-            #if db.ac_config_1[9] == "mpd":
-            log_changed = check_mpd_log(self, time_now, log_data)
-            #return
+            if db.ac_config_1[9] == "mpd":
+                log_changed = check_mpd_log(self, time_now, log_data)
+
             if log_changed is None:
                 return
             print ac.log_author
