@@ -107,7 +107,7 @@ class app_config(object):
         # app_config
         self.app_id = "003"
         self.app_desc = u"Play Out Logging"
-        self.app_config = u"PO_Logging_Config_3"
+        self.app_config = u"PO_Logging_Config"
         self.app_config_develop = u"PO_Logging_Config_1_e"
         self.app_develop = "no"
         self.app_windows = "no"
@@ -152,6 +152,7 @@ class app_config(object):
         self.log_author = None
         self.log_title = None
         self.log_songid = None
+        self.log_filename = None
 
 
 def load_extended_params():
@@ -279,7 +280,7 @@ def check_mairlist_log(self, source_id, time_now, log_data):
         ac.log_start = mairlist_log_data[6:25]
         log_data = mairlist_log_data
         # Ermitteln ob gebuchte Sendung, oder Musik
-        log_author_title = work_on_data_from_logfile(time_now, log_data)
+        log_author_title = work_on_data_from_log(time_now, log_data)
         ac.log_author = log_author_title[0]
         ac.log_title = log_author_title[1]
         return True
@@ -348,31 +349,32 @@ def check_mpd_log(self, time_now, log_data):
         self.display_logging("Aktueller Song nicht von MPD ermittelbar", None)
         return None
 
-    #current_status = mpd.exec_command(db, ac, "status", None)
-    #print current_status
-    #if current_status is None:
-    #    db.write_log_to_db_a(ac, ac.app_errorslist[8], "x",
-    #                                                "write_also_to_console")
-    #    mpd.disconnect()
-    #    return None
-
     mpd.disconnect()
 
     if "id" not in current_song:
         self.display_logging("Aktuelle id von MPD nicht ermittelbar", None)
         return None
 
+    # by stream, it could be, that id is eqal but title not
+    if "title" in current_song:
+        log_filename = current_song["file"]
+    else:
+        log_filename = "nicht vorhanden"
     lib_cm.message_write_to_console(ac, current_song["id"])
-    if current_song["id"] == ac.log_songid:
-        log_meldung_1 = ("Keine Aenderung des MPD-Status... \n" +
+
+    if (current_song["id"] == ac.log_songid
+                        and log_filename == ac.log_filename):
+
+        log_meldung_1 = ("Keine Aenderung des MPD-Song-Status... \n" +
                                 ac.log_author + " - " + ac.log_title)
         self.display_logging(log_meldung_1, None)
         return None
     else:
-        log_author_title = work_on_data_from_logfile(time_now, current_song)
+        log_author_title = work_on_data_from_log(time_now, current_song)
         ac.log_author = log_author_title[0]
         ac.log_title = log_author_title[1]
         ac.log_songid = current_song["id"]
+        ac.log_filename = log_filename
         ac.log_start = (str(time_now.date()) + " " + str(time_now.time())[0:8])
         return True
 
@@ -475,20 +477,21 @@ def upload_data_prepare():
     return web
 
 
-def work_on_data_from_logfile(time_now, log_data):
+def work_on_data_from_log(time_now, log_data):
     """Daten aus mAirlist-Logfile extrahieren"""
-    lib_cm.message_write_to_console(ac, u"work_on_data_from_logfile")
-    test = "mpd"
-    #if db.ac_config_1[9] == "mairlist":
-    if test == "mairlist":
+    lib_cm.message_write_to_console(ac, u"work_on_data_from_log")
+    #test = "mpd"
+    if db.ac_config_1[9] == "mairlist":
+    #if test == "mairlist":
         log_author = extract_from_stuff(log_data, "&author=", 8, "&title=", 0)
         log_title = extract_from_stuff(log_data, "&title=", 7, "&file=", 0)
         log_filename = extract_from_stuff_after_match(log_data, "&file=")
 
-    #if db.ac_config_1[9] == "mpd":
-    if test == "mpd":
+    if db.ac_config_1[9] == "mpd":
+        lib_cm.message_write_to_console(ac, u"mpd")
+    #if test == "mpd":
         if "title" in log_data:
-            log_title = log_data["title"]
+            log_title = lib_cm.convert_to_unicode(log_data["title"])
         else:
             log_title = db.ac_config_1[4]
         if "file" in log_data:
@@ -496,10 +499,11 @@ def work_on_data_from_logfile(time_now, log_data):
                 log_filename = log_data["file"]
             else:
                 log_filename = ntpath.basename(log_data["file"])
+            ac.log_filename = log_filename
         else:
             log_filename = ""
         if "artist" in log_data:
-            log_author = log_data["artist"]
+            log_author = lib_cm.convert_to_unicode(log_data["artist"])
         else:
             log_author = db.ac_config_1[3]
 
@@ -513,8 +517,8 @@ def work_on_data_from_logfile(time_now, log_data):
         lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream")
         via_inet = True
         stream_url = log_title
-    if log_filename[0:7] == "http://" and test == "mpd":
-    #if log_filename[0:7] == "http://" and db.ac_config_1[9] == "mpd":
+    #if log_filename[0:7] == "http://" and test == "mpd":
+    if log_filename[0:7] == "http://" and db.ac_config_1[9] == "mpd":
         lib_cm.message_write_to_console(ac, u"uebernahme_per_inetstream")
         via_inet = True
         stream_url = log_filename
@@ -573,17 +577,19 @@ def work_on_data_from_logfile(time_now, log_data):
         lib_cm.message_write_to_console(ac, u"nix in db gefunden")
         # pruefen ob autor und titel in logdatei vorhanden
         author_title_ok = "no"
-        if  log_author != "":
+        if log_author != "":
             author_title_ok = "yes"
 
-        if  log_title != "":
+        if log_title != "":
             author_title_ok = "yes"
 
         if author_title_ok == "yes":
-            # author und titel in logdatei
-            lib_cm.message_write_to_console(ac, u"daten_aus_mAirList_logfile")
-            log_author = lib_cm.convert_to_unicode(log_author)
-            log_title = lib_cm.convert_to_unicode(log_title)
+            if db.ac_config_1[9] == "mairlist":
+                # author und titel in logdatei
+                lib_cm.message_write_to_console(ac,
+                                    u"daten_aus_mAirList_logfile")
+                log_author = lib_cm.convert_to_unicode(log_author)
+                log_title = lib_cm.convert_to_unicode(log_title)
         else:
             # keine daten in id3-author, deshalb aus filename nehmen
             lib_cm.message_write_to_console(ac, u"daten_aus_filname")
