@@ -289,7 +289,7 @@ def check_and_work_on_files(sendungen, path_audio):
                                                     "write_also_to_console")
 
 
-def erase_files_from_play_out():
+def erase_files_from_cloud():
     """alte Dateien in cloud-ordnern loeschen"""
     lib_cm.message_write_to_console(ac, u"erase_files_from_cloud")
     # Paths
@@ -357,7 +357,7 @@ def lets_rock():
 
     db.write_log_to_db_a(ac, u"Veraltete Dateien in Cloud loeschen",
                                             "p", "write_also_to_console")
-    erase_files_from_play_out()
+    erase_files_from_cloud()
     return
 
 
