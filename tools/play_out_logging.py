@@ -211,16 +211,16 @@ def check_source(self, c_time, time_now):
 
     # 2. Quelle der aktuellen Sendezeit zuordnen
     #if time_now.minute < 5:
-    if time_now.minute < int(db.ac_config_times[3]):
+    if time_now.minute < int(db.ac_config_times[4]):
             source_id = source_params[0:2]
 
     #if time_now.minute >=5 <30:
-    if (time_now.minute >= int(db.ac_config_times[3])
-            < int(db.ac_config_times[4])):
+    if (time_now.minute >= int(db.ac_config_times[4])
+            < int(db.ac_config_times[5])):
         source_id = source_params[2:4]
 
     #if time_now.minute >=30:
-    if time_now.minute >= int(db.ac_config_times[4]):
+    if time_now.minute >= int(db.ac_config_times[5]):
             source_id = source_params[4:6]
 
     lib_cm.message_write_to_console(ac, source_id)
