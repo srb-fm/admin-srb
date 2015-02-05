@@ -65,14 +65,18 @@ class app_config(object):
         self.app_errorfile = "error_beamer_vp_periodisch.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
+        self.app_errorslist.append(self.app_desc +
             "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
+        self.app_errorslist.append(self.app_desc +
             "Fehler beim Kopieren der Vorproduktion in Cloud")
-        self.app_errorslist.append(u"Error 002 "
+        self.app_errorslist.append(self.app_desc +
             "Fehler beim Kopieren der Meta-Datei in Cloud")
-        self.app_errorslist.append(u"Error 003 "
+        self.app_errorslist.append(self.app_desc +
             "Fehler beim Generieren des Dateinamens")
+        self.app_errorslist.append(self.app_desc +
+            "Fehler beim Ermitteln zu loeschender Dateien ")
+        self.app_errorslist.append(self.app_desc +
+            "Fehler beim Loeschen einer veralteten Datei ")
 
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
@@ -86,7 +90,7 @@ class app_config(object):
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -303,6 +307,59 @@ def check_and_work_on_files(roboting_sgs):
                                                     "write_also_to_console")
 
 
+def erase_files_from_cloud_prepaere(roboting_sgs):
+    """loeschen alter Dateien vorbereiten"""
+    date_back = (datetime.datetime.now()
+                 + datetime.timedelta(days=- int(db.ac_config_1[3])))
+    c_date_back = date_back.strftime("%Y_%m_%d")
+    db.write_log_to_db_a(ac, u"Sendedatum muss aelter sein als: "
+                                + c_date_back, "t", "write_also_to_console")
+    for item in roboting_sgs:
+        path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
+        path_cloud = lib_cm.check_slashes(ac, item[1])
+        path_dest_cloud = (path_dest + path_cloud)
+        try:
+            files_sendung_dest = os.listdir(path_dest_cloud)
+        except Exception, e:
+            log_message = ac.app_errorslist[3] + u": %s" % str(e)
+            lib_cm.message_write_to_console(ac, log_message)
+            db.write_log_to_db(ac, log_message, "x")
+            return
+        print files_sendung_dest
+        erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back)
+    return
+
+
+def erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back):
+    """alte Dateien in cloud-ordnern loeschen"""
+    lib_cm.message_write_to_console(ac, u"erase_files_from_cloud")
+
+    x = 0
+    z = 0
+
+    for item in files_sendung_dest:
+        if item[0:10] < c_date_back:
+            try:
+                print "dele"
+                file_to_delete = path_dest_cloud + item
+                print file_to_delete
+                os.remove(file_to_delete)
+                log_message = u"geloescht: " + item
+                db.write_log_to_db(ac, log_message, "e")
+                z += 1
+            except Exception, e:
+                log_message = ac.app_errorslist[4] + u": %s" % str(e)
+                lib_cm.message_write_to_console(ac, log_message)
+                db.write_log_to_db(ac, log_message, "x")
+        x += 1
+    log_message = (u"Dateien in Cloud bearbeitet: " + str(x)
+                                + u" - Sendungen geloescht: " + str(z))
+    db.write_log_to_db(ac, log_message, "k")
+    if z != 0:
+        db.write_log_to_db(ac, log_message, "i")
+    return
+
+
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
@@ -313,6 +370,11 @@ def lets_rock():
 
     # pruefen was noch nicht in cloud ist, kopieren und meta schreiben
     check_and_work_on_files(roboting_sgs)
+
+    # delete old files in cloud
+    db.write_log_to_db_a(ac, u"Veraltete Dateien in Cloud loeschen",
+                                            "p", "write_also_to_console")
+    erase_files_from_cloud_prepaere(roboting_sgs)
     return
 
 
