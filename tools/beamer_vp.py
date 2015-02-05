@@ -27,16 +27,18 @@ Bezieht Daten aus: Firebird-Datenbank
 
 Fehlerliste:
 Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 Fehler beim Kopieren der Vorproduktion in Cloud
-Error 002 Fehler beim Kopieren der Meta-Datei in Cloud
-Error 005 Fehler beim Generieren des Dateinamens
+Error 001 beim Kopieren der Vorproduktion in Cloud
+Error 002 beim Kopieren der Meta-Datei in Cloud
+Error 003 beim Generieren des Dateinamens
+Error 004 beim Ermitteln zu loeschender Dateien
+Error 005 beim Loeschen einer veralteten Datei
 
 Parameterliste:
 Param 1: Pfad vom Server zu Playout-Infotime
 Param 2: Pfad vom Server zu Playout-Sendung
-Param 2: Tage zurueck loeschen alter Dateien in Cloud
-Param 3: Kuerzel Sender
-Param 4: Pfad vom Server zu Dropbox-Hauptordner
+Param 3: Tage zurueck loeschen alter Dateien in Cloud
+Param 4: Kuerzel Sender
+Param 5: Pfad vom Server zu Dropbox-Hauptordner
 
 
 Ausfuehrung: jede Stunde zur Minute 18
@@ -66,14 +68,18 @@ class app_config(object):
         self.app_errorfile = "error_beamer_vp.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
+        self.app_errorslist.append(self.app_desc +
             "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
+        self.app_errorslist.append(self.app_desc +
             "Fehler beim Kopieren der Vorproduktion in Cloud")
-        self.app_errorslist.append(u"Error 002 "
+        self.app_errorslist.append(self.app_desc +
             "Fehler beim Kopieren der Meta-Datei in Cloud")
-        self.app_errorslist.append(u"Error 003 "
+        self.app_errorslist.append(self.app_desc +
             "Fehler beim Generieren des Dateinamens")
+        self.app_errorslist.append(self.app_desc +
+            "Fehler beim Ermitteln zu loeschender Dateien ")
+        self.app_errorslist.append(self.app_desc +
+            "Fehler beim Loeschen einer veralteten Datei ")
 
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
@@ -87,7 +93,7 @@ class app_config(object):
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -216,7 +222,7 @@ def filepaths(sendung, path_audio):
             + db.ac_config_1[4] + str(sendung[12][7:]))
         path_file_dest = (path_dest + filename_dest)
     except Exception, e:
-        log_message = (ac.app_errorslist[5] + "fuer: "
+        log_message = (ac.app_errorslist[3] + "fuer: "
             + sendung[11].encode('ascii', 'ignore') + " " + str(e))
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         success_file = None
@@ -283,26 +289,75 @@ def check_and_work_on_files(sendungen, path_audio):
                                                     "write_also_to_console")
 
 
+def erase_files_from_play_out():
+    """alte Dateien in cloud-ordnern loeschen"""
+    lib_cm.message_write_to_console(ac, u"erase_files_from_cloud")
+    # Paths
+    path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
+    lib_cm.message_write_to_console(ac, path_sendung_dest)
+    date_back = (datetime.datetime.now()
+                 + datetime.timedelta(days=- int(db.ac_config_1[3])))
+    c_date_back = date_back.strftime("%Y_%m_%d")
+    db.write_log_to_db_a(ac, u"Sendedatum muss aelter sein als: "
+                                + c_date_back, "t", "write_also_to_console")
+
+    try:
+        files_sendung_dest = os.listdir(path_sendung_dest)
+    except Exception, e:
+        log_message = ac.app_errorslist[3] + u": %s" % str(e)
+        lib_cm.message_write_to_console(ac, log_message)
+        db.write_log_to_db(ac, log_message, "x")
+        return
+
+    x = 0
+    z = 0
+
+    for item in files_sendung_dest:
+        if item[0:10] < c_date_back:
+            try:
+                file_to_delete = path_sendung_dest + item
+                os.remove(file_to_delete)
+                log_message = u"geloescht: " + item
+                db.write_log_to_db(ac, log_message, "e")
+                z += 1
+            except Exception, e:
+                log_message = ac.app_errorslist[4] + u": %s" % str(e)
+                lib_cm.message_write_to_console(ac, log_message)
+                db.write_log_to_db(ac, log_message, "x")
+        x += 1
+    log_message = (u"Dateien in Cloud bearbeitet: " + str(x)
+                                + u" - Sendungen geloescht: " + str(z))
+    db.write_log_to_db(ac, log_message, "k")
+    if z != 0:
+        db.write_log_to_db(ac, log_message, "i")
+    return
+
+
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
+
     log_message = u"Infotime bearbeiten.."
-    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("IT")
     if sendungen is not None:
         check_and_work_on_files(sendungen, db.ac_config_1[1])
 
     log_message = u"Magazin bearbeiten.."
-    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("MAG")
     if sendungen is not None:
         check_and_work_on_files(sendungen, db.ac_config_1[1])
 
     log_message = u"Sendung bearbeiten.."
-    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("SG")
     if sendungen is not None:
         check_and_work_on_files(sendungen, db.ac_config_1[2])
+
+    db.write_log_to_db_a(ac, u"Veraltete Dateien in Cloud loeschen",
+                                            "p", "write_also_to_console")
+    erase_files_from_play_out()
     return
 
 
