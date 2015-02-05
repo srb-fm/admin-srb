@@ -256,6 +256,8 @@ def write_files_to_archive(files_sendung_source,
             db.read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(ac, db,
             db_tbl_limit, db_tbl_condition, db_tbl_order))
 
+        db.write_log_to_db(ac, "we are here", "t")
+
         if sendung_data is None:
             lib_cm.message_write_to_console(ac, "nix")
             continue
@@ -503,6 +505,7 @@ def erase_files_from_play_out_old_year(files_sendung_source,
     date_back = (datetime.datetime.now()
                  + datetime.timedelta(days=- int(db.ac_config_1[6])))
     #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
+
     lib_cm.message_write_to_console(ac, db.ac_config_1[7])
     nr_of_files_to_archive = int(db.ac_config_1[7])
 
@@ -511,6 +514,10 @@ def erase_files_from_play_out_old_year(files_sendung_source,
     log_message = (u"In Folgejahren gesendete Dateien von " +
                     dir_year + u" loeschen aus: " + path_sendung_source)
     db.write_log_to_db(ac, log_message, "v")
+
+    c_date_back = date_back.strftime("%Y-%m-%d")
+    db.write_log_to_db_a(ac, u"Sendedatum muss aelter sein als: "
+                                + c_date_back, "t", "write_also_to_console")
 
     try:
         files_sendung_dest = os.listdir(path_sendung_dest)
