@@ -269,7 +269,7 @@ echo "<div class='content'>\n";
 if ( $action_ok == "no" ) { 
 	return;
 }
-//if ( !$tbl_row ) { echo "Fehler bei Abfrage!"; return;}
+
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");			
 if ( $user_rights == "yes" ) { 
 	echo "<div class='content_row_a_1'>";
@@ -460,30 +460,29 @@ if ( $user_rights == "yes" ) {
 		//echo "AudioPlayer.embed('audioplayer_1', {soundFile: '".$remotefilename."' });"; 
 		//echo "</script>\n  ";
 		
-echo '<script type="text/javascript">';
-//echo '//<![CDATA[';
-echo '$(document).ready(function(){';
-echo '	$("#jquery_jplayer_1").jPlayer({';
-echo 'ready: function () {';
-echo '			$(this).jPlayer("setMedia", {';
-echo 'mp3: "'.$remotefilename.'"';
-echo '		});';
-echo '		},';
+		echo '<script type="text/javascript">';
+		//echo '//<![CDATA[';
+		echo '$(document).ready(function(){';
+		echo '	$("#jquery_jplayer_1").jPlayer({';
+		echo 'ready: function () {';
+		echo '			$(this).jPlayer("setMedia", {';
+		echo 'mp3: "'.$remotefilename.'"';
+		echo '		});';
+		echo '		},';
+		echo '		swfPath: "../../dist/jplayer",';
+		echo '		supplied: "mp3",';
+		echo '		wmode: "window",';
+		echo '		useStateClassSkin: true,';
+		echo '		autoBlur: false,';
+		echo '		smoothPlayBar: true,';
+		echo '		keyEnabled: true,';
+		echo '		remainingDuration: true,';
+		echo '		toggleDuration: true';
+		echo '});';
+		echo '	$("#jplayer_inspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});';
+		echo '});	';
 
-echo '		swfPath: "../../dist/jplayer",';
-echo '		supplied: "mp3",';
-echo '		wmode: "window",';
-echo '		useStateClassSkin: true,';
-echo '		autoBlur: false,';
-echo '		smoothPlayBar: true,';
-echo '		keyEnabled: true,';
-echo '		remainingDuration: true,';
-echo '		toggleDuration: true';
-echo '});';
-echo '	$("#jplayer_inspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});';
-echo '});	';
-
-echo '</script>';
+		echo '</script>';
 
 echo '<div id="jquery_jplayer_1" class="jp-jplayer"></div>';
 echo '<div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">';
