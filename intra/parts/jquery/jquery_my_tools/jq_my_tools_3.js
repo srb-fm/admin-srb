@@ -1,0 +1,57 @@
+$(document).ready(function()
+{
+	//slides the element with class "menu_body" when paragraph with class "menu_head" is clicked 
+	$("#jq_slide_by_click_1 p.menu_head").click(function()
+    {
+		$(this).next("div.menu_body").slideToggle(300).siblings("div.menu_body").slideUp("slow");
+	});
+		
+	//slides
+	$("#jq_slide_by_click div.content_row_toggle_head_1").click(function()
+    {
+		$(this).next("div.content_row_toggle_body_1").slideToggle(300).siblings("div.content_row_toggle_body_1").slideUp("slow");   	
+	});
+
+	//slides
+	$("#jq_slide_by_click div.content_row_toggle_head_2").click(function()
+    {
+		$(this).next("div.content_row_toggle_body_2").slideToggle(300).siblings("div.content_row_toggle_body_2").slideUp("slow");   	
+	});
+
+	//slides
+	$("#jq_slide_by_click div.content_row_toggle_head_3").click(function()
+    {
+		$(this).next("div.content_row_toggle_body_3").slideToggle(300).siblings("div.content_row_toggle_body_3").slideUp("slow");   	
+	});
+
+	// scroll-button, muss ausserhalb des main-divs platziert werden	
+	$(function () {  
+        $(window).scroll(function () {  
+            if ($(this).scrollTop() > 100) {  
+                $('#back-to-top').fadeIn();  
+            } else {  
+                $('#back-to-top').fadeOut();  
+            }  
+        });  
+  
+        $('#back-to-top').click(function () {  
+            $('body,html').animate({  
+                scrollTop: 0  
+            }, 800);  
+            return false;  
+        });  
+    });  
+	// scroll-button ende
+
+	// blink-elements
+	// class blink in style_srb_jq_2.css
+	setInterval(function () {
+        //$('.blink').fadeIn(1000).delay(1000).fadeOut(500).delay(500).fadeIn(1000);
+        $('.blink').animate( { backgroundColor: 'red' }, 500).animate( { backgroundColor: 'pink' }, 800);
+        //$('.blink').delay(1000).css("background-color","blue").delay(500).css("background-color","red");
+        //$('.blink').fadeIn(1000).delay(1000).fadeTo(500, 0.5).delay(500).fadeIn(1000);
+    }, 3000);
+	// blink-elements ende
+
+
+});
