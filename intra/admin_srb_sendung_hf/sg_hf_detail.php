@@ -236,11 +236,15 @@ if ( $action_ok == "yes" ) {
 	<style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
 	<style type="text/css"> @import url("../parts/style/style_srb_jq_2.css");  </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
+	<link href="../parts/jPlayer-2.9.2/dist/skin/blue.monday/css/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
 	
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_ui_1_8_16/jquery-ui-1.8.16.custom.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_tools/jq_tools.js"></script>
-	<script type="text/javascript" src="../parts/jquery/jquery_my_tools/jq_my_tools_2.js"></script>	
+	<script type="text/javascript" src="../parts/jquery/jquery_my_tools/jq_my_tools_3.js"></script>	
+	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/jplayer/jquery.jplayer.min.js"></script>
+	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/add-on/jquery.jplayer.inspector.min.js"></script>
+	
 	
 	<script type="text/javascript" src="parts/audio-player/audio-player.js"></script>  
    <script type="text/javascript">  
@@ -448,13 +452,64 @@ if ( $user_rights == "yes" ) {
 
 			
 	if ( $file_exist == "yes" ) {
-		echo "<br><div class='space_line_1'> </div>";
-		echo "<p id='audioplayer_1'>Alternative content</p>";  
-		echo "<script type='text/javascript'>";
+		//echo "<br><div class='space_line_1'> </div>";
+		//echo "<p id='audioplayer_1'>Alternative content</p>";  
+		//echo "<script type='text/javascript'>";
 		//AudioPlayer.embed("audioplayer_1", {soundFile: "1052854_Sobek_Sommerfest_Sabelschule.mp3"});  
 		//echo "AudioPlayer.embed('audioplayer_1', {soundFile: 'http://streamserver.max.fm:80/srb'});";
-		echo "AudioPlayer.embed('audioplayer_1', {soundFile: '".$remotefilename."' });"; 
-		echo "</script>\n  ";
+		//echo "AudioPlayer.embed('audioplayer_1', {soundFile: '".$remotefilename."' });"; 
+		//echo "</script>\n  ";
+		
+echo '<script type="text/javascript">';
+//echo '//<![CDATA[';
+echo '$(document).ready(function(){';
+echo '	$("#jquery_jplayer_1").jPlayer({';
+echo 'ready: function () {';
+echo '			$(this).jPlayer("setMedia", {';
+echo 'mp3: "'.$remotefilename.'"';
+echo '		});';
+echo '		},';
+
+echo '		swfPath: "../../dist/jplayer",';
+echo '		supplied: "mp3",';
+echo '		wmode: "window",';
+echo '		useStateClassSkin: true,';
+echo '		autoBlur: false,';
+echo '		smoothPlayBar: true,';
+echo '		keyEnabled: true,';
+echo '		remainingDuration: true,';
+echo '		toggleDuration: true';
+echo '});';
+echo '	$("#jplayer_inspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});';
+echo '});	';
+
+echo '</script>';
+
+echo '<div id="jquery_jplayer_1" class="jp-jplayer"></div>';
+echo '<div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">';
+	echo '<div class="jp-type-single">';
+		echo '<div class="jp-gui jp-interface">';
+			echo '<div class="jp-controls">';
+				echo '<button class="jp-play" role="button" tabindex="0">play</button>';
+				echo '<button class="jp-stop" role="button" tabindex="0">stop</button>';
+			echo '</div>';
+			echo '<div class="jp-progress">';
+				echo '<div class="jp-seek-bar">';
+					echo '<div class="jp-play-bar"></div>';
+				echo '</div>';
+			echo '</div>';
+			echo '<div class="jp-time-holder">';
+				echo '<div class="jp-current-time" role="timer" aria-label="time">&nbsp;</div>';
+				echo '<div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>';
+			echo '</div>';
+		echo '</div>';
+		echo '<div class="jp-no-solution">';
+			echo '<span>Update Required</span>';
+			echo 'To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.';
+		echo '</div>';
+	echo '</div>';
+echo '</div>';	
+//echo '<div id="jplayer_inspector"></div>';		
 	}
 
 	echo "<br>\n<span class='error_message'>".$error_message."</span>";
