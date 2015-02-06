@@ -38,7 +38,31 @@ function f_start_play_out () {
 	echo $message
 	f_check_package "mpd"
 	sleep 1
-	mpd &
+	mpd ~/srb-mpd/mpd.conf &
+}
+
+function f_start_mixer () {
+	message="$message Starting Mixer..\n"
+	echo $message
+	f_check_package "jack-mixer"
+	sleep 1
+	jack_mixer &
+}
+
+function f_start_scheduler () {
+	message="$message Starting Play-Out-Scheduler..\n"
+	echo $message
+	sleep 1
+	cd ~/srb-tools/
+	./play_out_scheduler.py &
+}
+
+function f_start_logging () {
+	message="$message Starting Play-Out-Logging..\n"
+	echo $message
+	sleep 1
+	cd ~/srb-tools/
+	./play_out_logging.py &
 }
 
 function f_start_meterbridge () {
@@ -127,6 +151,7 @@ echo "Starting Play-Out and Jack-Apps..."
 	fi
 
 	f_start_play_out
+	#f_start_mixer
 
 	if [ "$meterbridge" != "n" ]; then
 		f_start_meterbridge
@@ -151,7 +176,10 @@ echo "Starting Play-Out and Jack-Apps..."
 		fi
 	fi
 
-	sleep 2
+	f_start_scheduler
+	sleep 1	
+	f_start_logging
+	sleep 1
 	echo "100"
 	
 )| zenity --progress \
