@@ -256,15 +256,16 @@ def write_files_to_archive(files_sendung_source,
             db.read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(ac, db,
             db_tbl_limit, db_tbl_condition, db_tbl_order))
 
-        db.write_log_to_db(ac, "we are here", "t")
-
         if sendung_data is None:
             lib_cm.message_write_to_console(ac, "nix")
             continue
 
+        db.write_log_to_db(ac, "we are here", "t")
+
         for row in sendung_data:
             y += 1
             #print row
+            db.write_log_to_db(ac, "we are here 1", "t")
             sendung_year = row[2].year
             lib_cm.message_write_to_console(ac, sendung_year)
 
@@ -502,8 +503,10 @@ def erase_files_from_play_out_old_year(files_sendung_source,
     lib_cm.message_write_to_console(ac, u"erase_files_from_play_out_old_year")
     # Zeiten
     lib_cm.message_write_to_console(ac, db.ac_config_1[6])
+    # one day more back than archiveday
+    days_back = int(db.ac_config_1[6]) + 1
     date_back = (datetime.datetime.now()
-                 + datetime.timedelta(days=- int(db.ac_config_1[6])))
+                 + datetime.timedelta(days=- days_back))
     #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
 
     lib_cm.message_write_to_console(ac, db.ac_config_1[7])
