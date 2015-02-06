@@ -965,7 +965,8 @@ def params_check_type(ac, db, param_typ, param_value):
 def error_write_to_file(ac, err_message):
     # fehler in datei schreiben, wenn nicht in db möglich
     message_write_to_console(ac, "error_write_to_file")
-    message = str(datetime.datetime.now()) + " - " + err_message + "\n"
+    message = (str(datetime.datetime.now()) + " - "
+                            + err_message.encode('ascii', 'ignore') + "\n")
     message_write_to_console(ac, message)
     try:
         f_errors = open(ac.app_errorfile, 'a')
