@@ -819,6 +819,7 @@ def create_music_playlist():
             return
         file_rotation = lib_cm.read_random_file_from_dir(ac,
                                          db, path_rotation_music)
+        db.write_log_to_db(ac, str(duration_minute_music), "t")
         if file_rotation is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[3], "x",
                                              "write_also_to_console")

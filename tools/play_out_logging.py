@@ -341,7 +341,7 @@ def check_mpd_log(self, time_now, log_data):
         self.display_logging("No MPD-Connect", None)
         return None
     current_song = mpd.exec_command(db, ac, "song", None)
-    print current_song
+    #print current_song
     if current_song is None:
         db.write_log_to_db_a(ac, ac.app_errorslist[7], "x",
                                                     "write_also_to_console")
@@ -606,9 +606,9 @@ def work_on_data_from_log(time_now, log_data, load_from):
 
     log_data_list = []
     #log_data_list.append(log_start)
-    log_data_list.append(log_author.encode('ascii', 'ignore'))
-    log_data_list.append(log_title.encode('ascii', 'ignore'))
-    lib_cm.message_write_to_console(ac, log_data_list)
+    log_data_list.append(log_author)
+    log_data_list.append(log_title)
+    #lib_cm.message_write_to_console(ac, log_data_list)
     return log_data_list
 
 
@@ -713,8 +713,6 @@ class my_form(Frame):
 
             if log_changed is None:
                 return
-            print ac.log_author
-            print ac.log_title
 
         if ac.log_author is None:
             ac.log_start = (str(time_now.date()) + " "
