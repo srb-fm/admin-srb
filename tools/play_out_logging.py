@@ -130,7 +130,7 @@ class app_config(object):
         self.app_errorslist.append(u"Fehler bei MPD-Song-Abfrage")
         self.app_errorslist.append(u"Fehler bei MPD-Status-Abfrage")
         # meldungen auf konsole ausgeben oder nicht: "no"
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # anzahl parameter list 0
         self.app_config_params_range = 10
         # params-type-list, typ entsprechend der params-liste in der config
@@ -459,7 +459,8 @@ def upload_data_prepare():
             'pg': db.ac_config_1[7]}
 
         lib_cm.message_write_to_console(ac, u"data_upload"
-                + c_autor + " " + c_title)
+                            + c_autor.encode('ascii', 'ignore') + " "
+                            + c_title.encode('ascii', 'ignore'))
         data_upload_encoded = urllib.urlencode(data_upload)
 
     web = lib_cm.upload_data(ac, db, db.ac_config_1[5], data_upload_encoded)
@@ -570,7 +571,9 @@ def work_on_data_from_log(time_now, log_data, load_from):
         lib_cm.message_write_to_console(ac, u"daten_aus_db")
         log_author = sendung_data[12] + " " + sendung_data[13]
         log_title = sendung_data[9]
-        lib_cm.message_write_to_console(ac, log_author + " - " + log_title)
+        lib_cm.message_write_to_console(ac,
+                            log_author.encode('ascii', 'ignore') + " - "
+                            + log_title.encode('ascii', 'ignore'))
     else:
         lib_cm.message_write_to_console(ac, u"nix in db gefunden")
         # pruefen ob autor und titel in logdatei vorhanden
@@ -590,7 +593,7 @@ def work_on_data_from_log(time_now, log_data, load_from):
                 log_title = lib_cm.convert_to_unicode(log_title)
         else:
             # keine daten in id3-author, deshalb aus filename nehmen
-            lib_cm.message_write_to_console(ac, u"daten_aus_filname")
+            lib_cm.message_write_to_console(ac, u"daten_aus_filename")
             log_title = log_title[11:len(log_title)]
             #print log_title
             # split in autor und title,
@@ -603,8 +606,8 @@ def work_on_data_from_log(time_now, log_data, load_from):
 
     log_data_list = []
     #log_data_list.append(log_start)
-    log_data_list.append(log_author)
-    log_data_list.append(log_title)
+    log_data_list.append(log_author.encode('ascii', 'ignore'))
+    log_data_list.append(log_title.encode('ascii', 'ignore'))
     lib_cm.message_write_to_console(ac, log_data_list)
     return log_data_list
 
