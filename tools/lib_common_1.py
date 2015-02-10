@@ -1061,8 +1061,14 @@ def read_random_file_from_dir(ac, db, path):
     try:
         dirList = os.listdir(path)
         random_file = random.choice(dirList)
-        log_message = ("random_file: " + random_file.encode('ascii', 'ignore'))
-        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+        try:
+            log_message = ("random_file: "
+                                + random_file.encode('ascii', 'ignore'))
+            db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+        except Exception, e:
+            log_message = "Error by write random-file to db: %s" % str(e)
+            message_write_to_console(ac, log_message)
+            db.write_log_to_db(ac, log_message, "x")
         return random_file
     except OSError, msg:
         log_message = "read_random_files_in_list: " + "%r: %s" % (msg, path)
