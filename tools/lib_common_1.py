@@ -1069,6 +1069,7 @@ def read_random_file_from_dir(ac, db, path):
             log_message = "Error by write random-file to db: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
+            return None
         return random_file
     except OSError, msg:
         log_message = "read_random_files_in_list: " + "%r: %s" % (msg, path)
