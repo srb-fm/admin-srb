@@ -16,13 +16,14 @@ Copyright (C) Joerg Sorge joergsorge at ggooogl
 This script provides playlistitems for mpd.
 The items are taken from the work of play_out_loader.py in the log-table.
 
-Parameterliste:
-Dieses Script bereitet für den MPD die Auszuspielenden Audiodateien
+Dieses Script bereitet für den MPD die auszuspielenden Audiodateien
 oder zu streamende URLs vor.
-Es fragt zu festgelegten Zeiten die durch den play_out_loader.py
-vorbereiteten Eintraege ab (Sendebuchungen). Damit wird eine Wartschlange
-mit Audiodateien erzeugt. Ausserdem werden aus einem Musikpool Musikdateien
-fuer eine Warteschlange vorbereitet.
+Durch den play_out_loader.py wird jede auzuspielende Datei
+(Sendebuchungen und weitere aus Pools zufallgenerierte) in der Log-Tabelle
+registiert. Diese log-Eintraege werden durch den Scheduler abgefragt um
+eine Wartschlange mit den Audiodateien zu erzeugen.
+Zusaetzlich werden aus einem Musikpool Musikdateien
+fuer die Warteschlange vorbereitet.
 
 Zu den festgelegten Zeiten erhaelt mpd ein play-command
 um die vorbereiteten Sendungen auszuspielen. Festegelegte Zeiten sind:
@@ -46,7 +47,7 @@ können.
 Fuer den Regelbetrieb (Start ueber qjackctrl) muss der Debugmod ausgeschaltet
 sein: self.app_debug_mod = "no"
 
-Die Musikrotation wird jeweils 10 Minuten vior der vollen Stunde vorbereitet.
+Die Musikrotation wird jeweils 10 Minuten vor der vollen Stunde vorbereitet.
 Dazu werden Musikdateien mittels Zufallsgenaerator aus dem vordefinierten
 Verzeichnis geladen. Diese Haupt-Playlist kann durch weitere Musik aus anderen
 Pools ergaenzt werden. Es koennen Wochentag und Stundenabschnitte
