@@ -13,14 +13,14 @@ Copyright (C) Joerg Sorge joergsorge at goooglee
 2014-09-24
 
 Dieses Script stellt vorproduzierte Audio-Dateien
-fuer regelmaessige Sendungen (mp3-Dateien)
+fuer Sendungen (mp3-Dateien)
 extern (Cloud) zur Verfuegung.
 Zusaetzlich wird eine Text-Datei mit Meta-Daten gespeichert.
 Festgelegt sind die Sendungen durch SG_HF_VP_OUT
-in der Tabelle SG_HF_MAIN.
+in der Tabelle SG_HF_MAIN. (VP-out in der Seneanmeldung)
 
 Dateiname Script: beamer_vp.py
-Schluesselwort fuer Einstellungen: Beamer_VP_period
+Schluesselwort fuer Einstellungen: Beamer_VP
 Benoetigt: lib_common_1.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 

@@ -17,6 +17,7 @@ fuer regelmaessige Sendungen (mp3-Dateien)
 extern (Cloud) zur Verfuegung.
 Zusaetzlich wird eine Text-Datei mit Meta-Daten gespeichert.
 Festgelegt sind die Sendungen in der Tabelle SG_HF_ROBOT.
+(Intra-Menue: Sendungen/Einstellungen/Automatisierte Sendungen)
 
 Dateiname Script: beamer_vp_periodisch.py
 Schluesselwort fuer Einstellungen: Beamer_VP_period
