@@ -578,7 +578,9 @@ echo '</div>';
 			}
 		}
 		echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."' target='_blank'>Drucken</a> ";
-		echo "<a href='sg_hf_detail.php?action=play_out&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;po_it=".rtrim($tbl_row_sg->SG_HF_INFOTIME)."&amp;po_mg=".rtrim($tbl_row_sg->SG_HF_MAGAZINE)."&amp;po_filename=".rtrim($tbl_row_sg->SG_HF_CONT_FILENAME)."' >Play-Out</a> ";
+		if ( $file_exist == "yes" ) { 
+			echo "<a href='sg_hf_detail.php?action=play_out&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;po_it=".rtrim($tbl_row_sg->SG_HF_INFOTIME)."&amp;po_mg=".rtrim($tbl_row_sg->SG_HF_MAGAZINE)."&amp;po_filename=".rtrim($tbl_row_sg->SG_HF_CONT_FILENAME)."' >Play-Out</a> ";
+		}
 	} else {
 		echo "<a title='Keine Berechtigung'>Bearbeiten</a> ";
 		echo "<a title='Keine Berechtigung'>Wiederholen</a> ";			
