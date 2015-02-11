@@ -16,9 +16,9 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	
 // check action	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	if ( $_GET['action'] == "print" ) {
-		if ( isset( $_GET['ad_id'] ) ) {
+		if ( isset($_GET['ad_id']) ) {
 			$ad_id = $_GET['ad_id'];
 			// check id
 			if ( ! filter_var( $ad_id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
@@ -142,10 +142,17 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='space_line'> </div>";
 			
 	$tbl_row_b = db_query_display_item_from_one_row_table_1("USER_DATA");
+	echo "<br>\n";
+	echo "<div class='content_column_a_1'>Aufnahmedatum: ".get_date_format_deutsch($tbl_row->AD_TIME_AUFNAHME)."</div>";
+	echo "<div class='space_line'> </div>";
+	echo "<div class='space_line'> </div>";
 	echo "<div class='content_column_a_1'>........................................<br> Unterschrift Nutzer/in</div>";
 	echo "<div class='content_column_a_2'>&nbsp;</div>";
 	echo "<div class='content_column_a_5'>........................................<br> Unterschrift ". $tbl_row_b->USER_AD_NAME_SHORT. "</div>";
 	echo "<br>\n</div>";
+	
+	
+	
 } // user_rights
 ?>
 	
