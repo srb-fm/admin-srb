@@ -672,6 +672,16 @@ class my_form(Frame):
         c_time = time_back.strftime("%Y-%m-%d %H")
         lib_cm.message_write_to_console(ac, c_time)
 
+        # time for reloading mpd
+        # skipping mpd-check
+        if time_now.hour == 4:
+            if time_now.minute == 40:
+                if time_now.second >= 10 and time_now.second <= 30:
+                    db.write_log_to_db_a(ac,
+                                    "Logging waerend MPD-Neustart ausgesetzt",
+                                                "i", "write_also_to_console")
+                    return
+
         # 1. load sources
         # 2. assign sources transmittime
         source_id = check_source(self, c_time, time_now)
