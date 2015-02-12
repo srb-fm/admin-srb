@@ -18,26 +18,18 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
 $error_message = "";
 $manuskript_vorhanden = false;
-if ( isset( $_GET['message'] ) ) { 
+
+if ( isset($_GET['message']) ) { 
 	$message .= $_GET['message'];
 }
-if ( isset( $_POST['message'] ) ) { 
+if ( isset($_POST['message']) ) { 
 	$message .= $_POST['message'];
 }
-if ( isset( $_GET['error_message'] ) ) { 
+if ( isset($_GET['error_message']) ) { 
 	$error_message .= $_GET['error_message'];
 }
-if ( isset( $_POST['error_message'] ) ) { 
+if ( isset($_POST['error_message']) ) { 
 	$error_message .= $_POST['error_message'];
-}
-if ( isset( $_GET['po_filename'] ) ) { 
-	$po_filename = $_GET['po_filename'];
-}
-if ( isset( $_GET['po_it'] ) ) { 
-	$po_it = $_GET['po_it'];
-}
-if ( isset( $_GET['po_mg'] ) ) { 
-	$po_mg = $_GET['po_mg'];
 }
 
 $action_ok = "no";
@@ -183,9 +175,16 @@ if ( $action_ok == "yes" ) {
 			
 				$message .= "Sendung ausspielen... ";
 				// choose play-out-path
-				$po_path = "Play_Out_Sendung"; 
-				if ( $po_it == "T" or $po_mg == "T" ) {
-					$po_path = "Play_Out_Infotime";
+				$po_path = "Play_Out_Sendung";
+				if ( isset($_POST['po_it']) ) {  
+					if ( $_POST['po_it'] == "T" ) {
+						$po_path = "Play_Out_Infotime";
+					}
+				}
+				if ( isset($_POST['po_mg']) ) { 
+					if ( $_POST['po_mg'] == "T" ) {
+						$po_path = "Play_Out_Infotime";
+					}
 				}
 				// load access mpc
 				$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config'");
@@ -555,7 +554,9 @@ echo '</div>';
 			echo "<form action='sg_hf_detail.php' method='POST' enctype='application/x-www-form-urlencoded'>\n";
 			echo "<input type='hidden' name='action' value='play_now'>";
 			echo "<input type='hidden' name='sg_id' value=".$tbl_row_sg->SG_HF_ID.">";	
-			echo "<input type='hidden' name='po_filename' value=".rtrim($tbl_row_sg->SG_HF_CONT_FILENAME).">";	
+			echo "<input type='hidden' name='po_filename' value=".rtrim($tbl_row_sg->SG_HF_CONT_FILENAME).">";
+			echo "<input type='hidden' name='po_it' value=".rtrim(rtrim($tbl_row_sg->SG_HF_INFOTIME)).">";
+			echo "<input type='hidden' name='po_mg' value=".rtrim($tbl_row_sg->SG_HF_MAGAZINE).">";
 			echo "<input type='password' name='form_play_code' class='text_a_1' value=''>"; 
 			echo "<input type='submit' class='b_1' value='Jetzt ausspielen'></form><div class='space_line_1'> </div></div>";
 		}
