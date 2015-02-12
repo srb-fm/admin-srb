@@ -356,7 +356,7 @@ def check_mpd_log(self, time_now, log_data):
         return None
 
     # by stream, it could be, that id is eqal but title not
-    if "title" in current_song:
+    if "file" in current_song:
         log_filename = current_song["file"]
     else:
         log_filename = "nicht vorhanden"
