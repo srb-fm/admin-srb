@@ -1042,6 +1042,9 @@ class my_form(Frame):
                     work_on_extra_music_sources(music_sources_extra)
                     # shuffling music-playlist
                     random.shuffle(ac.music_play_list)
+                db.write_log_to_db_a(ac,
+                            "Vorbereitung Rotation abgeschlossen: ", "i",
+                                             "write_also_to_console")
 
         # reload mpd
         # this is for freeing mpd.log to rotate them
