@@ -219,6 +219,11 @@ def write_files_to_archive(files_sendung_source,
     lib_cm.message_write_to_console(ac, db.ac_config_1[7])
     nr_of_files_to_archive = int(db.ac_config_1[7])
 
+    c_date_back = date_back.strftime("%Y-%m-%d")
+    db.write_log_to_db_a(ac, u"Sendedatum muss vor "
+                            + c_date_back
+                            + " liegen", "t", "write_also_to_console")
+
     # pfad anpassen
     path_sendung_dest += lib_cm.check_slashes(ac, dir_year)
     log_message = u"Dateien archivieren nach: " + path_sendung_dest
@@ -380,14 +385,16 @@ def erase_files_from_play_out_prepare(sendung_art):
             else:
                 #log_message = "Dateien loeschen von: " + path_sendung_source
                 #db.write_log_to_db( ac, log_message, "t" )
-                erase_files_from_play_out(files_sendung_source,
+                files_sendung_source = erase_files_from_play_out(
+                    files_sendung_source,
                     path_sendung_source, path_sendung_dest, item, sendung_art)
                 erase_files_from_play_out_old_year(files_sendung_source,
                     path_sendung_source, path_sendung_dest, item, sendung_art)
         else:
             #log_message = "Dateien loeschen von: " + path_sendung_source
             #db.write_log_to_db( ac, log_message, "t" )
-            erase_files_from_play_out(files_sendung_source,
+            files_sendung_source = erase_files_from_play_out(
+                files_sendung_source,
                 path_sendung_source, path_sendung_dest, item, sendung_art)
             erase_files_from_play_out_old_year(files_sendung_source,
                 path_sendung_source, path_sendung_dest, item, sendung_art)
@@ -472,11 +479,13 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
                 file_source = path_sendung_source + item
                 try:
                     os.remove(file_source)
+                    # del from list for next run eras prev_year
+                    del files_sendung_source[files_sendung_source.index(item)]
                     log_message = u"geloescht: " + item
                     db.write_log_to_db(ac, log_message, "e")
                     z += 1
                     # nicht nochmal bei WH loeschen,
-                    # braucme nich, nur ein satz wird geholt (der juengste)
+                    # brauchme nich, nur ein satz wird geholt (der juengste)
                     # break
                 except Exception, e:
                     log_message = u"erase_files_fom_dir Error: %s" % str(e)
@@ -500,7 +509,7 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
     db.write_log_to_db(ac, log_message, "k")
     if z != 0:
         db.write_log_to_db(ac, log_message, "i")
-    return
+    return files_sendung_source
 
 
 def erase_files_from_play_out_old_year(files_sendung_source,
@@ -509,8 +518,7 @@ def erase_files_from_play_out_old_year(files_sendung_source,
     lib_cm.message_write_to_console(ac, u"erase_files_from_play_out_old_year")
     # Zeiten
     lib_cm.message_write_to_console(ac, db.ac_config_1[6])
-    # x days more back than archiveday
-    days_back = int(db.ac_config_1[6]) + 2
+    days_back = int(db.ac_config_1[6])
     date_back = (datetime.datetime.now()
                  + datetime.timedelta(days=- days_back))
     #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
@@ -635,21 +643,21 @@ def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
 
-    #sendung_art = "Info-Time"
-    #archiv_ok = write_files_to_archive_prepare(sendung_art)
-    #if archiv_ok is None:
+    sendung_art = "Info-Time"
+    archiv_ok = write_files_to_archive_prepare(sendung_art)
+    if archiv_ok is None:
         # Error 001 Fehler beim Lesen
         # oder Schreiben von Archiv-Ordnern oder Dateien
-    #    db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-    #        "write_also_to_console")
-    #    return
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+        return
 
-    #erase_files_ok = erase_files_from_play_out_prepare(sendung_art)
-    #if erase_files_ok is None:
+    erase_files_ok = erase_files_from_play_out_prepare(sendung_art)
+    if erase_files_ok is None:
         # Error 002 Fehler beim Loeschen von Dateien in Play-Out
-    #    db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
-    #        "write_also_to_console")
-    #    return
+        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+            "write_also_to_console")
+        return
 
     sendung_art = "Sendung normal"
     archiv_ok_1 = write_files_to_archive_prepare(sendung_art)
