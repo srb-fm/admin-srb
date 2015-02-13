@@ -155,10 +155,10 @@ class app_config(object):
             "oder Inhalt stimmt nicht: PO_Time_Config")
         self.app_errorslist.append(u"Parameter-Typ "
             "oder Inhalt stimmt nicht: PO_Rotation")
-        self.app_errorslist.append(u"Musik-Datei "
-            "in Rotations-Verzeichnis nicht lesbar")
-        self.app_errorslist.append(u"Laenge der Musik-Datei "
-            "nicht ermittelbar")
+        self.app_errorslist.append(u"Rotationsvorbereitung: Musik-Datei "
+                                "in Rotations-Verzeichnis nicht lesbar")
+        self.app_errorslist.append(u"Rotationsvorbereitung: "
+                            "Laenge der Musik-Datei nicht ermittelbar")
         self.app_errorslist.append(u"MPD-Setup fehlgeschlagen, "
                                                 "kein connect zu MPD")
         self.app_errorslist.append(u"Update MPD-DB fehlgeschlagen, "
@@ -385,6 +385,8 @@ def prepare_mpd_0(time_now, minute_start):
 
         if ac.play_out_items is not None:
             msg_1 = "Load Items for top of the hour from DB..." + "\n"
+            db.write_log_to_db_a(ac, "Load Items for top of the hour from DB",
+                                "t", "write_also_to_console")
             for item in ac.play_out_items:
                 if ac.play_out_infotime is True:
                     msg_1 = msg_1 + item[2][19:] + "\n"
@@ -397,6 +399,9 @@ def prepare_mpd_0(time_now, minute_start):
         if ac.play_out_items is not None:
             msg_1 = "Add Items for top of the hour to Playlist..."
             msg_2 = ""
+            db.write_log_to_db_a(ac,
+                                "Add Items for top of the hour to Playlist",
+                                "t", "write_also_to_console")
             # load current song
             mpd_result = mpd.connect(db, ac)
             if mpd_result is None:
@@ -821,6 +826,12 @@ def create_music_playlist():
         file_rotation = lib_cm.read_random_file_from_dir(ac,
                                          db, path_rotation_music)
         db.write_log_to_db(ac, str(duration_minute_music), "t")
+
+        if (file_rotation[len(file_rotation) - 3:len(file_rotation)]
+                                                        != "mp3".lower()):
+            # no mp3 file
+            continue
+
         if file_rotation is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[3], "x",
                                              "write_also_to_console")
@@ -1043,7 +1054,7 @@ class my_form(Frame):
                     # shuffling music-playlist
                     random.shuffle(ac.music_play_list)
                 db.write_log_to_db_a(ac,
-                            "Vorbereitung Rotation abgeschlossen: ", "i",
+                            "Vorbereitung Rotation abgeschlossen", "i",
                                              "write_also_to_console")
 
         # reload mpd
