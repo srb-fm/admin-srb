@@ -677,10 +677,10 @@ class my_form(Frame):
         if time_now.hour == 4:
             if time_now.minute == 40:
                 if time_now.second >= 10 and time_now.second <= 30:
-                    db.write_log_to_db_a(ac,
-                                    "Logging waerend MPD-Neustart ausgesetzt",
+                    log_meldung_1 = "Logging waehrend MPD-Neustart ausgesetzt"
+                    db.write_log_to_db_a(ac, log_meldung_1,
                                                 "i", "write_also_to_console")
-                    return
+                    self.display_logging(log_meldung_1, "")
 
         # 1. load sources
         # 2. assign sources transmittime
