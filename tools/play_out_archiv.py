@@ -99,7 +99,7 @@ class app_config(object):
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         self.app_windows = "no"
 
 
@@ -260,18 +260,20 @@ def write_files_to_archive(files_sendung_source,
             lib_cm.message_write_to_console(ac, "nix")
             continue
 
-        db.write_log_to_db(ac, "we are here", "t")
+        #db.write_log_to_db(ac, "we are here", "t")
 
         for row in sendung_data:
             y += 1
             #print row
-            db.write_log_to_db(ac, "we are here 1", "t")
+            #db.write_log_to_db(ac, "we are here 1", "t")
             sendung_year = row[2].year
             lib_cm.message_write_to_console(ac, sendung_year)
 
             sendung_date = row[2]
-            lib_cm.message_write_to_console(ac, sendung_date)
-            lib_cm.message_write_to_console(ac, item)
+            #db.write_log_to_db(ac, "we are here 2", "t")
+            #lib_cm.message_write_to_console(ac, sendung_date)
+            #lib_cm.message_write_to_console(ac, item)
+            #db.write_log_to_db(ac, "we are here 3", "t")
             # nur
 
             if (sendung_date < date_back and sendung_year == int(dir_year)):
@@ -304,7 +306,7 @@ def write_files_to_archive(files_sendung_source,
     lib_cm.message_write_to_console(ac, u"dateien bearbeitet: " + str(x))
     lib_cm.message_write_to_console(ac, u"sendungen in db gefunden: " + str(y))
     lib_cm.message_write_to_console(ac, u"dateien archiviert: " + str(z))
-    log_message = (u"Dateien archiviert: " + sendung_art + " - "
+    log_message = (u"Dateien bearbeitet: " + sendung_art + " - "
                    + dir_year + " - " + str(x) + u" - in Archiv kopiert: "
                    + str(z))
     db.write_log_to_db(ac, log_message, "k")
@@ -410,6 +412,10 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
     log_message = (u"Dateien von " + dir_year + u" loeschen aus: "
                    + path_sendung_source)
     db.write_log_to_db(ac, log_message, "v")
+    c_date_back = date_back.strftime("%Y-%m-%d")
+    db.write_log_to_db_a(ac, u"Sendedatum muss vor "
+                            + c_date_back
+                            + " liegen", "t", "write_also_to_console")
 
     try:
         files_sendung_dest = os.listdir(path_sendung_dest)
@@ -503,8 +509,8 @@ def erase_files_from_play_out_old_year(files_sendung_source,
     lib_cm.message_write_to_console(ac, u"erase_files_from_play_out_old_year")
     # Zeiten
     lib_cm.message_write_to_console(ac, db.ac_config_1[6])
-    # one day more back than archiveday
-    days_back = int(db.ac_config_1[6]) + 1
+    # x days more back than archiveday
+    days_back = int(db.ac_config_1[6]) + 2
     date_back = (datetime.datetime.now()
                  + datetime.timedelta(days=- days_back))
     #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
@@ -514,13 +520,15 @@ def erase_files_from_play_out_old_year(files_sendung_source,
 
     # pfad anpassen
     path_sendung_dest += lib_cm.check_slashes(ac, dir_year)
-    log_message = (u"In Folgejahren gesendete Dateien von " +
-                    dir_year + u" loeschen aus: " + path_sendung_source)
+    log_message = ("Dateien von " + dir_year
+                    + " loeschen, die in Folgejahren erneut gesendet wurden: "
+                    + path_sendung_source)
     db.write_log_to_db(ac, log_message, "v")
 
     c_date_back = date_back.strftime("%Y-%m-%d")
-    db.write_log_to_db_a(ac, u"Sendedatum muss aelter sein als: "
-                                + c_date_back, "t", "write_also_to_console")
+    db.write_log_to_db_a(ac, u"Wiederholungs-Sendedatum muss vor "
+                            + c_date_back
+                            + " liegen", "t", "write_also_to_console")
 
     try:
         files_sendung_dest = os.listdir(path_sendung_dest)
@@ -627,21 +635,21 @@ def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
 
-    sendung_art = "Info-Time"
-    archiv_ok = write_files_to_archive_prepare(sendung_art)
-    if archiv_ok is None:
+    #sendung_art = "Info-Time"
+    #archiv_ok = write_files_to_archive_prepare(sendung_art)
+    #if archiv_ok is None:
         # Error 001 Fehler beim Lesen
         # oder Schreiben von Archiv-Ordnern oder Dateien
-        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-            "write_also_to_console")
-        return
+    #    db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+    #        "write_also_to_console")
+    #    return
 
-    erase_files_ok = erase_files_from_play_out_prepare(sendung_art)
-    if erase_files_ok is None:
+    #erase_files_ok = erase_files_from_play_out_prepare(sendung_art)
+    #if erase_files_ok is None:
         # Error 002 Fehler beim Loeschen von Dateien in Play-Out
-        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
-            "write_also_to_console")
-        return
+    #    db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+    #        "write_also_to_console")
+    #    return
 
     sendung_art = "Sendung normal"
     archiv_ok_1 = write_files_to_archive_prepare(sendung_art)
