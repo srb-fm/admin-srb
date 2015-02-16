@@ -142,8 +142,12 @@ class app_config(object):
         # app_config
         self.app_id = "022"
         self.app_desc = u"Play Out Scheduler"
-        self.app_config = u"PO_Scheduler_Config"
+        self.app_config = u"PO_Scheduler_Config_Server_3"
         self.app_config_develop = u"PO_Scheduler_Config_e"
+        # display debugmessages on console or no: "no"
+        # for normal usage set to no!!!!!!
+        self.app_debug_mod = "yes"
+        # using develop-params
         self.app_develop = "no"
         self.app_windows = "no"
         self.app_errorfile = "error_play_out_scheduler.log"
@@ -171,9 +175,6 @@ class app_config(object):
                                                 "kein connect zu MPD")
         self.app_errorslist.append(u"MPD-Status kann nicht ermittelt werden")
         self.app_errorslist.append(u"MPD-Song kann nicht ermittelt werden")
-        # display debugmessages on console or no: "no"
-        # for normal usage set to no!!!!!!
-        self.app_debug_mod = "no"
         # number of params 0
         self.app_config_params_range = 11
         # params-type-list
@@ -236,7 +237,7 @@ def load_extended_params():
         return ext_params_ok
 
     # Rotation
-    db.ac_config_rotation = db.params_load_1a(ac, db, "PO_Rotation")
+    db.ac_config_rotation = db.params_load_1a(ac, db, "PO_Rotation_Server_3")
     if db.ac_config_rotation is not None:
         # create extended Paramslist
         app_params_type_list_rotation = []
@@ -311,7 +312,7 @@ def check_mpd_stat(option):
         if option == "status":
             if "state" in current_status:
                 lib_cm.message_write_to_console(ac,
-                        current_status["state"].encode('ascii', 'ignore'))
+                        current_status["state"].encode('utf-8', 'ignore'))
                 index = string.find(current_status["state"], ":")
                 mpd_state = current_status["state"][index + 1:]
                 return mpd_state
@@ -327,12 +328,13 @@ def check_mpd_song(option):
         db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
                                                     "write_also_to_console")
         ac.app_msg_1 = "mpd-error song"
-        return
+        return "getting song-info failed"
     if option is not None:
         if option == "file":
             if "file" in current_song:
-                lib_cm.message_write_to_console(ac,
-                            current_song["file"].encode('ascii', 'ignore'))
+                # can fail if filename can not eincode to ascii
+                #lib_cm.message_write_to_console(ac,
+                #            current_song["file"].encode('ascii', 'ignore'))
                 return current_song["file"]
             else:
                 err_message = ("Dateiname nicht ermittelbar."
@@ -410,6 +412,7 @@ def prepare_mpd_0(time_now, minute_start):
                 ac.app_msg_1 = "No mpd-connect, prepaere_mpd"
                 return
             current_song_file = check_mpd_song("file")
+
             # cropping playlist-items
             mpd.exec_command(db, ac, "crop", None)
             # add items to playlist
@@ -433,7 +436,7 @@ def prepare_mpd_0(time_now, minute_start):
                     else:
                         mpd.exec_command(db, ac, "add", item[2][21:])
                         db.write_log_to_db_a(ac, "OnAir next: "
-                                + item[2][21:].encode('ascii', 'ignore'),
+                                + item[2][21:].encode('utf-8', 'ignore'),
                                 "i", "write_also_to_console")
 
             if ac.play_out_infotime is True:
@@ -444,7 +447,7 @@ def prepare_mpd_0(time_now, minute_start):
             # check time of current song
             ac.song_time_elapsed = check_mpd_stat("time_remain")
             log_message = ("Aktueller Titel "
-                                + current_song_file.encode('ascii', 'ignore')
+                                + current_song_file.encode('utf-8', 'ignore')
                                 + " noch "
                                 + str(ac.song_time_elapsed) + " Sekunden")
             db.write_log_to_db_a(ac, log_message, "t",
@@ -489,7 +492,7 @@ def prepare_mpd_5x(time_now, minute_start):
             for item in ac.play_out_items:
                 msg_1 = msg_1 + item[2][21:] + "\n"
                 log_message = ("Sendung vorbereitet: " +
-                                item[2][21:].encode('ascii', 'ignore'))
+                                item[2][21:].encode('utf-8', 'ignore'))
                 db.write_log_to_db_a(ac,
                             log_message, "t", "write_also_to_console")
         else:
@@ -523,7 +526,7 @@ def prepare_mpd_5x(time_now, minute_start):
                 else:
                     mpd.exec_command(db, ac, "add", item[2][21:])
                     db.write_log_to_db_a(ac, "OnAir next: "
-                                + item[2][21:].encode('ascii', 'ignore'),
+                                + item[2][21:].encode('utf-8', 'ignore'),
                                 "i", "write_also_to_console")
 
             # add music
@@ -534,7 +537,7 @@ def prepare_mpd_5x(time_now, minute_start):
             # check time of current song
             ac.song_time_elapsed = check_mpd_stat("time_remain")
             log_message = ("Aktueller Titel "
-                                + current_song_file.encode('ascii', 'ignore')
+                                + current_song_file.encode('utf-8', 'ignore')
                                 + " noch "
                                 + str(ac.song_time_elapsed) + " Sekunden")
             db.write_log_to_db_a(ac, log_message, "t",
