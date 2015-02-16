@@ -111,6 +111,9 @@ class app_config(object):
         self.app_config_develop = u"PO_Logging_Config_1_e"
         self.app_develop = "no"
         self.app_windows = "no"
+        # display debugmessages on console or no: "no"
+        # for normal usage set to no!!!!!!
+        self.app_debug_mod = "yes"
         self.app_errorfile = "error_play_out_logging.log"
         # errorlist
         self.app_errorslist = []
@@ -129,8 +132,6 @@ class app_config(object):
         self.app_errorslist.append(u"Fehler bei MPD-Connect")
         self.app_errorslist.append(u"Fehler bei MPD-Song-Abfrage")
         self.app_errorslist.append(u"Fehler bei MPD-Status-Abfrage")
-        # meldungen auf konsole ausgeben oder nicht: "no"
-        self.app_debug_mod = "no"
         # anzahl parameter list 0
         self.app_config_params_range = 10
         # params-type-list, typ entsprechend der params-liste in der config
@@ -676,7 +677,7 @@ class my_form(Frame):
         # skipping mpd-check
         if time_now.hour == 4:
             if time_now.minute == 40:
-                if time_now.second >= 10 and time_now.second <= 30:
+                if time_now.second >= 5 and time_now.second <= 30:
                     log_meldung_1 = "Logging waehrend MPD-Neustart ausgesetzt"
                     db.write_log_to_db_a(ac, log_meldung_1,
                                                 "i", "write_also_to_console")
