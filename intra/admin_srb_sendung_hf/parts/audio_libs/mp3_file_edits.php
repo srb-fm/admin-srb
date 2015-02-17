@@ -61,7 +61,7 @@ if ( $fp_remote = fopen( $remotefilename, 'rb')) {
 		// set various options (optional)
 		$tagwriter->overwrite_tags = true;
 		$tagwriter->tag_encoding   = $TaggingFormat;
-		$tagwriter->remove_other_tags = true;
+		//$tagwriter->remove_other_tags = true;
 
 		// populate data array
 		$TagData['title'][]   = $title;
@@ -71,6 +71,15 @@ if ( $fp_remote = fopen( $remotefilename, 'rb')) {
 		//$TagData['genre'][]   = 'Rock';
 		//$TagData['comment'][] = 'excellent!';
 		//$TagData['track'][]   = '04/16';
+		
+		// save ape-tags for new writing: mp3gain
+		$ReplayGainTagsToPreserve = array('mp3gain_minmax', 'mp3gain_album_minmax', 'mp3gain_undo', 'replaygain_track_peak', 'replaygain_track_gain', 'replaygain_album_peak', 'replaygain_album_gain');
+		foreach ($ReplayGainTagsToPreserve as $rg_key) {
+			if (isset($ThisFileInfo['ape']['items'][strtolower($rg_key)]['data'][0]) ) {
+				//$TagData[strtoupper($rg_key)][0] = $ThisFileInfo['ape']['items'][strtolower($rg_key)]['data'][0];
+				$TagData[strtoupper($rg_key)][] = $ThisFileInfo['ape']['items'][strtolower($rg_key)]['data'][0];
+			}
+		}
 
 		$tagwriter->tag_data = $TagData;
 
@@ -90,7 +99,7 @@ if ( $fp_remote = fopen( $remotefilename, 'rb')) {
 		$need_change_mp3gain = "no";
 		
 		//if (@$ThisFileInfo['playtime_seconds'] < 600 ){
-		// mp3Gain prüfen wenn gewünscht, nur wenn nicht zu lang!
+		// mp3Gain pruefen wenn gewuenscht, nur wenn nicht zu lang!
 		if ( $set_mp3gain == "yes" ) {
 				//$patfilename = $tbl_row_config_a->USER_SP_PARAM_1.$_POST['form_sg_filename'];
 				//$patfilename = "E:/Media_HF/temp/".$tbl_row_config->USER_SP_PARAM_1.$_POST['form_sg_filename'];
@@ -134,7 +143,7 @@ if ( $fp_remote = fopen( $remotefilename, 'rb')) {
 //echo @$ThisFileInfo['tags']['id3v2']['title'][0]."<br>";  // title from ID3v2
 //echo @$ThisFileInfo['audio']['bitrate']."<br>";           // audio bitrate
 
-// write_log_file( $log_message );
+ //write_log_file( $log_message );
 
 return @$ThisFileInfo['playtime_seconds']."<br>";            // playtime in minutes:seconds, formatted string
 //echo @$ThisFileInfo['error'][0]."<br>";
