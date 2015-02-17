@@ -460,8 +460,8 @@ def upload_data_prepare():
             'pg': db.ac_config_1[7]}
 
         lib_cm.message_write_to_console(ac, u"data_upload"
-                            + c_autor.encode('ascii', 'ignore') + " "
-                            + c_title.encode('ascii', 'ignore'))
+                            + c_autor.encode('utf-8', 'ignore') + " "
+                            + c_title.encode('utf-8', 'ignore'))
         data_upload_encoded = urllib.urlencode(data_upload)
 
     web = lib_cm.upload_data(ac, db, db.ac_config_1[5], data_upload_encoded)
@@ -573,8 +573,8 @@ def work_on_data_from_log(time_now, log_data, load_from):
         log_author = sendung_data[12] + " " + sendung_data[13]
         log_title = sendung_data[9]
         lib_cm.message_write_to_console(ac,
-                            log_author.encode('ascii', 'ignore') + " - "
-                            + log_title.encode('ascii', 'ignore'))
+                            log_author.encode('utf-8', 'ignore') + " - "
+                            + log_title.encode('utf-8', 'ignore'))
     else:
         lib_cm.message_write_to_console(ac, u"nix in db gefunden")
         # pruefen ob autor und titel in logdatei vorhanden
@@ -680,8 +680,9 @@ class my_form(Frame):
                 if time_now.second >= 5 and time_now.second <= 30:
                     log_meldung_1 = "Logging waehrend MPD-Neustart ausgesetzt"
                     db.write_log_to_db_a(ac, log_meldung_1,
-                                                "i", "write_also_to_console")
+                                                "p", "write_also_to_console")
                     self.display_logging(log_meldung_1, "")
+                    return
 
         # 1. load sources
         # 2. assign sources transmittime
