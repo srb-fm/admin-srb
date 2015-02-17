@@ -447,7 +447,7 @@ def prepare_mpd_0(time_now, minute_start):
             # check time of current song
             ac.song_time_elapsed = check_mpd_stat("time_remain")
             log_message = ("Aktueller Titel "
-                                + current_song_file.encode('utf-8', 'ignore')
+                                #+ current_song_file.encode('utf-8', 'ignore')
                                 + " noch "
                                 + str(ac.song_time_elapsed) + " Sekunden")
             db.write_log_to_db_a(ac, log_message, "t",
@@ -537,7 +537,7 @@ def prepare_mpd_5x(time_now, minute_start):
             # check time of current song
             ac.song_time_elapsed = check_mpd_stat("time_remain")
             log_message = ("Aktueller Titel "
-                                + current_song_file.encode('utf-8', 'ignore')
+                                #+ current_song_file.encode('utf-8', 'ignore')
                                 + " noch "
                                 + str(ac.song_time_elapsed) + " Sekunden")
             db.write_log_to_db_a(ac, log_message, "t",
@@ -828,7 +828,7 @@ def create_music_playlist():
             return
         file_rotation = lib_cm.read_random_file_from_dir(ac,
                                          db, path_rotation_music)
-        db.write_log_to_db(ac, str(duration_minute_music), "t")
+        #db.write_log_to_db(ac, str(duration_minute_music), "t")
 
         if (file_rotation[len(file_rotation) - 3:len(file_rotation)]
                                                         != "mp3".lower()):
