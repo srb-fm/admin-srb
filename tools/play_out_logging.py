@@ -15,7 +15,7 @@ Copyright (C) Joerg Sorge joergsorge at ggooogl
 
 Dieses Script registriert ausgespielte Beitraege in der Datenbank
 und uebertraegt sie auf den Webserver.
-Dort koennen die  zur Anzeige des aktuellen Beitrags/Titels
+Dort koennen die Daten zur Anzeige des aktuellen Beitrags/Titels
 und fuer Playlisten genutzt werden.
 
 Dateiname Script: play_out_logging.py
@@ -38,20 +38,24 @@ Die Quellen werden aus dem Logeintrag (Sendequellenumschalter)
 in der DB ermittelt.
 Wenn Aussenuebertragung, dann gibts keine Logfiles,
 also Sendedaten aus db hohlen.
-Wenn VP oder Studio, dann die mAirlist-Logdateien einlesen
-und mit db vergleichen.
+Wenn VP oder Studio, dann mAirlist-Logdateien einlesen oder
+MPD-Song-Abfrage und mit db vergleichen.
 Zu guter letzt, Daten in db schreiben und auf Webserver uebertragen.
 Bei Fehlern gibt es ein Fallback.
 Es wird der in der Config voreingestellte Autor und Titel
 geloggt und uebertragen.
 
 Liste der moeglichen Haupt-Fehlermeldungen:
-Error 000 Parameter-Typ oder Inhalt stimmt nicht
-Error 001 Sende-Quelle kann aus Datenbank nicht ermittelt werden
-Error 002 Play-Out-Log-Datei kann nicht gelesen werden
-Error 003 Webserver fuer PlayOut-Logging lieferte bei
+E 0 Parameter-Typ oder Inhalt stimmt nicht
+E 1 Sende-Quelle kann aus Datenbank nicht ermittelt werden
+E 2 Play-Out-Log-Datei kann nicht gelesen werden
+E 3 Webserver fuer PlayOut-Logging lieferte bei
 Uebertragung Fehler zurueck
-Error 004 Webserver fuer PlayOut-Logging nicht erreichbar
+E 4 Webserver fuer PlayOut-Logging nicht erreichbar
+E 5 Externes PlayOut-Logging ausgesetzt, Webserver nicht erreichbar
+E 6 PlayOut-Logging-Fehler bei MPD-Connect
+E 7 PlayOut-Logging-Fehler bei MPD-Song-Abfrage
+E 8 PlayOut-Logging-Fehler bei MPD-Status-Abfrage
 
 Parameterliste:
 Param 1: mAirList Logdatei aktueller Titel
@@ -76,7 +80,7 @@ PO_Time_Config_1
 Das Script laeuft mit graphischer Oberflaeche staendig.
 
 Hinweis:
-Log und Statusmeldungen, die direkt ausgegeben werden (print),
+Log und Statusmeldungen (debug_mod= yes), die direkt ausgegeben werden (print),
 koennen bei laengerer Laufzeit zu Speicherproblemen fuehren,
 besonders unter Windows.
 
@@ -96,8 +100,8 @@ import re
 import datetime
 import urllib
 import ntpath
-import lib_common_1 as lib_cm
-import lib_mpd as lib_mp
+#import lib_common_1 as lib_cm
+#import lib_mpd as lib_mp
 
 
 class app_config(object):
@@ -113,7 +117,7 @@ class app_config(object):
         self.app_windows = "no"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         self.app_errorfile = "error_play_out_logging.log"
         # errorlist
         self.app_errorslist = []
@@ -129,9 +133,11 @@ class app_config(object):
             "fuer PlayOut-Logging nicht erreichbar")
         self.app_errorslist.append(u"Externes PlayOut-Logging ausgesetzt, "
             "Webserver nicht erreichbar")
-        self.app_errorslist.append(u"Fehler bei MPD-Connect")
-        self.app_errorslist.append(u"Fehler bei MPD-Song-Abfrage")
-        self.app_errorslist.append(u"Fehler bei MPD-Status-Abfrage")
+        self.app_errorslist.append(u"PlayOut-Logging-Fehler bei MPD-Connect")
+        self.app_errorslist.append(u"PlayOut-Logging-Fehler "
+            "bei MPD-Song-Abfrage")
+        self.app_errorslist.append(u"PlayOut-Logging-Fehler "
+            "bei MPD-Status-Abfrage")
         # anzahl parameter list 0
         self.app_config_params_range = 10
         # params-type-list, typ entsprechend der params-liste in der config
@@ -153,10 +159,11 @@ class app_config(object):
         self.log_author = None
         self.log_title = None
         self.log_songid = None
-        self.log_filename = None
+        #self.log_filename = None
 
 
 def load_extended_params():
+    """load extended params"""
     # Times
     ext_params_ok = True
     db.ac_config_times = db.params_load_1a(ac, db, "PO_Time_Config_1")
@@ -187,7 +194,7 @@ def load_extended_params():
 
 
 def check_source(self, c_time, time_now):
-    """detect sources and assig transmittimes """
+    """detect sources and assign transmittimes """
     # source-switch-from user_logs
     source_log = db.read_tbl_row_with_cond_log(ac, db,
             "USER_LOGS", "USER_LOG_ACTION, USER_LOG_TIME",
@@ -357,15 +364,16 @@ def check_mpd_log(self, time_now, log_data):
         return None
 
     # by stream, it could be, that id is eqal but title not
-    if "file" in current_song:
-        log_filename = current_song["file"]
-    else:
-        log_filename = "nicht vorhanden"
+    # no several ids in stream ar a mess, we will not display this
+    #if "file" in current_song:
+    #    log_filename = current_song["file"]
+    #else:
+    #    log_filename = "nicht vorhanden"
     lib_cm.message_write_to_console(ac, current_song["id"])
 
-    if (current_song["id"] == ac.log_songid
-                        and log_filename == ac.log_filename):
-
+    #if (current_song["id"] == ac.log_songid
+    #                    and log_filename == ac.log_filename):
+    if current_song["id"] == ac.log_songid:
         log_meldung_1 = ("Keine Aenderung des MPD-Song-Status... \n" +
                                 ac.log_author + " - " + ac.log_title)
         self.display_logging(log_meldung_1, None)
@@ -375,13 +383,13 @@ def check_mpd_log(self, time_now, log_data):
         ac.log_author = log_author_title[0]
         ac.log_title = log_author_title[1]
         ac.log_songid = current_song["id"]
-        ac.log_filename = log_filename
+        #ac.log_filename = log_filename
         ac.log_start = (str(time_now.date()) + " " + str(time_now.time())[0:8])
         return True
 
 
 def extract_from_stuff_after_match(stuff, match_string):
-    """Aus String Abschnitt extrahieren was nach match_string kommt """
+    """extract string after match_string """
     index_trenner = string.find(stuff, match_string)
     index_begin_offset = len(match_string)
     index_end = len(stuff)
@@ -400,7 +408,7 @@ def extract_from_stuff_after_match(stuff, match_string):
 
 def extract_from_stuff(stuff,
             match_string_1, offset_1, match_string_2, offset_2):
-    """ String aus Abschnitt rausholen """
+    """extract string """
     index_begin = string.find(stuff, match_string_1)
     if index_begin == -1:
         cut_off = "nix"
@@ -424,7 +432,7 @@ def extract_from_stuff(stuff,
 
 
 def upload_data_prepare():
-    """ Upload auf Webserver vorbereiten """
+    """prepare pload-data for webserver """
     # Bei I-Netfehler upload aussetzen
     if ac.app_counter_error > 3:
         db.write_log_to_db_a(ac, ac.app_errorslist[5], "x",
@@ -480,7 +488,7 @@ def upload_data_prepare():
 
 
 def work_on_data_from_log(time_now, log_data, load_from):
-    """Daten aus mAirlist-Logfile extrahieren"""
+    """extract data from logs"""
     lib_cm.message_write_to_console(ac, u"work_on_data_from_log")
     if load_from == "mairlist":
         log_author = extract_from_stuff(log_data, "&author=", 8, "&title=", 0)
@@ -499,7 +507,7 @@ def work_on_data_from_log(time_now, log_data, load_from):
                 log_filename = log_data["file"]
             else:
                 log_filename = ntpath.basename(log_data["file"])
-            ac.log_filename = log_filename
+        #    ac.log_filename = log_filename
         else:
             log_filename = ""
         if "artist" in log_data:
@@ -644,7 +652,7 @@ class my_form(Frame):
         self.listenID = self.after(500, self.lets_rock)
 
     def display_logging(self, log_meldung_1, log_meldung_2):
-        """Logging in Form zur Anzeige bringen """
+        """display messages in form, loading periodically """
         if log_meldung_1 is not None:
             self.text_label.config(text="Play-Out-Logging Nr: "
                 + str(ac.app_counter) + "  / Interval von "
