@@ -100,8 +100,8 @@ import re
 import datetime
 import urllib
 import ntpath
-#import lib_common_1 as lib_cm
-#import lib_mpd as lib_mp
+import lib_common_1 as lib_cm
+import lib_mpd as lib_mp
 
 
 class app_config(object):
