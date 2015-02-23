@@ -326,7 +326,6 @@ def erase_files_from_cloud_prepaere(roboting_sgs):
             lib_cm.message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return
-        print files_sendung_dest
         erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back)
     return
 
@@ -341,9 +340,7 @@ def erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back):
     for item in files_sendung_dest:
         if item[0:10] < c_date_back:
             try:
-                print "dele"
                 file_to_delete = path_dest_cloud + item
-                print file_to_delete
                 os.remove(file_to_delete)
                 log_message = u"geloescht: " + item
                 db.write_log_to_db(ac, log_message, "e")
@@ -363,7 +360,6 @@ def erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back):
 
 def lets_rock():
     """Hauptfunktion """
-    print "lets_rock "
     # Sendungen suchen, die bearbeitet werden sollen
     roboting_sgs = load_roboting_sgs()
     if roboting_sgs is None:
