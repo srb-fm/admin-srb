@@ -33,7 +33,7 @@ if ( isset($_POST['error_message']) ) {
 }
 
 $action_ok = "no";
-// Dateipruefung ja/nein
+// check file yes/no
 $file_exist_check = "yes";
 	
 // action pruefen	
@@ -54,12 +54,12 @@ if ( $action_ok == "yes" ) {
 		$id = $_POST['sg_id'];
 	}
 		
-	// Audiodatei pruefen oder nicht (nach Neuaufnahme nicht pruefen, da ja noch keine da sein kann)
+	// Check file or not (after new/add not checking, then, it can't be there)
 	if ( isset( $_GET['check_file'] ) ) {	
 		$file_exist_check = $_GET['check_file'];
 	}
 			
-	// action switchen
+	// switch action
 	if ( $id !="" ) { 
 		switch ( $action ) {
 		case "display":
@@ -72,18 +72,18 @@ if ( $action_ok == "yes" ) {
 				
 		case "check_delete":		
 			$message .= "Sendung löschen? ";
-			// erstsendung und wh pruefen!!!!!!!!!!!
+			// check first-broadcast or repetition for only dlete when no repetition exists
 			$tbl_row_sg_check_delete = db_query_sg_display_item_1($id);
 			if ( !$tbl_row_sg_check_delete ) { 
 				$message .= "Fehler bei Abfrage Sendung!"; 
 				$action_ok = "no";
 			} else { 
 				if ( rtrim($tbl_row_sg_check_delete->SG_HF_FIRST_SG) == "F" ) { 
-					// WH, kann geloescht werden
-					//header( "Location: sg_hf_detail.php?action=delete&sg_id=".$id."&kill_wh=T" );
+					// Is Reptition, can be deleted
 					header("Location: sg_hf_detail.php?action=delete&sg_id=".$id."&kill_wh=T&kill_possible=T");
+					exit;
 				} else {	
-					// ist ES, pruefen ob WH vorhanden
+					// is first-sg, check if repetition available
 					$c_query_condition_sg_wh = " SG_HF_CONTENT_ID =".$tbl_row_sg_check_delete->SG_HF_CONTENT_ID;
 					$db_result_sg_wh = db_query_list_items_1("SG_HF_CONTENT_ID", "SG_HF_MAIN", $c_query_condition_sg_wh);
 					$z = 0;
@@ -92,17 +92,19 @@ if ( $action_ok == "yes" ) {
 					}
 
 					if ( $z > 1 ) {
-						//$message .= "Wiederholungen vorhanden, löschen nicht möglich!";
+						//Repetition, can't delete!
 						header("Location: sg_hf_detail.php?action=delete&sg_id=".$id."&kill_possible=F");
+						exit;
 					} else {
-						// pruefen ob Manuskript vorhanden
-						//$tbl_row_sg->SG_HF_CONT_ID
+						// if Manuskript avilable?
 						$tbl_row_mk = db_query_display_item_1("SG_MANUSKRIPT", "SG_MK_SG_CONT_ID = ".$tbl_row_sg_check_delete->SG_HF_CONTENT_ID);
 						if ( isset($tbl_row_mk->SG_MK_ID )) { 
-							//zur Sendung ist ein Manuskript vorhanden, loeschen nicht moeglich
+							//yes, can't delete
 							header("Location: sg_hf_detail.php?action=delete&sg_id=".$id."&kill_possible=F");
+							exit;
 						} else {
 							header("Location: sg_hf_detail.php?action=delete&sg_id=".$id."&kill_es=T&kill_possible=T");
+							exit;
 						}
 					}
 				}
@@ -118,7 +120,7 @@ if ( $action_ok == "yes" ) {
 
 		case "kill_wh":		
 			$message .= "Sendung löschen. ";
-			// pruefen ob bestaetigung passt
+			// correct?
 			$c_kill = db_query_load_item("USER_SECURITY", 0);
 
 			if ( $_POST['form_kill_code'] == trim($c_kill) ) {
@@ -137,7 +139,7 @@ if ( $action_ok == "yes" ) {
 				
 		case "kill_es":		
 			$message .= "Erstsendung löschen. ";
-			// pruefen ob bestaetigung passt
+			// correct?
 			$c_kill = db_query_load_item("USER_SECURITY", 0);
 
 			if ( $_POST['form_kill_code'] == trim($c_kill) ) {
@@ -187,8 +189,12 @@ if ( $action_ok == "yes" ) {
 					}
 				}
 				// load access mpc
-				$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config'");
-				$cmd = $tbl_row_mpd_config->USER_SP_PARAM_2." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_3." add ".$po_path."/".$po_filename;
+				$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config_Server_3'");
+				if ( substr($po_filename, 0, 5) == "http:" ) {
+					$cmd = $tbl_row_mpd_config->USER_SP_PARAM_2." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_3." add ".$po_filename;
+				} else {
+					$cmd = $tbl_row_mpd_config->USER_SP_PARAM_2." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_3." add ".$po_path."/".$po_filename;
+				}
 				$message .= shell_exec($cmd); 
 			} else {
 				$message .= "Keine Playberechtigung!";
@@ -201,8 +207,8 @@ if ( $action_ok == "yes" ) {
 	$message .= "Keine Anweisung. Nichts zu tun..... "; 
 }
 
-// Ende $action_ok == "yes" 
-// $action_ok kann auf "no" gesetzt worden sein, deshalb weiter mit neuer Prüfung
+// End $action_ok == "yes" 
+// if $action_ok "no", continue checking  
 		
 if ( $action_ok == "yes" ) {
 	$tbl_row_sg = db_query_sg_display_item_1($id);
@@ -222,7 +228,7 @@ if ( $action_ok == "yes" ) {
 		}
 			
 	}
-	// Pfade fuer flashplayer-audios etc. aus einstellungen
+	// Paths flashplayer-audios from Settings
 	$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF_1'");
 }
 ?>
@@ -390,8 +396,8 @@ if ( $user_rights == "yes" ) {
 	$file_exist = "no";
 	$z = 0;
 			
-	// Datei pruefen oder nicht
-	// wird oben schon auf no gesetzt wenn wir von edit-neuaufnahme kommen 			
+	// Check file or not
+	// is no by comming from add/new 			
 	if ( $tbl_row_sg->SG_HF_CONT_FILENAME == "Keine_Audiodatei" ) {
 		$file_exist_check = "no";
 	}
@@ -411,7 +417,7 @@ if ( $user_rights == "yes" ) {
 			$archiv_sg_year = db_query_sg_load_year_by_id($tbl_row_sg->SG_HF_CONT_SG_ID)."/";
 		}
 				
-		// pfad zusammenbauen
+		// pfaths
 		if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" or rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
 			// FLASHPLAYER				
 			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$tbl_row_sg->SG_HF_CONT_FILENAME;
@@ -451,6 +457,7 @@ if ( $user_rights == "yes" ) {
 
 			
 	if ( $file_exist == "yes" ) {
+		// old flash-player
 		//echo "<br><div class='space_line_1'> </div>";
 		//echo "<p id='audioplayer_1'>Alternative content</p>";  
 		//echo "<script type='text/javascript'>";
@@ -634,8 +641,7 @@ echo '</div>';
 		echo "</div>"; // content wieder zu
 	}
 			
-	// Wiederholungen Ende
-	//echo $_SESSION["log_rights"]."x";	
+	// Repetition End
 } // user_rights
 echo "</div><!--class=column_right-->";
 ?>
