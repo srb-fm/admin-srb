@@ -146,7 +146,7 @@ class app_config(object):
         self.app_config_develop = u"PO_Scheduler_Config_e"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # using develop-params
         self.app_develop = "no"
         self.app_windows = "no"
@@ -667,9 +667,6 @@ def check_day_options_of_music_sources(music_source_options):
     if len(music_source_options[2]) > 1:
         # single number means single day
         # more means e.g. 23: day 2 and 3 of week
-        #if len(music_source_options[2]) == 2:
-            # two different days
-            #print "more options come here"
         found_current_day = None
         for day in music_source_options[2]:
             if int(day) == datetime.datetime.today().weekday():
@@ -928,6 +925,25 @@ def mpd_setup():
     db.write_log_to_db(ac, "MPD Setup durchgefuehrt", "k")
 
 
+def mpd_play():
+    """mpd must continue playing"""
+    mpd_result = mpd.connect(db, ac)
+    if mpd_result is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[5], "x",
+                                                    "write_also_to_console")
+        return
+    current_status = check_mpd_stat("status")
+    if current_status != "play":
+        mpd.exec_command(db, ac, "play", None)
+        mpd_fade_in()
+        db.write_log_to_db(ac, "MPD - Play", "x")
+
+    mpd.disconnect()
+
+    ac.app_msg_1 = "Check if MPD is playing..." + "\n"
+    db.write_log_to_db(ac, "Check if MPD is playing", "k")
+
+
 class my_form(Frame):
     """Form"""
     def __init__(self, master=None):
@@ -1059,6 +1075,18 @@ class my_form(Frame):
                 db.write_log_to_db_a(ac,
                             "Vorbereitung Rotation abgeschlossen", "i",
                                              "write_also_to_console")
+
+        # check if mpd is playing
+        if time_now.minute == 10:
+            if time_now.second == 30:
+                mpd_play()
+        if time_now.minute == 35:
+            if time_now.second == 30:
+                mpd_play()
+        if time_now.minute == 54:
+            if time_now.second == 30:
+                mpd_play()
+
 
         # reload mpd
         # this is for freeing mpd.log to rotate them
