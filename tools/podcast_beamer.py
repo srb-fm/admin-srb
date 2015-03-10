@@ -78,31 +78,30 @@ class app_config(object):
         # app_config
         self.app_id = "014"
         self.app_desc = u"Podcast_Beamer"
-        # schluessel fuer config in db
+        # key for config in db
         self.app_config = u"PC_Beamer_Config_4"
         self.app_config_develop = u"PC_Beamer_Config_1_e"
-        # anzahl parameter
+        # amount parameter
         self.app_config_params_range = 12
         self.app_errorfile = "error_podcast_beamer.log"
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # dev-mod (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # show messages on console
         self.app_debug_mod = "no"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"E 0 "
-            "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"E 1 "
-            "Fehler beim Verbinden zum Podcast-ftp-Server")
-        self.app_errorslist.append(u"E 2 "
-            "Fehler beim Recodieren der Podcast-mp3-Datei")
-        self.app_errorslist.append(u"E 3 "
-            "Recodierte Podcast-mp3-Datei nicht gefunden")
-        self.app_errorslist.append(u"E 4 "
-            "Fehler beim Loeschen der Temp-Podcast-Datei")
-        self.app_errorslist.append(u"E 5 "
-            "Podcast-mp3-Datei in Play-Out nicht gefunden:")
-        # params-type-list, typ entsprechend der params-liste in der config
+        self.app_errorslist.append("Parameter-Typ oder Inhalt stimmt nicht ")
+        self.app_errorslist.append(
+                        "Fehler beim Verbinden zum Podcast-ftp-Server")
+        self.app_errorslist.append(
+                        "Fehler beim Recodieren der Podcast-mp3-Datei")
+        self.app_errorslist.append(
+                        "Recodierte Podcast-mp3-Datei nicht gefunden")
+        self.app_errorslist.append(
+                        "Fehler beim Loeschen der Temp-Podcast-Datei")
+        self.app_errorslist.append(
+                        "Podcast-mp3-Datei in Play-Out nicht gefunden:")
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -117,7 +116,6 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
-
 
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
@@ -145,7 +143,6 @@ def load_podcast():
         db.write_log_to_db(ac, log_message, "t")
         return sendung_data
 
-    # log schreiben
     log_message = (u"Podcast-Sendungen vorhanden für: "
                    + str(ac.time_target.date()))
     db.write_log_to_db(ac, log_message, "t")
@@ -155,15 +152,13 @@ def load_podcast():
 def encode_file(podcast_sendung):
     """recode mp3-files with lower rate"""
     lib_cm.message_write_to_console(ac, u"encode_file")
-    # damit die uebergabe der befehle richtig klappt
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # all cmds must be in the right charset
     c_lame_encoder = db.ac_config_1[2].encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, u"type c_lame_encoder")
     lib_cm.message_write_to_console(ac, type(c_lame_encoder))
     lib_cm.message_write_to_console(ac, u"type podcast_sendung[1]")
     lib_cm.message_write_to_console(ac, type(podcast_sendung[1]))
 
-    #c_id3_title = "--tt"
     c_id3_title = u"--tt".encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, u"type( c_id3_title )")
     lib_cm.message_write_to_console(ac, type(c_id3_title))
@@ -173,7 +168,7 @@ def encode_file(podcast_sendung):
     c_id3_title_value = c_id3_title_value_uni.encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, u"type( c_id3_title_value )")
     lib_cm.message_write_to_console(ac, type(c_id3_title_value))
-    #c_id3_author = "--ta"
+
     c_id3_author = u"--ta".encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, u"type( c_id3_author )")
     lib_cm.message_write_to_console(ac, type(c_id3_author))
@@ -185,16 +180,12 @@ def encode_file(podcast_sendung):
     lib_cm.message_write_to_console(ac, type(c_id3_author_value))
 
     # source sendung
-    #path_sendung_source = db.ac_config_1[4]
     path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[5])
-
-    #c_source_file = path_sendung_source + podcast_sendung[0]
     c_source_file = (path_sendung_source.encode(ac.app_encode_out_strings)
                      + podcast_sendung[0].encode(ac.app_encode_out_strings))
     lib_cm.message_write_to_console(ac, c_source_file)
 
     # source infotime und mag
-    #path_it_mg_source = db.ac_config_1[3]
     path_it_mg_source = lib_cm.check_slashes(ac, db.ac_config_1[4])
 
     # infotime
@@ -220,10 +211,8 @@ def encode_file(podcast_sendung):
         return None
 
     # dest recoded file
-    #path_dest = db.ac_config_1[5]
     path_dest = lib_cm.check_slashes(ac, db.ac_config_1[6])
 
-    #c_dest_file = path_dest + podcast_sendung[0]
     c_dest_file = (path_dest.encode(ac.app_encode_out_strings)
                    + podcast_sendung[0].encode(ac.app_encode_out_strings))
     lib_cm.message_write_to_console(ac, c_dest_file)
@@ -246,24 +235,24 @@ def encode_file(podcast_sendung):
                         c_source_file, c_dest_file],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE).communicate()
-    #print p
+
     lib_cm.message_write_to_console(ac, u"returncode 0")
     lib_cm.message_write_to_console(ac, p[0])
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
+    # search for success-mesg, if not found: -1
     n_encode_percent = string.find(p[1], "(100%)")
     n_encode_percent_1 = string.find(p[1], "(99%)")
     lib_cm.message_write_to_console(ac, n_encode_percent)
     c_complete = "no"
 
-    # bei kurzen files kommt die 100% meldung nicht,
-    # deshalb auch 99% durchgehen lassen
+    # by short files 100% will not be reached,
+    # therfor also 99%
     if n_encode_percent == -1:
-        # 100% nicht erreicht
+        # 100% not reached
         if n_encode_percent_1 != -1:
-            # aber 99
+            # but 99
             c_complete = "yes"
     else:
         c_complete = "yes"
@@ -288,7 +277,6 @@ def check_files_online(podcast_sendungen):
     try:
         ftp = ftplib.FTP(db.ac_config_1[8])
     except (socket.error, socket.gaierror):
-        #print 'ERROR: cannot reach "%s"' % db.ac_config_1[7]
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
                                         + db.ac_config_1[8])
         return None
@@ -309,8 +297,8 @@ def check_files_online(podcast_sendungen):
     ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
 
-    # liste enthaelt alle online-dateien,
-    # nun audiodateien herausfiltern (nummernblock am anfang)
+    # liste of all online-files,
+    # filter out admin-srb audio-files (numbers in the beginning)
     files_online_1 = []
     for item in files_online:
         if (re.match("[0-9]{7}", item) is not None):
@@ -326,7 +314,7 @@ def check_files_online(podcast_sendungen):
     lib_cm.message_write_to_console(ac, files_podcast)
     files_offline = list(set(files_podcast).difference(set(files_online_1)))
     lib_cm.message_write_to_console(ac, files_offline)
-    # nur den ersten titel mitnehmen
+    # take only thirst title
     if (len(files_offline) > 0):
         file_offline = files_offline[0]
     else:
@@ -342,7 +330,6 @@ def upload_file(podcast_sendung):
     try:
         ftp = ftplib.FTP(db.ac_config_1[8])
     except (socket.error, socket.gaierror):
-        #print 'ERROR: cannot reach "%s"' % db.ac_config_1[7]
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
                                         + db.ac_config_1[8])
         return None
@@ -387,7 +374,6 @@ def delete_files_online():
     try:
         ftp = ftplib.FTP(db.ac_config_1[8])
     except (socket.error, socket.gaierror):
-        #print 'ERROR: cannot reach "%s"' % db.ac_config_1[7]
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
                                         + db.ac_config_1[8])
         return None
@@ -395,7 +381,7 @@ def delete_files_online():
     ftp.login(db.ac_config_1[9], db.ac_config_1[10])
     ftp.cwd(db.ac_config_1[11])
 
-    # online-files einlesen
+    # read online-files
     files_online = []
     try:
         files_online = ftp.nlst()
@@ -409,15 +395,15 @@ def delete_files_online():
     #ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
 
-    # liste enthaelt alle online-dateien,
-    # nun audiodateien herausfiltern (nummernblock am anfang)
+    # liste of all online-files,
+    # filter out admin-srb audio-files (numbers in the beginning)
     files_online_1 = []
     for item in files_online:
         if (re.match("[0-9]{7}", item) is not None):
-            # Zeitstempel der Datei ermitteln
+            # timestamp of file
             ftp_cmd = "MDTM " + item
             ftp_mod_time = ftp.sendcmd(ftp_cmd)
-            # reply code wegschneiden und mit Dateiname in Liste speichern
+            # cut reply code and save with filename in list
             if ftp_mod_time[:3] == "213":
                 ftp_mod_time = ftp_mod_time[3:].strip()
                 ftp_time_file = ftp_mod_time + item
@@ -427,12 +413,12 @@ def delete_files_online():
 
     lib_cm.message_write_to_console(ac, files_online_1)
     lib_cm.message_write_to_console(ac, u"sort..........")
-    # Dateiliste anhand der Zeitstempel/Dateinamen-Nummern sortieren
+    # sort filelist on timestamp/filenamenumbers
     files_online_1.sort()
     lib_cm.message_write_to_console(ac, files_online_1)
 
     n_anzahl_online = 0
-    # pruefen wieviel online sind
+    # check how much is online
     for item in files_online_1:
         n_anzahl_online += 1
 
@@ -453,9 +439,6 @@ def delete_files_online():
             if zz >= n_anzahl_files_to_delete:
                 break
     else:
-        #log_message = u"Keine Podcasts auf dem Server zu loeschen.."
-        #lib_cm.message_write_to_console( ac, log_message )
-        #db.write_log_to_db_log( ac,  log_message, "c" )
         db.write_log_to_db_a(ac, u"Keine Podcasts auf dem Server zu loeschen..",
                               "c", "write_also_to_console")
 
@@ -473,10 +456,10 @@ def lets_rock():
         db.write_log_to_db(ac, u"Zur Zeit kein neuer Podcast vorgesehen", "t")
         return
 
-    # pruefen was noch nicht hochgeladen ist
+    # check whats not online
     podcast_offline = check_files_online(podcast_sendungen)
     if podcast_offline is None:
-        # Error 001 Fehler beim Verbinden zum ftp-Server
+        # Error 1
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
             "write_also_to_console")
         return
@@ -486,7 +469,7 @@ def lets_rock():
             "write_also_to_console")
         return
 
-    # eine sendung aus offline-sendungen rausholen
+    # take one item from offlines
     podcast_sendung = ()
     for item in podcast_sendungen:
         if item[12] == podcast_offline:
@@ -499,8 +482,8 @@ def lets_rock():
     # recoden
     podcast_temp = encode_file(podcast_sendung)
     if podcast_temp is None:
-        # mit naechstem file versuchen
-        # eine sendung aus offline-sendungen rausholen
+        # try with next file
+        # take one item from offlines
         podcast_sendung = ()
         for item in podcast_sendungen:
             if item[12] == podcast_offline:
@@ -518,10 +501,10 @@ def lets_rock():
             # nothing else to do
             return
 
-        # recoden 2. versuch mit naechstem file
+        # recoden nr 2. with next file
         podcast_temp_1 = encode_file(podcast_sendung)
         if podcast_temp_1 is None:
-            # Error 002 Fehler beim Recodieren der mp3-Datei
+            # Error 2
             db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
                 "write_also_to_console")
             return
@@ -529,29 +512,29 @@ def lets_rock():
     # uploaden was noch nicht oben ist
     upload_ok = upload_file(podcast_sendung)
     if upload_ok is None:
-        # Error 001 Fehler beim Verbinden zum ftp-Server
+        # Error 1
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
             "write_also_to_console")
         return
 
     if upload_ok == "temporaere Datei nicht vorhanden":
-        # Error 003 recodierte mp3-Datei nicht gefunden
+        # Error 3
         db.write_log_to_db_a(ac, ac.app_errorslist[3], "x",
             "write_also_to_console")
         return
 
-    # temp_file fuer encoder wieder loeschen
+    # delete temp_file from encode
     delete_temp_ok = lib_cm.erase_file_a(ac, db, podcast_temp,
         u"Temp-Podcast-Datei geloescht ")
     if delete_temp_ok is None:
-        # Error 004 Fehler beim Loeschen der Temp-Podcast-Datei
+        # Error 4
         db.write_log_to_db_a(ac, ac.app_errorslist[4], "x",
             "write_also_to_console")
 
-    # alte files auf ftp loeschen
+    # delete old online-files
     delete_ok = delete_files_online()
     if delete_ok is None:
-        # Error 001 Fehler beim Verbinden zum ftp-Server
+        # Error 1
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
             "write_also_to_console")
 
