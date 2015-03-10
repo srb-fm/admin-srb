@@ -32,11 +32,12 @@ Ueberzaehlige alte Podcasts werden auf vom Webspace geloescht.
 Auf dem Webserver sorgt ein weiteres Script fuer die Generierung des RSS-Feeds.
 
 Fehlerliste:
-Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 Fehler beim Verbinden zum Podcast-ftp-Server
-Error 002 Fehler beim Recodieren der Podcast-mp3-Datei
-Error 003 Recodierte Podcast-mp3-Datei nicht gefunden
-Error 004 Fehler beim Loeschen der Temp-Podcast-Datei
+E 0 Parameter-Typ oder Inhalt stimmt nicht
+E 1 Fehler beim Verbinden zum Podcast-ftp-Server
+E 2 Fehler beim Recodieren der Podcast-mp3-Datei
+E 3 Recodierte Podcast-mp3-Datei nicht gefunden
+E 4 Fehler beim Loeschen der Temp-Podcast-Datei
+E 5 Podcast-mp3-Datei in Play-Out nicht gefunden:
 
 Parameterliste:
 Param 1: On/Off Switch
@@ -73,7 +74,7 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "014"
         self.app_desc = u"Podcast_Beamer"
@@ -83,18 +84,24 @@ class app_config(object):
         # anzahl parameter
         self.app_config_params_range = 12
         self.app_errorfile = "error_podcast_beamer.log"
+        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        self.app_develop = "no"
+        # meldungen auf konsole ausgeben
+        self.app_debug_mod = "no"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
+        self.app_errorslist.append(u"E 0 "
             "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
+        self.app_errorslist.append(u"E 1 "
             "Fehler beim Verbinden zum Podcast-ftp-Server")
-        self.app_errorslist.append(u"Error 002 "
+        self.app_errorslist.append(u"E 2 "
             "Fehler beim Recodieren der Podcast-mp3-Datei")
-        self.app_errorslist.append(u"Error 003 "
+        self.app_errorslist.append(u"E 3 "
             "Recodierte Podcast-mp3-Datei nicht gefunden")
-        self.app_errorslist.append(u"Error 004 "
+        self.app_errorslist.append(u"E 4 "
             "Fehler beim Loeschen der Temp-Podcast-Datei")
+        self.app_errorslist.append(u"E 5 "
+            "Podcast-mp3-Datei in Play-Out nicht gefunden:")
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -111,10 +118,7 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
 
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
-        self.app_develop = "no"
-        # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -124,7 +128,7 @@ class app_config(object):
 
 
 def load_podcast():
-    """Pruefen ob Sendungen als Podcast zur Verfuegung stehen"""
+    """check for Podcasts in db"""
     lib_cm.message_write_to_console(ac, u"load_podcast")
 
     db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND "
@@ -149,7 +153,7 @@ def load_podcast():
 
 
 def encode_file(podcast_sendung):
-    """mp3-files mit geringerer Bitrate encoden"""
+    """recode mp3-files with lower rate"""
     lib_cm.message_write_to_console(ac, u"encode_file")
     # damit die uebergabe der befehle richtig klappt
     # muessen alle cmds im richtigen zeichensatz encoded sein
@@ -209,6 +213,12 @@ def encode_file(podcast_sendung):
     lib_cm.message_write_to_console(ac, u"type(c_source_file)")
     lib_cm.message_write_to_console(ac, type(c_source_file))
 
+    if not os.path.isfile(c_source_file):
+        db.write_log_to_db_a(ac, ac.app_errorslist[5] + " "
+                + podcast_sendung[0].encode(ac.app_encode_out_strings), "x",
+            "write_also_to_console")
+        return None
+
     # dest recoded file
     #path_dest = db.ac_config_1[5]
     path_dest = lib_cm.check_slashes(ac, db.ac_config_1[6])
@@ -264,13 +274,15 @@ def encode_file(podcast_sendung):
         lib_cm.message_write_to_console(ac, "ok")
         return c_dest_file
     else:
-        log_message = u"recode_file Error: " + c_source_file
-        db.write_log_to_db(ac, log_message, "x")
+        #log_message = u"recode_file Error: " + c_source_file
+        #db.write_log_to_db(ac, log_message, "x")
+        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+            "write_also_to_console")
         return None
 
 
 def check_files_online(podcast_sendungen):
-    """Pruefen welche Podcasts schon online sind"""
+    """check what's online"""
     lib_cm.message_write_to_console(ac, u"check_files_online")
 
     try:
@@ -325,7 +337,7 @@ def check_files_online(podcast_sendungen):
 
 
 def upload_file(podcast_sendung):
-    """ Dateien hochladen """
+    """ upload files"""
     lib_cm.message_write_to_console(ac, u"upload_file")
     try:
         ftp = ftplib.FTP(db.ac_config_1[8])
@@ -370,7 +382,7 @@ def upload_file(podcast_sendung):
 
 
 def delete_files_online():
-    """ Alte Dateien auf dem Webspace loeschen """
+    """delete old files at Webspace"""
     lib_cm.message_write_to_console(ac, u"delete_files_online")
     try:
         ftp = ftplib.FTP(db.ac_config_1[8])
@@ -452,11 +464,10 @@ def delete_files_online():
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """Mainfunction """
     print "lets_rock "
 
-    # sendungen holen die fuer podcast vorgesehen
-    #podcast_sendungen = load_podcast(ac)
+    # load from db
     podcast_sendungen = load_podcast()
     if podcast_sendungen is None:
         db.write_log_to_db(ac, u"Zur Zeit kein neuer Podcast vorgesehen", "t")
@@ -484,27 +495,28 @@ def lets_rock():
                                item[4].strip(), item[5].strip())
 
     lib_cm.message_write_to_console(ac, podcast_sendung)
-
+    podcast_sendung_temp = podcast_sendung
     # recoden
     podcast_temp = encode_file(podcast_sendung)
     if podcast_temp is None:
-        # Error 002 Fehler beim Recodieren der mp3-Datei
-        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
-            "write_also_to_console")
-        #return
-
         # mit naechstem file versuchen
         # eine sendung aus offline-sendungen rausholen
         podcast_sendung = ()
         for item in podcast_sendungen:
             if item[12] == podcast_offline:
                 # nicht das vorige file nochmal
-                if item[12] != podcast_sendung[0]:
+                print "podcast_sendung"
+                print podcast_sendung
+                if item[12] != podcast_sendung_temp[0]:
                     # filename, titel, vorname, name, infotime, magazin
                     podcast_sendung = (item[12], item[11], item[14],
                                 item[15], item[4].strip(), item[5].strip())
 
         lib_cm.message_write_to_console(ac, podcast_sendung)
+
+        if len(podcast_sendung) == 0:
+            # nothing else to do
+            return
 
         # recoden 2. versuch mit naechstem file
         podcast_temp_1 = encode_file(podcast_sendung)
