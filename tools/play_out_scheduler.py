@@ -885,21 +885,21 @@ def mpd_fade_out():
     """fade player-volume to 0%"""
     mpd.exec_command(db, ac, "vol", "-5")
     sleep(0.100)
+    mpd.exec_command(db, ac, "vol", "-5")
+    sleep(0.150)
+    mpd.exec_command(db, ac, "vol", "-10")
+    sleep(0.150)
+    mpd.exec_command(db, ac, "vol", "-10")
+    sleep(0.100)
     mpd.exec_command(db, ac, "vol", "-10")
     sleep(0.100)
     mpd.exec_command(db, ac, "vol", "-15")
     sleep(0.100)
-    mpd.exec_command(db, ac, "vol", "-10")
-    sleep(0.100)
-    mpd.exec_command(db, ac, "vol", "-10")
-    sleep(0.100)
     mpd.exec_command(db, ac, "vol", "-15")
     sleep(0.100)
     mpd.exec_command(db, ac, "vol", "-15")
     sleep(0.100)
-    mpd.exec_command(db, ac, "vol", "-10")
-    sleep(0.100)
-    mpd.exec_command(db, ac, "vol", "-10")
+    mpd.exec_command(db, ac, "vol", "-15")
     db.write_log_to_db_a(ac, "Fade out", "t", "write_also_to_console")
 
 
@@ -1087,7 +1087,6 @@ class my_form(Frame):
             if time_now.second == 30:
                 mpd_play()
 
-
         # reload mpd
         # this is for freeing mpd.log to rotate them
         if time_now.hour == 4:
@@ -1112,10 +1111,9 @@ if __name__ == "__main__":
     db.write_log_to_db(ac, ac.app_desc + u" gestartet", "a")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
-    #param_check_counter = 0
 
     if db.ac_config_1 is not None:
-        # Haupt-Params pruefen
+        # check main-params
         param_check = lib_cm.params_check_1(ac, db)
         if param_check is not None:
             load_extended_params_ok = load_extended_params()
