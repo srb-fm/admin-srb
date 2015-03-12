@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script is for installing server-packages.
+# Some of them must be configured later.
 # Dieses kleine Script uebernimmt die Instalaltion von Paketen
 # fuer den srb-admin-server
 # Bei einigen ist eine spaetere Configuration noetig
@@ -8,11 +10,11 @@
 # Copyright (C) Joerg Sorge joergsorge@gmail.com
 # 2012-09-17
 
-echo "SRB-Admin-Server Paketinstallation..."
+echo "Admin-SRB-Server Packageinstall..."
 
 sudo apt-get install \
 ntp php5-cli php5-dev php-pear \
-phpmyadmin vsftpd pgadmin3 \
+phpmyadmin vsftpd mpc \
 python-tk python-mutagen python-setuptools \
 lame mp3val libid3-tools mp3gain sox ffmpeg mp3info \
 darkice id3v2 \
@@ -21,15 +23,15 @@ synaptic gnome-schedule git
 
 sudo pear install HTTP_Download
 
-echo "Tweepy von git laden..."
+echo "Load Tweepy from git ..."
 git clone https://github.com/tweepy/tweepy.git
 
-echo "Tweepy installieren"
+echo "Install Tweepy"
 cd ~/tweepy
 sudo python setup.py install
 
-echo "Tweepy aufraeumen"
+echo "Clean up Tweepy-Temp"
 sudo rm -rf ~/tweepy
 
-echo "...abgeschlossen"
+echo "...finish"
 exit
