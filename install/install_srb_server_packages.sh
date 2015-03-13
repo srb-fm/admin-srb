@@ -24,6 +24,12 @@ curl gawk links libtranslate-bin
 
 sudo pear install HTTP_Download
 
+echo "Load ez_setup.py.."
+wget https://bootstrap.pypa.io/ez_setup.py -O - | sudo python
+
+echo "Install pip"
+sudo easy_install pip
+
 echo "Load Tweepy from git ..."
 git clone https://github.com/tweepy/tweepy.git
 
@@ -32,7 +38,8 @@ cd "$(pwd)"/tweepy
 sudo python setup.py install
 
 echo "Clean up Tweepy-Temp"
-sudo rm -rf "$(pwd)"/tweepy
+sudo rm -R "$(pwd)"/tweepy
+sudo rm "$(pwd)"/setuptools-14.0.zip
 
 echo "...finish"
 exit
