@@ -2,6 +2,8 @@
 
 # This script is for installing server-packages.
 # Some of them must be configured later.
+# Testet with ubuntu-server 14.04 in 2015
+#
 # Dieses kleine Script uebernimmt die Instalaltion von Paketen
 # fuer den srb-admin-server
 # Bei einigen ist eine spaetere Configuration noetig
