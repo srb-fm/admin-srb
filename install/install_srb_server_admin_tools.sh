@@ -45,7 +45,7 @@ sudo cp -R "$(pwd)"/admin-srb/intra/* ~/srb-intra/public_html
 sudo cp -R "$(pwd)"/admin-srb/intra/admin_srb_libs/ ~/srb-intra/cgi-bin/
 
 echo "Folder admin-srb will continue stay for later use of install-scripts..."
-
+echo "To complete intra-webserver-config check your webserver-config, especially the doc-root-definition"
 echo "...finish"
 read -p "Press Enter to close..."
 exit
