@@ -24,8 +24,11 @@ mkdir ~/srb-tools
 
 echo "Copy Tools"
 cp "$(pwd)"/admin-srb/tools/*.py ~/srb-tools
+cp "$(pwd)"/admin-srb/tools/*.sh ~/srb-tools
+cp "$(pwd)"/admin-srb/tools/*.template ~/srb-tools
 echo "Make Tools executable"
 chmod u+x ~/srb-tools/*.py
+chmod u+x ~/srb-tools/*.sh
 
 echo "Make Path ~/srb-intra"
 sudo mkdir /var/www/srb-intra
