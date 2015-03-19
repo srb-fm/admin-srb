@@ -30,20 +30,20 @@ echo "Make Tools executable"
 chmod u+x ~/srb-tools/*.py
 chmod u+x ~/srb-tools/*.sh
 
-echo "Make Path ~/srb-intra"
+echo "Make path ~/srb-intra"
 sudo mkdir /var/www/srb-intra
 echo "Change User:Group for srb-intra"
 sudo chown $USER:www-data /var/www/srb-intra
-echo "Make symbolic Link from /var/www/srb-intra to home"
+echo "Make symbolic link from /var/www/srb-intra to home"
 ln -s /var/www/srb-intra ~/
 mkdir ~/srb-intra/public_html
 mkdir ~/srb-intra/cgi-bin
 mkdir ~/srb-intra/cgi-bin/admin_srb_libs
 echo "Make Export-Path"
 sudo mkdir ~/srb-intra/public_html/admin_srb_export
-echo "Change User:Group for srb-export"
+echo "Change user:group for srb-export"
 sudo chown -R www-data:www-data ~/srb-intra/public_html/admin_srb_export
-echo "Copy Intra" 
+echo "Copy intra" 
 sudo cp -R "$(pwd)"/admin-srb/intra/* ~/srb-intra/public_html
 sudo cp -R "$(pwd)"/admin-srb/intra/admin_srb_libs/ ~/srb-intra/cgi-bin/
 
