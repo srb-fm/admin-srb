@@ -844,14 +844,14 @@ def create_music_playlist():
             audio_rotation_music = MP3(path_rotation_music + file_rotation)
             duration_minute_music += audio_rotation_music.info.length / 60
         except Exception, e:
-            #err_message = "Error by reading duration: %s" % str(e)
-            #lib_cm.message_write_to_console(ac, err_message)
             db.write_log_to_db_a(ac, ac.app_errorslist[4], "x",
+                                             "write_also_to_console")
+            db.write_log_to_db_a(ac, e, "x",
                                              "write_also_to_console")
         #lib_cm.message_write_to_console(ac, "Duration Music")
         #lib_cm.message_write_to_console(ac,
         #                    str(audio_rotation_music.info.length))
-    db.write_log_to_db(ac, "Musik-Playlist Rotation vorbereitet", "i")
+    db.write_log_to_db(ac, "Musik-Playlist Rotation vorbereitet", "t")
     if ac.app_msg_1 is not None:
         # append msg by first run
         ac.app_msg_1 = ac.app_msg_1 + "Music-Playlist createt..."
@@ -889,15 +889,15 @@ def mpd_fade_out():
     sleep(0.150)
     mpd.exec_command(db, ac, "vol", "-10")
     sleep(0.150)
+    mpd.exec_command(db, ac, "vol", "-15")
+    sleep(0.100)
+    mpd.exec_command(db, ac, "vol", "-15")
+    sleep(0.100)
+    mpd.exec_command(db, ac, "vol", "-15")
+    sleep(0.100)
     mpd.exec_command(db, ac, "vol", "-10")
     sleep(0.100)
     mpd.exec_command(db, ac, "vol", "-10")
-    sleep(0.100)
-    mpd.exec_command(db, ac, "vol", "-15")
-    sleep(0.100)
-    mpd.exec_command(db, ac, "vol", "-15")
-    sleep(0.100)
-    mpd.exec_command(db, ac, "vol", "-15")
     sleep(0.100)
     mpd.exec_command(db, ac, "vol", "-15")
     db.write_log_to_db_a(ac, "Fade out", "t", "write_also_to_console")
