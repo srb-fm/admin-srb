@@ -39,13 +39,13 @@ ln -s /var/www/srb-intra ~/
 mkdir ~/srb-intra/public_html
 mkdir ~/srb-intra/cgi-bin
 mkdir ~/srb-intra/cgi-bin/admin_srb_libs
-echo "Make Export-Path"
-sudo mkdir ~/srb-intra/public_html/admin_srb_export
-echo "Change user:group for srb-export"
-sudo chown -R www-data:www-data ~/srb-intra/public_html/admin_srb_export
+
 echo "Copy intra" 
 sudo cp -R "$(pwd)"/admin-srb/intra/* ~/srb-intra/public_html
 sudo cp -R "$(pwd)"/admin-srb/intra/admin_srb_libs/ ~/srb-intra/cgi-bin/
+
+echo "Change user:group for srb-export"
+sudo chown -R www-data:www-data ~/srb-intra/public_html/admin_srb_export
 
 echo "Folder admin-srb will continue stay for later use of install-scripts..."
 echo "To complete intra-webserver-config check your webserver-config, especially the doc-root-definition"
