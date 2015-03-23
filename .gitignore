@@ -7,7 +7,6 @@
 *.sh~
 *.py~
 *.log
-_.htaccess
 *.template~
 *.inc~
 *.shtml~
