@@ -467,9 +467,10 @@ def upload_data_prepare():
             'pf': db.ac_config_1[6],
             'pg': db.ac_config_1[7]}
 
-        lib_cm.message_write_to_console(ac, u"data_upload"
-                            + c_autor.encode('utf-8', 'ignore') + " "
-                            + c_title.encode('utf-8', 'ignore'))
+        # use is only for debugging!!
+        #lib_cm.message_write_to_console(ac, u"data_upload"
+        #                    + c_autor.encode('utf-8', 'ignore') + " "
+        #                    + c_title.encode('utf-8', 'ignore'))
         data_upload_encoded = urllib.urlencode(data_upload)
 
     web = lib_cm.upload_data(ac, db, db.ac_config_1[5], data_upload_encoded)
