@@ -82,7 +82,7 @@ Error 010 beim Lesen des Jingles
 Error 011 beim Lesen des Instrumentals
 Error 012 beim Lesen der Laenge von Instrumentals
 Error 013 beim Loeschen der Magazin-Playlist
-
+Error 014 Instrumental-Playlist Erstellung abgebrochen
 
 Funktionsweise
 1. Bereitstellen der vorgesehenen "normalen" Sendungen
@@ -163,6 +163,9 @@ class app_config(object):
             "beim Lesen der Laenge von Instrumentals")
         self.app_errorslist.append(u"Error 013 "
             "beim Loeschen der Magazin-Playlist")
+        self.app_errorslist.append(u"Error 014 "
+            "Instrumental-Playlist Erstellung abgebrochen")
+        self.random_file_error = 0
         # mAirlist-Playlist running under Windows
         self.pl_win_mairlist = "yes"
         # mpd-Playlist running under Windows
@@ -861,11 +864,16 @@ def read_instrumental():
 
     # Instrumentals sammeln bis erforderliche Gesamtlaenge erreicht
     while (duration_minute_instr < duration_minute_target):
+        if ac.random_file_error >= 5:
+            db.write_log_to_db(ac, ac.app_errorslist[11], "x")
+            ac.random_file_error = 0
+            return
         file_instrumental = lib_cm.read_random_file_from_dir(ac,
                                          db, path_instrumental)
         if file_instrumental is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[11], "x",
+            db.write_log_to_db_a(ac, ac.app_errorslist[14], "x",
                                              "write_also_to_console")
+            ac.random_file_error += 1
             continue
         else:
             # mairlist
