@@ -865,13 +865,13 @@ def read_instrumental():
     # Instrumentals sammeln bis erforderliche Gesamtlaenge erreicht
     while (duration_minute_instr < duration_minute_target):
         if ac.random_file_error >= 5:
-            db.write_log_to_db(ac, ac.app_errorslist[11], "x")
+            db.write_log_to_db(ac, ac.app_errorslist[14], "x")
             ac.random_file_error = 0
             return
         file_instrumental = lib_cm.read_random_file_from_dir(ac,
                                          db, path_instrumental)
         if file_instrumental is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[14], "x",
+            db.write_log_to_db_a(ac, ac.app_errorslist[11], "x",
                                              "write_also_to_console")
             ac.random_file_error += 1
             continue
