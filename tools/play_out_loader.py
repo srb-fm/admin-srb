@@ -519,12 +519,12 @@ def prepare_pl_broadcast(minute_start, list_result):
         if delete_pl_ok is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
                                              "write_also_to_console")
-        if list_result[0][0] == "nix":
-            log_message = "Keine normale Sendung! keine PL schreiben!"
-            lib_cm.message_write_to_console(ac, log_message)
-            return
+    if list_result[0][0] == "nix":
+        log_message = "Keine normale Sendung, keine PL schreiben!"
+        lib_cm.message_write_to_console(ac, log_message)
+        return
 
-    # PL write only if nessecary
+    # PL write only if necessary
     if len(list_result[0]) == 1 and ac.po_switch[nZ_po_switch] != "03":
         log_message = (u"Sendung nicht via Play-Out,"
                 " keine PL geschrieben: " + "".join(list_result[4]))
@@ -537,7 +537,11 @@ def prepare_pl_broadcast(minute_start, list_result):
 
 def write_playlist(
     path_filename, list_sendung_filename, list_sendung_duration, minute_start):
-    """Write Playlist"""
+    """
+    Write Playlist
+    mpd will take t from logging-db,
+    mairlist from file
+    """
     path_mediafile_mpd = lib_cm.check_slashes_a(ac,
                              db.ac_config_playlist[2], ac.pl_win_mpd)
     z = 0
