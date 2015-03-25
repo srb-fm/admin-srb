@@ -41,8 +41,8 @@ mkdir ~/srb-intra/cgi-bin
 mkdir ~/srb-intra/cgi-bin/admin_srb_libs
 
 echo "Copy intra" 
-sudo cp -R "$(pwd)"/admin-srb/intra/* ~/srb-intra/public_html
-sudo cp -R "$(pwd)"/admin-srb/intra/admin_srb_libs/ ~/srb-intra/cgi-bin/
+cp -R "$(pwd)"/admin-srb/intra/* ~/srb-intra/public_html
+cp -R "$(pwd)"/admin-srb/intra/admin_srb_libs/ ~/srb-intra/cgi-bin/
 
 echo "Change user:group for srb-export"
 sudo chown -R www-data:www-data ~/srb-intra/public_html/admin_srb_export
