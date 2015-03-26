@@ -15,7 +15,7 @@ Copyright (C) Joerg Sorge joergsorge at googell
 
 Dieses Script durchsucht die Logs nach Actions und Errors um sie zu twittern.
 
-Dateiname Script: log_tweeter.py
+Dateiname Script: log_tweeter_v3.py
 Schluesselwort fuer Einstellungen: Log_Tweeter_Config
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
@@ -48,6 +48,8 @@ Param 7: Twitter-User, die Personal-Messages mit Notifications bekommen
 
 
 Dieses Script wird zeitgesteuert alle 2 Minuten ausgefuehrt.
+
+Ab Tweepy-Version 3 ist diese Version zu verwenden!
 
 Man bedenke:
 Wer so tut, als bringe er die Menschen zum Nachdenken,
