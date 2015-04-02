@@ -12,10 +12,16 @@
 # db access user and pw for redundant server needed
 #
 # folders from config:
-# notice fullpath to conf for using with cron and different workdir
+# notice fullpath to conf for using with cron and different workdir!
+#
+#
+# change "my-user" to your user in next line!!!
 
 source /home/my-user/srb-backup-firebird/sync_db_daily_conf.sh
 
+running=$(date +'%Y-%m-%d-%H-%M-%S')
+echo "running sync_db_daily.sh..."
+echo $running
 
 cdate=$(date +"%Y_%m_%d")
 fb_db_sync="$fb_db_sync_pref$cdate.fdb"
@@ -23,9 +29,9 @@ fb_db_sync="$fb_db_sync_pref$cdate.fdb"
 if [ -f $fb_db_sync_log ]; then 
 	rm $fb_db_sync_log
 fi
-echo "running sync_db_daily.sh..."
+
 echo "Syncing db..."
-sudo gbak -c -v -user $fb_db_user -password $fb_db_pw $fb_db_backup $fb_db_location$fb_db_sync -y $fb_db_sync_log
+gbak -c -v -user $fb_db_user -password $fb_db_pw $fb_db_backup $fb_db_location$fb_db_sync -y $fb_db_sync_log
 
 echo "Set owner"
 chown firebird:firebird $fb_db_location$fb_db_sync
