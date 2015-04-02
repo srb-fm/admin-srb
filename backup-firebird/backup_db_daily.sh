@@ -14,7 +14,9 @@
 
 source /home/my-user/srb-backup-firebird/backup_db_daily_conf.sh
 
+running=$(date +'%Y-%m-%d-%H-%M-%S')
 echo "running backup_db_daily.sh..."
+echo $running
 
 if [ -f $fb_db_backup_log ]; then 
 	rm $fb_db_backup_log
