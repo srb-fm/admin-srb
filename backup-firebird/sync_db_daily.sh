@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script is for syncing firebird-db 
+# This script is for syncing firebird-db
 # from active server to redundant server
 #
 # It must be running on redundant server
@@ -26,7 +26,7 @@ echo $running
 cdate=$(date +"%Y_%m_%d")
 fb_db_sync="$fb_db_sync_pref$cdate.fdb"
 
-if [ -f $fb_db_sync_log ]; then 
+if [ -f $fb_db_sync_log ]; then
 	rm $fb_db_sync_log
 fi
 
@@ -37,7 +37,7 @@ echo "Set owner"
 chown firebird:firebird $fb_db_location$fb_db_sync
 
 echo "Customize Aliases ..."
-mv $fb_alias_location $fb_alias_location.$(date +'%y-%m-%d-%H-%M-%S')
+mv $fb_alias_location $fb_alias_location.$(date +'%Y-%m-%d-%H-%M-%S')
 bash -c "echo ""Admin_SRB_db = $fb_db_location$fb_db_sync"" >> /etc/firebird/2.5/aliases.conf"
 bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
 
