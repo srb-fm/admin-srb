@@ -22,7 +22,7 @@ if [ -f $fb_db_log_backup_log ]; then
 	rm $fb_db_log_backup_log
 fi
 
-gbak -b -v -user $fb_db_log_user -pass $fb_db_log_pw $fb_db_location$fb_db_log $fb_db_log_backup -y $fb_db_log_backup_log
+gbak -b -v -user $fb_db_user -pass $fb_db_pw $fb_db_location$fb_db_active $fb_db_backup -y $fb_db_log_backup_log
 
 echo "finish backup_db_log_weekly.sh..."
 exit
