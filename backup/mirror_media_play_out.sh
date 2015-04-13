@@ -19,7 +19,7 @@ echo "Mirror from play_out Sendung"
 rsync -r -t -v -s --delete --log-file=$path_file_log_sg $media_play_out_sendung $media_mirror_sendung
 
 echo "Mirror aus play_out Infotime"
-rsync -r -t -v -s --delete --log-file=$path_file_log_sg $media_play_out_sendung $media_mirror_sendung
+rsync -r -t -v -s --delete --log-file=$path_file_log_it $media_play_out_infotime $media_mirror_infotime
 
 echo "Mirror aus play_out Layout"
 rsync -r -t -v -s --delete --log-file=$path_file_log_layout $media_play_out_layout $media_mirror_layout
