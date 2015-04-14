@@ -19,7 +19,7 @@ git ntp php5-cli php5-dev php-pear \
 phpmyadmin vsftpd mpc \
 python-tk python-mutagen python-setuptools \
 lame mp3val libid3-tools mp3gain sox mp3info \
-darkice id3v2 \
+libsox-fmt-all darkice id3v2 \
 curl gawk links libtranslate-bin
 
 sudo pear install HTTP_Download
