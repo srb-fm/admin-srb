@@ -498,11 +498,15 @@ def work_on_data_from_log(time_now, log_data, load_from):
 
     if load_from == "mpd":
         lib_cm.message_write_to_console(ac, u"mpd")
+        id3_artist = None
+        id3_title = None
     #if test == "mpd":
         if "title" in log_data:
             log_title = lib_cm.convert_to_unicode(log_data["title"])
+            id3_title = log_title
         else:
             log_title = db.ac_config_1[4]
+            lib_cm.message_write_to_console(ac, u"no title-tag")
         if "file" in log_data:
             if log_data["file"][0:7] == "http://":
                 log_filename = log_data["file"]
@@ -513,8 +517,10 @@ def work_on_data_from_log(time_now, log_data, load_from):
             log_filename = ""
         if "artist" in log_data:
             log_author = lib_cm.convert_to_unicode(log_data["artist"])
+            id3_artist = log_author
         else:
             log_author = db.ac_config_1[3]
+            lib_cm.message_write_to_console(ac, u"no artist-tag")
 
     sendung_data = None
     sendung_data_search_for_id_only = "no"
@@ -585,34 +591,45 @@ def work_on_data_from_log(time_now, log_data, load_from):
                             log_author.encode('utf-8', 'ignore') + " - "
                             + log_title.encode('utf-8', 'ignore'))
     else:
-        lib_cm.message_write_to_console(ac, u"nix in db gefunden")
-        # pruefen ob autor und titel in logdatei vorhanden
-        author_title_ok = "no"
-        if log_author != "":
-            author_title_ok = "yes"
+        lib_cm.message_write_to_console(ac, u"nothing found in db")
+        # check if author and title in logfile
+        if load_from == "mairlist":
+            author_title_ok = "no"
+            if log_author != "":
+                author_title_ok = "yes"
 
-        if log_title != "":
-            author_title_ok = "yes"
+            if log_title != "":
+                author_title_ok = "yes"
 
-        if author_title_ok == "yes":
-            if load_from == "mairlist":
+            if author_title_ok == "yes":
                 # author und titel in logdatei
                 lib_cm.message_write_to_console(ac,
                                     u"daten_aus_mAirList_logfile")
                 log_author = lib_cm.convert_to_unicode(log_author)
                 log_title = lib_cm.convert_to_unicode(log_title)
-        else:
-            # keine daten in id3-author, deshalb aus filename nehmen
-            lib_cm.message_write_to_console(ac, u"daten_aus_filename")
-            log_title = log_title[11:len(log_title)]
-            #print log_title
-            # split in autor und title,
-            # klappt nur wenn ein unterstrich dazwischen
-            index_trenner = string.find(log_title, "_")
-            log_author = log_title[0:index_trenner]
-            log_title = extract_from_stuff_after_match(log_title, "_")
-            log_author = lib_cm.convert_to_unicode(log_author)
-            log_title = lib_cm.convert_to_unicode(log_title)
+            else:
+                # keine daten in id3-author, deshalb aus filename nehmen
+                lib_cm.message_write_to_console(ac, u"data from filename")
+                log_title = log_title[11:len(log_title)]
+                # split in author und title,
+                # klappt nur wenn ein unterstrich dazwischen
+                index_trenner = string.find(log_title, "_")
+                log_author = log_title[0:index_trenner]
+                log_title = extract_from_stuff_after_match(log_title, "_")
+                log_author = lib_cm.convert_to_unicode(log_author)
+                log_title = lib_cm.convert_to_unicode(log_title)
+
+        if load_from == "mpd":
+            if id3_artist is None and id3_title is None:
+                # no data from id3-author and title, take from filename
+                lib_cm.message_write_to_console(ac, u"data from filename")
+                # split in author and title,
+                # success only by pattern:
+                index_trenner = string.find(log_filename, " - ")
+                log_author = log_filename[0:index_trenner]
+                log_title = extract_from_stuff_after_match(log_filename, " - ")
+                log_author = lib_cm.convert_to_unicode(log_author)
+                log_title = lib_cm.convert_to_unicode(log_title)
 
     log_data_list = []
     #log_data_list.append(log_start)
