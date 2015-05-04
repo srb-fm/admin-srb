@@ -16,31 +16,30 @@
 // include getID3() library (can be in a different directory if full path is specified)
 require_once('../parts/get_id3/getid3/getid3.php');
 
-function read_length_write_tag ( $remotefilename, $pathfilename, $artist , $title, $audio_length, $set_mp3gain ){
+function read_length_write_tag ( $remotefilename, $pathfilename, $artist , $title, $audio_length, $set_mp3gain ) {
 
 $log_message = "start ".date('l jS \of F Y h:i:s A')."\n".$artist." - ".$title."\n";
 // Copy remote file locally to scan with getID3()
-//$remotefilename = 'http://ok.saalfeld.local/Media_HF/HF_Aktuell_Infotime/1052344_Schaller_Stausee_Flammen.mp3';
-//$remotefilename = 'http://ok.saalfeld.local/Media_HF/HF_Aktuell_Sendung/1053335_Pueschel_Live-Hendrik_2_09_09_09.mp3';
 
 if ( $fp_remote = fopen( $remotefilename, 'rb')) {
     $localtempfilename = tempnam('/tmp', 'getID3');
    
-	//   echo $localtempfilename."<br>";
-	if ( $fp_local = fopen( $localtempfilename, 'wb')) {
-        while ($buffer = fread( $fp_remote, 8192)) {
-            fwrite( $fp_local, $buffer); }
+	if ( $fp_local = fopen($localtempfilename, 'wb')) {
+        while ($buffer = fread($fp_remote, 8192)) {
+            fwrite( $fp_local, $buffer); 
+        }
         fclose($fp_local);
-	}}
+	}
+}
    
    fclose( $fp_remote );
 
-	// laenge holen
+	// get length
 	// Initialize getID3 engine
 	$getID3 = new getID3;
 	$ThisFileInfo = $getID3->analyze( $localtempfilename );
 
-	// vergleichen
+	// compare
 	$need_change_id3 = "no";
 	if ( get_time_in_hms ( @$ThisFileInfo['playtime_seconds'] ) != $audio_length ){ $need_change_id3 = "yes";  $log_message .= $need_change_id3." playtime \n". $audio_length." - ".get_time_in_hms ( @$ThisFileInfo['playtime_seconds'])."\n";}
 	if ( @$ThisFileInfo['tags']['id3v2']['title'][0] != $title ){ $need_change_id3 = "yes"; $log_message .= $need_change_id3." title\n";}
@@ -49,7 +48,7 @@ if ( $fp_remote = fopen( $remotefilename, 'rb')) {
 	$log_message .= $need_change_id3."\n";
 		
 	if ( $need_change_id3 = "yes" ){		
-		// tag schreiben
+		// write tag
 		//$TaggingFormat = 'UTF-8';
 		$TaggingFormat = 'ISO-8859-1';
 		$getID3->setOption(array('encoding'=>$TaggingFormat));
@@ -57,7 +56,7 @@ if ( $fp_remote = fopen( $remotefilename, 'rb')) {
 		require_once('../parts/get_id3/getid3/write.php');
 		$tagwriter = new getid3_writetags;
 		$tagwriter->filename       = $localtempfilename;
-		$tagwriter->tagformats     = array('id3v1', 'id3v2.3');
+		$tagwriter->tagformats     = array('id3v1', 'id3v2.3', 'ape');
 		// set various options (optional)
 		$tagwriter->overwrite_tags = true;
 		$tagwriter->tag_encoding   = $TaggingFormat;
@@ -68,18 +67,15 @@ if ( $fp_remote = fopen( $remotefilename, 'rb')) {
 		$TagData['artist'][]  = $artist;
 		$TagData['album'][]   = 'SRB - Das Buergerradio';
 		$TagData['year'][]    = date("Y");
-		//$TagData['genre'][]   = 'Rock';
-		//$TagData['comment'][] = 'excellent!';
-		//$TagData['track'][]   = '04/16';
+
 		
 		// save ape-tags for new writing: mp3gain
-		$ReplayGainTagsToPreserve = array('mp3gain_minmax', 'mp3gain_album_minmax', 'mp3gain_undo', 'replaygain_track_peak', 'replaygain_track_gain', 'replaygain_album_peak', 'replaygain_album_gain');
-		foreach ($ReplayGainTagsToPreserve as $rg_key) {
-			if (isset($ThisFileInfo['ape']['items'][strtolower($rg_key)]['data'][0]) ) {
-				//$TagData[strtoupper($rg_key)][0] = $ThisFileInfo['ape']['items'][strtolower($rg_key)]['data'][0];
-				$TagData[strtoupper($rg_key)][] = $ThisFileInfo['ape']['items'][strtolower($rg_key)]['data'][0];
-			}
-		}
+		//$ReplayGainTagsToPreserve = array('mp3gain_minmax', 'mp3gain_album_minmax', 'mp3gain_undo', 'replaygain_track_peak', 'replaygain_track_gain', 'replaygain_album_peak', 'replaygain_album_gain');
+		//foreach ($ReplayGainTagsToPreserve as $rg_key) {
+		//	if (isset($ThisFileInfo['ape']['items'][strtolower($rg_key)]['data'][0]) ) {
+				//$TagData[strtoupper($rg_key)][] = $ThisFileInfo['ape']['items'][strtolower($rg_key)]['data'][0];
+			//}
+		//}
 
 		$tagwriter->tag_data = $TagData;
 
@@ -93,7 +89,7 @@ if ( $fp_remote = fopen( $remotefilename, 'rb')) {
 			echo 'Failed to write tags!<br>'.implode('<br><br>', $tagwriter->errors);
 		}
 		
-	}// Ende change_id3
+	}// End change_id3
 		
 		
 		$need_change_mp3gain = "no";
@@ -143,18 +139,20 @@ if ( $fp_remote = fopen( $remotefilename, 'rb')) {
 //echo @$ThisFileInfo['tags']['id3v2']['title'][0]."<br>";  // title from ID3v2
 //echo @$ThisFileInfo['audio']['bitrate']."<br>";           // audio bitrate
 
- //write_log_file( $log_message );
+ //write_log_file( $log_message, $TagData );
 
 return @$ThisFileInfo['playtime_seconds']."<br>";            // playtime in minutes:seconds, formatted string
 //echo @$ThisFileInfo['error'][0]."<br>";
 }
 
-function write_log_file( $wert ) {
+function write_log_file( $wert, $TagData ) {
 	// logfile schreiben
 	$myFile = "/tmp/admin_srb_audiofile_edit.log";
 	$fh = fopen($myFile, 'w+') or die("can't open file ".$myFile);
 	$stringData = $wert."\n";
 	fwrite($fh, $stringData);
+	$a_results = print_r($TagData, true);
+	fwrite($fh, $a_results);
 	fclose($fh);
 }
 ?>
