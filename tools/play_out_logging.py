@@ -94,6 +94,7 @@ Die Bibel 1. Koenige 3,8
 
 from Tkinter import Frame, Label, NW, END
 from ScrolledText import ScrolledText
+import os
 import sys
 import string
 import re
@@ -511,8 +512,10 @@ def work_on_data_from_log(time_now, log_data, load_from):
             if log_data["file"][0:7] == "http://":
                 log_filename = log_data["file"]
             else:
-                log_filename = ntpath.basename(log_data["file"])
-        #    ac.log_filename = log_filename
+                #log_filename = ntpath.basename(log_data["file"])
+                #with mpd, we are only on linux, so we can use this
+                log_filename = os.path.splitext(
+                    os.path.basename(log_data["file"]))[0]
         else:
             log_filename = ""
         if "artist" in log_data:
@@ -625,11 +628,13 @@ def work_on_data_from_log(time_now, log_data, load_from):
                 lib_cm.message_write_to_console(ac, u"data from filename")
                 # split in author and title,
                 # success only by pattern:
-                index_trenner = string.find(log_filename, " - ")
-                log_author = log_filename[0:index_trenner]
-                log_title = extract_from_stuff_after_match(log_filename, " - ")
-                log_author = lib_cm.convert_to_unicode(log_author)
-                log_title = lib_cm.convert_to_unicode(log_title)
+                index_of = string.find(log_filename, " - ")
+                if index_of != -1:
+                    log_author = log_filename[0:index_of]
+                    log_title = extract_from_stuff_after_match(
+                                                log_filename, " - ")
+                    log_author = lib_cm.convert_to_unicode(log_author)
+                    log_title = lib_cm.convert_to_unicode(log_title)
 
     log_data_list = []
     #log_data_list.append(log_start)
