@@ -146,7 +146,7 @@ class app_config(object):
         self.app_config_develop = u"PO_Scheduler_Config_e"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # using develop-params
         self.app_develop = "no"
         self.app_windows = "no"
@@ -310,12 +310,25 @@ def check_mpd_stat(option):
                                 int(current_status["time"][0:index]))
                 return seconds_remain
         if option == "status":
+            status_list = []
+            #lib_cm.message_write_to_console(ac, current_status)
             if "state" in current_status:
                 lib_cm.message_write_to_console(ac,
                         current_status["state"].encode('utf-8', 'ignore'))
                 index = string.find(current_status["state"], ":")
                 mpd_state = current_status["state"][index + 1:]
-                return mpd_state
+                status_list.append(mpd_state)
+            else:
+                status_list.append("None State")
+            if "volume" in current_status:
+                lib_cm.message_write_to_console(ac,
+                        current_status["volume"].encode('utf-8', 'ignore'))
+                index = string.find(current_status["volume"], ":")
+                mpd_volume = current_status["volume"][index + 1:]
+                status_list.append(mpd_volume)
+            else:
+                status_list.append("None Volume")
+            return status_list
 
     else:
         return current_status
@@ -472,6 +485,8 @@ def prepare_mpd_0(time_now, minute_start):
                 ac.play_out_current_continue = False
         push_music_playlist()
         mpd.disconnect()
+        # security-check
+        mpd_play()
 
     ac.app_msg_1 = msg_1
     ac.app_msg_2 = msg_2
@@ -556,7 +571,8 @@ def prepare_mpd_5x(time_now, minute_start):
             play_out()
             push_music_playlist()
             mpd.disconnect()
-
+        # security-check
+        mpd_play()
     ac.app_msg_1 = msg_1
     ac.app_msg_2 = msg_2
 
@@ -610,6 +626,8 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
             db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
         else:
             msg_1 = None
+        # security-check
+        mpd_play()
 
     ac.app_msg_1 = msg_1
     ac.app_msg_2 = msg_2
@@ -917,9 +935,11 @@ def mpd_setup():
     mpd.exec_command(db, ac, "single", db.ac_config_1[9])
     mpd.exec_command(db, ac, "replay_gain_mode", db.ac_config_1[10])
     current_status = check_mpd_stat("status")
-    if current_status != "play":
+    if current_status[0] != "play":
         mpd.exec_command(db, ac, "play", None)
+    if current_status[1] != "100":
         mpd_fade_in()
+        db.write_log_to_db(ac, "MPD - Fade In", "x")
     mpd.disconnect()
     ac.app_msg_1 = "MPD Setup..." + "\n"
     db.write_log_to_db(ac, "MPD Setup durchgefuehrt", "k")
@@ -933,15 +953,16 @@ def mpd_play():
                                                     "write_also_to_console")
         return
     current_status = check_mpd_stat("status")
-    if current_status != "play":
+    if current_status[0] != "play":
         mpd.exec_command(db, ac, "play", None)
+        db.write_log_to_db(ac, "MPD - Force Play while not playing", "x")
+    if current_status[1] != "100":
         mpd_fade_in()
-        db.write_log_to_db(ac, "MPD - Play", "x")
-
+        db.write_log_to_db(ac, "MPD - Force Fade In, while volume not 100", "x")
     mpd.disconnect()
 
-    ac.app_msg_1 = "Check if MPD is playing..." + "\n"
-    db.write_log_to_db(ac, "Check if MPD is playing", "k")
+    ac.app_msg_1 = "Check if MPD is playing and volume at 100 %..." + "\n"
+    db.write_log_to_db(ac, "Check if MPD is playing and volume at 100 %", "k")
 
 
 class my_form(Frame):
