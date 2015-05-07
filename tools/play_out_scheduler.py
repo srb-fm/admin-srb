@@ -146,7 +146,7 @@ class app_config(object):
         self.app_config_develop = u"PO_Scheduler_Config_e"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # using develop-params
         self.app_develop = "no"
         self.app_windows = "no"
@@ -313,6 +313,7 @@ def check_mpd_stat(option):
             status_list = []
             #lib_cm.message_write_to_console(ac, current_status)
             if "state" in current_status:
+                # content are play or stop etc.
                 lib_cm.message_write_to_console(ac,
                         current_status["state"].encode('utf-8', 'ignore'))
                 index = string.find(current_status["state"], ":")
@@ -321,6 +322,7 @@ def check_mpd_stat(option):
             else:
                 status_list.append("None State")
             if "volume" in current_status:
+                # content: number e.g. 100 for full volume
                 lib_cm.message_write_to_console(ac,
                         current_status["volume"].encode('utf-8', 'ignore'))
                 index = string.find(current_status["volume"], ":")
@@ -425,7 +427,11 @@ def prepare_mpd_0(time_now, minute_start):
                 ac.app_msg_1 = "No mpd-connect, prepaere_mpd"
                 return
             current_song_file = check_mpd_song("file")
-
+            # for debug
+            c_current_song_file = current_song_file.decode('utf_8')
+            type_current_song_file = whatisthis(c_current_song_file)
+            db.write_log_to_db_a(ac, "type of current_song_file: "
+                + type_current_song_file, "t", "write_also_to_console")
             # cropping playlist-items
             mpd.exec_command(db, ac, "crop", None)
             # add items to playlist
@@ -435,8 +441,14 @@ def prepare_mpd_0(time_now, minute_start):
                     mpd.exec_command(db, ac, "add", item[2][19:])
                 else:
                     msg_2 = msg_2 + item[2][21:] + "\n"
+                    # for debug
+                    type_current_song_file = whatisthis(current_song_file)
+                    type_item = whatisthis(item[2][21:])
+                    db.write_log_to_db_a(ac, "type of current_song_file: "
+                        + type_current_song_file + " and item: "
+                        + type_item, "t", "write_also_to_console")
                     # trying seamless play
-                    if current_song_file == item[2][21:]:
+                    if current_song_file.decode('utf_8') == item[2][21:]:
                         # if streaming over one hour,
                         # the filename (url) is the same
                         # so there is no need to repeatly adding url
@@ -526,12 +538,24 @@ def prepare_mpd_5x(time_now, minute_start):
                 ac.app_msg_1 = "No mpd-connect, prepaere_mpd"
                 return
             current_song_file = check_mpd_song("file")
+            # for debug
+            c_current_song_file = current_song_file.decode('utf_8')
+            type_current_song_file = whatisthis(c_current_song_file)
+            db.write_log_to_db_a(ac, "type of current_song_file: "
+                + type_current_song_file, "t", "write_also_to_console")
             # cropping playlist-items
             mpd.exec_command(db, ac, "crop", None)
             # add items to playlist
             for item in ac.play_out_items:
                 msg_2 = msg_2 + item[2][21:] + "\n"
-                if current_song_file == item[2][21:]:
+                # for debug
+                type_current_song_file = whatisthis(current_song_file)
+                type_item = whatisthis(item[2][21:])
+                db.write_log_to_db_a(ac, "type of current_song_file: "
+                + type_current_song_file + " and item: "
+                + type_item, "t", "write_also_to_console")
+
+                if current_song_file.decode('utf_8') == item[2][21:]:
                     ac.play_out_current_continue = True
                     ac.app_msg_1 = "Playing current continue..."
                     db.write_log_to_db_a(ac, "Play current continue", "t",
@@ -1122,6 +1146,17 @@ class my_form(Frame):
                     create_music_playlist()
 
         self.run_scheduling()
+
+
+def whatisthis(s):
+    type_of = ""
+    if isinstance(s, str):
+        type_of = "ordinary string"
+    elif isinstance(s, unicode):
+        type_of = "unicode string"
+    else:
+        type_of = "not a string"
+    return type_of
 
 
 if __name__ == "__main__":
