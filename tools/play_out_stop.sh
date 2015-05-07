@@ -20,10 +20,6 @@ echo "Play-Out Jack-Apps-stopping..."
 	echo "# Jamin stop.."
 	sleep 1	
 	killall jamin &
-
-	echo "# Meterbridge stop.."
-	sleep 1
-	killall meterbridge &
 	
 	echo "# EBU Meter stop.."
 	sleep 1
