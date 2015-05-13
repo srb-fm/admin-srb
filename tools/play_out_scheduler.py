@@ -427,11 +427,6 @@ def prepare_mpd_0(time_now, minute_start):
                 ac.app_msg_1 = "No mpd-connect, prepaere_mpd"
                 return
             current_song_file = check_mpd_song("file")
-            # for debug
-            c_current_song_file = current_song_file.decode('utf_8')
-            type_current_song_file = whatisthis(c_current_song_file)
-            db.write_log_to_db_a(ac, "type of current_song_file: "
-                + type_current_song_file, "t", "write_also_to_console")
             # cropping playlist-items
             mpd.exec_command(db, ac, "crop", None)
             # add items to playlist
@@ -538,11 +533,6 @@ def prepare_mpd_5x(time_now, minute_start):
                 ac.app_msg_1 = "No mpd-connect, prepaere_mpd"
                 return
             current_song_file = check_mpd_song("file")
-            # for debug
-            c_current_song_file = current_song_file.decode('utf_8')
-            type_current_song_file = whatisthis(c_current_song_file)
-            db.write_log_to_db_a(ac, "type of current_song_file: "
-                + type_current_song_file, "t", "write_also_to_console")
             # cropping playlist-items
             mpd.exec_command(db, ac, "crop", None)
             # add items to playlist
