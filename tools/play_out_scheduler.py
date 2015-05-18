@@ -436,12 +436,6 @@ def prepare_mpd_0(time_now, minute_start):
                     mpd.exec_command(db, ac, "add", item[2][19:])
                 else:
                     msg_2 = msg_2 + item[2][21:] + "\n"
-                    # for debug
-                    type_current_song_file = whatisthis(current_song_file)
-                    type_item = whatisthis(item[2][21:])
-                    db.write_log_to_db_a(ac, "type of current_song_file: "
-                        + type_current_song_file + " and item: "
-                        + type_item, "t", "write_also_to_console")
                     # trying seamless play
                     if current_song_file.decode('utf_8') == item[2][21:]:
                         # if streaming over one hour,
@@ -538,13 +532,6 @@ def prepare_mpd_5x(time_now, minute_start):
             # add items to playlist
             for item in ac.play_out_items:
                 msg_2 = msg_2 + item[2][21:] + "\n"
-                # for debug
-                type_current_song_file = whatisthis(current_song_file)
-                type_item = whatisthis(item[2][21:])
-                db.write_log_to_db_a(ac, "type of current_song_file: "
-                + type_current_song_file + " and item: "
-                + type_item, "t", "write_also_to_console")
-
                 if current_song_file.decode('utf_8') == item[2][21:]:
                     ac.play_out_current_continue = True
                     ac.app_msg_1 = "Playing current continue..."
@@ -1136,17 +1123,6 @@ class my_form(Frame):
                     create_music_playlist()
 
         self.run_scheduling()
-
-
-def whatisthis(s):
-    type_of = ""
-    if isinstance(s, str):
-        type_of = "ordinary string"
-    elif isinstance(s, unicode):
-        type_of = "unicode string"
-    else:
-        type_of = "not a string"
-    return type_of
 
 
 if __name__ == "__main__":
