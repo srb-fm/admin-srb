@@ -251,9 +251,9 @@ function replace_umlaute_gross_klein( $x )
 */ 
 function replace_umlaute_sonderzeichen( $x )
 {
-	$k2 = array('Ae', 'ae', 'Oe', 'oe', 'Ue', 'ue', 'sz', 'und', '_');
-	$k1 = array('Ä', 'ä', 'Ö', 'ö', 'Ü', 'ü', 'ß', '&', ' ');
-	for ($i='0';$i<'8';$i++) {
+	$k2 = array('Ae', 'ae', 'Oe', 'oe', 'Ue', 'ue', 'sz', 'und', '_', 'e', 'e');
+	$k1 = array('Ä', 'ä', 'Ö', 'ö', 'Ü', 'ü', 'ß', '&', ' ', 'é', 'è');
+	for ($i='0';$i<'10';$i++) {
 		$x = str_replace($k1[$i], $k2[$i], $x);
 	}
 	return $x;
