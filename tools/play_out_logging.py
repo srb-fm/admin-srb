@@ -19,8 +19,8 @@ Dort koennen die Daten zur Anzeige des aktuellen Beitrags/Titels
 und fuer Playlisten genutzt werden.
 
 Dateiname Script: play_out_logging.py
-Schluesselworte fuer Einstellungen: PO_Logging_Config_1/
-PO_Switch_Broadcast_Config_1
+Schluesselworte fuer Einstellungen: PO_Logging_Config/
+PO_Time_Config
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank, Logfiles mehrerer mAirlist-Instanzen
 
@@ -100,7 +100,6 @@ import string
 import re
 import datetime
 import urllib
-import ntpath
 import lib_common_1 as lib_cm
 import lib_mpd as lib_mp
 
@@ -468,7 +467,7 @@ def upload_data_prepare():
             'pf': db.ac_config_1[6],
             'pg': db.ac_config_1[7]}
 
-        # use is only for debugging!!
+        # use this only for debugging!!
         #lib_cm.message_write_to_console(ac, u"data_upload"
         #                    + c_autor.encode('utf-8', 'ignore') + " "
         #                    + c_title.encode('utf-8', 'ignore'))
@@ -482,7 +481,6 @@ def upload_data_prepare():
         return web
 
     if web[0:6] == "Fehler":
-        #print web
         db.write_log_to_db(ac, ac.app_errorslist[3], "x")
         db.write_log_to_db(ac, web, "x")
 
