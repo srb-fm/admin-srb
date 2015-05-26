@@ -15,7 +15,7 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 $find_limit_skip = "no";
 $condition_delivery = "no";
 	
@@ -24,21 +24,21 @@ $condition_delivery = "no";
 // fuer den link zu den naechsten satzen wird die skip-anzahl in der url zugrechnet: (ausgabebegrenzung 2) und dann in die abfrage uebernommen (// ausgabebegrenzung 1)
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 	
-// action pruefen	
+// check action
 if ( isset($_GET['action'] ) ) {
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 if ( isset($_POST['action'] ) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
 		
-if ( $action_ok != "yes" ) { 
+if ( $action_ok == false ) { 
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
 			
-// condition_delivery pruefen (	ausgabelimit)
+// check condition_delivery (outputlimit)
 if ( isset($_GET['condition'] ) ) {
 	$c_query_condition = rawurldecode($_GET['condition']);
 	$condition_delivery = "yes";
@@ -83,7 +83,7 @@ if ( $condition_delivery != "yes" ) {
 			$c_field_value = $_POST['sg_regieanweisung']; 
 		}
 	}
-	
+
 	if ( isset($_POST['sg_dateiname'] ) ) {
 		if ( $_POST['sg_dateiname'] !="") { 
 			$c_field_desc = "SG_HF_CONT_FILENAME";
@@ -102,19 +102,19 @@ if ( $condition_delivery != "yes" ) {
 			}
 		}
 	}
-	
+
 	if ( isset($_POST['sg_quelle'] ) ) {
 		if ( $_POST['sg_quelle'] !="") { 
 			$c_field_desc = "A.SG_HF_SOURCE_ID";
 			$c_field_value = db_query_load_id_by_value("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", $_POST['sg_quelle']);
 
 			if ( $c_field_value =="" ) {
-				$action_ok = "no";
+				$action_ok = false;
 				$message .= "Quelle nicht gefunden... "; 	
 			}
 		}
 	}
-		
+
 	if ( isset($_POST['sg_datum'] ) ) {
 		if ( $_POST['sg_datum'] !="" ) { 
 			$c_field_desc = "A.SG_HF_TIME";
@@ -129,7 +129,7 @@ if ( $condition_delivery != "yes" ) {
 			$c_field_value = $_POST['sg_magazin']; 
 		}
 	}
-			
+
 	if ( isset($_POST['sg_live'] ) ) {
 		if ( $_POST['sg_live'] !="" ) { 
 			$find_option = "exact";
@@ -137,38 +137,34 @@ if ( $condition_delivery != "yes" ) {
 			$c_field_value = $_POST['sg_live']; 
 		}
 	}
-	
+
 	if ( isset($_POST['sg_cont_id'] ) ) {
 		if ( $_POST['sg_cont_id'] !="" ) { 
 			$c_field_desc = "A.SG_HF_CONTENT_ID";
 			$c_field_value = $_POST['sg_cont_id']; 
 		}
 	}
-		
-		
-	// Bedingung pruefen	
-	$find_option_ok = "no";
+
+
+	// check condition
+	$find_option_ok = false;
 	if ( isset($_GET['find_option'] ) ) {	
 		$find_option = $_GET['find_option'];
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}
 	if ( isset($_POST['find_option'] ) ) { 
 		$find_option = $_POST['find_option']; 	
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}		
-	
-	if ( $find_option_ok = "yes" ) {
+
+	if ( $find_option_ok == true and $action_ok == true ) {
 		switch ( $action ) {
 		case "find": 
 			if ( $find_option == "begin" ) {
-		    	//$c_query_condition = "UPPER(".$c_field_desc.") LIKE UPPER(_iso8859_1'".$c_field_value."%' collate de_de)";
 		    	$c_query_condition = "UPPER(".$c_field_desc.") LIKE UPPER(_iso8859_1'".utf8_decode($c_field_value)."%' collate de_de)";
 				$message_find_string = $c_field_desc. " beginnt mit: " .$c_field_value.", neueste zuerst" ;
 			} elseif ( $find_option == "in" ) {
 				$c_query_condition =  "UPPER(".$c_field_desc.") LIKE UPPER(_iso8859_1'%".utf8_decode($c_field_value)."%' collate de_de)";
-				//$c_query_condition =  "UPPER(".$c_field_desc.") LIKE UPPER('%".$c_field_value."%' collate de_de)";
-				//$c_query_condition =  $c_field_desc." LIKE '%".utf8_encode($c_field_value)."%'";
-				//$c_query_condition =  "UPPER(".$c_field_desc.") LIKE UPPER(_utf8'%".$c_field_value."%' collate de_de)";
 				$message_find_string = $c_field_desc. " enthält: " .$c_field_value.", neueste zuerst"  ;
 			} elseif ( $find_option == "exact" ) {
 				$c_query_condition = $c_field_desc." = '".$c_field_value."'";
@@ -180,7 +176,7 @@ if ( $condition_delivery != "yes" ) {
 				$message_find_string = $c_field_desc. " ist Datum: " .$c_field_value.", neueste zuerst"  ;
 			}
 				
-			// Sortierung anhaengen
+			// append sort
 			$c_query_condition .= " AND SG_HF_FIRST_SG = 'T' ORDER BY SG_HF_CONT_ID DESC";
 			break;
 			
@@ -421,7 +417,7 @@ echo "</div>";
 require "parts/sg_hf_toolbar.inc";
 echo "<div class='content' id='jq_slide_by_click'>";		
 
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 } 
 	

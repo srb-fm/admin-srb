@@ -14,7 +14,7 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 $find_limit_skip = "no";
 $condition_delivery = "no";
 	
@@ -23,21 +23,21 @@ $condition_delivery = "no";
 // fuer den link zu den naechsten satzen wird die skip-anzahl in der url zugrechnet: (ausgabebegrenzung 2) und dann in die abfrage uebernommen (// ausgabebegrenzung 1)
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 	
-// action pruefen
-if ( isset( $_GET['action'] ) ) {
-	$action = $_GET['action'];	$action_ok = "yes";
+// check action
+if ( isset($_GET['action']) ) {
+	$action = $_GET['action'];	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
 		
-if ( $action_ok != "yes" ) { 
+if ( $action_ok == false ) { 
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
 			
 // condition_delivery pruefen (	ausgabelimit)
-if ( isset( $_GET['condition'] ) ) {
+if ( isset($_GET['condition']) ) {
 	$c_query_condition = rawurldecode($_GET['condition']);
 	$condition_delivery = "yes";
 }	
@@ -46,7 +46,7 @@ if ( isset( $_GET['condition'] ) ) {
 // limit  ueber limitweiterschaltung
 
 
-if ( isset( $_GET['find_limit_skip'] ) ) { 
+if ( isset($_GET['find_limit_skip']) ) { 
 	$find_limit_skip = $_GET['find_limit_skip'];
 }
 		
@@ -54,55 +54,55 @@ if ( $condition_delivery != "yes" ) {
 	// Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 	// also hier nur pruefen in welchem feld was ist
 	
-	if ( isset( $_POST['sg_titel'] ) ) {
+	if ( isset($_POST['sg_titel']) ) {
 		if ( $_POST['sg_titel'] !="") { 
 			$c_field_desc = "SG_HF_CONT_TITEL";
 			$c_field_value = $_POST['sg_titel']; 
 		}
 	}
 
-	if ( isset( $_POST['sg_untertitel'] ) ) {
+	if ( isset($_POST['sg_untertitel']) ) {
 		if ( $_POST['sg_untertitel'] !="") { 
 			$c_field_desc = "SG_HF_CONT_UNTERTITEL";
 			$c_field_value = $_POST['sg_untertitel']; 
 		}
 	}
 
-	if ( isset( $_POST['sg_stichwort'] ) ) {
+	if ( isset($_POST['sg_stichwort']) ) {
 		if ( $_POST['sg_stichwort'] !="") { 
 			$c_field_desc = "SG_HF_CONT_STICHWORTE";
 			$c_field_value = $_POST['sg_stichwort']; 
 		}
 	}
 	
-	if ( isset( $_POST['sg_regieanweisung'] ) ) {
+	if ( isset($_POST['sg_regieanweisung']) ) {
 		if ( $_POST['sg_regieanweisung'] !="") { 
 			$c_field_desc = "SG_HF_CONT_REGIEANWEISUNG";
 			$c_field_value = $_POST['sg_regieanweisung']; 
 		}
 	}
 	
-	if ( isset( $_POST['sg_dateiname'] ) ) {
+	if ( isset($_POST['sg_dateiname']) ) {
 		if ( $_POST['sg_dateiname'] !="") { 
 			$c_field_desc = "SG_HF_CONT_FILENAME";
 			$c_field_value = $_POST['sg_dateiname']; 
 		}
 	}
 
-	if ( isset( $_POST['sg_genre'] ) ) {
+	if ( isset($_POST['sg_genre']) ) {
 		if ( $_POST['sg_genre'] !="") { 
 			$c_field_desc = "SG_HF_CONT_GENRE_ID";
 			//$c_field_value = db_query_load_id_by_value( "SG_GENRE", "SG_GENRE_UPPER_DESC", strtoupper( $_POST['sg_genre'] ));
 			$c_field_value = db_query_load_id_by_value("SG_GENRE", "SG_GENRE_DESC", $_POST['sg_genre']);
 
 			if ( $c_field_value =="") {
-				$action_ok = "no";
+				$action_ok = false;
 				$message .= "Gengre nicht gefunden... "; 	
 			}
 		}
 	}
-	
-	if ( isset( $_POST['sg_quelle'] ) ) {
+
+	if ( isset($_POST['sg_quelle']) ) {
 		if ( $_POST['sg_quelle'] !="") { 
 			//$query_main_table = "SG_HF_MAIN";
 			$c_field_desc = "A.SG_HF_SOURCE_ID";
@@ -110,13 +110,13 @@ if ( $condition_delivery != "yes" ) {
 			$c_field_value = db_query_load_id_by_value("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", $_POST['sg_quelle']);
 
 			if ( $c_field_value =="") {
-				$action_ok = "no";
+				$action_ok = false;
 				$message .= "Quelle nicht gefunden... "; 	
 			}
 		}
 	}
-		
-	if ( isset( $_POST['sg_datum'] ) ) {
+
+	if ( isset($_POST['sg_datum']) ) {
 		if ( $_POST['sg_datum'] !="") { 
 			//$query_main_table = "SG_HF_MAIN";
 			$c_field_desc = "A.SG_HF_TIME";
@@ -124,7 +124,7 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 
-	if ( isset( $_POST['sg_magazin'] ) ) {
+	if ( isset($_POST['sg_magazin']) ) {
 		if ( $_POST['sg_magazin'] !="") { 
 			$find_option = "exact";
 			//$query_main_table = "SG_HF_MAIN";
@@ -132,27 +132,27 @@ if ( $condition_delivery != "yes" ) {
 			$c_field_value = $_POST['sg_magazin']; 
 		}
 	}
-	
-	if ( isset( $_POST['sg_cont_id'] ) ) {
+
+	if ( isset($_POST['sg_cont_id']) ) {
 		if ( $_POST['sg_cont_id'] !="") { 
 			$c_field_desc = "A.SG_HF_CONT_ID";
 			$c_field_value = $_POST['sg_cont_id']; 
 		}
 	}
-		
-		
-	// Bedingung pruefen	
-	$find_option_ok = "no";
+
+
+	// check condition
+	$find_option_ok = false;
 	if ( isset( $_GET['find_option'] ) ) {	
 		$find_option = $_GET['find_option'];	
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}
 	if ( isset( $_POST['find_option'] ) ) { 
 		$find_option = $_POST['find_option']; 	
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}		
-	
-	if ( $find_option_ok = "yes" ) {
+
+	if ( $find_option_ok == true and $action_ok == true ) {
 		switch ( $action ) {
 		case "find": 
 			if ( $find_option == "begin" ) {
@@ -170,7 +170,7 @@ if ( $condition_delivery != "yes" ) {
 				$c_query_condition = "SUBSTRING( ".$c_field_desc." FROM 1 FOR 10) = '".$c_field_value."'";
 				$message_find_string = $c_field_desc. " ist datum " .$c_field_value." neueste zuerst"  ;
 			}
-				
+
 			// Sortierung anhaengen
 			$c_query_condition .= " AND SG_HF_FIRST_SG = 'T' ORDER BY SG_HF_CONT_ID DESC";
 			break;
@@ -181,8 +181,6 @@ if ( $condition_delivery != "yes" ) {
 				$c_query_condition = "B.SG_HF_CONT_SG_ID = A.SG_HF_ID AND A.SG_HF_FIRST_SG ='T' AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 4) = '2012' order by A.SG_HF_TIME";
 				$message_find_string = "Sendungen zur Adresse";
 				break;
-			
-
 				//endswitch; // $find_option
 			}
 			break;
@@ -190,8 +188,8 @@ if ( $condition_delivery != "yes" ) {
 		}
 	} else {
 		$message = "Keine Suchbedingung! Kann nichts tun... "; 
-	} //$find_option_ok = "yes" 
-	
+	} //$find_option_ok = true 
+
 } else {// $condition_delivery != "yes"
 	$message_find_string = $_GET['find_string'] ;
 } // $condition_delivery != "yes"
@@ -242,7 +240,7 @@ echo "</div>";
 require "parts/sg_hf_toolbar.inc";
 echo "<div class='content' id='jq_slide_by_click'>";		
 
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 } 
 	
