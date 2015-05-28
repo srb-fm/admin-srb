@@ -29,6 +29,8 @@ echo "Play-Out Jack-Apps-stopping..."
 	sleep 1
 	killall mpd &
 
+	zenity --info --text="Please close scheduler and logger manually!" 
+
 	sleep 2
 	echo "100"
 
