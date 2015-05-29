@@ -323,7 +323,8 @@ if ( $action_ok == "yes" ) {
 				} else {	
 					$set_mp3gain = "no";	
 				} 				
-				$c_audio_length = read_length_write_tag($remotefilename, $patfilename, replace_umlaute_sonderzeichen($_POST['form_ad_name']), replace_umlaute_sonderzeichen($_POST['form_sg_titel']), $c_audio_length, $set_mp3gain);
+				//$c_audio_length = read_length_write_tag($remotefilename, $patfilename, replace_umlaute_sonderzeichen($_POST['form_ad_name']), replace_umlaute_sonderzeichen($_POST['form_sg_titel']), $c_audio_length, $set_mp3gain);
+				$c_audio_length = read_length_write_tag($remotefilename, $patfilename, $_POST['form_ad_name'], $_POST['form_sg_titel'], $c_audio_length, $set_mp3gain);
 				$c_audio_length = get_time_in_hms($c_audio_length);
 				if ( $c_audio_length == "00:00:00" ) { 
 					$error_message .= "Fehler beim Hoerdauerabgleich "; 
