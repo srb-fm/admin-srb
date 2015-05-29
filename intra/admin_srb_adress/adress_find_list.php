@@ -16,115 +16,115 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
-$action_ok = "no";
+$action_ok = false;
+$find_option_ok = false;
 $display_firma = "no";
 $display_option = "normal";
 $find_limit_skip = "first";
-	
+
 // info ausgabebegrenzung auf 25 datensaetze:
 // der abfrage_condition wird das limit von 25 datensaetzen zugefuegt: ausgabebegrenzung 1
 // fuer den link zu den naechsten saetzen wird die skip-anzahl in der url zugrechnet: (ausgabebegrenzung 2) 
 // und dann in die abfrage uebernommen (// ausgabebegrenzung 1)
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
-	
-// action pruefen	
-if ( isset( $_GET['action'] ) ) {
-	$action = $_GET['action'];	
-	$action_ok = "yes";
+
+// check action
+if ( isset($_GET['action']) ) {
+	$action = $_GET['action'];
+	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) {
+if ( isset($_POST['action']) ) {
 	$action = $_POST['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
-					
-if ( $action_ok != "yes" ) {
-	$message = "Keine Anweisung. Nichts zu tun..... "; 
+				
+if ( $action_ok == false ) {
+	$message = "Keine Anweisung. Nichts zu tun..... ";
 }
 
 // pruefen display, limit
-if ( isset( $_POST['display_firma'] ) ) { 
+if ( isset($_POST['display_firma']) ) { 
 	$display_firma = "yes"; 
 }
-if ( isset( $_GET['find_limit_skip'] ) ) {
+if ( isset($_GET['find_limit_skip']) ) {
 	$find_limit_skip = $_GET['find_limit_skip'];
 }
-		
+	
 // Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 // also hier nur pruefen in welchem feld was ist
-	
-if ( isset( $_POST['ad_name'] ) ) {
-	if ( $_POST['ad_name'] !="") { 
+
+if ( isset($_POST['ad_name']) ) {
+	if ( $_POST['ad_name'] !="") {
 		$c_field_message ="Name";
 		$c_field_desc = "AD_NAME";
-		$c_field_value = $_POST['ad_name']; 
+		$c_field_value = $_POST['ad_name'];
 	}
 }
 
-if ( isset( $_POST['ad_vorname'] ) ) {
+if ( isset($_POST['ad_vorname']) ) {
 	if ( $_POST['ad_vorname'] !="") {
 		$c_field_message ="Vorname";
 		$c_field_desc = "AD_VORNAME";
-		$c_field_value = $_POST['ad_vorname']; 
+		$c_field_value = $_POST['ad_vorname'];
 	}
 }
-	
-if ( isset( $_POST['ad_firma'] ) ) {
-	if ( $_POST['ad_firma'] !="") { 
+
+if ( isset($_POST['ad_firma']) ) {
+	if ( $_POST['ad_firma'] !="") {
 		$c_field_message ="Firma";
 		$c_field_desc = "AD_FIRMA";
 		$display_firma = "yes";
-		$c_field_value = $_POST['ad_firma']; 
+		$c_field_value = $_POST['ad_firma'];
 	}
 }
-		
-if ( isset( $_POST['ad_stichwort'] ) ) {
-	if ( $_POST['ad_stichwort'] !="") { 
+	
+if ( isset($_POST['ad_stichwort']) ) {
+	if ( $_POST['ad_stichwort'] !="") {
 		$c_field_message ="Stichwort";
 		$c_field_desc = "AD_STICHWORT";
-		$c_field_value = $_POST['ad_stichwort']; 
+		$c_field_value = $_POST['ad_stichwort'];
 	}
 }
-	
-if ( isset( $_POST['ad_ort'] ) ) {
-	if ( $_POST['ad_ort'] !="") { 
+
+if ( isset($_POST['ad_ort']) ) {
+	if ( $_POST['ad_ort'] !="") {
 		$c_field_message ="Ort";
 		$c_field_desc = "AD_ORT";
-		$c_field_value = $_POST['ad_ort']; 
-	} 
+		$c_field_value = $_POST['ad_ort'];
+	}
 }
-	
-if ( isset( $_POST['ad_email'] ) ) {
-	if ( $_POST['ad_email'] !="") { 
+
+if ( isset($_POST['ad_email']) ) {
+	if ( $_POST['ad_email'] !="") {
 		$c_field_message ="eMail";
 		$c_field_desc = "AD_EMAIL";
-		$c_field_value = $_POST['ad_email']; 
-	} 
+		$c_field_value = $_POST['ad_email'];
+	}
 }
-	
+
 // ausgabebegrenzung 3			
 //wenn unber limitweiterschaltung kommt find field und value per get:
-if ( isset( $_GET['field_desc'] ) ) { 
+if ( isset($_GET['field_desc']) ) {
 	$c_field_desc = $_GET['field_desc'];
 }
-if ( isset( $_GET['field_value'] ) ) { 
-	$c_field_value = $_GET['field_value']; 
+if ( isset($_GET['field_value']) ) {
+	$c_field_value = $_GET['field_value'];
 }
-	
-	
-// Bedingung pruefen	
-$find_option_ok = "no";
-if ( isset( $_GET['find_option'] ) ) {
+
+
+// check condition
+if ( isset($_GET['find_option']) ) {
 	$find_option = $_GET['find_option'];
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }
-if ( isset( $_POST['find_option'] ) ) {
+if ( isset($_POST['find_option']) ) {
 	$find_option = $_POST['find_option'];
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }		
-	
-if ( $find_option_ok = "yes" ) {
+
+if ( $find_option_ok == true and $action_ok == true ) {
 	switch ( $action ) {
-	case "find": 
+	case "find":
 	
 		if ( $find_option == "begin" ) {
 			//$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '".$c_field_value."%' collate de_de) ORDER BY ".$c_field_desc;
@@ -138,7 +138,7 @@ if ( $find_option_ok = "yes" ) {
 			$c_query_condition = $c_field_desc." = '".$c_field_value."'";
 			$message_find_string = $c_field_message. " ist exakt " .$c_field_value ;
 		}
-				
+		$message_find_string .= " " .$action." " .$find_option;
 		break;
 
 	case "list_adress": 
@@ -210,7 +210,7 @@ if ( $find_option_ok = "yes" ) {
 	}								
 		
 } else { 
-	//$find_option_ok = "yes"
+	//$find_option_ok == true
 	$message = "Keine Suchbedingung! Kann nichts tun... "; 
 }
 
@@ -265,7 +265,7 @@ echo "</div>";
 include "parts/ad_toolbar.inc";
 echo "<div class='content'>";	
 		 
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 }
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
