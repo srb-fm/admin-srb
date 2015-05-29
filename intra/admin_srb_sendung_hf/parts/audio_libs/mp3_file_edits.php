@@ -19,75 +19,75 @@ require_once('../parts/get_id3/getid3/getid3.php');
 
 function read_length_write_tag ( $remotefilename, $pathfilename, $artist , $title, $audio_length, $set_mp3gain ) {
 
-$log_message = "start ".date('l jS \of F Y h:i:s A')."\n".$artist." - ".$title."\n";
-// Copy remote file locally to scan with getID3()
+	$log_message = "start ".date('l jS \of F Y h:i:s A')."\n".$artist." - ".$title."\n";
+	// Copy remote file locally to scan with getID3()
 
-if ( $fp_remote = fopen( $remotefilename, 'rb')) {
-    $localtempfilename = tempnam('/tmp', 'getID3');
-   
-	if ( $fp_local = fopen($localtempfilename, 'wb')) {
-        while ($buffer = fread($fp_remote, 8192)) {
-            fwrite( $fp_local, $buffer); 
-        }
-        fclose($fp_local);
-	}
-}
+	if ( $fp_remote = fopen( $remotefilename, 'rb')) {
+		$localtempfilename = tempnam('/tmp', 'getID3');
 
-fclose( $fp_remote );
-
-// Initialize getID3 engine
-$getID3 = new getID3;
-$ThisFileInfo = $getID3->analyze( $localtempfilename );
-
-// compare
-$need_change_id3 = "no";
-if ( get_time_in_hms ( @$ThisFileInfo['playtime_seconds'] ) != $audio_length ) { 
-	$need_change_id3 = "yes";  
-	$log_message .= $need_change_id3." playtime \n". $audio_length." - ".get_time_in_hms ( @$ThisFileInfo['playtime_seconds'])."\n";
-}
-if ( @$ThisFileInfo['tags']['id3v2']['title'][0] != $title ) { 
-	$need_change_id3 = "yes"; 
-	$log_message .= $need_change_id3." title\n";
-}
-if ( @$ThisFileInfo['tags']['id3v2']['artist'][0] != $artist ) { 
-	$need_change_id3 = "yes"; 
-	$log_message .= $need_change_id3." artist\n";
-}
-
-$log_message .= $need_change_id3."\n";
-
-if ( $need_change_id3 = "yes" ) {		
-	// prepare tag
-	//$TaggingFormat = 'UTF-8';
-	$TaggingFormat = 'ISO-8859-1';
-	$getID3->setOption(array('encoding'=>$TaggingFormat));
-	// Initialize getID3 tag-writing module
-	require_once('../parts/get_id3/getid3/write.php');
-	$tagwriter = new getid3_writetags;
-	$tagwriter->filename       = $localtempfilename;
-	$tagwriter->tagformats     = array('id3v1', 'id3v2.3', 'ape');
-	// set various options (optional)
-	$tagwriter->overwrite_tags = true;
-	$tagwriter->tag_encoding   = $TaggingFormat;
-	$tagwriter->remove_other_tags = true;
-
-	// populate data array
-	$TagData['title'][]   = $title;
-	$TagData['artist'][]  = $artist;
-	$TagData['album'][]   = 'SRB - Das Buergerradio';
-	$TagData['year'][]    = date("Y");
-	$tagwriter->tag_data = $TagData;
-
-	// write tags v2
-	if ($tagwriter->WriteTags()) {
-		$log_message .= "write v2\n";
-		//echo 'Successfully wrote tags<br>';
-		if (!empty( $tagwriter->warnings )) {
-			echo 'There were some warnings:<br>'.implode('<br><br>', $tagwriter->warnings);
+		if ( $fp_local = fopen($localtempfilename, 'wb')) {
+			while ($buffer = fread($fp_remote, 8192)) {
+				fwrite( $fp_local, $buffer); 
+			}
+			fclose($fp_local);
 		}
-	} else {
-		echo 'Failed to write tags V2!<br>'.implode('<br><br>', $tagwriter->errors);
 	}
+
+	fclose( $fp_remote );
+
+	// Initialize getID3 engine
+	$getID3 = new getID3;
+	$ThisFileInfo = $getID3->analyze( $localtempfilename );
+
+	// compare
+	$need_change_id3 = "no";
+	if ( get_time_in_hms ( @$ThisFileInfo['playtime_seconds'] ) != $audio_length ) { 
+		$need_change_id3 = "yes";  
+		$log_message .= $need_change_id3." playtime \n". $audio_length." - ".get_time_in_hms ( @$ThisFileInfo['playtime_seconds'])."\n";
+	}
+	if ( @$ThisFileInfo['tags']['id3v2']['title'][0] != $title ) { 
+		$need_change_id3 = "yes"; 
+		$log_message .= $need_change_id3." title\n";
+	}
+	if ( @$ThisFileInfo['tags']['id3v2']['artist'][0] != $artist ) { 
+		$need_change_id3 = "yes"; 
+		$log_message .= $need_change_id3." artist\n";
+	}
+
+	$log_message .= $need_change_id3."\n";
+
+	if ( $need_change_id3 = "yes" ) {		
+		// prepare tag
+		$TaggingFormat = 'UTF-8';
+		//$TaggingFormat = 'ISO-8859-1';
+		$getID3->setOption(array('encoding'=>$TaggingFormat));
+		// Initialize getID3 tag-writing module
+		require_once('../parts/get_id3/getid3/write.php');
+		$tagwriter = new getid3_writetags;
+		$tagwriter->filename       = $localtempfilename;
+		$tagwriter->tagformats     = array('id3v1', 'id3v2.3', 'ape');
+		// set various options (optional)
+		$tagwriter->overwrite_tags = true;
+		$tagwriter->tag_encoding   = $TaggingFormat;
+		$tagwriter->remove_other_tags = true;
+
+		// populate data array
+		$TagData['title'][]   = $title;
+		$TagData['artist'][]  = $artist;
+		$TagData['album'][]   = 'SRB - Das Buergerradio';
+		$TagData['year'][]    = date("Y");
+		$tagwriter->tag_data = $TagData;
+
+		// write tags v2
+		if ($tagwriter->WriteTags()) {
+			$log_message .= "write v2\n";
+			//echo 'Successfully wrote tags<br>';
+			if (!empty( $tagwriter->warnings )) {
+				echo 'There were some warnings:<br>'.implode('<br><br>', $tagwriter->warnings);
+			}
+		} else {
+			echo 'Failed to write tags V2!<br>'.implode('<br><br>', $tagwriter->errors);
+		}
 
 	//$TaggingFormat = 'ISO-8859-1';
 	//$getID3->setOption(array('encoding'=>$TaggingFormat));
@@ -109,10 +109,10 @@ if ( $need_change_id3 = "yes" ) {
 		//echo 'Failed to write tags V1!<br>'.implode('<br><br>', $tagwriter->errors);
 	//}
 		
-}// End change_id3
+	}// End change_id3
 	
 	
-$need_change_mp3gain = "no";
+	$need_change_mp3gain = "no";
 	
 		//if (@$ThisFileInfo['playtime_seconds'] < 600 ){
 		// mp3Gain pruefen wenn gewuenscht, nur wenn nicht zu lang!
@@ -131,23 +131,23 @@ $need_change_mp3gain = "no";
 		} //}// Ende mp3Gain wenn gewuenscht			
 
 		
-if ( $need_change_id3 == "yes" or $need_change_mp3gain == "yes" ) {	
-	// delete original file
-	unlink( $pathfilename );		
-	if ( !copy( $localtempfilename, $pathfilename )) {
-   	print ("failed to copy $pathfilename...<br>\n");
-	} else {
-		chmod($pathfilename, 0764 );
+	if ( $need_change_id3 == "yes" or $need_change_mp3gain == "yes" ) {	
+		// delete original file
+		unlink( $pathfilename );		
+		if ( !copy( $localtempfilename, $pathfilename )) {
+   		print ("failed to copy $pathfilename...<br>\n");
+		} else {
+			chmod($pathfilename, 0764 );
+		}
 	}
-}
 
-// Delete temporary file
-unlink( $localtempfilename );
+	// Delete temporary file
+	unlink( $localtempfilename );
 
-//write_log_file( $log_message, $TagData );
+	//write_log_file( $log_message, $TagData );
 
-return @$ThisFileInfo['playtime_seconds']."<br>";            // playtime in minutes:seconds, formatted string
-//echo @$ThisFileInfo['error'][0]."<br>";
+	return @$ThisFileInfo['playtime_seconds']."<br>";            // playtime in minutes:seconds, formatted string
+	//echo @$ThisFileInfo['error'][0]."<br>";
 }
 
 function write_log_file( $wert, $TagData ) {
