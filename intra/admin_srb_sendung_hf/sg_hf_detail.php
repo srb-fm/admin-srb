@@ -17,7 +17,7 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
 $error_message = "";
-$manuskript_vorhanden = false;
+$manuskript_present = false;
 
 if ( isset($_GET['message']) ) { 
 	$message .= $_GET['message'];
@@ -32,18 +32,18 @@ if ( isset($_POST['error_message']) ) {
 	$error_message .= $_POST['error_message'];
 }
 
-$action_ok = "no";
+$action_ok = false;
 // check file yes/no
 $file_exist_check = "yes";
 	
-// action pruefen	
+// check action	
 if ( isset( $_GET['action'] ) ) {
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 if ( isset( $_POST['action'] ) ) { 
 	$action = $_POST['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
 			
 if ( $action_ok == "yes" ) {
@@ -76,7 +76,7 @@ if ( $action_ok == "yes" ) {
 			$tbl_row_sg_check_delete = db_query_sg_display_item_1($id);
 			if ( !$tbl_row_sg_check_delete ) { 
 				$message .= "Fehler bei Abfrage Sendung!"; 
-				$action_ok = "no";
+				$action_ok = false;
 			} else { 
 				if ( rtrim($tbl_row_sg_check_delete->SG_HF_FIRST_SG) == "F" ) { 
 					// Is Reptition, can be deleted
@@ -127,7 +127,7 @@ if ( $action_ok == "yes" ) {
 				$_ok = db_query_delete_item("SG_HF_MAIN", "SG_HF_ID", $id);
 				if ( $_ok == "true" ) {
 					$message = "Sendung gelöscht!";
-					$action_ok = "no";
+					$action_ok = false;
 					//$kill_possible = "F";
 				} else { 
 					$message .= "Löschen fehlgeschlagen";
@@ -146,10 +146,10 @@ if ( $action_ok == "yes" ) {
 				$_ok_a = db_query_delete_item("SG_HF_MAIN", "SG_HF_ID", $id);
 				$_ok_b = db_query_delete_item("SG_HF_CONTENT", "SG_HF_CONT_SG_ID", $id);
 				if ( $_ok_a == "true" ) {
-					$action_ok = "no" ;// damit geloeschte Sendung nicht aufgrufen wird;	
+					$action_ok = false ;// damit geloeschte Sendung nicht aufgrufen wird;	
 					if ( $_ok_b == "true" ) {
 						$message = "Erstsendung gelöscht!";
-						$action_ok = "no" ;// damit geloeschte Sendung nicht aufgrufen wird;	
+						$action_ok = false ;// damit geloeschte Sendung nicht aufgrufen wird;	
 					} else { 
 						$message .= "Content löschen fehlgeschlagen";
 					}
@@ -167,7 +167,7 @@ if ( $action_ok == "yes" ) {
 			break;
 		
 		case "play_now":
-			// pruefen ob bestaetigung passt
+			// check if valid user
 			$c_play = db_query_load_item("USER_SECURITY", 0);
 
 			if ( $_POST['form_play_code'] == trim($c_play) ) {
@@ -207,26 +207,26 @@ if ( $action_ok == "yes" ) {
 	$message .= "Keine Anweisung. Nichts zu tun..... "; 
 }
 
-// End $action_ok == "yes" 
+// End $action_ok == true
 // if $action_ok "no", continue checking  
 		
-if ( $action_ok == "yes" ) {
+if ( $action_ok == true ) {
 	$tbl_row_sg = db_query_sg_display_item_1($id);
 	if ( !$tbl_row_sg ) { 
 		$message .= "Fehler bei Abfrage Sendung!"; 
-		$action_ok = "no";
+		$action_ok = false;
 	} else {
 		$tbl_row_ad = db_query_display_item_1("AD_MAIN", "AD_ID = " .$tbl_row_sg->SG_HF_CONT_AD_ID);
 		if ( ! isset( $tbl_row_ad->AD_ID )) {
 			$message .= "Fehler bei Abfrage Adresse!"; 
-			$action_ok = "no";
+			$action_ok = false;
 		}
 				
 		$tbl_row_mk = db_query_display_item_1("SG_MANUSKRIPT", "SG_MK_SG_CONT_ID = " .$tbl_row_sg->SG_HF_CONT_ID);
 		if ( isset( $tbl_row_mk->SG_MK_ID )) { 
-			$manuskript_vorhanden = true;
+			$manuskript_present = true;
 		}
-			
+
 	}
 	// Paths flashplayer-audios from Settings
 	$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF_1'");
@@ -250,7 +250,6 @@ if ( $action_ok == "yes" ) {
 	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/jplayer/jquery.jplayer.min.js"></script>
 	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/add-on/jquery.jplayer.inspector.min.js"></script>
 	
-	
 	<script type="text/javascript" src="parts/audio-player/audio-player.js"></script>  
    <script type="text/javascript">  
              AudioPlayer.setup("parts/audio-player/player.swf", {  
@@ -266,17 +265,17 @@ if ( $action_ok == "yes" ) {
 echo "<div class='column_right'>";
 echo "<div class='head_item_right'>";
 echo $message; 
-if ( $action_ok == "yes" ) { 
+if ( $action_ok == true ) { 
 	html_sg_state(rtrim($tbl_row_sg->SG_HF_FIRST_SG), rtrim($tbl_row_sg->SG_HF_ON_AIR), rtrim($tbl_row_sg->SG_HF_CONT_FILENAME));
 }
 echo "</div>\n";
 echo "<div class='content'>\n";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 }
 
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");			
-if ( $user_rights == "yes" ) { 
+if ( $user_rights == "yes" ) {
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Datum/ Zeit/ Länge</div>";
 	echo "<div class='content_column_4'>" .get_date_format_deutsch(substr($tbl_row_sg->SG_HF_TIME, 0, 10))." (".get_german_day_name_a(substr($tbl_row_sg->SG_HF_TIME, 0, 10)).") </div>";
@@ -289,7 +288,7 @@ if ( $user_rights == "yes" ) {
 		break;
 
 	case "00:01:00":
-		// Vorbelegte Laenge von 1 Minute hervorheben				
+		// highlight predefined length of 1 Minute				
 		echo "<div class='content_column_4 blink' title='Bitte Sendedauer ueberpruefen'>" .rtrim($tbl_row_sg->SG_HF_DURATION). " </div>";
 		break;
 	
@@ -392,7 +391,7 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_2'>" .$tbl_row_sg->SG_HF_CONT_FILENAME. "</div>";
 	echo "</div>\n";
 
-	// Pfad + Dateiname audio
+	// path + filename audio
 	$file_exist = "no";
 	$z = 0;
 			
@@ -410,14 +409,14 @@ if ( $user_rights == "yes" ) {
 
 	if ( $file_exist_check == "yes" ) {
 		$search_in_archiv = $tbl_row_config->USER_SP_PARAM_9;
-		// archiv-Jahr
+		// archive-year
 		if ( rtrim($tbl_row_sg->SG_HF_FIRST_SG) == "T" ) {
 			$archiv_sg_year = substr($tbl_row_sg->SG_HF_TIME, 0, 4)."/";
 		} else {
 			$archiv_sg_year = db_query_sg_load_year_by_id($tbl_row_sg->SG_HF_CONT_SG_ID)."/";
 		}
 				
-		// pfaths
+		// paths
 		if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" or rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
 			// FLASHPLAYER				
 			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$tbl_row_sg->SG_HF_CONT_FILENAME;
@@ -606,7 +605,7 @@ echo '</div>';
 		echo "<a href='sg_hf_detail.php?action=show_dubs&amp;sg_id=".$tbl_row_sg->SG_HF_ID."'>Wiederholungen listen</a> "; 
 	}
 	echo "<a href='sg_hf_find_list.php?action=list&amp;find_option=show_hour&amp;sg_time=".$tbl_row_sg->SG_HF_TIME."' target='_blank'>Sendungen dieser Stunde in neuem Tab</a> ";	
-	if ( $manuskript_vorhanden ) { 
+	if ( $manuskript_present ) { 
 		echo "<a href='sg_hf_manuskript_edit.php?action=edit&amp;sg_id=".$tbl_row_sg->SG_HF_CONT_ID."&amp;sg_mk_id=".$tbl_row_mk->SG_MK_ID."&amp;sg_titel=".$tbl_row_sg->SG_HF_CONT_TITEL."' target='_blank'>Manuskript bearbeiten</a> ";
 	} else {
 		echo "<a href='sg_hf_manuskript_edit.php?action=new&amp;sg_id=".$tbl_row_sg->SG_HF_CONT_ID."&amp;sg_titel=".$tbl_row_sg->SG_HF_CONT_TITEL."' target='_blank'>Manuskript anlegen</a> ";
@@ -615,7 +614,7 @@ echo '</div>';
 	echo "</ul>\n</div>\n<!--menu_bottom-->";  
 	echo "\n</div><!--content wieder zu-->"; 
 			
-	// Wiederholungen Anfang
+	// begin repetition
 	if ( $action == "show_dubs" ) {
 		$c_query_condition_dubs = " SG_HF_CONTENT_ID = ".$tbl_row_sg->SG_HF_CONTENT_ID." AND SG_HF_FIRST_SG = 'F'";
 		$db_result_dubs = db_query_list_items_1("SG_HF_ID, SG_HF_TIME, SG_HF_DURATION", "SG_HF_MAIN", $c_query_condition_dubs);
