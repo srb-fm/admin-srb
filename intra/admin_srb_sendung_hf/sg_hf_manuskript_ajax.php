@@ -14,24 +14,25 @@
 require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 
-// action pruefen	
-$action_ok = "no";
-if ( isset( $_POST['action'] ) ) { 
+// check action	
+$action_ok = false;
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 		
-if ( $action_ok == "yes" ) {
+if ( $action_ok == true ) {
 	switch ( $action ) {
 	case "update":
-		// Aenderungen speichern
+		// save changes
 		//write_log_file( utf8_decode($_POST['ctxt'])) ;
+		//write_log_file( $_POST['ctxt']) ;
 		$fields_params = "SG_MK_TEXT=?";
-		//$a_values = array( utf8_decode($_POST['ctxt']) );
+		//$a_values = array( utf8_encode($_POST['ctxt']) );
 		$a_values = array($_POST['ctxt']);
 		$db_result = db_query_update_item_b("SG_MANUSKRIPT", $fields_params, "SG_MK_ID =".$_POST['mk_id'], $a_values);
 			
-		if ($db_result = false) {
+		if ($db_result == false) {
 			echo 'Fehler beim Speichern des Manuskriptes...';
 		} else {
 			echo 'Manuskript gespeichert...';
