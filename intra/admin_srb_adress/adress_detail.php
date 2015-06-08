@@ -24,7 +24,7 @@ if ( isset($_POST['message']) ) {
 }
 
 $action_ok = "no";
-	
+
 // check action	
 if ( isset($_GET['action']) ) {
 	$action    =    $_GET['action'];	
@@ -35,7 +35,7 @@ if ( isset($_POST['action']) ) {
 	$action    =    $_POST['action'];
 	$action_ok = "yes";
 }
-			
+		
 if ( $action_ok == "yes" ) {
 	if ( isset($_GET['ad_id']) ) {
 		$id = $_GET['ad_id'];
@@ -44,15 +44,15 @@ if ( $action_ok == "yes" ) {
 	if ( isset($_POST['ad_id']) ) {
 		$id = $_POST['ad_id'];
 	}
-	
+
 	// check id
-	if ( ! filter_var( $id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 ))) ) {
+	if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
 		$id = "";
 		$action_ok = "no";
 	}
-			
+
 	// switch action 
-	if ( $id !="" ) { 
+	if ( $id !="" ) {
 		switch ( $action ){
 
 		case "display":		
@@ -62,11 +62,9 @@ if ( $action_ok == "yes" ) {
 
 		case "check_delete":		
 			$message .= "Adresse zum Löschen prüfen! ";
-			// pruefen ob ad_id in anderen Tabellen vorhanden, 
-			// wird die ad_id gefunden, liefert die func eine id des satzes, 
-			// der die ad_id enthaelt
-			// bei case delete wird geprueft ob kill_possible eine id enthaelt, 
-			// wenn ja dann loeschen nicht moeglich
+			// check if ad_id present in another tables 
+			// if yes, result is id of row in this table 
+			// and then, delete isn't possible
 			$c_query_condition = "AD_ID = ".$id;
 			$ad_in_other_modul = db_query_load_value_n_by_id("SG_HF_CONTENT", "SG_HF_CONT_AD_ID", $id, 0);
 			// weitere an erste belegung von $ad_in_other_modul dranhaengen, 
@@ -88,7 +86,7 @@ if ( $action_ok == "yes" ) {
 
 		case "kill":		
 			$message .= "Adresse löschen. ";
-			// pruefen ob bestaetigung passt
+			// check user
 			$c_kill = db_query_load_item("USER_SECURITY", 0);
 
 			if ( $_POST['form_kill_code'] == trim($c_kill) ) {
@@ -105,14 +103,14 @@ if ( $action_ok == "yes" ) {
 				$c_query_condition = "AD_ID = ".$id;
 			}	
 			break;
-												
+					
 		}
 	}
 } else {
 	$message .= "Keine Anweisung. Nichts zu tun..... "; 
 }
 	
-// Alles ok, Daten holen
+// all ok, retrieve data
 if ( $action_ok == "yes" ) {
 	$tbl_row	= db_query_display_item_1("AD_MAIN", $c_query_condition);
 }
@@ -153,6 +151,7 @@ $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_
 	
 if ( $user_rights == "yes" ) {
 	echo "<div class='content_row_a_1'>";
+	//echo mb_internal_encoding();
 	echo "<div class='content_column_1'>Anrede/ Titel</div>";
 	$c_anrede = db_query_load_value_by_id("AD_ANREDE", "AD_ANREDE_ID", $tbl_row->AD_ANREDE_ID);
 	$c_titel  = db_query_load_value_by_id("AD_TITEL", "AD_TITEL_ID", $tbl_row->AD_TITEL_ID);
@@ -287,11 +286,11 @@ if ( $user_rights == "yes" ) {
 	echo "</div>\n<br>";
 				
 	if ( $action == "delete" ) { 
-		// wird in anderen Modulen verwendet
+		// adress is used in another moduls
 		if ( $kill_possible != "" ) {
 			display_message("Löschen dieser Adresse fehlgeschlagen", "Adresse wird in anderen Modulen verwendet, löschen nicht möglich!");				
 		} else {
-			// ist frei
+			// no other module use this adress, delete possible
 			echo "<script>";
 			echo '$( "#dialog-form" ).dialog( "open" )';
 			echo "</script>";
@@ -313,13 +312,13 @@ if ( $user_rights == "yes" ) {
 
 		if ( $action == "display" ) { 
 			if ( $tbl_row->AD_ID != "0" ) {
-				// Adresse mit nr 0 darf nicht geloescht werden, 
-				// ist vorlage fuer neue 
+				// adress of id-nr 0 can not be deleted!!!!
+				// while 0 is template 
 				echo "<a href='adress_detail.php?action=check_delete&amp;ad_id=".$tbl_row->AD_ID."'>Löschen</a> ";
 			}
 		}
 
-		// Prüfen ob user egal ob HF oder TV
+		// check if user HF or TV
 		$c_user = "no";
 		if ( rtrim($tbl_row->AD_USER_OK_HF) == "T" ) { 
 			$c_user ="yes";
