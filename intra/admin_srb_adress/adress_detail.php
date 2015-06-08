@@ -23,17 +23,17 @@ if ( isset($_POST['message']) ) {
 	$message .= $_POST['message'];
 }
 
-$action_ok = "no";
+$action_ok = false;
 
 // check action	
 if ( isset($_GET['action']) ) {
 	$action    =    $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 
 if ( isset($_POST['action']) ) { 
 	$action    =    $_POST['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
 		
 if ( $action_ok == "yes" ) {
@@ -48,7 +48,7 @@ if ( $action_ok == "yes" ) {
 	// check id
 	if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
 		$id = "";
-		$action_ok = "no";
+		$action_ok = false;
 	}
 
 	// switch action 
@@ -93,7 +93,7 @@ if ( $action_ok == "yes" ) {
 				$_ok = db_query_delete_item("AD_MAIN", "AD_ID", $id);
 				if ( $_ok == "true" ) {
 					$message = "Adresse gelöscht!";
-					$action_ok = "no";	
+					$action_ok = false;	
 				} else { 
 					$message .= "Löschen fehlgeschlagen";
 					$c_query_condition = "AD_ID = ".$id;
@@ -111,7 +111,7 @@ if ( $action_ok == "yes" ) {
 }
 	
 // all ok, retrieve data
-if ( $action_ok == "yes" ) {
+if ( $action_ok == true ) {
 	$tbl_row	= db_query_display_item_1("AD_MAIN", $c_query_condition);
 }
 
@@ -136,7 +136,7 @@ echo "<div class='head_item_right'>";
 echo $message;
 echo "</div>\n";
 echo "<div class='content'>"; 
-if ( $action_ok == "no" ) {
+if ( $action_ok == false ) {
 	if ( $action != "kill" ) {
 		echo "Fehler bei Übergabe: ".$action;
 		return;
