@@ -61,7 +61,7 @@ class app_config(object):
         # schluessel fuer config in db
         self.app_config = u"Beamer_VP_period"
         self.app_config_develop = u"Beamer_VP_period_e"
-        # anzahl parameter
+        # number parameters
         self.app_config_params_range = 5
         self.app_errorfile = "error_beamer_vp_periodisch.log"
         # errorlist
@@ -88,7 +88,7 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
 
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # developmod (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
         self.app_debug_mod = "no"
@@ -124,7 +124,7 @@ def load_roboting_sgs():
         u"Sendungen suchen, die bearbeitet werden sollen")
     sendungen_data = db.read_tbl_rows_with_cond(ac, db,
         "SG_HF_ROBOT",
-        "SG_HF_ROB_TITEL, SG_HF_ROB_FILENAME_OUT",
+        "SG_HF_ROB_TITEL, SG_HF_ROB_OUT_DROPB, SG_HF_ROB_FILE_OUT_DB",
         "SG_HF_ROB_VP_OUT ='T'")
 
     if sendungen_data is None:
@@ -226,7 +226,7 @@ def filepaths(item, sendung):
         path_file_source = (path_source + sendung[12])
 
         path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
-        path_cloud = lib_cm.check_slashes(ac, item[1])
+        path_cloud = lib_cm.check_slashes(ac, item[2])
         filename_dest = (sendung[2].strftime('%Y_%m_%d') + "_"
             + db.ac_config_1[4] + str(sendung[12][7:]))
         path_file_dest = (path_dest + path_cloud + filename_dest)
@@ -260,15 +260,15 @@ def filepaths(item, sendung):
 
 def check_and_work_on_files(roboting_sgs):
     """
-    - Zugehoerige Audios suchen
-    - wenn vorhanden, bearbeiten
+    - search audiofiles,
+    - if found, work on them
     """
     lib_cm.message_write_to_console(ac, u"check_and_work_on_files")
 
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
         titel = item[0]
-        # Sendung suchen
+        # search in db
         sendungen = load_sg(titel)
 
         if sendungen is None:
@@ -280,31 +280,34 @@ def check_and_work_on_files(roboting_sgs):
                     + sendung[11].encode('ascii', 'ignore'), "t",
                     "write_also_to_console")
 
-            # Pfade und Dateinamen zusammenbauen
-            success_file, path_file_source, path_file_dest = filepaths(
+            if item[1][:1] == "T":
+                # to Dropbox
+                # create path and filename
+                success_file, path_file_source, path_file_dest = filepaths(
                                      item, sendung)
-            if success_file is None:
-                continue
+                if success_file is None:
+                    continue
 
-            # In Cloud kopieren
-            success_copy = audio_copy(path_file_source, path_file_dest)
-            if success_copy is None:
-                continue
+                # copy to dropbox
+                success_copy = audio_copy(path_file_source, path_file_dest)
+                if success_copy is None:
+                    continue
 
-            # info-txt-Datei
-            success_write = write_to_info_file(path_file_dest, item, sendung)
-            if success_write is None:
-                # probs mit datei
-                continue
+                # info-txt-file
+                success_write = write_to_info_file(
+                                                path_file_dest, item, sendung)
+                if success_write is None:
+                    # probs mit datei
+                    continue
 
-            # filename rechts von slash extrahieren
-            filename = lib_cm.extract_filename(ac, path_file_dest)
+                # filename rechts von slash extrahieren
+                filename = lib_cm.extract_filename(ac, path_file_dest)
 
-            db.write_log_to_db_a(ac,
-                "VP nach extern bearbeitet: " + filename, "i",
+                db.write_log_to_db_a(ac,
+                    "VP in Dropbox kopiert: " + filename, "i",
                                                     "write_also_to_console")
-            db.write_log_to_db_a(ac,
-                "VP nach extern bearbeitet: " + filename, "n",
+                db.write_log_to_db_a(ac,
+                    "VP in Dropbox kopiert: " + filename, "n",
                                                     "write_also_to_console")
 
 
@@ -317,7 +320,7 @@ def erase_files_from_cloud_prepaere(roboting_sgs):
                                 + c_date_back, "t", "write_also_to_console")
     for item in roboting_sgs:
         path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
-        path_cloud = lib_cm.check_slashes(ac, item[1])
+        path_cloud = lib_cm.check_slashes(ac, item[2])
         path_dest_cloud = (path_dest + path_cloud)
         try:
             files_sendung_dest = os.listdir(path_dest_cloud)
