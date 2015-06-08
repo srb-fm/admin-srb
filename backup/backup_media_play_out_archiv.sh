@@ -11,8 +11,8 @@
 # Source and destinationfolders
 path_file_log_sg="Destpath/backup_media_archiv_sg.log"
 path_file_log_it="Destpath/backup_media_archiv_it.log"
-media_play_out_sendung="Sourcepath/Sendung"
-media_play_out_infotime="Sourcepath/Infotime"
+media_archive_sendung="Sourcepath/Sendung"
+media_archive_infotime="Sourcepath/Infotime"
 media_backup_sendung="Backuppath/Sendung"
 media_backup_infotime="Backuppath/Infotime"
 # mountz
@@ -51,8 +51,8 @@ function f_check_mountz () {
 
 
 running=$(date +'%Y-%m-%d-%H-%M-%S')
-echo "$running running backup_media_play_out_archiv.sh..."
-echo "$running running backup_media_play_out_archiv.sh..." >> $path_file_log_sg
+echo "$running running backup_media_play_out_archive.sh..."
+echo "$running running backup_media_play_out_archive.sh..." >> $path_file_log_sg
 
 if [ $mount_check == "Y" ]; then
 	f_check_mountz
@@ -63,15 +63,15 @@ fi
 if [ $mount_available == "Y" ]; then
 
 	echo "Backup from Archive Sendung"
-	rsync -r -t -v -s --log-file=$path_file_log_sg $media_archiv_sendung $media_backup_sendung
+	rsync -r -t -v -s --log-file=$path_file_log_sg $media_archive_sendung $media_backup_sendung
 
 	echo "Now running Backup Archive Infotime..." >> $path_file_log_sg
 
 	echo "Backup from Archive Infotime"
-	rsync -r -t -v -s --log-file=$path_file_log_it $media_archiv_infotime $media_backup_infotime
+	rsync -r -t -v -s --log-file=$path_file_log_it $media_archive_infotime $media_backup_infotime
 
-	echo "finish backup_media_play_out_archiv.sh..."
-	echo "finish backup_media_play_out_archiv.sh..." >> $path_file_log_it
+	echo "finish backup_media_play_out_archive.sh..."
+	echo "finish backup_media_play_out_archive.sh..." >> $path_file_log_it
 else
 	echo "No backup possible" >> $path_file_log_it
 fi
