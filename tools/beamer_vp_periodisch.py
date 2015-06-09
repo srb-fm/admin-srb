@@ -156,7 +156,7 @@ def load_sg(sg_titel):
 
 def audio_copy(path_file_source, path_file_dest):
     """audiofile kopieren"""
-    success_copy = None
+    success_copy = False
     try:
         shutil.copy(path_file_source, path_file_dest)
         db.write_log_to_db_a(ac, u"Audio Vorproduktion: "
@@ -194,7 +194,7 @@ def write_to_info_file(path_file_dest, item, sendung):
         db.write_log_to_db(ac, log_message, "x")
         db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
                                              "write_also_to_console")
-        success_write = None
+        success_write = False
     else:
         # filename rechts von slash extrahieren
         filename = lib_cm.extract_filename(ac, path_file_dest)
@@ -215,7 +215,7 @@ def write_to_info_file(path_file_dest, item, sendung):
 
 
 def filepaths(item, sendung):
-    """Pfade und Dateinamen zusammenbauen"""
+    """concatenate path and filename"""
     success_file = True
     try:
         if sendung[4].strip() == "T" or sendung[5].strip() == "T":
@@ -226,7 +226,9 @@ def filepaths(item, sendung):
         path_file_source = (path_source + sendung[12])
 
         path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
-        path_cloud = lib_cm.check_slashes(ac, item[2])
+        if item[1].strip() == "T":
+            # Dropbox
+            path_cloud = lib_cm.check_slashes(ac, item[2])
         filename_dest = (sendung[2].strftime('%Y_%m_%d') + "_"
             + db.ac_config_1[4] + str(sendung[12][7:]))
         path_file_dest = (path_dest + path_cloud + filename_dest)
@@ -234,28 +236,40 @@ def filepaths(item, sendung):
         log_message = (ac.app_errorslist[3] + "fuer: "
             + sendung[11].encode('ascii', 'ignore') + " " + str(e))
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        success_file = None
+        success_file = False
 
     lib_cm.message_write_to_console(ac, path_file_source)
     lib_cm.message_write_to_console(ac, path_file_dest)
     #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
+    return success_file, path_file_source, path_file_dest
 
+
+def check_file_source(path_file_source, sendung):
+    """check if file exist in source"""
+    success_file = True
     if not os.path.isfile(path_file_source):
+        filename = lib_cm.extract_filename(ac, path_file_source)
         lib_cm.message_write_to_console(ac, u"nicht vorhanden: "
-                    + path_file_dest)
+                    + filename)
         db.write_log_to_db_a(ac,
             u"Vorproduktion fuer extern noch nicht in Play_Out vorhanden: "
             + sendung[12], "f", "write_also_to_console")
-        success_file = None
+        success_file = False
+    return success_file
 
+
+def check_file_dest_dropb(path_file_dest):
+    """check if file exist in destination"""
+    success_file = True
     if os.path.isfile(path_file_dest):
+        filename = lib_cm.extract_filename(ac, path_file_dest)
         lib_cm.message_write_to_console(ac, u"vorhanden: " + path_file_dest)
         db.write_log_to_db_a(ac,
             u"Vorproduktion fuer extern in Cloud bereits vorhanden: "
-            + filename_dest,
+            + filename,
             "k", "write_also_to_console")
-        success_file = None
-    return success_file, path_file_source, path_file_dest
+        success_file = False
+    return success_file
 
 
 def check_and_work_on_files(roboting_sgs):
@@ -280,27 +294,35 @@ def check_and_work_on_files(roboting_sgs):
                     + sendung[11].encode('ascii', 'ignore'), "t",
                     "write_also_to_console")
 
-            if item[1][:1] == "T":
-                # to Dropbox
-                # create path and filename
-                success_file, path_file_source, path_file_dest = filepaths(
+            # create path and filename
+            success_file, path_file_source, path_file_dest = filepaths(
                                      item, sendung)
-                if success_file is None:
+            if success_file is False:
+                continue
+
+            success_file = check_file_source(path_file_source, sendung)
+            if success_file is False:
+                continue
+
+            if item[1].strip() == "T":
+                # to Dropbox
+                success_file = check_file_dest_dropb(path_file_dest)
+                if success_file is False:
                     continue
 
                 # copy to dropbox
                 success_copy = audio_copy(path_file_source, path_file_dest)
-                if success_copy is None:
+                if success_copy is False:
                     continue
 
                 # info-txt-file
                 success_write = write_to_info_file(
                                                 path_file_dest, item, sendung)
-                if success_write is None:
+                if success_write is False:
                     # probs mit datei
                     continue
 
-                # filename rechts von slash extrahieren
+                # extract filename
                 filename = lib_cm.extract_filename(ac, path_file_dest)
 
                 db.write_log_to_db_a(ac,
