@@ -122,10 +122,11 @@ def load_roboting_sgs():
     """Sendungen suchen, die bearbeitet werden sollen"""
     lib_cm.message_write_to_console(ac,
         u"Sendungen suchen, die bearbeitet werden sollen")
-    sendungen_data = db.read_tbl_rows_with_cond(ac, db,
+    sendungen_data = (db.read_tbl_rows_with_cond(ac, db,
         "SG_HF_ROBOT",
-        "SG_HF_ROB_TITEL, SG_HF_ROB_OUT_DROPB, SG_HF_ROB_FILE_OUT_DB",
-        "SG_HF_ROB_VP_OUT ='T'")
+        "SG_HF_ROB_TITEL, SG_HF_ROB_OUT_DROPB, SG_HF_ROB_FILE_OUT_DB "
+        "SG_HF_ROB_OUT_FTP, SG_HF_ROB_FILE_OUT_FTP",
+        "SG_HF_ROB_VP_OUT ='T'"))
 
     if sendungen_data is None:
         log_message = u"Keine Sendungen fuer externe VP vorgesehen.. "
@@ -175,7 +176,7 @@ def audio_copy(path_file_source, path_file_dest):
 
 
 def write_to_info_file(path_file_dest, item, sendung):
-    """info-file schreiben"""
+    """writing info-file"""
     success_write = True
     manuskript_data = load_manuskript(sendung)
     if manuskript_data is not None:
@@ -186,7 +187,7 @@ def write_to_info_file(path_file_dest, item, sendung):
         #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
         path_text_file_dest = os.path.splitext(path_file_dest)[0] + ".txt"
         f_info_txt = open(path_text_file_dest, 'w')
-        db.write_log_to_db_a(ac, u"Info-Text schreiben " + path_file_dest,
+        db.write_log_to_db_a(ac, "Info-Text schreiben " + path_file_dest,
                 "v", "write_also_to_console")
     except IOError as (errno, strerror):
         log_message = ("write_to_file_record_params: I/O error({0}): {1}"
@@ -258,7 +259,7 @@ def check_file_source(path_file_source, sendung):
     return success_file
 
 
-def check_file_dest_dropb(path_file_dest):
+def check_file_dest_cloud(path_file_dest):
     """check if file exist in destination"""
     success_file = True
     if os.path.isfile(path_file_dest):
@@ -277,7 +278,7 @@ def check_and_work_on_files(roboting_sgs):
     - search audiofiles,
     - if found, work on them
     """
-    lib_cm.message_write_to_console(ac, u"check_and_work_on_files")
+    lib_cm.message_write_to_console(ac, "check_and_work_on_files")
 
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
@@ -286,11 +287,11 @@ def check_and_work_on_files(roboting_sgs):
         sendungen = load_sg(titel)
 
         if sendungen is None:
-            lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
+            lib_cm.message_write_to_console(ac, "Keine Sendungen gefunden")
             continue
 
         for sendung in sendungen:
-            db.write_log_to_db_a(ac, u"Sendung fuer VP nach extern gefunden: "
+            db.write_log_to_db_a(ac, "Sendung fuer VP nach extern gefunden: "
                     + sendung[11].encode('ascii', 'ignore'), "t",
                     "write_also_to_console")
 
@@ -305,8 +306,8 @@ def check_and_work_on_files(roboting_sgs):
                 continue
 
             if item[1].strip() == "T":
-                # to Dropbox
-                success_file = check_file_dest_dropb(path_file_dest)
+                # to Cloud
+                success_file = check_file_dest_cloud(path_file_dest)
                 if success_file is False:
                     continue
 
@@ -333,24 +334,26 @@ def check_and_work_on_files(roboting_sgs):
                                                     "write_also_to_console")
 
 
-def erase_files_from_cloud_prepaere(roboting_sgs):
-    """loeschen alter Dateien vorbereiten"""
+def erase_files_prepaere(roboting_sgs):
+    """prepaere erasing files"""
     date_back = (datetime.datetime.now()
                  + datetime.timedelta(days=- int(db.ac_config_1[3])))
     c_date_back = date_back.strftime("%Y_%m_%d")
     db.write_log_to_db_a(ac, u"Sendedatum muss aelter sein als: "
                                 + c_date_back, "t", "write_also_to_console")
     for item in roboting_sgs:
-        path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
-        path_cloud = lib_cm.check_slashes(ac, item[2])
-        path_dest_cloud = (path_dest + path_cloud)
-        try:
-            files_sendung_dest = os.listdir(path_dest_cloud)
-        except Exception, e:
-            log_message = ac.app_errorslist[3] + u": %s" % str(e)
-            lib_cm.message_write_to_console(ac, log_message)
-            db.write_log_to_db(ac, log_message, "x")
-            return
+        if item[1].strip() == "T":
+            # in Cloud
+            path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
+            path_cloud = lib_cm.check_slashes(ac, item[2])
+            path_dest_cloud = (path_dest + path_cloud)
+            try:
+                files_sendung_dest = os.listdir(path_dest_cloud)
+            except Exception, e:
+                log_message = ac.app_errorslist[3] + u": %s" % str(e)
+                lib_cm.message_write_to_console(ac, log_message)
+                db.write_log_to_db(ac, log_message, "x")
+                return
         erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back)
     return
 
@@ -394,9 +397,9 @@ def lets_rock():
     check_and_work_on_files(roboting_sgs)
 
     # delete old files in cloud
-    db.write_log_to_db_a(ac, u"Veraltete Dateien in Cloud loeschen",
+    db.write_log_to_db_a(ac, "Veraltete Dateien in Cloud loeschen",
                                             "p", "write_also_to_console")
-    erase_files_from_cloud_prepaere(roboting_sgs)
+    erase_files_prepaere(roboting_sgs)
     return
 
 
@@ -405,7 +408,7 @@ if __name__ == "__main__":
     ac = app_config()
     print "lets_work: " + ac.app_desc
     # losgehts
-    db.write_log_to_db(ac, ac.app_desc + u" gestartet", "a")
+    db.write_log_to_db(ac, ac.app_desc + " gestartet", "a")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
     if db.ac_config_1 is not None:
