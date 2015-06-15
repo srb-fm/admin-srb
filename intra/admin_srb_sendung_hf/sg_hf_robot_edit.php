@@ -17,26 +17,26 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	
 $message = "";
-$action_ok = "no";
-	
-// action pruefen	
-if ( isset( $_GET['action'] ) ) {
+$action_ok = false;
+
+// check action	
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
-			
-if ( $action_ok == "yes" ) {	
-	if ( isset( $_GET['sg_robot_id'] ) ) { 
+
+if ( $action_ok == true ) {
+	if ( isset($_GET['sg_robot_id']) ) { 
 		$id = $_GET['sg_robot_id'];
 	}
-	if ( isset( $_POST['sg_robot_id'] ) ) { 
+	if ( isset($_POST['sg_robot_id']) ) { 
 		$id = $_POST['sg_robot_id'];
 	}
-	if ( $id !="" ) { 
+	if ( $id !="" ) {
 		switch ( $action ) {
 		case "new":
 			$message = "Automatisierte Sendung eintragen";
@@ -47,9 +47,9 @@ if ( $action_ok == "yes" ) {
 		case "add":
 			// fields
 			$tbl_fields = "SG_HF_ROB_ID, SG_HF_ROB_TITEL, SG_HF_ROB_STICHWORTE, 
-								SG_HF_ROB_FILENAME_IN, SG_HF_ROB_VP_IN, 
+								SG_HF_ROB_FILE_IN_DB, SG_HF_ROB_VP_IN, 
 								SG_HF_ROB_DUB_ID, SG_HF_ROB_SHIFT,
-								SG_HF_ROB_FILENAME_OUT, SG_HF_ROB_VP_OUT";
+								SG_HF_ROB_FILE_OUT_DB, SG_HF_ROB_VP_OUT";
 			$main_id = db_generator_main_id_load_value();
 			// checkboxen
 			if ( isset($_POST['form_sg_rob_vp']) ) { 
@@ -80,9 +80,9 @@ if ( $action_ok == "yes" ) {
 			
 		case "update":
 			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, 
-									SG_HF_ROB_FILENAME_IN=?, SG_HF_ROB_VP_IN=?, 
+									SG_HF_ROB_FILE_IN_DB=?, SG_HF_ROB_VP_IN=?, 
 									SG_HF_ROB_DUB_ID=?, SG_HF_ROB_SHIFT=?,
-									SG_HF_ROB_FILENAME_OUT=?, SG_HF_ROB_VP_OUT=?";
+									SG_HF_ROB_FILE_OUT_DB=?, SG_HF_ROB_VP_OUT=?";
 			// checkboxen
 			if ( isset($_POST['form_sg_rob_vp']) ) { 
 				$tbl_value_vp = $_POST['form_sg_rob_vp']; 
@@ -133,7 +133,7 @@ echo "<div class='head_item_right'>";
 echo $message;
 echo "</div>";
 echo "<div class='content'>";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) {
 	return;
 }
 if ( ! isset($tbl_row->SG_HF_ROB_ID ) ) { 
@@ -167,7 +167,7 @@ if ( $user_rights == "yes" ) {
 	
 	echo "<div class='content_row_b_1'>";
 	echo "<div class='content_column_1'>Pfad/Dateiname <b>von</b> extern</div>";
-	echo "<input type=\"text\" name='form_sg_rob_filename' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILENAME_IN))."\" >";
+	echo "<input type=\"text\" name='form_sg_rob_filename' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILE_IN_DB))."\" >";
 	echo "</div>";
 
 	echo "<div class='content_row_a_1'>";
@@ -199,7 +199,7 @@ if ( $user_rights == "yes" ) {
 	
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Pfad/Dateiname nach extern</div>";
-	echo "<input type=\"text\" name='form_sg_rob_filename_out' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILENAME_OUT))."\" >";
+	echo "<input type=\"text\" name='form_sg_rob_filename_out' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILE_OUT_DB))."\" >";
 	echo "</div>";
 	
 	echo "<br>";

@@ -119,7 +119,7 @@ def load_manuskript(sendung):
 
 
 def load_roboting_sgs():
-    """Sendungen suchen, die bearbeitet werden sollen"""
+    """search shows"""
     lib_cm.message_write_to_console(ac,
         u"Sendungen suchen, die bearbeitet werden sollen")
     sendungen_data = (db.read_tbl_rows_with_cond(ac, db,
@@ -155,16 +155,16 @@ def load_sg(sg_titel):
     return sendung_data
 
 
-def audio_copy(path_file_source, path_file_dest):
+def audio_copy(path_file_source, path_file_cloud):
     """audiofile kopieren"""
     success_copy = False
     try:
-        shutil.copy(path_file_source, path_file_dest)
+        shutil.copy(path_file_source, path_file_cloud)
         db.write_log_to_db_a(ac, u"Audio Vorproduktion: "
                 + path_file_source.encode('ascii', 'ignore'),
                 "v", "write_also_to_console")
         db.write_log_to_db_a(ac, u"Audio kopiert nach: "
-                + path_file_dest, "c", "write_also_to_console")
+                + path_file_cloud, "c", "write_also_to_console")
         success_copy = True
     except Exception, e:
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
@@ -175,7 +175,7 @@ def audio_copy(path_file_source, path_file_dest):
     return success_copy
 
 
-def write_to_info_file(path_file_dest, item, sendung):
+def write_to_info_file(path_file_cloud, item, sendung):
     """writing info-file"""
     success_write = True
     manuskript_data = load_manuskript(sendung)
@@ -185,20 +185,20 @@ def write_to_info_file(path_file_dest, item, sendung):
     #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
     try:
         #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
-        path_text_file_dest = os.path.splitext(path_file_dest)[0] + ".txt"
+        path_text_file_dest = os.path.splitext(path_file_cloud)[0] + ".txt"
         f_info_txt = open(path_text_file_dest, 'w')
-        db.write_log_to_db_a(ac, "Info-Text schreiben " + path_file_dest,
+        db.write_log_to_db_a(ac, "Info-Text schreiben " + path_file_cloud,
                 "v", "write_also_to_console")
     except IOError as (errno, strerror):
         log_message = ("write_to_file_record_params: I/O error({0}): {1}"
-                        .format(errno, strerror) + ": " + path_file_dest)
+                        .format(errno, strerror) + ": " + path_file_cloud)
         db.write_log_to_db(ac, log_message, "x")
         db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
                                              "write_also_to_console")
         success_write = False
     else:
         # filename rechts von slash extrahieren
-        filename = lib_cm.extract_filename(ac, path_file_dest)
+        filename = lib_cm.extract_filename(ac, path_file_cloud)
 
         f_info_txt.write("Titel: " + sendung[11].encode('utf-8')
                         + "\r\n")
@@ -218,6 +218,9 @@ def write_to_info_file(path_file_dest, item, sendung):
 def filepaths(item, sendung):
     """concatenate path and filename"""
     success_file = True
+    path_file_cloud = None
+    path_file_ftp = None
+
     try:
         if sendung[4].strip() == "T" or sendung[5].strip() == "T":
             # IT or MAG
@@ -226,13 +229,18 @@ def filepaths(item, sendung):
             path_source = lib_cm.check_slashes(ac, db.ac_config_1[2])
         path_file_source = (path_source + sendung[12])
 
-        path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
-        if item[1].strip() == "T":
-            # Dropbox
-            path_cloud = lib_cm.check_slashes(ac, item[2])
         filename_dest = (sendung[2].strftime('%Y_%m_%d') + "_"
             + db.ac_config_1[4] + str(sendung[12][7:]))
-        path_file_dest = (path_dest + path_cloud + filename_dest)
+
+        if item[1].strip() == "T":
+            # Cloud
+            path_dest_cloud = lib_cm.check_slashes(ac, db.ac_config_1[5])
+            path_cloud = lib_cm.check_slashes(ac, item[2])
+            path_file_cloud = (path_dest_cloud + path_cloud + filename_dest)
+        if item[3].strip() == "T":
+            # FTP
+            path_ftp = lib_cm.check_slashes(ac, item[4])
+            path_file_ftp = (path_ftp + filename_dest)
     except Exception, e:
         log_message = (ac.app_errorslist[3] + "fuer: "
             + sendung[11].encode('ascii', 'ignore') + " " + str(e))
@@ -240,9 +248,9 @@ def filepaths(item, sendung):
         success_file = False
 
     lib_cm.message_write_to_console(ac, path_file_source)
-    lib_cm.message_write_to_console(ac, path_file_dest)
+    lib_cm.message_write_to_console(ac, path_file_cloud)
     #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
-    return success_file, path_file_source, path_file_dest
+    return success_file, path_file_source, path_file_cloud, path_file_ftp
 
 
 def check_file_source(path_file_source, sendung):
@@ -259,12 +267,12 @@ def check_file_source(path_file_source, sendung):
     return success_file
 
 
-def check_file_dest_cloud(path_file_dest):
+def check_file_dest_cloud(path_file_cloud):
     """check if file exist in destination"""
     success_file = True
-    if os.path.isfile(path_file_dest):
-        filename = lib_cm.extract_filename(ac, path_file_dest)
-        lib_cm.message_write_to_console(ac, u"vorhanden: " + path_file_dest)
+    if os.path.isfile(path_file_cloud):
+        filename = lib_cm.extract_filename(ac, path_file_cloud)
+        lib_cm.message_write_to_console(ac, u"vorhanden: " + path_file_cloud)
         db.write_log_to_db_a(ac,
             u"Vorproduktion fuer extern in Cloud bereits vorhanden: "
             + filename,
@@ -273,12 +281,12 @@ def check_file_dest_cloud(path_file_dest):
     return success_file
 
 
-def check_and_work_on_files(roboting_sgs):
+def work_on_files(roboting_sgs):
     """
     - search audiofiles,
     - if found, work on them
     """
-    lib_cm.message_write_to_console(ac, "check_and_work_on_files")
+    lib_cm.message_write_to_console(ac, "work_on_files")
 
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
@@ -296,35 +304,35 @@ def check_and_work_on_files(roboting_sgs):
                     "write_also_to_console")
 
             # create path and filename
-            success_file, path_file_source, path_file_dest = filepaths(
-                                     item, sendung)
-            if success_file is False:
+            success, path_f_source, path_file_cloud, path_file_ftp = filepaths(
+                                                        item, sendung)
+            if success is False:
                 continue
 
-            success_file = check_file_source(path_file_source, sendung)
+            success_file = check_file_source(path_f_source, sendung)
             if success_file is False:
                 continue
 
             if item[1].strip() == "T":
                 # to Cloud
-                success_file = check_file_dest_cloud(path_file_dest)
+                success_file = check_file_dest_cloud(path_file_cloud)
                 if success_file is False:
                     continue
 
                 # copy to dropbox
-                success_copy = audio_copy(path_file_source, path_file_dest)
+                success_copy = audio_copy(path_f_source, path_file_cloud)
                 if success_copy is False:
                     continue
 
                 # info-txt-file
                 success_write = write_to_info_file(
-                                                path_file_dest, item, sendung)
+                                                path_file_cloud, item, sendung)
                 if success_write is False:
                     # probs mit datei
                     continue
 
                 # extract filename
-                filename = lib_cm.extract_filename(ac, path_file_dest)
+                filename = lib_cm.extract_filename(ac, path_file_cloud)
 
                 db.write_log_to_db_a(ac,
                     "VP in Dropbox kopiert: " + filename, "i",
@@ -332,6 +340,11 @@ def check_and_work_on_files(roboting_sgs):
                 db.write_log_to_db_a(ac,
                     "VP in Dropbox kopiert: " + filename, "n",
                                                     "write_also_to_console")
+            if item[3].strip() == "T":
+                # to ftp
+                success_file = check_file_dest_ftp(path_file_ftp)
+                if success_file is False:
+                    continue
 
 
 def erase_files_prepaere(roboting_sgs):
@@ -394,7 +407,7 @@ def lets_rock():
         return
 
     # pruefen was noch nicht in cloud ist, kopieren und meta schreiben
-    check_and_work_on_files(roboting_sgs)
+    work_on_files(roboting_sgs)
 
     # delete old files in cloud
     db.write_log_to_db_a(ac, "Veraltete Dateien in Cloud loeschen",

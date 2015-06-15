@@ -139,7 +139,7 @@ if ( $user_rights == "yes" ) {
 
 	echo "<div class='content_row_b_1'>";
 	echo "<div class='content_column_1'>Pfad/Dateiname von extern</div>";
-	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILENAME_IN. "</div>";
+	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILE_IN_DB. "</div>";
 	echo "</div>\n";
 
 	echo "<div class='content_row_a_1'>";
