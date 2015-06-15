@@ -63,6 +63,7 @@ fi
 if [ $mount_available == "Y" ]; then
 
 	echo "Backup from Archive Sendung"
+	echo "Backup from Archive Sendung" >> $path_file_log_sg
 	rsync -r -t -v -s --log-file=$path_file_log_sg $media_archive_sendung $media_backup_sendung
 
 	echo "Now running Backup Archive Infotime..." >> $path_file_log_sg
