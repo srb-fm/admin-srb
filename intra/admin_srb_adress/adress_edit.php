@@ -15,24 +15,24 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
-$action_ok = "no";
-	
+$action_ok = false;
+
 // check action	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
 
-if ( isset( $_POST['action'] ) ) {
+if ( isset($_POST['action']) ) {
 	$action = $_POST['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
-			
-if ( $action_ok == "yes" ) {
-	if ( isset( $_GET['ad_id'] ) ) {
+		
+if ( $action_ok == true ) {
+	if ( isset($_GET['ad_id']) ) {
 		$id = $_GET['ad_id'];
 	}
-	if ( isset( $_POST['ad_id'] ) ) {
+	if ( isset($_POST['ad_id']) ) {
 		$id = $_POST['ad_id'];
 	}
 
@@ -40,12 +40,12 @@ if ( $action_ok == "yes" ) {
 	if ( $action == "new" or $action == "add" ) { 
 		if ( $id != "0" ) {
 			$id = "";
-			$action_ok = "no";
+			$action_ok = false;
 		}
 	} else {	
 		if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
 			$id = "";
-			$action_ok = "no";
+			$action_ok = false;
 		}
 	}
 
@@ -72,54 +72,54 @@ if ( $action_ok == "yes" ) {
 			$value_titel = db_query_load_id_by_value("AD_TITEL", "AD_TITEL_DESC", $_POST['form_ad_titel']);
 			$value_land = db_query_load_id_by_value("AD_COUNTRY", "AD_COUNTRY_DESC", $_POST['form_ad_land']);
 			$value_geb_dat = get_date_format_sql($_POST['form_ad_datum_geburt']);
-				
+			
 			// checkboxen
-			if ( isset( $_POST['form_ad_user_ok_hf']) ) { 
+			if ( isset($_POST['form_ad_user_ok_hf'])) { 
 				$value_user_ok_hf = $_POST['form_ad_user_ok_hf']; 
 			} else { 
 				$value_user_ok_hf = "F" ;
 			}				
-			if ( isset( $_POST['form_ad_user_ok_tv']) ) { 
+			if ( isset($_POST['form_ad_user_ok_tv'])) { 
 				$value_user_ok_tv = $_POST['form_ad_user_ok_tv']; 
 			} else { 
 				$value_user_ok_tv = "F" ;
 			}				
-			if ( isset( $_POST['form_ad_privat']) ) { 
+			if ( isset($_POST['form_ad_privat'])) { 
 				$value_privat = $_POST['form_ad_privat']; 
-			} else { 
+			} else {
 				$value_privat = "F" ;
 			}
-			if ( isset( $_POST['form_ad_org']) ) { 
+			if ( isset($_POST['form_ad_org'])) { 
 				$value_org = $_POST['form_ad_org']; 
-			} else { 
+			} else {
 				$value_org = "F" ;
-			}				
-			if ( isset( $_POST['form_ad_verein']) ) { 
+			}	
+			if ( isset($_POST['form_ad_verein'])) { 
 				$value_verein = $_POST['form_ad_verein']; 
-			} else { 
+			} else {
 				$value_verein = "F" ;
 			}
-			if ( isset( $_POST['form_ad_vereinsnah']) ) { 
+			if ( isset($_POST['form_ad_vereinsnah'])) { 
 				$value_ver_nah = $_POST['form_ad_vereinsnah']; 
-			} else { 
+			} else {
 				$value_ver_nah = "F" ;
 			}
-			if ( isset( $_POST['form_ad_active'] ) ) { 
+			if ( isset($_POST['form_ad_active']) ) { 
 				$value_active = $_POST['form_ad_active']; 
-			} else { 
+			} else {
 				$value_active = "F" ;
 			}
-			if ( isset( $_POST['form_ad_active_user'] ) ) { 
+			if ( isset($_POST['form_ad_active_user']) ) { 
 				$value_active_user = $_POST['form_ad_active_user']; 
-			} else { 
+			} else {
 				$value_active_user = "F" ;
 			}
-			if ( isset( $_POST['form_ad_praktikant'] ) ) {
+			if ( isset($_POST['form_ad_praktikant']) ) {
 				$value_praktikant = $_POST['form_ad_praktikant']; 
-			} else { 
+			} else {
 				$value_praktikant = "F" ;
 			}
-				
+
 			$a_values = array( $main_id,
   				$value_anrede, $value_titel, $value_land, $value_geb_dat,
   				$_POST['form_ad_nr_pa'],
@@ -132,18 +132,18 @@ if ( $action_ok == "yes" ) {
   				$_POST['form_ad_stichwort'], $_POST['form_ad_bildung'], $_POST['form_ad_beruf'],
   				$_POST['form_ad_text'],
   				$value_user_ok_hf,  $value_user_ok_tv, $value_privat, $value_org, $value_verein, $value_ver_nah, $value_active, $value_active_user,  $value_praktikant ); 
-				
+			
 			$insert_ok = db_query_add_item_b("AD_MAIN", $tbl_fields, "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", $a_values);
-		    		 
+	    		 
 			header("Location: adress_detail.php?action=display&ad_id=".$main_id);
 			break;
-				
+			
 		case "edit":
 			$message .=   "Adress-Details bearbeiten";
 			$form_input_type = "update"; //form action einstellen
 			$tbl_row = db_query_display_item_1("AD_MAIN", "AD_ID = " .$id);
 			break;
-				
+			
 		case "update":
 			$fields_params = "AD_ANREDE_ID=?, AD_TITEL_ID=?, AD_LAND_ID=?, AD_DATUM_GEBURT=?, ";
 			$fields_params .= "AD_VORNAME=?, AD_NAME=?, AD_FIRMA=?, AD_STRASSE=?,  AD_PF=?, AD_PLZ=?, AD_ORT=?, ";
@@ -160,47 +160,47 @@ if ( $action_ok == "yes" ) {
 			} else { 
 				$value_user_ok_hf = "F" ;
 			}				
-			if ( isset( $_POST['form_ad_user_ok_tv'] ) ) { 
+			if ( isset($_POST['form_ad_user_ok_tv']) ) { 
 				$value_user_ok_tv = $_POST['form_ad_user_ok_tv']; 
-			} else { 
+			} else {
 				$value_user_ok_tv = "F" ;
-			}				
-			if ( isset( $_POST['form_ad_privat'] ) ) { 
+			}	
+			if ( isset($_POST['form_ad_privat']) ) { 
 				$value_privat = $_POST['form_ad_privat']; 
-			} else { 
+			} else {
 				$value_privat = "F" ;
 			}
-			if ( isset( $_POST['form_ad_org'] ) ) { 
+			if ( isset($_POST['form_ad_org']) ) { 
 				$value_org = $_POST['form_ad_org']; 
-			} else { 
+			} else {
 				$value_org = "F" ;
-			}				
-			if ( isset( $_POST['form_ad_verein'] ) ) { 
+			}	
+			if ( isset($_POST['form_ad_verein']) ) { 
 				$value_verein = $_POST['form_ad_verein']; 
-			} else { 
+			} else {
 				$value_verein = "F" ;
 			}
-			if ( isset( $_POST['form_ad_vereinsnah'] ) ) { 
+			if ( isset($_POST['form_ad_vereinsnah']) ) { 
 				$value_ver_nah = $_POST['form_ad_vereinsnah']; 
-			} else { 
+			} else {
 				$value_ver_nah = "F" ;
 			}
-			if ( isset( $_POST['form_ad_active'] ) ) { 
+			if ( isset($_POST['form_ad_active']) ) { 
 				$value_active = $_POST['form_ad_active']; 
-			} else { 
+			} else {
 				$value_active = "F" ;
 			}
-			if ( isset( $_POST['form_ad_active_user'] ) ) { 
+			if ( isset($_POST['form_ad_active_user']) ) { 
 				$value_active_user = $_POST['form_ad_active_user']; 
-			} else { 
+			} else {
 				$value_active_user = "F" ;
 			}
-			if ( isset( $_POST['form_ad_praktikant'] ) ) { 
+			if ( isset($_POST['form_ad_praktikant']) ) { 
 				$value_praktikant = $_POST['form_ad_praktikant']; 
-			} else { 
+			} else {
 				$value_praktikant = "F" ;
 			}
-				
+
 			$a_values = array($value_anrede, $value_titel,	$value_land, $value_geb_dat,
     			$_POST['form_ad_vorname'], $_POST['form_ad_name'],
     			$_POST['form_ad_firma'], $_POST['form_ad_strasse'],
@@ -255,7 +255,7 @@ echo $message;
 echo "</div>";	
 echo "<div class='content'>";	
 		 
-if ( $action_ok == "no" ) {
+if ( $action_ok == false ) {
 	echo "Fehler bei Übergabe: ".$action;
 	return;
 }

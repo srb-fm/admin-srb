@@ -22,21 +22,21 @@ if ( isset($_GET['action']) ) {
 			$ad_id = $_GET['ad_id'];
 			// check id
 			if ( ! filter_var( $ad_id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
-				$action_ok = "no";
+				$action_ok = false;
 				$ad_id = "";
 			}
 			if ( $ad_id !="" )	{ 
-				$action_ok = "yes";
+				$action_ok = true;
 				$c_query_condition = "AD_ID = ".$_GET['ad_id'];	
 			}	
 		}	
-	}	
+	}
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-	
+
 // Alles ok, Daten holen
-if ( $action_ok == "yes" ) {
+if ( $action_ok == true ) {
 	$tbl_row = db_query_display_item_1("AD_MAIN", $c_query_condition);
 }
 
@@ -57,7 +57,7 @@ if ( $action_ok == "yes" ) {
 <body onload="javascript:window.print(); return true;">
  
 <?php 
-if ( $action_ok == "no" ) {
+if ( $action_ok == false ) {
 	echo "Fehler bei Übergabe: ".$action;
 	return;
 }
@@ -155,6 +155,5 @@ if ( $user_rights == "yes" ) {
 	
 } // user_rights
 ?>
-	
 </body>
 </html>

@@ -16,7 +16,7 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 $display_option = "normal";
 $find_limit_skip = "no";
 $sg_id = "no";
@@ -28,24 +28,24 @@ $sg_id = "no";
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 	
 // check action	
-if ( isset( $_GET['action'] ) ) { 
+if ( isset($_GET['action']) ) { 
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) {	
+if ( isset($_POST['action']) ) {	
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
 
-if ( $action_ok != "yes" ) {	
+if ( $action_ok == false ) {	
 	$message .= "Keine Anweisung. Nichts zu tun..... "; 
 }
-if ( isset( $_GET['find_limit_skip'] )) {
+if ( isset($_GET['find_limit_skip'])) {
 	$find_limit_skip = $_GET['find_limit_skip'];
 }
 
 // change Sendeveranwortlicher
-if ( isset( $_POST['sg_id'] ) ) {	
+if ( isset($_POST['sg_id']) ) {	
 	$sg_id = $_POST['sg_id'];
 }
 
@@ -53,11 +53,11 @@ if ( isset( $_POST['sg_id'] ) ) {
 if ( ! filter_var( $sg_id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
 	$sg_id = "no";
 }
-					
+				
 // Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 // also hier nur pruefen in welchem feld was ist
 	
-if ( isset( $_POST['ad_name'] ) ) {
+if ( isset($_POST['ad_name']) ) {
 	if ( $_POST['ad_name'] !="") { 
 		$c_field_message ="Name";
 		$c_field_desc = "AD_NAME";
@@ -65,15 +65,15 @@ if ( isset( $_POST['ad_name'] ) ) {
 	}
 }
 
-if ( isset( $_POST['ad_vorname'] ) ) {
+if ( isset($_POST['ad_vorname']) ) {
 	if ( $_POST['ad_vorname'] != "") { 
 		$c_field_message ="Vorname";
 		$c_field_desc = "AD_VORNAME";
 		$c_field_value = $_POST['ad_vorname']; 
 	}
 }
-	
-if ( isset( $_POST['ad_firma'] ) ) {
+
+if ( isset($_POST['ad_firma']) ) {
 	if ( $_POST['ad_firma'] !="") { 
 		$c_field_message ="Firma";
 		$c_field_desc = "AD_FIRMA";
@@ -81,44 +81,44 @@ if ( isset( $_POST['ad_firma'] ) ) {
 		$c_field_value = $_POST['ad_firma']; 
 	}
 }
-		
-if ( isset( $_POST['ad_stichwort'] ) ) {
+
+if ( isset($_POST['ad_stichwort']) ) {
 	if ( $_POST['ad_stichwort'] !="") { 
 		$c_field_message ="Stichwort";
 		$c_field_desc = "AD_STICHWORT";
 		$c_field_value = $_POST['ad_stichwort']; 
 	}
 }
-	
-if ( isset( $_POST['ad_ort'] ) ) {
+
+if ( isset($_POST['ad_ort']) ) {
 	if ( $_POST['ad_ort'] !="") { 
 		$c_field_message ="Ort";
 		$c_field_desc = "AD_ORT";
 		$c_field_value = $_POST['ad_ort']; 
 	} 
 }
-	
+
 // ausgabebegrenzung 3			
 //wenn unber limitweiterschaltung kommt find field und value per get:
-if ( isset( $_GET['field_desc'] ) ) { 
+if ( isset($_GET['field_desc']) ) { 
 	$c_field_desc = $_GET['field_desc']; 
 }
-if ( isset( $_GET['field_value'] ) ) { 
+if ( isset($_GET['field_value']) ) { 
 	$c_field_value = $_GET['field_value']; 
 }
-	
-	
-// Bedingung pruefen	
+
+
+// check condition	
 $find_option_ok = "no";
-if ( isset( $_GET['find_option'] ) ) {
+if ( isset($_GET['find_option']) ) {
 	$find_option = $_GET['find_option'];
 	$find_option_ok = "yes";
 }
-if ( isset( $_POST['find_option'] ) ) {
+if ( isset($_POST['find_option']) ) {
 	$find_option = $_POST['find_option'];
 	$find_option_ok = "yes";
-}		
-	
+}
+
 if ( $find_option_ok = "yes" ) {
 	switch ( $action ) {
 	case "find": 
@@ -174,9 +174,9 @@ echo $message_find_string."\n";
 echo "</div>";
 echo "<div class='content'>";	
  
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
-} 
+}
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
 if ( $user_rights == "yes" ) { 	 
 	if ( $db_result ) {
@@ -225,7 +225,7 @@ if ( $user_rights == "yes" ) {
 			}
 		}	
 	}						
-				
+			
 	echo "</div>";
 	echo "<div class='space_line'></div>";	
 } // user_rights

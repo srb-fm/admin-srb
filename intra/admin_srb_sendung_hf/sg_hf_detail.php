@@ -46,7 +46,7 @@ if ( isset( $_POST['action'] ) ) {
 	$action_ok = true;
 }
 			
-if ( $action_ok == "yes" ) {
+if ( $action_ok == true ) {
 	if ( isset( $_GET['sg_id'] ) ) {	
 		$id = $_GET['sg_id'];
 	}

@@ -16,18 +16,18 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	
-// action pruefen	
+// check action	
 if ( isset( $_GET['action'] ) ) {
 	if ( $_GET['action'] == "print" ) {
 		if ( isset( $_GET['ad_id'] ) ) {
 			// check id
 			if ( ! filter_var( $ad_id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 )) ) ) {
-				$action_ok = "no";
+				$action_ok = false;
 				$ad_id = "";
 			}			
 			
 			if ( $_GET['ad_id'] !="" ) { 
-				$action_ok = "yes";
+				$action_ok = true;
 				$c_query_condition = "AD_ID = ".$_GET['ad_id'];	
 			}	
 		}	
@@ -37,7 +37,7 @@ if ( isset( $_GET['action'] ) ) {
 }
 	
 // Alles ok, Daten holen
-if ( $action_ok == "yes" ) {
+if ( $action_ok == true ) {
 	$tbl_row = db_query_display_item_1("AD_MAIN", $c_query_condition);
 }
 
@@ -58,7 +58,7 @@ if ( $action_ok == "yes" ) {
 <body onload="javascript:window.print(); return true;">
  
 <?php 
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 }
 if ( !$tbl_row ) { 

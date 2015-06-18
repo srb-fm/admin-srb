@@ -18,19 +18,19 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
 
-// action pruefen	
-$action_ok = "no";
-if ( isset( $_GET['action'] ) ) {	
+// check action	
+$action_ok = false;
+if ( isset($_GET['action']) ) {	
 	$action = $_GET['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
 		
-if ( $action_ok == "yes" ) {	
+if ( $action_ok == true ) {	
 	$message = "Statistik Adresse"; 	
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-			
+
 $a_statistik_ad = statistik_ad();	
 
 ?>
@@ -55,9 +55,9 @@ echo "<div class='head_item_right'>";
 echo "Statistik Adresse";
 echo "</div>\n";
 	
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
-} 
+}
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
 if ( $user_rights == "yes" ) { 		
 	echo "<div class='content'>Gesamtübersicht Macher</div>\n";	
