@@ -17,18 +17,18 @@ require_once 'HTTP/Download.php';
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
-if ( $user_rights == "yes" ) { 	
-	
-	$message = "";
-	$action_ok = "no";
+if ( $user_rights == "yes" ) {
 
-	// action prüfen	
-	if ( isset( $_GET['action'] ) ) {
+	$message = "";
+	$action_ok = false;
+
+	// check action	
+	if ( isset($_GET['action']) ) {
 		$action = $_GET['action'];
-		$action_ok = "yes";
+		$action_ok = true;
 	}
 
-	if ( $action_ok != "yes" ) { 
+	if ( $action_ok == false ) { 
 		$message = "Keine Anweisung. Nichts zu tun..... "; 
 	}
 	
@@ -40,13 +40,13 @@ if ( $user_rights == "yes" ) {
 		$pfad_datei = "../admin_srb_export/adress_export_anschrift.csv";
 		$dateiname = "adress_export_anschrift.csv";
 		$handler = fOpen($pfad_datei, "w");
-		fWrite($handler, "Anrede,Vorname,Name,Strasse,PLZ,ORT\n");
+		fWrite($handler, "Firma,Anrede,Vorname,Name,Strasse,PLZ,ORT\n");
 		foreach ( $db_result as $item ) {	
 				$anrede = db_query_load_value_by_id("AD_ANREDE", "AD_ANREDE_ID", $item['AD_ANREDE_ID']);
-				fWrite($handler, $anrede. "," .$item['AD_VORNAME']. "," .$item['AD_NAME']. "," .$item['AD_STRASSE']. ",".$item['AD_PLZ']. ",".$item['AD_ORT'] ."\n");
-		}	
+				fWrite($handler, $item['AD_FIRMA']. "," .$anrede. "," .$item['AD_VORNAME']. "," .$item['AD_NAME']. "," .$item['AD_STRASSE']. ",".$item['AD_PLZ']. ",".$item['AD_ORT'] ."\n");
+		}
 		break;
-			
+		
 	case "export_telefon":
 		$pfad_datei = "../admin_srb_export/adress_export_telefon.csv";
 		$dateiname = "adress_export_telefon.csv";
@@ -57,9 +57,9 @@ if ( $user_rights == "yes" ) {
 				fWrite($handler, $item['AD_NAME']. "," . $item['AD_VORNAME']. "," . $item['AD_TEL_1']. ",".$item['AD_TEL_2'] ."\n");
 			}
 		}
-	
+
 		break;
-		
+	
 	case "export_email":
 		$pfad_datei = "../admin_srb_export/adress_export_email.csv";
 		$dateiname = "adress_export_email.csv";
@@ -70,23 +70,21 @@ if ( $user_rights == "yes" ) {
 				fWrite($handler, $item['AD_NAME']. "," . $item['AD_VORNAME']. "," . $item['AD_EMAIL']."\n");
 			}
 		}
-		
+
 		break;
 	//endswitch;		
-	}	
+	}
 	
-		
-	
-	fClose($handler); // Datei schließen
+	fClose($handler); // close file
 	
 	$params = array(
 	  'file'                => $pfad_datei,
 	  'contenttype'         => 'text/comma-separated-values',
 	  'contentdisposition'  => array(HTTP_DOWNLOAD_ATTACHMENT, $dateiname),
 	 );
-	 
+
 	$error = HTTP_Download::staticSend($params, false);
 	echo $error;
-	echo "fertsch"; 
+	echo "fertsch";
 } // user_rights
 ?>
