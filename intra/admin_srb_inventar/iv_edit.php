@@ -17,24 +17,24 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 	
 // check action	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
 			
-if ( $action_ok == "yes" ) {
-	if ( isset( $_GET['iv_id'] ) ) {	
+if ( $action_ok == true ) {
+	if ( isset($_GET['iv_id']) ) {	
 		$id = $_GET['iv_id'];
 	}
-	if ( isset( $_POST['iv_id'] ) ) {
+	if ( isset($_POST['iv_id']) ) {
 		$id = $_POST['iv_id'];
 	}
 
@@ -43,7 +43,7 @@ if ( $action_ok == "yes" ) {
 		case "new":
 			if ( $id != "1" ) {
 				$id = "";
-				$action_ok = "no";
+				$action_ok = false;
 				}
 		break;
 		
@@ -51,15 +51,15 @@ if ( $action_ok == "yes" ) {
 			if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
 				if ( $id != "1" ) {
 					$id = "";
-					$action_ok = "no";
+					$action_ok = false;
 				}
 			}
 		break;
-		
+
 		default:
 			if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
 				$id = "";
-				$action_ok = "no";
+				$action_ok = false;
 			}
 		}
 				
@@ -252,7 +252,7 @@ echo $message;
 echo "</div>";	
 echo "<div class='content'>";
 	
-if ( $action_ok == "no" ) {
+if ( $action_ok == false ) {
 	echo "Fehler bei Übergabe: ".$action;
 	return;
 }

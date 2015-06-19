@@ -18,37 +18,38 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
 
-if ( isset( $_GET['message'] ) ) { 
+if ( isset($_GET['message']) ) { 
 	$message = $_GET['message'];
 }
-if ( isset( $_POST['message'] ) ) { 
+if ( isset($_POST['message']) ) { 
 	$message = $_POST['message'];
 }
 
-$action_ok = "no";
+$action_ok = false;
 	
 // check action	
-if ( isset( $_GET['action'] ) ) {
-	$action = $_GET['action'];	$action_ok = "yes";
+if ( isset($_GET['action']) ) {
+	$action = $_GET['action'];	
+	$action_ok = true;
 }
 
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
 			
-if ( $action_ok == "yes" ) {
-	if ( isset( $_GET['iv_id'] ) ) {	
+if ( $action_ok == true ) {
+	if ( isset($_GET['iv_id']) ) {	
 		$id = $_GET['iv_id'];
 	}
-	if ( isset( $_POST['iv_id'] ) ) {
+	if ( isset($_POST['iv_id']) ) {
 		$id = $_POST['iv_id'];
 	}
 
 	// check id
 	if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
 		$id = "";
-		$action_ok = "no";
+		$action_ok = false;
 	}
 
 	// switch action 
@@ -71,7 +72,7 @@ if ( $action_ok == "yes" ) {
 			}
 			break;
 
-		case "delete":		
+		case "delete":
 			$message .= "Inventar wirklich löschen? ";
 			$c_query_condition = "IV_ID = ".$id;
 			if ( isset( $_GET['kill_possible'] ) ) { 
@@ -88,7 +89,7 @@ if ( $action_ok == "yes" ) {
 				$_ok = db_query_delete_item("IV_MAIN", "IV_ID", $id);
 				if ( $_ok == "true" ) {
 					$message = "Inventar gelöscht!";
-					$action_ok = "no";	
+					$action_ok = false;
 				} else { 
 					$message .= "Löschen fehlgeschlagen";
 					$c_query_condition = "IV_ID = ".$id;
@@ -104,9 +105,9 @@ if ( $action_ok == "yes" ) {
 } else {
 	$message .= "Keine Anweisung. Nichts zu tun..... "; 
 }
-	
+
 // Alles ok, Daten holen
-if ( $action_ok == "yes" ) { 
+if ( $action_ok == true ) { 
 	$tbl_row = db_query_display_item_1("IV_MAIN", $c_query_condition);
 }
 
@@ -132,7 +133,7 @@ echo "<div class='head_item_right'>";
 echo $message; 
 echo "</div>";	
 echo "<div class='content'>";
-if ( $action_ok == "no" ) {
+if ( $action_ok == false ) {
 	echo "Fehler bei Übergabe: ".$action;
 	return;
 }

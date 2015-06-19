@@ -16,7 +16,7 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 $find_limit_skip = "no";
 $condition_delivery = "no";
 $look_up_field ="no";
@@ -31,11 +31,11 @@ $find_kategorie = "no";
 // action pruefen	
 if ( isset($_GET['action']) ) {	
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
 		
 if ( $action_ok != "yes" ) { 
@@ -53,7 +53,7 @@ if ( isset($_GET['vl_id']) ) {
 // check id
 if ( ! filter_var($vl_id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 ))) ) {
 	$vl_id = "";
-	$action_ok = "no";
+	$action_ok = false;
 }
 		
 // condition_delivery pruefen (	ausgabelimit)
@@ -171,7 +171,7 @@ if ( $condition_delivery != "yes" ) {
 } // $condition_delivery != "yes"
 	
 
-if ( $action_ok = "yes" ) {
+if ( $action_ok = true ) {
 	// ausgabebegrenzung 1
 	if ( $find_limit_skip == "no" ) {			
 		if ( $find_kategorie == "no" ) {
@@ -214,7 +214,7 @@ echo "<div class='head_item_right'>";
 echo $message_find_string."\n"; 
 echo "	</div>";
 echo "<div class='content' id='jq_slide_by_click'>";
-if ( $action_ok == "no" ) {
+if ( $action_ok == false ) {
 	echo "Fehler bei Übergabe: ".$action;
 	return;
 }

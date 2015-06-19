@@ -23,23 +23,23 @@ if ( $user_rights != "yes" ) {
 
 require '../parts/fpdf/fpdf.php';
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 	
 // action pruefen	
 if ( isset( $_GET['action'] ) ) {	
-	$action = $_GET['action'];	$action_ok = "yes";
+	$action = $_GET['action'];	$action_ok = true;
 }	
 if ( isset( $_POST['action'] ) ) { 
-	$action = $_POST['action']; $action_ok = "yes";
+	$action = $_POST['action']; $action_ok = true;
 }
 if ( $action != "pdf_ausmusterung" ) { 
-	$action_ok = "no";
+	$action_ok = false;
 }
 if ( $action_ok != "yes" ) {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
 		
-if ( $action_ok == "yes" ) {
+if ( $action_ok == true ) {
 	if ( isset($_GET['iv_id']) ) {	
 		$id = $_GET['iv_id'];
 	}
@@ -50,7 +50,7 @@ if ( $action_ok == "yes" ) {
 	// check id
 	if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000 ))) ) {
 		$id = "";
-		$action_ok = "no";
+		$action_ok = false;
 	}
 }
 

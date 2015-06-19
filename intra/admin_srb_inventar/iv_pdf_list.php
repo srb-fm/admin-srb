@@ -23,7 +23,7 @@ if ( $user_rights != "yes" ) {
 	
 require '../parts/fpdf/fpdf.php';
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 $find_option_ok = "no";
 $display_text = "no";
 $c_query_condition ="";
@@ -31,11 +31,11 @@ $c_query_condition ="";
 // action pruefen	
 if ( isset( $_GET['action'] ) ) {
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 if ( isset( $_POST['action'] ) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
 		
 if ( $action_ok != "yes" ) { 
@@ -103,7 +103,7 @@ if ( $find_option_ok = "yes" ) {
 	}
 }
 
-if ( $action_ok == "yes" and $find_option_ok = "yes" and $c_query_condition !="") {
+if ( $action_ok == true and $find_option_ok = "yes" and $c_query_condition !="") {
 	if ( $display_text == "no" ) {		
 		// text nicht erst mit laden
 		$db_result = db_query_list_items_1("IV_ID, IV_OBJEKT, IV_HERSTELLER, IV_TYP, IV_SPONSOR, IV_DATUM_ANSCHAFFUNG, IV_WERT, IV_VERLIEHEN", "IV_MAIN", $c_query_condition);

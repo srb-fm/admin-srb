@@ -17,7 +17,7 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 $find_limit_skip = "no";
 $condition_delivery = "no";
 $look_up_field ="no";
@@ -31,12 +31,12 @@ $look_up_field ="no";
 // action pruefen	
 if ( isset( $_GET['action'] ) ) {
 		$action = $_GET['action'];
-		$action_ok = "yes";
+		$action_ok = true;
 }
 		
 if ( isset( $_POST['action'] ) ) {
 		$action = $_POST['action'];
-		$action_ok = "yes";
+		$action_ok = true;
 }
 		
 if ( $action_ok != "yes" ) {	
@@ -134,7 +134,7 @@ echo $message_find_string."\n";
 echo "	</div>";
 include "parts/iv_toolbar.inc";
 echo "<div class='content' id='jq_slide_by_click'>";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 		return;
 } 
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
