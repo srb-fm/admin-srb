@@ -18,6 +18,7 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
 $action_ok = false;
+$find_option_ok = false;
 $find_limit_skip = "no";
 $condition_delivery = "no";
 $look_up_field ="no";
@@ -114,20 +115,19 @@ if ( $condition_delivery != "yes" ) {
 			$c_field_value = $_POST['iv_id']; 
 		}
 	}
-			
 		
-	// Bedingung pruefen	
-	$find_option_ok = "no";
+
+	// check condition
 	if ( isset( $_GET['find_option'] ) ) { 
 		$find_option = $_GET['find_option'];
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}
 	if ( isset( $_POST['find_option'] ) ) {
 		$find_option = $_POST['find_option'];	
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}		
 	
-	if ( $find_option_ok = "yes" ) {
+	if ( $find_option_ok == true ) {
 		switch ( $action ) {
 		case "find": 
 			if ( $find_option == "begin" ) {
@@ -187,7 +187,7 @@ if ( $condition_delivery != "yes" ) {
 		}
 	} else {
 		$message = "Keine Suchbedingung! Kann nichts tun... "; 
-	} //$find_option_ok = "yes" 
+	} //$find_option_ok == true 
 	
 } else {// $condition_delivery != "yes"
 		$message_find_string = $_GET['find_string'] ;

@@ -24,7 +24,7 @@ if ( $user_rights != "yes" ) {
 require '../parts/fpdf/fpdf.php';
 $message = "";
 $action_ok = false;
-$find_option_ok = "no";
+$find_option_ok = false;
 $display_text = "no";
 $c_query_condition ="";
 	
@@ -42,17 +42,17 @@ if ( $action_ok != "yes" ) {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
 		
-// Bedingung pruefen		
+// check condtion		
 if ( isset( $_GET['find_option'] ) ) { 
 	$find_option = $_GET['find_option'];
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }
 if ( isset( $_POST['find_option'] ) ) { 
 	$find_option = $_POST['find_option']; 
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }		
 	
-if ( $find_option_ok = "yes" ) {
+if ( $find_option_ok == true ) {
 	if ( $action == "find") {
 		if ( isset( $_POST['form_iv_eigentuemer'] ) ) {
 			// form_iv_eigentuemer gibts praktisch immer
@@ -103,7 +103,7 @@ if ( $find_option_ok = "yes" ) {
 	}
 }
 
-if ( $action_ok == true and $find_option_ok = "yes" and $c_query_condition !="") {
+if ( $action_ok == true and $find_option_ok == true and $c_query_condition !="") {
 	if ( $display_text == "no" ) {		
 		// text nicht erst mit laden
 		$db_result = db_query_list_items_1("IV_ID, IV_OBJEKT, IV_HERSTELLER, IV_TYP, IV_SPONSOR, IV_DATUM_ANSCHAFFUNG, IV_WERT, IV_VERLIEHEN", "IV_MAIN", $c_query_condition);

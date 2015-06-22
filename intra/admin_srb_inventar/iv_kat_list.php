@@ -18,6 +18,7 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 
 $message = "";
 $action_ok = false;
+$find_option_ok = false;
 $find_limit_skip = "no";
 $condition_delivery = "no";
 $look_up_field ="no";
@@ -58,20 +59,19 @@ if ( isset( $_GET['find_limit_skip'] ) ) {
 if ( $condition_delivery != "yes" ) {
 	// Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 	// also hier nur pruefen in welchem feld was ist
-	
-		
-	// Bedingung pruefen	
-	$find_option_ok = "no";
+
+
+	// check condition
 	if ( isset( $_GET['find_option'] ) ) {
 		$find_option = $_GET['find_option'];
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}
 	if ( isset( $_POST['find_option'] ) ) {
 		$find_option = $_POST['find_option'];
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}		
 	
-	if ( $find_option_ok = "yes" ) {
+	if ( $find_option_ok == true ) {
 
 		switch ( $find_option ) {
 		case "gesamt":
@@ -82,7 +82,7 @@ if ( $condition_delivery != "yes" ) {
 		}
 	} else {
 		$message = "Keine Suchbedingung! Kann nichts tun... "; 
-	} //$find_option_ok = "yes" 
+	} //$find_option_ok == true 
 	
 } else {// $condition_delivery != "yes"
 	$message_find_string = $_GET['find_string'] ;
