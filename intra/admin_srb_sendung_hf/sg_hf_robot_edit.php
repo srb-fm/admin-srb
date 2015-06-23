@@ -55,7 +55,7 @@ if ( $action_ok == true ) {
 								SG_HF_ROB_OUT_DROPB, SG_HF_ROB_FILE_OUT_DB, 
 								SG_HF_ROB_OUT_FTP, SG_HF_ROB_FILE_OUT_FTP";
 			$main_id = db_generator_main_id_load_value();
-			// checkboxen
+			// checkboxes
 			if ( isset($_POST['form_sg_rob_vp']) ) { 
 				$tbl_value_vp_in = $_POST['form_sg_rob_vp']; 
 			} else { 
@@ -89,50 +89,94 @@ if ( $action_ok == true ) {
 			// lookups
 			$tbl_value_dub = db_query_load_id_by_value(
 				"SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", $_POST['form_sg_rob_dub']);
-				
-    		$a_values = array($main_id, trim($_POST['form_sg_rob_titel']), 
-    			trim($_POST['form_sg_rob_stichworte']), $tbl_value_vp_in, 
-    			$tbl_value_vp_in_db, trim($_POST['form_sg_rob_file_in_db']),
-    			$tbl_value_vp_in_ftp, trim($_POST['form_sg_rob_file_in_ftp']), 
-    			$tbl_value_dub, $_POST['form_sg_rob_shift'],
-    			$tbl_value_vp_out, 
-    			$tbl_value_vp_out_db, trim($_POST['form_sg_rob_file_out_db']),
-    			$tbl_value_vp_out_ftp, trim($_POST['form_sg_rob_file_out_ftp']));
+
+    		$a_values = array($main_id, 
+    						trim($_POST['form_sg_rob_titel']), 
+    						trim($_POST['form_sg_rob_stichworte']), 
+    						$tbl_value_vp_in, 
+							$tbl_value_vp_in_db, 
+							trim($_POST['form_sg_rob_file_in_db']),
+							$tbl_value_vp_in_ftp, 
+							trim($_POST['form_sg_rob_file_in_ftp']), 
+							$tbl_value_dub, 
+							$_POST['form_sg_rob_shift'],
+							$tbl_value_vp_out, 
+							$tbl_value_vp_out_db, 
+							trim($_POST['form_sg_rob_file_out_db']),
+							$tbl_value_vp_out_ftp, 
+							trim($_POST['form_sg_rob_file_out_ftp']));
   			$insert_ok = db_query_add_item_b(
   			"SG_HF_ROBOT", $tbl_fields, "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", $a_values);
 			header("Location: sg_hf_robot_detail.php?action=display&sg_robot_id=".$main_id);
 			exit;
 			break;
-				
+			
 		case "edit":
 			$message = "Automatisierte Sendung: Details bearbeiten";
-			$form_input_type = "update"; //form action einstellen
+			$form_input_type = "update"; // set form action
 			$tbl_row = db_query_display_item_1("SG_HF_ROBOT", "SG_HF_ROB_ID = " .$id);
 			break;
-			
+
 		case "update":
 			$fields_params = "SG_HF_ROB_TITEL=?, SG_HF_ROB_STICHWORTE=?, 
-									SG_HF_ROB_FILE_IN_DB=?, SG_HF_ROB_VP_IN=?, 
+									SG_HF_ROB_VP_IN=?,
+									SG_HF_ROB_IN_DROPB=?, SG_HF_ROB_FILE_IN_DB=?, 
+									SG_HF_ROB_IN_FTP=?, SG_HF_ROB_FILE_IN_FTP=?, 
 									SG_HF_ROB_DUB_ID=?, SG_HF_ROB_SHIFT=?,
-									SG_HF_ROB_FILE_OUT_DB=?, SG_HF_ROB_VP_OUT=?";
-			// checkboxen
+									SG_HF_ROB_VP_OUT=?,
+									SG_HF_ROB_OUT_DROPB=?, SG_HF_ROB_FILE_OUT_DB=?, 
+									SG_HF_ROB_OUT_FTP=?, SG_HF_ROB_FILE_OUT_FTP=?";
+			// checkboxes
 			if ( isset($_POST['form_sg_rob_vp']) ) { 
-				$tbl_value_vp = $_POST['form_sg_rob_vp']; 
+				$tbl_value_vp_in = $_POST['form_sg_rob_vp']; 
 			} else { 
-				$tbl_value_vp = "F" ;
+				$tbl_value_vp_in = "F" ;
+			}
+			if ( isset($_POST['form_sg_rob_in_dropb']) ) { 
+				$tbl_value_vp_in_db = $_POST['form_sg_rob_in_dropb']; 
+			} else { 
+				$tbl_value_vp_in_db = "F" ;
+			}
+			if ( isset($_POST['form_sg_rob_in_ftp']) ) { 
+				$tbl_value_vp_in_ftp = $_POST['form_sg_rob_in_ftp']; 
+			} else { 
+				$tbl_value_vp_in_ftp = "F" ;
 			}
 			if ( isset($_POST['form_sg_rob_vp_out']) ) { 
 				$tbl_value_vp_out = $_POST['form_sg_rob_vp_out']; 
 			} else { 
 				$tbl_value_vp_out = "F" ;
 			}
+			if ( isset($_POST['form_sg_rob_out_dropb']) ) { 
+				$tbl_value_vp_out_db = $_POST['form_sg_rob_out_dropb']; 
+			} else { 
+				$tbl_value_vp_out_db = "F" ;
+			}
+			if ( isset($_POST['form_sg_rob_out_ftp']) ) { 
+				$tbl_value_vp_out_ftp = $_POST['form_sg_rob_out_ftp']; 
+			} else { 
+				$tbl_value_vp_out_ftp = "F" ;
+			}
 			// lookups
-			$tbl_value_dub = db_query_load_id_by_value("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", $_POST['form_sg_rob_dub']);
-			
-    		$a_values = array( trim($_POST['form_sg_rob_titel']), trim($_POST['form_sg_rob_stichworte']),
-    			trim($_POST['form_sg_rob_file_in_db']), $tbl_value_vp, $tbl_value_dub, $_POST['form_sg_rob_shift'], 
-    			trim($_POST['form_sg_rob_file_out_db']), $tbl_value_vp_out);   					
-    		db_query_update_item_b("SG_HF_ROBOT", $fields_params, "SG_HF_ROB_ID =".$id, $a_values);
+			$tbl_value_dub = db_query_load_id_by_value(
+				"SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", $_POST['form_sg_rob_dub']);
+
+    		$a_values = array(trim($_POST['form_sg_rob_titel']), 
+    								trim($_POST['form_sg_rob_stichworte']),
+    								$tbl_value_vp_in, 
+    								$tbl_value_vp_in_db, 
+    								trim($_POST['form_sg_rob_file_in_db']), 
+    								$tbl_value_vp_in_ftp, 
+    								trim($_POST['form_sg_rob_file_in_ftp']), 
+    								$tbl_value_dub, 
+    								$_POST['form_sg_rob_shift'], 
+    								$tbl_value_vp_out, 
+									$tbl_value_vp_out_db, 
+    								trim($_POST['form_sg_rob_file_out_db']), 
+    								$tbl_value_vp_out_ftp, 
+									trim($_POST['form_sg_rob_file_out_ftp']));   					
+    		db_query_update_item_b(
+    				"SG_HF_ROBOT", $fields_params, "SG_HF_ROB_ID =".$id, $a_values);
 			header("Location: sg_hf_robot_detail.php?action=display&sg_robot_id=".$id);
 			exit;
 			break;
@@ -261,12 +305,12 @@ if ( $user_rights == "yes" ) {
 	echo "</label> </div></div>\n";
 	
 	echo "<div class='content_row_a_1'>";
-	echo "<div class='content_column_1'>Ordner/Dateiname nach Dropbox</div>";
+	echo "<div class='content_column_1'>Ordner Dropbox nach extern</div>";
 	echo "<input type=\"text\" name='form_sg_rob_file_out_db' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILE_OUT_DB))."\" >";
 	echo "</div>";
 	
 	echo "<div class='content_row_b_1'>";
-	echo "<div class='content_column_1'>Ordner/Dateiname nach FTP</div>";
+	echo "<div class='content_column_1'>Ordner FTP nach extern</div>";
 	echo "<input type=\"text\" name='form_sg_rob_file_out_ftp' class='text_1' maxlength='100' value=\"".trim(htmlspecialchars($tbl_row->SG_HF_ROB_FILE_OUT_FTP))."\" >";
 	echo "</div>";
 	
