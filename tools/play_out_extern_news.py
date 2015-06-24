@@ -120,7 +120,7 @@ class app_config(object):
         # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
 
@@ -239,21 +239,20 @@ def trim_silence():
 
 
 def trim_bed(c_lenght):
-    """Soundbed auf Laenge der News trimmen"""
+    """trim soundbed to length of news"""
     lib_cm.message_write_to_console(ac, u"Soundbed auf News trimmen")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # us the right char-encoding for supprocesses
     cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, c_lenght)
     source_path = lib_cm.check_slashes(ac, db.ac_config_1[9])
     source_file = source_path + ac.app_file_bed
     dest_file = ac.app_file_bed_trim
-    # subprozess starten
+    # start subprocess
     #silence 1 0.1 1% reverse silence 1 0.1 1% reverse
     try:
         p = subprocess.Popen([cmd, u"-S", source_file, dest_file,
-            u"trim", u"0", str(c_lenght)],
+            u"trim", u"0", c_lenght],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
         log_message = ac.app_errorslist[5] + u": %s" % str(e)
