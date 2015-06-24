@@ -250,9 +250,10 @@ def trim_bed(c_lenght):
     dest_file = ac.app_file_bed_trim
     # start subprocess
     #silence 1 0.1 1% reverse silence 1 0.1 1% reverse
+    l = c_lenght[0:7]
     try:
         p = subprocess.Popen([cmd, u"-S", source_file, dest_file,
-            u"trim", u"0", c_lenght],
+            u"trim", u"0", l],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
         log_message = ac.app_errorslist[5] + u": %s" % str(e)
