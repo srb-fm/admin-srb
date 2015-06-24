@@ -31,6 +31,8 @@ Error 001 Fehler beim Kopieren der Vorproduktion in Cloud
 Error 002 Fehler beim Kopieren der Meta-Datei in Cloud
 Error 003 Fehler beim Generieren des Dateinamens
 
+Error 006 Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden
+
 Parameterliste:
 Param 1: Pfad vom Server zu Playout-IT/MAG
 Param 2: Pfad vom Server zu Playout-Sendung
@@ -69,17 +71,25 @@ class app_config(object):
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(self.app_desc +
-            "Parameter-Typ oder Inhalt stimmt nicht ")
+            " Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Kopieren der Vorproduktion in Cloud")
+            " Fehler beim Kopieren der Vorproduktion in Cloud")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Kopieren der Meta-Datei in Cloud")
+            " Fehler beim Kopieren der Meta-Datei in Cloud")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Generieren des Dateinamens")
+            " Fehler beim Generieren des Dateinamens")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Ermitteln zu loeschender Dateien ")
+            " Fehler beim Ermitteln zu loeschender Dateien ")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Loeschen einer veralteten Datei ")
+            " Fehler beim Loeschen einer veralteten Datei ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Connect zu FTP-Server")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim LogIn zu FTP-Server")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Zugriff auf FTP-Ordner")
 
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
@@ -96,7 +106,7 @@ class app_config(object):
         # developmod (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # meldungen auf konsole ausgeben
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -129,7 +139,7 @@ def load_roboting_sgs():
         u"Sendungen suchen, die bearbeitet werden sollen")
     sendungen_data = (db.read_tbl_rows_with_cond(ac, db,
         "SG_HF_ROBOT",
-        "SG_HF_ROB_TITEL, SG_HF_ROB_OUT_DROPB, SG_HF_ROB_FILE_OUT_DB "
+        "SG_HF_ROB_TITEL, SG_HF_ROB_OUT_DROPB, SG_HF_ROB_FILE_OUT_DB, "
         "SG_HF_ROB_OUT_FTP, SG_HF_ROB_FILE_OUT_FTP",
         "SG_HF_ROB_VP_OUT ='T'"))
 
@@ -253,6 +263,7 @@ def write_to_info_file(path_file_cloud, item, sendung):
 
 def filepaths(item, sendung):
     """concatenate path and filename"""
+    lib_cm.message_write_to_console(ac, u"filepaths")
     success_file = True
     path_file_cloud = None
     path_ftp = None
@@ -279,9 +290,11 @@ def filepaths(item, sendung):
             path_ftp_sub = lib_cm.check_slashes(ac, item[4])
             path_ftp = (path_ftp_main + path_ftp_sub)
     except Exception, e:
-        log_message = (ac.app_errorslist[3] + "fuer: "
-            + sendung[11].encode('ascii', 'ignore') + " " + str(e))
+        log_message = (ac.app_errorslist[3] + " fuer - "
+            + sendung[11].encode('ascii', 'ignore')
+            + " - vielt. kein Ordner in autm. Sendung angegeben")
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, str(e), "x", "write_also_to_console")
         success_file = False
 
     lib_cm.message_write_to_console(ac, path_file_source)
@@ -293,6 +306,7 @@ def filepaths(item, sendung):
 
 def check_file_source(path_f_source, sendung):
     """check if file exist in source"""
+    lib_cm.message_write_to_console(ac, "check if file exist in source")
     success_file = True
     if not os.path.isfile(path_f_source):
         filename = lib_cm.extract_filename(ac, path_f_source)
@@ -307,6 +321,7 @@ def check_file_source(path_f_source, sendung):
 
 def check_file_dest_cloud(path_file_cloud):
     """check if file exist in destination"""
+    lib_cm.message_write_to_console(ac, u"check_files_cloud")
     file_is_online = False
     if os.path.isfile(path_file_cloud):
         filename = lib_cm.extract_filename(ac, path_file_cloud)
@@ -321,17 +336,34 @@ def check_file_dest_cloud(path_file_cloud):
 
 def check_file_dest_ftp(path_ftp, filename_dest):
     """check if file exist in destination-ftp"""
-    lib_cm.message_write_to_console(ac, u"check_files_online_ftp")
+    lib_cm.message_write_to_console(ac, "check_files_online_ftp")
     file_online = False
     try:
         ftp = ftplib.FTP(db.ac_config_1[7])
     except (socket.error, socket.gaierror):
-        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
+        lib_cm.message_write_to_console(ac, "ftp: no connect to: "
                                         + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
 
-    ftp.login(db.ac_config_1[8], db.ac_config_1[9])
-    ftp.cwd(path_ftp)
+    try:
+        ftp.login(db.ac_config_1[8], db.ac_config_1[9])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no login to: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    try:
+        ftp.cwd(path_ftp)
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[8] + " - " + path_ftp)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
 
     files_online = []
     try:
@@ -341,7 +373,8 @@ def check_file_dest_ftp(path_ftp, filename_dest):
             lib_cm.message_write_to_console(ac,
             u"ftp: no files in this directory")
         else:
-            raise
+            log_message = (ac.app_errorslist[9])
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
     ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
@@ -359,7 +392,7 @@ def check_file_dest_ftp(path_ftp, filename_dest):
 
 def work_on_files(roboting_sgs):
     """
-    - search audiofiles,
+    - search audiofiles from roboting-sgs,
     - if found, work on them
     """
     lib_cm.message_write_to_console(ac, "work_on_files")
@@ -391,6 +424,7 @@ def work_on_files(roboting_sgs):
 
             if item[1].strip() == "T":
                 # to Cloud
+                lib_cm.message_write_to_console(ac, "dropbox")
                 file_is_in_cloud = check_file_dest_cloud(path_file_cloud)
                 if file_is_in_cloud is True:
                     continue
@@ -415,8 +449,12 @@ def work_on_files(roboting_sgs):
                                                     "write_also_to_console")
             if item[3].strip() == "T":
                 # to ftp
+                lib_cm.message_write_to_console(ac, "ftp")
                 file_is_online = check_file_dest_ftp(path_ftp, filename_dest)
                 if file_is_online is True:
+                    continue
+                if file_is_online is None:
+                    # an error occures
                     continue
 
                 # ftp-upload
