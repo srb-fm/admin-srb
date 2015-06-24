@@ -77,6 +77,11 @@ class app_config(object):
         # schluessel fuer config in db
         self.app_config = u"PO_News_extern_Config_1"
         self.app_config_develop = u"PO_News_extern_Config_1_e"
+        # display debugmessages on console or no: "no"
+        # for normal usage set to no!!!!!!
+        self.app_debug_mod = "yes"
+        # using develop-params
+        self.app_develop = "no"
         # anzahl parameter
         self.app_config_params_range = 11
         self.app_errorfile = "error_play_out_news_extern.log"
@@ -117,10 +122,6 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
 
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
-        self.app_develop = "no"
-        # meldungen auf konsole ausgeben
-        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
 
@@ -132,6 +133,41 @@ class app_config(object):
         self.app_file_bed_trim = "News_ext_Automation_Bed_trimmed.wav"
         self.app_file_intro = "News_ext_Automation_Intro.wav"
         self.app_file_closer = "News_ext_Automation_Closer.wav"
+
+
+def load_extended_params():
+    """load extended params"""
+    ext_params_ok = True
+    # extern-tools
+    db.ac_config_etools = db.params_load_1a(ac, db, "ext_tools")
+    if db.ac_config_etools is not None:
+        # create extended Paramslist
+        app_params_type_list_etools = []
+        # Types of extended-List
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        # check extended Params
+        param_check_etools_config = lib_cm.params_check_a(
+                        ac, db, 12,
+                        app_params_type_list_etools,
+                        db.ac_config_etools)
+        if param_check_etools_config is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+    return ext_params_ok
 
 
 def load_sg():
@@ -159,7 +195,8 @@ def fetch_media():
     lib_cm.message_write_to_console(ac, u"mp3-File von Server holen")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    cmd = db.ac_config_1[2].encode(ac.app_encode_out_strings)
+    #cmd = db.ac_config_1[2].encode(ac.app_encode_out_strings)
+    cmd = db.ac_config_etools[1].encode(ac.app_encode_out_strings)
     #cmd = "wget"
     #lib_cm.message_write_to_console(ac, cmd )
     url_source_file = db.ac_config_1[6].encode(ac.app_encode_out_strings)
@@ -199,7 +236,7 @@ def trim_silence():
     lib_cm.message_write_to_console(ac, u"Stille am Anfang und Ende entfernen")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings)
+    cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
     source_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
@@ -242,7 +279,7 @@ def trim_bed(c_lenght):
     """trim soundbed to length of news"""
     lib_cm.message_write_to_console(ac, u"Soundbed auf News trimmen")
     # us the right char-encoding for supprocesses
-    cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings)
+    cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, c_lenght)
     source_path = lib_cm.check_slashes(ac, db.ac_config_1[9])
@@ -287,7 +324,7 @@ def compand_voice():
     lib_cm.message_write_to_console(ac, u"Sprache komprimieren")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings)
+    cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
     source_file = lib_cm.extract_filename(ac,
@@ -334,7 +371,7 @@ def check_lenght(source_file):
     lib_cm.message_write_to_console(ac, u"Laenge der News ermitteln")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    cmd = db.ac_config_1[4].encode(ac.app_encode_out_strings)
+    cmd = db.ac_config_etools[3].encode(ac.app_encode_out_strings)
     #cmd = "soxi"
     lib_cm.message_write_to_console(ac, cmd)
     # subprozess starten
@@ -359,7 +396,7 @@ def mix_bed():
     lib_cm.message_write_to_console(ac, u"Soundbed drunter legen")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings)
+    cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
     news_file = lib_cm.extract_filename(ac,
@@ -403,7 +440,7 @@ def concatenate_media(filename):
     lib_cm.message_write_to_console(ac, u"mp3-Files kombinieren")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    cmd = db.ac_config_1[3].encode(ac.app_encode_out_strings)
+    cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     news_file = lib_cm.extract_filename(ac,
                 db.ac_config_1[6]).replace("mp3", "wav")
@@ -451,7 +488,7 @@ def add_id3(sendung_data):
     lib_cm.message_write_to_console(ac, u"id3-Tag in mp3-File schreiben")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    cmd = db.ac_config_1[5].encode(ac.app_encode_out_strings)
+    cmd = db.ac_config_etools[4].encode(ac.app_encode_out_strings)
     #cmd = "id3v2"
     dest_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
     dest_path_file = dest_path + sendung_data[12]
@@ -517,7 +554,7 @@ def collect_garbage(garbage_counter):
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """mainfunction """
     print "lets_rock "
 
     sendung_data = load_sg()
@@ -592,15 +629,20 @@ if __name__ == "__main__":
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
     if db.ac_config_1 is not None:
+        # check main-params
         param_check = lib_cm.params_check_1(ac, db)
-        # alles ok: weiter
         if param_check is not None:
-            if db.ac_config_1[1] == "on":
-                lets_rock()
-            else:
-                db.write_log_to_db_a(ac, ac.app_desc + " ausgeschaltet", "e",
-                    "write_also_to_console")
-
+            # extended params
+            load_extended_params_ok = load_extended_params()
+            print "x"
+            print load_extended_params_ok
+            if load_extended_params_ok is not None:
+                if db.ac_config_1[1] == "on":
+                    lets_rock()
+                else:
+                    db.write_log_to_db_a(ac, ac.app_desc
+                                    + " ausgeschaltet", "e",
+                                    "write_also_to_console")
     # fertsch
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
     print "lets_lay_down"
