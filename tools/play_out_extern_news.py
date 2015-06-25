@@ -32,6 +32,7 @@ Error 006 beim Mixen der externen News
 Error 007 beim Verketten von Layout und externer News
 Error 008 beim Schreiben von id3Tags in externe News
 Error 009 beim Aktualisieren der Sendebuchung der externen News
+Error 010 weder ftp noch Cloud- Diesnt definiert, Verarbeitung abgebrochen
 
 Parameterliste:
 Param 1: On/Off Switch
@@ -61,8 +62,10 @@ In der Regel also ca. 11:51 Uhr
 """
 
 import sys
+import os
 import string
 import subprocess
+import shutil
 import datetime
 import lib_common_1 as lib_cm
 
@@ -75,7 +78,7 @@ class app_config(object):
         self.app_id = "018"
         self.app_desc = u"play_out_news_extern"
         # schluessel fuer config in db
-        self.app_config = u"PO_News_extern_Config_1"
+        self.app_config = u"PO_News_extern_Config_Elias_s3"
         self.app_config_develop = u"PO_News_extern_Config_1_e"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
@@ -83,7 +86,7 @@ class app_config(object):
         # using develop-params
         self.app_develop = "no"
         # anzahl parameter
-        self.app_config_params_range = 11
+        self.app_config_params_range = 12
         self.app_errorfile = "error_play_out_news_extern.log"
         # errorlist
         self.app_errorslist = []
@@ -107,6 +110,9 @@ class app_config(object):
             "beim Schreiben von id3Tags in externe News")
         self.app_errorslist.append(u"Error 009 "
             "beim Aktualisieren der Sendebuchung der externen News")
+        self.app_errorslist.append(u"Error 010 "
+            "Weder ftp noch Cloud- Dienst f. ext News definiert,"
+            "Verarbeitung abgebrochen")
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -121,14 +127,14 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
-
+        self.app_params_type_list.append("p_string")
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
 
         # das script laeuft 11:52 uhr, hier zeit einstellen
         self.time_target_start = (datetime.datetime.now()
                             + datetime.timedelta(hours=+1))
-
+        self.app_file_orig_temp = "News_ext_orig"
         self.app_file_bed = "News_ext_Automation_Bed.wav"
         self.app_file_bed_trim = "News_ext_Automation_Bed_trimmed.wav"
         self.app_file_intro = "News_ext_Automation_Intro.wav"
@@ -177,7 +183,8 @@ def load_sg():
     db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
         "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) = '"
         + ac.time_target_start.strftime("%Y-%m-%d %H") + "' "
-        "AND A.SG_HF_INFOTIME = 'T'")
+        "AND A.SG_HF_INFOTIME = 'T' "
+        "AND B.SG_HF_CONT_TITEL = '" + db.ac_config_1[12].strip() + "'")
     sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_b(ac,
         db, db_tbl_condition)
 
@@ -190,7 +197,50 @@ def load_sg():
     return sendung_data
 
 
-def fetch_media():
+def filepaths():
+    """concatenate path and filename"""
+
+    #path_source = lib_cm.check_slashes(ac, db.ac_config_1[4])
+    d_h_pattern, l_path_title = date_hour_pattern(db.ac_config_1[4])
+    if d_h_pattern is None:
+        #TODO: noch errormsg
+        return None, None
+    #curr_date_hour = ac.time_target_start.strftime("%Y_%m_%d_%H")
+    date_hour = ac.time_target_start.strftime("%Y_%m_%d_%H")
+    #lib_cm.message_write_to_console(ac, curr_date_hour)
+    #path_file_source = path_source + curr_date_hour + "_Elias_News_ohne.mp3"
+    path_file_source = (l_path_title[0]
+            + date_hour + l_path_title[1].rstrip())
+    lib_cm.message_write_to_console(ac, path_file_source)
+    temp_orig_file = ac.app_file_orig_temp + ".mp3"
+    return path_file_source, temp_orig_file
+
+
+def date_hour_pattern(path_filename):
+    """find datepattern, return two parts"""
+    d_h_pattern = None
+    l_path_title = None
+    if path_filename.find("yyyy_mm_dd_hh") != -1:
+        l_path_title = path_filename.split("yyyy_mm_dd_hh")
+        d_h_pattern = "%Y_%m_%d_%H"
+    if path_filename.find("yyyymmddhh") != -1:
+        l_path_title = path_filename.split("yyyymmddhh")
+        d_h_pattern = "%Y%m%d%H"
+    if path_filename.find("yyyy-mm-dd-hh") != -1:
+        l_path_title = path_filename.split("yyyy-mm-dd-hh")
+        d_h_pattern = "%Y-%m-%d-%H"
+    if path_filename.find("ddmmyyhh") != -1:
+        l_path_title = path_filename.split("ddmmyyhh")
+        d_h_pattern = "%d%m%y%H"
+
+    if d_h_pattern is None:
+        #TODO: errorlist aktualisieren
+        log_message = (ac.app_errorslist[6] + path_filename)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+    return d_h_pattern, l_path_title
+
+
+def fetch_media_ftp(dest_file):
     """mp3-File von Server holen"""
     lib_cm.message_write_to_console(ac, u"mp3-File von Server holen")
     # damit die uebergabe der befehle richtig klappt,
@@ -221,8 +271,11 @@ def fetch_media():
     lib_cm.message_write_to_console(ac, cmd_output_1)
     # wenn gefunden, position, sonst -1
     if cmd_output_1 != -1:
-        log_message = u"Externe News heruntergeladen... "
+        log_message = "Externe News heruntergeladen... "
         db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
+        file_orig = lib_cm.extract_filename(ac, db.ac_config_1[6])
+        os.rename(file_orig, dest_file)
+        #TODO zu logisch machen
         return "ok"
     else:
         db.write_log_to_db_a(ac, ac.app_errorslist[1]
@@ -231,7 +284,27 @@ def fetch_media():
         return None
 
 
-def trim_silence():
+def copy_media_db(path_file_source, dest_file):
+    """copy audiofile"""
+    success_copy = None
+    try:
+        shutil.copy(path_file_source, dest_file)
+        db.write_log_to_db_a(ac, u"Audio Vorproduktion: "
+                + path_file_source.encode('ascii', 'ignore'),
+                "v", "write_also_to_console")
+        db.write_log_to_db_a(ac, u"Audio kopiert: "
+                + dest_file, "c", "write_also_to_console")
+        success_copy = True
+    except Exception, e:
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+        log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
+        lib_cm.message_write_to_console(ac, log_message)
+        db.write_log_to_db(ac, log_message, "x")
+    return success_copy
+
+
+def trim_silence(temp_orig_file):
     """Stille am Anfang und Ende entfernen"""
     lib_cm.message_write_to_console(ac, u"Stille am Anfang und Ende entfernen")
     # damit die uebergabe der befehle richtig klappt,
@@ -239,14 +312,15 @@ def trim_silence():
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
-    source_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
-    dest_file = lib_cm.extract_filename(ac,
-                db.ac_config_1[6]).replace("mp3", "wav")
-    lib_cm.message_write_to_console(ac, source_file)
+    #source_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
+    #dest_file = lib_cm.extract_filename(ac,
+    #            db.ac_config_1[6]).replace("mp3", "wav")
+    dest_file = ac.app_file_orig_temp + ".wav"
+    lib_cm.message_write_to_console(ac, temp_orig_file)
     # subprozess starten
     #silence 1 0.1 1% reverse silence 1 0.1 1% reverse
     try:
-        p = subprocess.Popen([cmd, u"-S", source_file, dest_file,
+        p = subprocess.Popen([cmd, u"-S", temp_orig_file, dest_file,
             u"silence", u"1", u"0.1", u"1%", u"reverse",
             u"silence", u"1", u"0.1", u"1%", u"reverse"],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -327,8 +401,9 @@ def compand_voice():
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
-    source_file = lib_cm.extract_filename(ac,
-                db.ac_config_1[6]).replace("mp3", "wav")
+    #source_file = lib_cm.extract_filename(ac,
+    #            db.ac_config_1[6]).replace("mp3", "wav")
+    source_file = ac.app_file_orig_temp + ".wav"
     dest_file = lib_cm.extract_filename(ac,
                 db.ac_config_1[6]).replace(".mp3", "_comp.wav")
     lib_cm.message_write_to_console(ac, source_file)
@@ -529,7 +604,8 @@ def add_id3(sendung_data):
 def collect_garbage(garbage_counter):
     """ aufraeumen """
     if garbage_counter >= 2:
-        temp_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
+        #temp_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
+        temp_file = ac.app_file_orig_temp + ".mp3"
         lib_cm.erase_file_a(ac, db, temp_file,
             u"Externe News-mp3-Datei geloescht ")
 
@@ -550,7 +626,7 @@ def collect_garbage(garbage_counter):
     if garbage_counter == 5:
         temp_file_2 = temp_file_1.replace(".wav", "_temp.wav")
         lib_cm.erase_file_a(ac, db, temp_file_2,
-            u"Externe News-temp-Datei geloescht ")
+            "Externe News-temp-Datei geloescht ")
 
 
 def lets_rock():
@@ -561,11 +637,25 @@ def lets_rock():
     if sendung_data is None:
         return
 
-    download_ok = fetch_media()
-    if download_ok is None:
+    if db.ac_config_1[2] == "yes":
+        # dropbox
+        path_file_source, temp_orig_file = filepaths()
+        copy_ok = copy_media_db(path_file_source, temp_orig_file)
+        if copy_ok is None:
+            return
+
+    if db.ac_config_1[3] == "yes":
+        # ftp
+        download_ok = fetch_media_ftp(temp_orig_file)
+        if download_ok is None:
+            return
+
+    if db.ac_config_1[2] != "yes" and db.ac_config_1[3] != "yes":
+        db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
+            "write_also_to_console")
         return
 
-    trim_ok = trim_silence()
+    trim_ok = trim_silence(temp_orig_file)
     if trim_ok is None:
         collect_garbage(2)
         return
@@ -575,8 +665,9 @@ def lets_rock():
         collect_garbage(2)
         return
 
-    source_file = lib_cm.extract_filename(ac,
-                db.ac_config_1[6]).replace("mp3", "wav")
+    #source_file = lib_cm.extract_filename(ac,
+    #            db.ac_config_1[6]).replace("mp3", "wav")
+    source_file = ac.app_file_orig_temp + ".wav"
     lenght_news = check_lenght(source_file)
     if lenght_news is None:
         return
