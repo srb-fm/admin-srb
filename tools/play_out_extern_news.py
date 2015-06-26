@@ -78,7 +78,7 @@ class app_config(object):
         self.app_id = "018"
         self.app_desc = u"play_out_news_extern"
         # schluessel fuer config in db
-        self.app_config = u"PO_News_extern_Config_Elias_s3"
+        self.app_config = u"PO_News_extern_Config_1"
         self.app_config_develop = u"PO_News_extern_Config_1_e"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
@@ -111,7 +111,7 @@ class app_config(object):
         self.app_errorslist.append(u"Error 009 "
             "beim Aktualisieren der Sendebuchung der externen News")
         self.app_errorslist.append(u"Error 010 "
-            "Weder ftp noch Cloud- Dienst f. ext News definiert,"
+            "Weder ftp noch Cloud- Dienst f. ext News definiert, "
             "Verarbeitung abgebrochen")
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
@@ -121,8 +121,8 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_url")
         self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_url")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -184,7 +184,7 @@ def load_sg():
         "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) = '"
         + ac.time_target_start.strftime("%Y-%m-%d %H") + "' "
         "AND A.SG_HF_INFOTIME = 'T' "
-        "AND B.SG_HF_CONT_TITEL = '" + db.ac_config_1[12].strip() + "'")
+        "AND B.SG_HF_CONT_TITEL = '" + db.ac_config_1[2].strip() + "'")
     sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_b(ac,
         db, db_tbl_condition)
 
@@ -200,8 +200,7 @@ def load_sg():
 def filepaths():
     """concatenate path and filename"""
 
-    #path_source = lib_cm.check_slashes(ac, db.ac_config_1[4])
-    d_h_pattern, l_path_title = date_hour_pattern(db.ac_config_1[4])
+    d_h_pattern, l_path_title = date_hour_pattern(db.ac_config_1[6])
     if d_h_pattern is None:
         #TODO: noch errormsg
         return None, None
@@ -245,13 +244,12 @@ def fetch_media_ftp(dest_file):
     lib_cm.message_write_to_console(ac, u"mp3-File von Server holen")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    #cmd = db.ac_config_1[2].encode(ac.app_encode_out_strings)
     cmd = db.ac_config_etools[1].encode(ac.app_encode_out_strings)
     #cmd = "wget"
     #lib_cm.message_write_to_console(ac, cmd )
-    url_source_file = db.ac_config_1[6].encode(ac.app_encode_out_strings)
-    url_user = "--user=" + db.ac_config_1[7].encode(ac.app_encode_out_strings)
-    url_pw = "--password=" + db.ac_config_1[8].encode(ac.app_encode_out_strings)
+    url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
+    url_user = "--user=" + db.ac_config_1[8].encode(ac.app_encode_out_strings)
+    url_pw = "--password=" + db.ac_config_1[9].encode(ac.app_encode_out_strings)
     # subprozess starten
     try:
         p = subprocess.Popen([cmd, url_user, url_pw, url_source_file],
@@ -273,7 +271,9 @@ def fetch_media_ftp(dest_file):
     if cmd_output_1 != -1:
         log_message = "Externe News heruntergeladen... "
         db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
-        file_orig = lib_cm.extract_filename(ac, db.ac_config_1[6])
+        file_orig = lib_cm.extract_filename(ac, db.ac_config_1[7])
+        lib_cm.message_write_to_console(ac, file_orig)
+        lib_cm.message_write_to_console(ac, dest_file)
         os.rename(file_orig, dest_file)
         #TODO zu logisch machen
         return "ok"
@@ -312,9 +312,6 @@ def trim_silence(temp_orig_file):
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
-    #source_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
-    #dest_file = lib_cm.extract_filename(ac,
-    #            db.ac_config_1[6]).replace("mp3", "wav")
     dest_file = ac.app_file_orig_temp + ".wav"
     lib_cm.message_write_to_console(ac, temp_orig_file)
     # subprozess starten
@@ -356,7 +353,7 @@ def trim_bed(c_lenght):
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, c_lenght)
-    source_path = lib_cm.check_slashes(ac, db.ac_config_1[9])
+    source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
     source_file = source_path + ac.app_file_bed
     dest_file = ac.app_file_bed_trim
     # start subprocess
@@ -401,13 +398,13 @@ def compand_voice():
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
-    #source_file = lib_cm.extract_filename(ac,
-    #            db.ac_config_1[6]).replace("mp3", "wav")
     source_file = ac.app_file_orig_temp + ".wav"
-    dest_file = lib_cm.extract_filename(ac,
-                db.ac_config_1[6]).replace(".mp3", "_comp.wav")
+    #TODO x
+    #dest_file = lib_cm.extract_filename(ac,
+    #            db.ac_config_1[6]).replace(".mp3", "_comp.wav")
+    dest_file = ac.app_file_orig_temp + "_comp.wav"
     lib_cm.message_write_to_console(ac, source_file)
-    compand_prams = db.ac_config_1[11].split()
+    compand_prams = db.ac_config_1[12].split()
     lib_cm.message_write_to_console(ac, compand_prams)
     # subprozess starten
     #compand 0.3,1 6:-70,-60,-20 -5 -90
@@ -474,8 +471,10 @@ def mix_bed():
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
-    news_file = lib_cm.extract_filename(ac,
-                db.ac_config_1[6]).replace(".mp3", "_comp.wav")
+    #TODO x
+    #news_file = lib_cm.extract_filename(ac,
+    #            db.ac_config_1[6]).replace(".mp3", "_comp.wav")
+    news_file = ac.app_file_orig_temp + "_comp.wav"
     news_file_temp = news_file.replace("_comp.wav", "_temp.wav")
     # subprozess starten
     #silence 1 0.1 1% reverse silence 1 0.1 1% reverse
@@ -517,15 +516,17 @@ def concatenate_media(filename):
     # muessen alle cmds im richtigen zeichensatz encoded sein
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
-    news_file = lib_cm.extract_filename(ac,
-                db.ac_config_1[6]).replace("mp3", "wav")
+    #TODO x
+    #news_file = lib_cm.extract_filename(ac,
+    #            db.ac_config_1[6]).replace("mp3", "wav")
+    news_file = ac.app_file_orig_temp + ".wav"
     news_file_temp = news_file.replace(".wav", "_temp.wav")
-    source_path = lib_cm.check_slashes(ac, db.ac_config_1[9])
+    source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
     #source_file_intro = source_path + "News_ext_Automation_Intro.wav"
     source_file_intro = source_path + ac.app_file_intro
     #source_file_closer = source_path + "News_ext_Automation_Closer.wav"
     source_file_closer = source_path + ac.app_file_closer
-    dest_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
+    dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
     dest_path_file = dest_path + filename
     lib_cm.message_write_to_console(ac, cmd)
     # subprozess starten
@@ -565,7 +566,7 @@ def add_id3(sendung_data):
     # muessen alle cmds im richtigen zeichensatz encoded sein
     cmd = db.ac_config_etools[4].encode(ac.app_encode_out_strings)
     #cmd = "id3v2"
-    dest_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
+    dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
     dest_path_file = dest_path + sendung_data[12]
     c_author = (sendung_data[15].encode(
             ac.app_encode_out_strings) + " "
@@ -637,20 +638,21 @@ def lets_rock():
     if sendung_data is None:
         return
 
-    if db.ac_config_1[2] == "yes":
+    if db.ac_config_1[4] == "yes":
         # dropbox
         path_file_source, temp_orig_file = filepaths()
         copy_ok = copy_media_db(path_file_source, temp_orig_file)
         if copy_ok is None:
             return
 
-    if db.ac_config_1[3] == "yes":
+    if db.ac_config_1[5] == "yes":
         # ftp
+        temp_orig_file = ac.app_file_orig_temp + ".mp3"
         download_ok = fetch_media_ftp(temp_orig_file)
         if download_ok is None:
             return
 
-    if db.ac_config_1[2] != "yes" and db.ac_config_1[3] != "yes":
+    if db.ac_config_1[4] != "yes" and db.ac_config_1[5] != "yes":
         db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
             "write_also_to_console")
         return
@@ -691,7 +693,7 @@ def lets_rock():
     if id3_ok is None:
         return
 
-    dest_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
+    dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
     source_file = dest_path + sendung_data[0][12]
     lenght_news = check_lenght(source_file)
     if lenght_news is None:
