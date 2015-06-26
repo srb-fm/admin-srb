@@ -118,7 +118,7 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
