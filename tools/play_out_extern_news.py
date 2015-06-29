@@ -77,7 +77,7 @@ class app_config(object):
         # app_config
         self.app_id = "018"
         self.app_desc = u"play_out_news_extern"
-        # schluessel fuer config in db
+        # key of config in db
         self.app_config = u"PO_News_extern_Config_1"
         self.app_config_develop = u"PO_News_extern_Config_1_e"
         # display debugmessages on console or no: "no"
@@ -412,11 +412,11 @@ def compand_voice():
         p = subprocess.Popen([cmd, u"-S", source_file, dest_file,
             #u"compand", u"0.3,1","6:-70,-60,-20", u"-12", u"-90", u"0.2"],
             #u"compand", u"0.3,1","-80,-60,-75,-16", u"-18", u"-80", u"0.2"],
-            u"compand", compand_prams[0], compand_prams[1], compand_prams[2],
-            compand_prams[3], compand_prams[4]],
+            u"compand", compand_prams[0], compand_prams[1],
+            compand_prams[2], compand_prams[3]],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
-        log_message = ac.app_errorslist[2] + u": %s" % str(e)
+        log_message = ac.app_errorslist[3] + u": %s" % str(e)
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
 
