@@ -113,7 +113,7 @@ class app_config(object):
         self.app_errorslist.append(u"Error 010 "
             "Weder ftp noch Cloud- Dienst f. ext News definiert, "
             "Verarbeitung abgebrochen")
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -131,7 +131,7 @@ class app_config(object):
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
 
-        # das script laeuft 11:52 uhr, hier zeit einstellen
+        # runtime approximately 10 minutes before transmitting
         self.time_target_start = (datetime.datetime.now()
                             + datetime.timedelta(hours=+1))
         self.app_file_orig_temp = "News_ext_orig"
@@ -399,7 +399,6 @@ def compand_voice():
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
     source_file = ac.app_file_orig_temp + ".wav"
-    #TODO x
     #dest_file = lib_cm.extract_filename(ac,
     #            db.ac_config_1[6]).replace(".mp3", "_comp.wav")
     dest_file = ac.app_file_orig_temp + "_comp.wav"
