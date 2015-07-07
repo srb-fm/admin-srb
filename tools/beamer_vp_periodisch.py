@@ -489,13 +489,17 @@ def erase_files_prepaere(roboting_sgs):
 
 
 def erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back):
-    """alte Dateien in cloud-ordnern loeschen"""
+    """erase files from dropbox"""
     lib_cm.message_write_to_console(ac, u"erase_files_from_cloud")
 
     x = 0
     z = 0
 
     for item in files_sendung_dest:
+        if item == ".dropbox":
+            # don't delete dropboxfile
+            continue
+
         if item[0:10] < c_date_back:
             try:
                 file_to_delete = path_dest_cloud + item
