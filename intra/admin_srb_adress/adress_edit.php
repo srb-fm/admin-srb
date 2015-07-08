@@ -308,7 +308,7 @@ if ( $user_rights == "yes" ) {
 	echo "</div>";	
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>eMail</div>";
-	echo "<input type='text' name='form_ad_email' id='ad_email' class='text_1' maxlength='50' value='".$tbl_row->AD_EMAIL."'>";
+	echo "<input type='text' name='form_ad_email' id='ad_email' class='text_1' maxlength='100' value='".$tbl_row->AD_EMAIL."'>";
 	echo "</div>";	
 	echo "<div class='content_row_b_1'>";
 	echo "<div class='content_column_1'>Internet</div>";
