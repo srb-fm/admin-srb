@@ -68,17 +68,18 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "019"
         self.app_desc = u"Live_Recording"
-        self.app_errorfile = "error_live_recording.log"
-        self.app_develop = "no"
-        # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
-        # schluessel fuer config in db
+        # key for config in db
         self.app_config = u"Live_Recording"
         self.app_config_develop = u"Live_Recording_e"
+        self.app_errorfile = "error_live_recording.log"
+        self.app_develop = "no"
+        # show messages on console
+        self.app_debug_mod = "yes"
+
         # anzahl parameter
         self.app_config_params_range = 7
         # params-type-list, typ entsprechend der params-liste in der config
@@ -96,7 +97,7 @@ class app_config(object):
             "Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(u"Error 001 "
             "beim Schreiben der Recorder-Config-Datei ")
-        # zeit fuer sendungensuche: ab jetzt
+        # time for schow-search: just now
         #self.time_target = datetime.datetime.now() + datetime.timedelta()
         # ab naechste stunde
         self.time_target = (datetime.datetime.now()
@@ -105,11 +106,10 @@ class app_config(object):
 
 def load_live_sendungen(up_to_target_hour):
     """
-    In DB nachsehen,
-    ob Live-Sendungen fuer die kommende Stunde vorgesehen sind
+    search for live-shows for the upcomming hour
     """
     lib_cm.message_write_to_console(ac, "load_live_sendungen")
-    # zfill fuellt nullen auf bei einstelliger stundenzahl
+    # zfill. filling with 0 if hour under 10
 
     c_date_time_from = (str(ac.time_target.date()) + " "
                         + str(ac.time_target.hour).zfill(2))
@@ -138,7 +138,7 @@ def load_live_sendungen(up_to_target_hour):
 
 
 def check_recording(sg_id):
-    """ Bereits laufende recordings suchen"""
+    """ search for currently running recordings"""
     c_date_time_from = (str(ac.time_target.date()) + " "
                         + str(ac.time_target.hour - 4).zfill(2))
     db_tbl_condition = ("USER_LOG_ACTION = 'Live-Sendung: " + str(sg_id)
@@ -156,12 +156,10 @@ def check_recording(sg_id):
 
 
 def log_duration(list_live_sendungen):
-    """Logging der Recordings und Laenge der Live-Sendungen ermitteln """
+    """Log recordings and calc length"""
     duration = 0
     title = list_live_sendungen[0][11]
-    #lib_cm.message_write_to_console(ac, "title " + title)
     for item in list_live_sendungen:
-        #lib_cm.message_write_to_console(ac, item[11][0:30])
         if item[11] == title:
             # sum duration
             duration += lib_cm.get_seconds_from_tstr(item[3])
@@ -180,27 +178,25 @@ def log_duration(list_live_sendungen):
 
 
 def write_to_file_record_params(r_duration, list_live_sendungen):
-    """Recorder Configdatei schreiben"""
+    """write configfile for recorder"""
     log_message = ("Laenge des Mitschnitts: " + str(r_duration) + "Sekunden")
     db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
     c_date_time_from = (str(ac.time_target.date()) + "_"
                         + str(ac.time_target.hour).zfill(2))
-    #file_recording_config =
-    #"/home/srb-server-03/srb-net/stream-logs/live_recording_conf.sh"
     file_recording_config = db.ac_config_1[5]
     r_name = lib_cm.replace_uchar_sonderzeichen_with_latein(
                         list_live_sendungen[0][15]).replace(" ", "")
     r_title = lib_cm.replace_uchar_sonderzeichen_with_latein(
                         list_live_sendungen[0][11][0:8]).replace(" ", "")
-    #r_path = "/home/srb-stream/SRB-Net/Media_Produktion/Live_Recordings/"
+
     r_path = db.ac_config_1[6]
     r_path_file = (r_path + c_date_time_from + "_" + r_name + "_"
                                                     + r_title + ".wav")
     # startdelay when transmitting begins not with 0 minute and 0 sec
     r_wait = list_live_sendungen[0][2].minute * 60
     r_wait += list_live_sendungen[0][2].second
-    # recordbegin a few seconds befor transmitt begins
+    # recordbegin a few seconds before transmitt begins
     r_wait -= int(db.ac_config_1[3])
     # crotab starts record script in minute 59, so 60 sec must added
     r_wait += 60
@@ -236,20 +232,20 @@ def write_to_file_record_params(r_duration, list_live_sendungen):
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
-    # live-sendung holen fuer kommende Stunde
+    # load live-show for the upcomming hour
     list_live_sendung = load_live_sendungen(0)
     if list_live_sendung is not None:
-        # check ob sendung bereits recorded wird
+        # check if show is always recorded
         recording_now = check_recording(list_live_sendung[0][0])
         if recording_now is None:
-            # live-sendunegn holen fuer kommende Stunden
+            # load live-shows for the upcomming hour
             list_live_sendungen = load_live_sendungen(
                                         int(db.ac_config_1[2]) - 1)
             if list_live_sendungen is not None:
                 duration = log_duration(list_live_sendungen)
-                # duration wieder um pre-rec-seconds verlaengern
+                # add duration with pre-rec-seconds
                 duration += int(db.ac_config_1[3])
-                # duration um x sec verlaengern
+                # add duration with x sec for the end
                 duration += int(db.ac_config_1[4])
                 write_to_file_record_params(duration, list_live_sendungen)
 
@@ -257,13 +253,13 @@ if __name__ == "__main__":
     db = lib_cm.dbase()
     ac = app_config()
     print  "lets_work: " + ac.app_desc
-    # losgehts
+    # let's start'
     db.write_log_to_db(ac, ac.app_desc + " gestartet", "r")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
     if db.ac_config_1 is not None:
         param_check = lib_cm.params_check_1(ac, db)
-        # alles ok: weiter
+        # roger, continue
         if param_check is not None:
             if db.ac_config_1[1] == "on":
                 lets_rock()
@@ -271,7 +267,7 @@ if __name__ == "__main__":
                 db.write_log_to_db_a(ac, "Live-Recording ausgeschaltet", "e",
                     "write_also_to_console")
 
-    # fertsch
+    # finish
     db.write_log_to_db(ac, ac.app_desc + " gestoppt", "s")
     print "lets_lay_down"
     sys.exit()
