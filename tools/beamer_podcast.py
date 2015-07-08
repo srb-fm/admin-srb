@@ -297,7 +297,7 @@ def check_files_online(podcast_sendungen):
     ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
 
-    # liste of all online-files,
+    # list of all online-files,
     # filter out admin-srb audio-files (numbers in the beginning)
     files_online_1 = []
     for item in files_online:
@@ -306,7 +306,7 @@ def check_files_online(podcast_sendungen):
 
     lib_cm.message_write_to_console(ac, files_online_1)
 
-    # aus podcast_sendungen nur filenames rausholen
+    # extract filenames from podcast_sendungen
     files_podcast = []
     for item in podcast_sendungen:
         files_podcast.append(item[12])
@@ -395,7 +395,7 @@ def delete_files_online():
     #ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
 
-    # liste of all online-files,
+    # list of all online-files,
     # filter out admin-srb audio-files (numbers in the beginning)
     files_online_1 = []
     for item in files_online:
@@ -479,7 +479,7 @@ def lets_rock():
 
     lib_cm.message_write_to_console(ac, podcast_sendung)
     podcast_sendung_temp = podcast_sendung
-    # recoden
+    # recode
     podcast_temp = encode_file(podcast_sendung)
     if podcast_temp is None:
         # try with next file
@@ -501,7 +501,7 @@ def lets_rock():
             # nothing else to do
             return
 
-        # recoden nr 2. with next file
+        # recode nr 2. with next file
         podcast_temp_1 = encode_file(podcast_sendung)
         if podcast_temp_1 is None:
             # Error 2
@@ -509,7 +509,7 @@ def lets_rock():
                 "write_also_to_console")
             return
 
-    # uploaden was noch nicht oben ist
+    # upload waths not online
     upload_ok = upload_file(podcast_sendung)
     if upload_ok is None:
         # Error 1
@@ -543,13 +543,13 @@ if __name__ == "__main__":
     db = lib_cm.dbase()
     ac = app_config()
     print  "lets_work: " + ac.app_desc
-    # losgehts
+    # lets start
     db.write_log_to_db(ac, ac.app_desc + u" gestartet", "r")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
     if db.ac_config_1 is not None:
         param_check = lib_cm.params_check_1(ac, db)
-        # alles ok: weiter
+        # all ok: continue
         if param_check is not None:
             if db.ac_config_1[1] == "on":
                 lets_rock()
@@ -557,7 +557,7 @@ if __name__ == "__main__":
                 db.write_log_to_db_a(ac, "Podcast-Beamer ausgeschaltet", "e",
                     "write_also_to_console")
 
-    # fertsch
+    # finish
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
     print "lets_lay_down"
     sys.exit()
