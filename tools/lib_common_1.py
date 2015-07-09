@@ -14,15 +14,15 @@ import db_config
 
 
 class dbase(object):
-    """Datenbankzugriff"""
+    """database-class"""
 
     def __init__(self):
-        """db Zugang"""
+        """db access"""
         self.db_name = db_config.db_name
         self.db_user = db_config.db_user
         self.db_pw = db_config.db_pw
         self.db_con = None
-        """db Zugang log"""
+        """db-log access"""
         self.db_log_name = db_config.db_log_name
         self.db_log_user = db_config.db_log_user
         self.db_log_pw = db_config.db_log_pw
@@ -55,7 +55,7 @@ class dbase(object):
         return
 
     def load_gen_id(self, ac, db):
-        """Neue ID aus db holen"""
+        """load new id"""
         message_write_to_console(ac, "load_generator_id: " + ac.app_desc)
         sql_string = "SELECT GEN_ID(GENERATOR_MAIN_ID, 1) FROM RDB$DATABASE"
 
@@ -72,7 +72,7 @@ class dbase(object):
             db_cur.execute(SELECT)
             gen_id = db_cur.fetchone()
 
-            # wenn kein satz vorhanden
+            # no row found
             if gen_id is None:
                 log_message = "load_generator_id fehlgeschlagen.."
                 db.write_log_to_db(ac, log_message, "x")
@@ -90,7 +90,7 @@ class dbase(object):
             return gen_id[0]
 
     def count_rows(self, ac, db, table, condition):
-        """Datensaetze zaehlen"""
+        """count rows"""
         message_write_to_console(ac, "count_rows: " + ac.app_desc)
         sql_string = "SELECT COUNT (*) FROM " + table + " WHERE " + condition
 
@@ -107,7 +107,7 @@ class dbase(object):
             db_cur.execute(SELECT)
             row_counter = db_cur.fetchone()
 
-            # wenn kein satz vorhanden
+            # no row found
             if row_counter is None:
                 log_message = "count_rows fehlgeschlagen.."
                 db.write_log_to_db(ac, log_message, "x", ac.app_id)
@@ -125,7 +125,7 @@ class dbase(object):
             return row_counter[0]
 
     def exec_sql(self, ac, db, sql_command):
-        """sql-statement ausfuehren"""
+        """execute sql-statement"""
         message_write_to_console(ac, "exec_sql: " + ac.app_desc)
 
         self.dbase_connect(ac)
@@ -592,7 +592,7 @@ class dbase(object):
             return rows
 
     def read_tbl_rows_sg_cont_ad_with_cond_a(self, ac, db, condition):
-        """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
+        """ read rows from table with condition """
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition_a")
 
         sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID,"
@@ -627,7 +627,7 @@ class dbase(object):
                 rows.append(row)
                 z += 1
 
-            # wenn kein satz vorhanden
+            # if no row found
             if z == 0:
                 log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
                                 " nichts gefunden..." + condition)
@@ -648,8 +648,8 @@ class dbase(object):
             return rows
 
     def read_tbl_rows_sg_cont_ad_with_cond_b(self, ac, db, condition):
-        """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
-        message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition_2: ")
+        """ read rows from table with condition """
+        message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_with_cond_b: ")
 
         sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID,"
             " A.SG_HF_TIME, A.SG_HF_DURATION, "
@@ -685,10 +685,11 @@ class dbase(object):
                 rows.append(row)
                 z += 1
 
-            # wenn kein satz vorhanden
+            # no row found
             if z == 0:
                 log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
-                                " nichts gefunden..." + condition)
+                                " nichts gefunden..."
+                                + condition.encode('ascii', 'ignore'))
                 message_write_to_console(ac, log_message)
                 self.db_con.close()
                 return None
@@ -696,7 +697,7 @@ class dbase(object):
         except Exception, e:
             self.db_con.close()
             log_message = ("read_tbl_rows_sg_cont_ad_with_cond_2 "
-                            "Error: %s" % str(e))
+                            "Error x: %s" % str(e))
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return None
