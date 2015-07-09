@@ -22,17 +22,19 @@ Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
 Fehlerliste:
-Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 beim Herunterladen externer News
-Error 002 beim Stille enfernen externer News
-Error 003 beim Komprimieren der Sprache externer News
-Error 004 beim ermitteln der Laenge externer News
-Error 005 beim Trimmen des Soundbeds fuer externe News
-Error 006 beim Mixen der externen News
-Error 007 beim Verketten von Layout und externer News
-Error 008 beim Schreiben von id3Tags in externe News
-Error 009 beim Aktualisieren der Sendebuchung der externen News
-Error 010 weder ftp noch Cloud- Diesnt definiert, Verarbeitung abgebrochen
+E 00 Parameter-Typ oder Inhalt stimmt nich
+E 01 beim Herunterladen externer News
+E 02 beim Stille enfernen externer News
+E 03 beim Komprimieren der Sprache externer News
+E 04 beim ermitteln der Laenge externer News
+E 05 beim Trimmen des Soundbeds fuer externe News
+E 06 beim Mixen der externen News
+E 07 beim Verketten von Layout und externer News
+E 08 beim Schreiben von id3Tags in externe News
+E 09 beim Aktualisieren der Sendebuchung der externen News
+E 10 weder ftp noch Cloud- Diesnt definiert, Verarbeitung abgebrochen
+E 11 Datumsmuster in Dateiname nicht zu finden, keine Zuordnung moeglich
+
 
 Parameterliste:
 Param 1: On/Off Switch
@@ -177,12 +179,13 @@ def load_extended_params():
 
 
 def load_sg():
-    """IT-Sendung suchen"""
-    lib_cm.message_write_to_console(ac, u"IT-Sendung suchen")
+    """search news in db"""
+    lib_cm.message_write_to_console(ac, "search news in db")
 
     db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
-        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) = '"
-        + ac.time_target_start.strftime("%Y-%m-%d %H") + "' "
+        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 16) = '"
+        + ac.time_target_start.strftime("%Y-%m-%d %H")
+        + ":" + db.ac_config_1[3].strip() + "' "
         "AND A.SG_HF_INFOTIME = 'T' "
         "AND B.SG_HF_CONT_TITEL = '" + db.ac_config_1[2].strip() + "'")
     sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_b(ac,
@@ -191,7 +194,8 @@ def load_sg():
     if sendung_data is None:
         log_message = (u"Keine externen News "
             "fuer diese Zeit vorgesehen: "
-            + ac.time_target_start.strftime("%Y-%m-%d %H") + " Uhr")
+            + ac.time_target_start.strftime("%Y-%m-%d %H")
+            + ":" + db.ac_config_1[3].strip() + " Uhr")
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
         return sendung_data
     return sendung_data
