@@ -12,14 +12,17 @@ Distributed under the terms of GNU GPL version 2 or later
 Copyright (C) Joerg Sorge joergsorge at googell
 2013-06-30
 
-Dieses Script laedt eine Audio-Datei von einem ftp-Server,
+Dieses Script laedt eine Audio-Datei von einem ftp- oder Clound-Server,
 bearbeitet diese, und stellt sie der Radioautomation
 zum PlayOut zur Verfuegung.
 
-Dateiname Script: play_out_extern_news.py
-Schluesselwort fuer Einstellungen: PO_News_extern_Config_1
-Benoetigt: lib_common.py im gleichen Verzeichnis
-Bezieht Daten aus: Firebird-Datenbank
+This script is for providing and editing files of radio news in the automation
+from external sources, like ftp or cloud servers
+
+Filename script: play_out_extern_news.py
+Keyword for Settings: PO_News_extern_Config_1
+Uses: lib_common.py im gleichen Verzeichnis
+Loading data from: Firebird-Database
 
 Fehlerliste:
 E 00 Parameter-Typ oder Inhalt stimmt nich
@@ -33,23 +36,25 @@ E 07 beim Verketten von Layout und externer News
 E 08 beim Schreiben von id3Tags in externe News
 E 09 beim Aktualisieren der Sendebuchung der externen News
 E 10 weder ftp noch Cloud- Diesnt definiert, Verarbeitung abgebrochen
-E 11 Datumsmuster in Dateiname nicht zu finden, keine Zuordnung moeglich
+E 11 Datum in Dateiname nicht zu finden, Zuordnung der Datei nicht moeglich
 
 
 Parameterliste:
 Param 1: On/Off Switch
-Param 2: Pfad/Programm fuer Download
-Param 3: Pfad/Programm fuer Audio-Bearbeitung
-Param 4: Pfad/Programm fuer Audio-Informationen
-Param 5: Pfad/Programm fuer ID3-Tags
-Param 6: URL
-Param 7: Benutzername
-Param 8: Passwort
-Param 9: Pfad zu Layout-Dateien
-Param 10: Pfad zu Play-Out-IT
+Param 2: Title of show
+Param 3: Starting minute
+Param 4: Source is Dropbox
+Param 5: Source is ftp
+Param 6: Dropbox path/file
+Param 7: ftp-URL
+Param 8: ftp-username
+Param 9: ftp-Password
+Param 10: Path to layout files
+Param 11: Path to Play-Out-Server IT
+Param 12: Params for audio compression
 
-Externe Tools:
-Folgende libs werden ueblicherweise auf dem system benoetigt:
+Extern tools:
+This additional libs are used:
 wget
 sox
 libsox-fmt-mp3
@@ -61,6 +66,7 @@ in der Stunde vor der Ausstrahlung
 und nach Bereitstellung der News ausgefuehrt.
 In der Regel also ca. 11:51 Uhr
 
+This script is running via cron, several minutes before transmitting
 """
 
 import sys
@@ -75,7 +81,7 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "018"
         self.app_desc = u"play_out_news_extern"
@@ -84,10 +90,10 @@ class app_config(object):
         self.app_config_develop = u"PO_News_extern_Config_1_e"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # using develop-params
         self.app_develop = "no"
-        # anzahl parameter
+        # number of main-parameters
         self.app_config_params_range = 12
         self.app_errorfile = "error_play_out_news_extern.log"
         # errorlist
@@ -203,10 +209,8 @@ def load_sg():
 
 def filepaths():
     """concatenate path and filename"""
-
     d_h_pattern, l_path_title = date_hour_pattern(db.ac_config_1[6])
     if d_h_pattern is None:
-        #TODO: noch errormsg
         return None, None
     #curr_date_hour = ac.time_target_start.strftime("%Y_%m_%d_%H")
     date_hour = ac.time_target_start.strftime("%Y_%m_%d_%H")
@@ -237,8 +241,7 @@ def date_hour_pattern(path_filename):
         d_h_pattern = "%d%m%y%H"
 
     if d_h_pattern is None:
-        #TODO: errorlist aktualisieren
-        log_message = (ac.app_errorslist[6] + path_filename)
+        log_message = (ac.app_errorslist[11] + path_filename)
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
     return d_h_pattern, l_path_title
 
@@ -246,15 +249,13 @@ def date_hour_pattern(path_filename):
 def fetch_media_ftp(dest_file):
     """mp3-File von Server holen"""
     lib_cm.message_write_to_console(ac, u"mp3-File von Server holen")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # all cmds must be in the right charset
     cmd = db.ac_config_etools[1].encode(ac.app_encode_out_strings)
     #cmd = "wget"
-    #lib_cm.message_write_to_console(ac, cmd )
     url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
     url_user = "--user=" + db.ac_config_1[8].encode(ac.app_encode_out_strings)
     url_pw = "--password=" + db.ac_config_1[9].encode(ac.app_encode_out_strings)
-    # subprozess starten
+    # starting subprozess
     try:
         p = subprocess.Popen([cmd, url_user, url_pw, url_source_file],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -268,10 +269,10 @@ def fetch_media_ftp(dest_file):
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
+    # search for success-msg, if not found: -1
     cmd_output_1 = string.find(p[1], "100%")
     lib_cm.message_write_to_console(ac, cmd_output_1)
-    # wenn gefunden, position, sonst -1
+    # if found, position, otherwise -1
     if cmd_output_1 != -1:
         log_message = "Externe News heruntergeladen... "
         db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
@@ -279,8 +280,7 @@ def fetch_media_ftp(dest_file):
         lib_cm.message_write_to_console(ac, file_orig)
         lib_cm.message_write_to_console(ac, dest_file)
         os.rename(file_orig, dest_file)
-        #TODO zu logisch machen
-        return "ok"
+        return True
     else:
         db.write_log_to_db_a(ac, ac.app_errorslist[1]
             + u"100% beim Download nicht erreicht...",
@@ -311,14 +311,13 @@ def copy_media_db(path_file_source, dest_file):
 def trim_silence(temp_orig_file):
     """Stille am Anfang und Ende entfernen"""
     lib_cm.message_write_to_console(ac, u"Stille am Anfang und Ende entfernen")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # all cmds must be in the right charset
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
     dest_file = ac.app_file_orig_temp + ".wav"
     lib_cm.message_write_to_console(ac, temp_orig_file)
-    # subprozess starten
+    # start subprozess
     #silence 1 0.1 1% reverse silence 1 0.1 1% reverse
     try:
         p = subprocess.Popen([cmd, u"-S", temp_orig_file, dest_file,
@@ -335,7 +334,7 @@ def trim_silence(temp_orig_file):
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
+    # search for success-msg, if not found: -1
     cmd_output_1 = string.find(p[1], "100%")
     lib_cm.message_write_to_console(ac, cmd_output_1)
 
@@ -353,7 +352,7 @@ def trim_silence(temp_orig_file):
 def trim_bed(c_lenght):
     """trim soundbed to length of news"""
     lib_cm.message_write_to_console(ac, u"Soundbed auf News trimmen")
-    # us the right char-encoding for supprocesses
+    # use the right char-encoding for supprocesses
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, c_lenght)
@@ -377,7 +376,7 @@ def trim_bed(c_lenght):
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
+    # search for success-msg, if not found: -1
     #cmd_output_1 = string.find(p[1], c_lenght[0:8])
     # Suche nach exacter Time ist nicht immer moeglich
     # Es gibt Abweichungen um Sekunden und Hundertstel
@@ -395,10 +394,9 @@ def trim_bed(c_lenght):
 
 
 def compand_voice():
-    """Sprache komprimieren"""
+    """compand voice"""
     lib_cm.message_write_to_console(ac, u"Sprache komprimieren")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # use the right char-encoding for supprocesses
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
@@ -409,7 +407,7 @@ def compand_voice():
     lib_cm.message_write_to_console(ac, source_file)
     compand_prams = db.ac_config_1[12].split()
     lib_cm.message_write_to_console(ac, compand_prams)
-    # subprozess starten
+    # start subprozess
     #compand 0.3,1 6:-70,-60,-20 -5 -90
     try:
         p = subprocess.Popen([cmd, u"-S", source_file, dest_file,
@@ -426,7 +424,7 @@ def compand_voice():
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
+    # search for success-msg, if not found: -1
     cmd_output_1 = string.find(p[1], "100%")
     lib_cm.message_write_to_console(ac, cmd_output_1)
 
@@ -442,14 +440,13 @@ def compand_voice():
 
 
 def check_lenght(source_file):
-    """Laenge der News ermitteln"""
+    """calc length of news file"""
     lib_cm.message_write_to_console(ac, u"Laenge der News ermitteln")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # use the right char-encoding for supprocesses
     cmd = db.ac_config_etools[3].encode(ac.app_encode_out_strings)
     #cmd = "soxi"
     lib_cm.message_write_to_console(ac, cmd)
-    # subprozess starten
+    # start subprozess
     try:
         p = subprocess.Popen([cmd, u"-d", source_file],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -467,19 +464,17 @@ def check_lenght(source_file):
 
 
 def mix_bed():
-    """Soundbed drunter legen"""
+    """adding soundbed"""
     lib_cm.message_write_to_console(ac, u"Soundbed drunter legen")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # use the right char-encoding for supprocesses
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, cmd)
-    #TODO x
     #news_file = lib_cm.extract_filename(ac,
     #            db.ac_config_1[6]).replace(".mp3", "_comp.wav")
     news_file = ac.app_file_orig_temp + "_comp.wav"
     news_file_temp = news_file.replace("_comp.wav", "_temp.wav")
-    # subprozess starten
+    # start subprocess
     #silence 1 0.1 1% reverse silence 1 0.1 1% reverse
     try:
         p = subprocess.Popen([cmd, u"-S", u"-m",
@@ -496,7 +491,7 @@ def mix_bed():
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
+    # search for success-msg, if not found: -1
     cmd_output_1 = string.find(p[1], "100%")
     #cmd_output_1 = string.find( p[1], "written" )
     #lib_cm.message_write_to_console(ac, cmd_output )
@@ -513,13 +508,11 @@ def mix_bed():
 
 
 def concatenate_media(filename):
-    """mp3-Files kombinieren"""
+    """concatenate audio files"""
     lib_cm.message_write_to_console(ac, u"mp3-Files kombinieren")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # use the right char-encoding for supprocesses
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
-    #TODO x
     #news_file = lib_cm.extract_filename(ac,
     #            db.ac_config_1[6]).replace("mp3", "wav")
     news_file = ac.app_file_orig_temp + ".wav"
@@ -532,7 +525,7 @@ def concatenate_media(filename):
     dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
     dest_path_file = dest_path + filename
     lib_cm.message_write_to_console(ac, cmd)
-    # subprozess starten
+    # start subprocess
     try:
         p = subprocess.Popen([cmd, u"-S",
             source_file_intro, news_file_temp, source_file_closer,
@@ -548,7 +541,7 @@ def concatenate_media(filename):
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
+    # search for success-msg, if not found: -1
     cmd_output_1 = string.find(p[1], "100%")
     if cmd_output_1 != -1:
         log_message = (u"Externe News bearbeitet"
@@ -563,10 +556,9 @@ def concatenate_media(filename):
 
 
 def add_id3(sendung_data):
-    """id3-Tag in mp3-File schreiben"""
+    """write id3-tag in mp3-file"""
     lib_cm.message_write_to_console(ac, u"id3-Tag in mp3-File schreiben")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # use the right char-encoding for supprocesses
     cmd = db.ac_config_etools[4].encode(ac.app_encode_out_strings)
     #cmd = "id3v2"
     dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
@@ -576,7 +568,7 @@ def add_id3(sendung_data):
             + sendung_data[16].encode(ac.app_encode_out_strings))
     c_title = sendung_data[11].encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, cmd)
-    # subprozess starten
+    # start subprocess
     try:
         p = subprocess.Popen([cmd, u"-a",
             c_author, u"-t", c_title,
@@ -606,7 +598,7 @@ def add_id3(sendung_data):
 
 
 def collect_garbage(garbage_counter):
-    """ aufraeumen """
+    """ clean up temp files"""
     if garbage_counter >= 2:
         #temp_file = lib_cm.extract_filename(ac, db.ac_config_1[6])
         temp_file = ac.app_file_orig_temp + ".mp3"
@@ -720,7 +712,7 @@ if __name__ == "__main__":
     db = lib_cm.dbase()
     ac = app_config()
     print  "lets_work: " + ac.app_desc
-    # losgehts
+    # let's start'
     db.write_log_to_db(ac, ac.app_desc + u" gestartet", "a")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
@@ -739,7 +731,7 @@ if __name__ == "__main__":
                     db.write_log_to_db_a(ac, ac.app_desc
                                     + " ausgeschaltet", "e",
                                     "write_also_to_console")
-    # fertsch
+    # finish
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
     print "lets_lay_down"
     sys.exit()
