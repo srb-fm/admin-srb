@@ -41,6 +41,7 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 		cEingabe += document.form1.iv_hersteller.value + document.form1.iv_rechnung.value;
 		cEingabe += document.form1.iv_eigentuemer.options[document.form1.iv_eigentuemer.selectedIndex].text;
 		cEingabe += document.form1.iv_kategorie.options[document.form1.iv_kategorie.selectedIndex].text;
+		cEingabe += document.form1.iv_ort.options[document.form1.iv_ort.selectedIndex].text;
 		cEingabe += document.form1.iv_id.value;
   		if ( cEingabe == "") {		  
 	    	alert("Es wurden keine Suchbegriffe eingegeben!");
@@ -80,6 +81,7 @@ if ( $user_rights == "yes" ) {
 	echo "<tr><td>Rechnung</td><td><input type='TEXT' name='iv_rechnung' value='' size='60' maxlength='100'></td></tr>";
 	echo "<tr><td>Eigentümer</td><td>".html_dropdown_from_table_1_a("IV_EIGENTUEMER", "IV_EIG_DESC", "iv_eigentuemer", "text_a_1")."</td></tr>";
 	echo "<tr><td>Kategorie</td><td>".html_dropdown_from_table_1_a("IV_KATEGORIE", "IV_KAT_DESC", "iv_kategorie", "text_a_1")."</td></tr>";
+	echo "<tr><td>Lagerort</td><td>".html_dropdown_from_table_1_a("IV_ORT", "IV_ORT_DESC", "iv_ort", "text_a_1")."</td></tr>";
 	echo "<tr><td>Nummer</td><td><input type='TEXT' name='iv_id' value='' size='60' maxlength='100'></td></tr>";
 	
 	echo "<tr><td> </td></tr>";

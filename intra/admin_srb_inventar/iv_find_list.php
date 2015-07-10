@@ -28,7 +28,7 @@ $look_up_field ="no";
 // fuer den link zu den nächsten satzen wird die skip-anzahl in der url zugrechnet: (ausgabebegrenzung 2) und dann in die abfrage uebernommen (// ausgabebegrenzung 1)
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 	
-// action pruefen	
+// check action	
 if ( isset( $_GET['action'] ) ) { 
 	$action = $_GET['action'];	
 	$action_ok = true;
@@ -42,7 +42,7 @@ if ( $action_ok != "yes" ) {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
 			
-// condition_delivery pruefen (ausgabelimit)
+// check condition_delivery (ausgabelimit)
 if ( isset($_GET['condition']) ) {
 	$c_query_condition = rawurldecode($_GET['condition']);
 	$condition_delivery = "yes";
@@ -105,6 +105,17 @@ if ( $condition_delivery != "yes" ) {
 			if ( $c_field_value =="") {
 				$action_ok = false;
 				$message .= "Eigentuemer nicht gefunden... "; 	
+			}
+		}
+	}
+	
+	if ( isset( $_POST['iv_ort'] ) ) {
+		if ( $_POST['iv_ort'] !="") { 
+			$c_field_desc = "IV_ORT_ID";
+			$c_field_value = db_query_load_id_by_value("IV_ORT", "IV_ORT_DESC", $_POST['iv_ort']);
+			if ( $c_field_value =="") {
+				$action_ok = false;
+				$message .= "Lagerort nicht gefunden... "; 	
 			}
 		}
 	}
