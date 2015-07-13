@@ -8,6 +8,7 @@ import datetime
 import string
 import re
 import os
+import socket
 import htmlentitydefs
 import random
 import db_config
@@ -903,6 +904,107 @@ def convert_to_unicode(my_string):
         continue
 
     return data
+
+
+def set_server(ac, db):
+    """server-setting"""
+    if db.ac_config_servset[1] == socket.gethostname():
+        ac.server_active = "A"
+    if db.ac_config_servset[2] == socket.gethostname():
+        ac.server_active = "B"
+
+
+def params_provide_server_settings(ac, db):
+    """Providing server-settings"""
+    ext_params_ok = True
+    db.ac_config_servset = db.params_load_1a(ac, db, "server_settings")
+    if db.ac_config_servset is not None:
+        # create extended Paramslist
+        app_params_type_list = []
+        # Types of extended-List
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        # check extended Params
+        param_check_config = params_check_a(
+                        ac, db, 2,
+                        app_params_type_list,
+                        db.ac_config_servset)
+        if param_check_config is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+    return ext_params_ok
+
+
+def params_provide_server_paths_a(ac, db, running_server):
+    """Providing server-paths a"""
+    ext_params_ok = True
+    config_string = "server_settings_paths_a_" + running_server.strip()
+    db.ac_config_servpath_a = db.params_load_1a(ac, db, config_string)
+    if db.ac_config_servpath_a is not None:
+        # create extended Paramslist
+        app_params_type_list = []
+        # Types of extended-List
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        # check extended Params
+        param_check_config = params_check_a(
+                        ac, db, 12,
+                        app_params_type_list,
+                        db.ac_config_servpath_a)
+        if param_check_config is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+    return ext_params_ok
+
+
+def params_provide_tools(ac, db):
+    """Providing extern tools/libs"""
+    ext_params_ok = True
+    db.ac_config_etools = db.params_load_1a(ac, db, "ext_tools")
+    if db.ac_config_etools is not None:
+        # create extended Paramslist
+        app_params_type_list_etools = []
+        # Types of extended-List
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        app_params_type_list_etools.append("p_string")
+        # check extended Params
+        param_check_etools_config = params_check_a(
+                        ac, db, 12,
+                        app_params_type_list_etools,
+                        db.ac_config_etools)
+        if param_check_etools_config is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+    return ext_params_ok
 
 
 def params_check_1(ac, db):

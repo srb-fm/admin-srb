@@ -49,8 +49,8 @@ Param 6: Dropbox path/file
 Param 7: ftp-URL
 Param 8: ftp-username
 Param 9: ftp-Password
-Param 10: Path to layout files
-Param 11: Path to Play-Out-Server IT
+Param 10: Path to layout files Server A
+Param 11: Path to layout files Server B
 Param 12: Params for audio compression
 
 Extern tools:
@@ -86,7 +86,7 @@ class app_config(object):
         self.app_id = "018"
         self.app_desc = u"play_out_news_extern"
         # key of config in db
-        self.app_config = u"PO_News_extern_Config_1"
+        self.app_config = u"PO_News_extern_Config"
         self.app_config_develop = u"PO_News_extern_Config_1_e"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
@@ -152,35 +152,12 @@ class app_config(object):
 def load_extended_params():
     """load extended params"""
     ext_params_ok = True
-    # extern-tools
-    db.ac_config_etools = db.params_load_1a(ac, db, "ext_tools")
-    if db.ac_config_etools is not None:
-        # create extended Paramslist
-        app_params_type_list_etools = []
-        # Types of extended-List
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        app_params_type_list_etools.append("p_string")
-        # check extended Params
-        param_check_etools_config = lib_cm.params_check_a(
-                        ac, db, 12,
-                        app_params_type_list_etools,
-                        db.ac_config_etools)
-        if param_check_etools_config is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-            "write_also_to_console")
-            ext_params_ok = None
-    else:
-        ext_params_ok = None
+    # extern tools
+    ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    lib_cm.set_server(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
+                                                        ac.server_active)
     return ext_params_ok
 
 
@@ -356,7 +333,10 @@ def trim_bed(c_lenght):
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, c_lenght)
-    source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
+    if ac.server_active == "A":
+        source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
+    if ac.server_active == "B":
+        source_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
     source_file = source_path + ac.app_file_bed
     dest_file = ac.app_file_bed_trim
     # start subprocess
@@ -517,12 +497,17 @@ def concatenate_media(filename):
     #            db.ac_config_1[6]).replace("mp3", "wav")
     news_file = ac.app_file_orig_temp + ".wav"
     news_file_temp = news_file.replace(".wav", "_temp.wav")
-    source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
+    #source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
+    if ac.server_active == "A":
+        source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
+    if ac.server_active == "B":
+        source_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
     #source_file_intro = source_path + "News_ext_Automation_Intro.wav"
     source_file_intro = source_path + ac.app_file_intro
     #source_file_closer = source_path + "News_ext_Automation_Closer.wav"
     source_file_closer = source_path + ac.app_file_closer
-    dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
+    #dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
+    dest_path = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
     dest_path_file = dest_path + filename
     lib_cm.message_write_to_console(ac, cmd)
     # start subprocess
@@ -561,7 +546,8 @@ def add_id3(sendung_data):
     # use the right char-encoding for supprocesses
     cmd = db.ac_config_etools[4].encode(ac.app_encode_out_strings)
     #cmd = "id3v2"
-    dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
+    #dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
+    dest_path = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
     dest_path_file = dest_path + sendung_data[12]
     c_author = (sendung_data[15].encode(
             ac.app_encode_out_strings) + " "
@@ -688,7 +674,8 @@ def lets_rock():
     if id3_ok is None:
         return
 
-    dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
+    #dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
+    dest_path = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
     source_file = dest_path + sendung_data[0][12]
     lenght_news = check_lenght(source_file)
     if lenght_news is None:
@@ -722,8 +709,6 @@ if __name__ == "__main__":
         if param_check is not None:
             # extended params
             load_extended_params_ok = load_extended_params()
-            print "x"
-            print load_extended_params_ok
             if load_extended_params_ok is not None:
                 if db.ac_config_1[1] == "on":
                     lets_rock()
