@@ -46,7 +46,7 @@ import os
 import string
 import shutil
 import subprocess
-import lib_common_1 as lib_cm
+#import lib_common_1 as lib_cm
 
 
 class app_config(object):
