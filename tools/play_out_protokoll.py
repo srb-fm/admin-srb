@@ -23,16 +23,16 @@ Bezieht Daten aus: Firebird-Datenbank
 Arbeitet zusammen mit: wave-recorder o.ae. (nicht direkt)
 
 Parameterliste:
-Param_1: Ordner Audio-Protokolldateien (wave_recorder, rotter)
-Param_2: Ordner Protokolldateien in media_hf (Fileserver)
-Param_3: Tage zurueck, loeschen Audio-Prot-Dateien muss dreistellig sein!!!
+P 1: Ordner Audio-Protokolldateien (wave_recorder, rotter)
+P 2: Ordner Protokolldateien in media_hf (Fileserver)
+P 3: Tage zurueck, loeschen Audio-Prot-Dateien muss dreistellig sein!!!
 (z.B. 030)
-Param_4: Tage zurueck, loeschen Protokoll-Dateien in media_hf
+P 4: Tage zurueck, loeschen Protokoll-Dateien in media_hf
 und logs in DB user_logs
-Param_5: Pefix fuer Protokolldateien in media_hf
-Param_6: Endung fuer Protokolldateien in media_hf
-Param_7: Tage zurueck, kontrollieren ob Protokoll vollstaendig
-
+P 5: Pefix fuer Protokolldateien in media_hf
+P 6: Endung fuer Protokolldateien in media_hf
+P 7: Tage zurueck, kontrollieren ob Protokoll vollstaendig
+P 8: Recorder WaveRecorder oder rotter
 
 Liste der moeglichen Haupt-Fehlermeldungen:
 Error 000 Parameter-Typ oder Inhalt stimmt nicht
@@ -63,15 +63,15 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "012"
         self.app_desc = u"Play_Out_Protokoll"
-        # schluessel fuer config in db
-        self.app_config = u"PO_Protokoll_Config_3"
+        # key for config in db
+        self.app_config = u"PO_Protokoll_Config"
         self.app_config_develop = u"PO_Protokoll_Config_1_e"
-        # anzahl parameter
-        self.app_config_params_range = 7
+        # number of parameters
+        self.app_config_params_range = 8
         self.app_errorfile = "error_play_out_protokoll.log"
         # errorlist
         self.app_errorslist = []
@@ -87,7 +87,7 @@ class app_config(object):
             "Fehler beim Ueberpruefen von Protokoll-Dateien")
         self.app_errorslist.append(u"Error 005 "
             "Fehler beim Loeschen veralteter Logeintraege")
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -97,16 +97,28 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        self.app_params_type_list.append("p_string")
+        # develop-mod
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
-        self.app_debug_mod = "yes"
+        # display debugmessages on console or no: "no"
+        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.action_summary = None
 
 
+def load_extended_params():
+    """load extended params"""
+    ext_params_ok = True
+    # extern tools
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    lib_cm.set_server(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
+                                                        ac.server_active)
+    return ext_params_ok
+
+
 def delete_log_in_db():
-    """Veraltete Log-Eintraege in DB loeschen"""
+    """delete old logs in DB"""
     lib_cm.message_write_to_console(ac, u"delete_log_in_db")
 
     #n_days_back = int( db.ac_config_1[4] )
@@ -144,7 +156,7 @@ def delete_log_in_db():
 
 
 def delete_log_in_db_log():
-    """Veraltete Log-Eintraege in DB-log loeschen"""
+    """delete old logs in DB-log"""
     lib_cm.message_write_to_console(ac, u"delete_log_in_db_log")
 
     #n_days_back = int( db.ac_config_1[4] )
@@ -182,14 +194,16 @@ def delete_log_in_db_log():
 
 
 def write_files_to_protokoll():
-    """Dateien in Protokoll-Archiv kopieren """
+    """copy files in Protokoll-Archive"""
     lib_cm.message_write_to_console(ac, u"write_files_to_protokoll")
 
-    # eine Stunde zurück
+    # one hour back
     date_proto = datetime.datetime.now() + datetime.timedelta(hours=- 1)
-    # Pfad slashes anpassen
-    path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
-    path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+    # Path slashes
+    #path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+    path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[1])
+    #path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+    path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_b[2])
     path_sendung_dest += date_proto.strftime("%Y_%m_%d")
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
 
@@ -241,7 +255,7 @@ def write_files_to_protokoll():
 
 
 def erase_file(path_filename):
-    """Datei loeschen"""
+    """erase file"""
     lib_cm.message_write_to_console(ac, u"erase_file: " + path_filename)
 
     try:
@@ -261,14 +275,14 @@ def erase_file(path_filename):
 
 
 def erase_files_from_protokoll():
-    """Veraltete archivierte Protokoll-Dateien loeschen"""
+    """erase old archived file"""
     lib_cm.message_write_to_console(ac, u"erase_files_from_protokoll")
 
-    #path_sendung_dest = db.ac_config_1[2]
-    path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+    #path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+    path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_b[2])
     lib_cm.message_write_to_console(ac, path_sendung_dest)
 
-    # Tage zurück
+    # Days back
     days_back = int(db.ac_config_1[4])
     date_proto_erase = (datetime.datetime.now()
                         + datetime.timedelta(days=- days_back))
@@ -308,17 +322,15 @@ def erase_files_from_protokoll():
 
 
 def erase_files_from_protokoll_temp():
-    """Temp-Protokoll-Dateien loeschen"""
+    """erase temp file"""
     lib_cm.message_write_to_console(ac, u"erase_files_from_protokoll_temp")
 
-    #path_sendung_source = db.ac_config_1[1]
-    #file_ext = "." + db.ac_config_1[6]
     file_ext = db.ac_config_1[6]
-    # Pfad Slash anpassen
-    path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+    #path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+    path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[1])
     lib_cm.message_write_to_console(ac, path_sendung_source)
 
-    # Tage zurück
+    # Days back
     days_back = int(db.ac_config_1[3][0:3])
     date_proto_erase = (datetime.datetime.now()
                         + datetime.timedelta(days=- days_back))
@@ -341,19 +353,16 @@ def erase_files_from_protokoll_temp():
 
     z = 0
     for item in files_sendung_temp:
-        # datum extrahieren
+        # extract date
         date_filename = (item[len(db.ac_config_1[5])
                             + 1:len(db.ac_config_1[5]) + 11])
         if date_filename <= date_to_erase:
-            # Infofiles die mit 001 beginnen ignorieren
+            # ignore files like "001" at the beginning
             if item[0:3] != "001":
-                # nur files mit richtiger extention loeschen
-                #print item[len(item)-3:len(item)] + "-" + file_ext
+                # delete only files with rigth extention
                 if item[len(item) - 3:len(item)] == file_ext:
-                #if item[23:27] == file_ext:
                     try:
                         path_file_to_erase = path_sendung_source + item
-                        #print path_file_to_erase
                         erase_file(path_file_to_erase)
                         z += 1
                     except Exception, e:
@@ -377,16 +386,11 @@ def erase_files_from_protokoll_temp():
 
 def check_files_in_protokoll_completely(n_days_back):
     """
-    Kopieren nachholen,
-    wenn bei vorigen Tagen Fehler beim Kopieren aufgetreten
+    copy files, they in prev loops not had been copied
     """
     lib_cm.message_write_to_console(ac, u"check_files_in_protokoll_completely")
 
-    # Pfade
-    #path_sendung_source = db.ac_config_1[1]
-    #path_sendung_dest = db.ac_config_1[2]
-
-    # Tage zurück
+    # Days back
     date_proto = (datetime.datetime.now()
                   + datetime.timedelta(days=- n_days_back))
     log_message = (u"Vollstaendigkeit der Protokolle pruefen fuer: "
@@ -394,16 +398,17 @@ def check_files_in_protokoll_completely(n_days_back):
     lib_cm.message_write_to_console(ac, log_message)
     db.write_log_to_db(ac, log_message, "t")
 
-    # Pfad slashes anpassen
-    path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
-    path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+    #path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+    path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[1])
+    #path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+    path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_b[2])
     path_sendung_dest += date_proto.strftime("%Y_%m_%d")
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
 
     lib_cm.message_write_to_console(ac, path_sendung_source)
     lib_cm.message_write_to_console(ac, path_sendung_dest)
 
-    # Dateien in temp in Liste
+    # files from temp in list
     try:
         files_sendung_source = os.listdir(path_sendung_source)
     except Exception, e:
@@ -501,7 +506,7 @@ def check_files_in_protokoll_completely(n_days_back):
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
-    # Dateien in Protokoll-Archiv kopieren
+    # copy files in Protokoll-Archive
     write_ok = write_files_to_protokoll()
     if write_ok is None:
         # Error 001 Fehler beim Kopieren in Protokoll-Archiv
@@ -510,7 +515,7 @@ def lets_rock():
     else:
         ac.action_summary = u"Audio-Protokoll archiviert"
 
-    # Archivierte Protokoll-Dateien loeschen
+    # delete archived Protokoll-files
     erase_proto_ok = erase_files_from_protokoll()
     if erase_proto_ok is None:
         # Error 002 Fehler beim Loeschen
@@ -537,13 +542,6 @@ def lets_rock():
                 db.write_log_to_db_a(ac, ac.app_errorslist[4], "x",
                     "write_also_to_console")
 
-    # Veraltete Log-Eintraege in DB loeschen
-    #delete_ok = delete_log_in_db( )
-    #if delete_ok is None:
-        # Error 005 Fehler beim Loeschen veralteter Logeintraege
-        #db.write_log_to_db_a(ac,  ac.app_errorslist[5] , "x",
-                            #"write_also_to_console" )
-
     # Veraltete Log-Eintraege in DB-log loeschen
     delete_ok = delete_log_in_db_log()
     if delete_ok is None:
@@ -557,17 +555,20 @@ if __name__ == "__main__":
     db = lib_cm.dbase()
     ac = app_config()
     print  "lets_work: " + ac.app_desc
-    # losgehts
+    # lets rock
     db.write_log_to_db(ac, ac.app_desc + " gestartet", "a")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
     if db.ac_config_1 is not None:
         param_check = lib_cm.params_check_1(ac, db)
-        # alles ok: weiter
+        # ok: continue
         if param_check is not None:
-            lets_rock()
+            # extended params
+            load_extended_params_ok = load_extended_params()
+            if load_extended_params_ok is not None:
+                lets_rock()
 
-    # fertsch
+    # finish
     if ac.action_summary is not None:
         db.write_log_to_db(ac, ac.action_summary, "i")
     db.write_log_to_db(ac, ac.app_desc + " gestoppt", "s")

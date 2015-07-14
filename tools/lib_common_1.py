@@ -973,6 +973,41 @@ def params_provide_server_paths_a(ac, db, running_server):
     return ext_params_ok
 
 
+def params_provide_server_paths_b(ac, db, running_server):
+    """Providing server-paths b"""
+    ext_params_ok = True
+    config_string = "server_settings_paths_b_" + running_server.strip()
+    db.ac_config_servpath_b = db.params_load_1a(ac, db, config_string)
+    if db.ac_config_servpath_b is not None:
+        # create extended Paramslist
+        app_params_type_list = []
+        # Types of extended-List
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        # check extended Params
+        param_check_config = params_check_a(
+                        ac, db, 12,
+                        app_params_type_list,
+                        db.ac_config_servpath_b)
+        if param_check_config is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+    return ext_params_ok
+
+
 def params_provide_tools(ac, db):
     """Providing extern tools/libs"""
     ext_params_ok = True
