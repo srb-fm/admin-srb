@@ -79,7 +79,7 @@ class app_config(object):
         self.app_id = "014"
         self.app_desc = u"Podcast_Beamer"
         # key for config in db
-        self.app_config = u"PC_Beamer_Config_4"
+        self.app_config = u"PC_Beamer_Config"
         self.app_config_develop = u"PC_Beamer_Config_1_e"
         # amount parameter
         self.app_config_params_range = 12
@@ -125,6 +125,18 @@ class app_config(object):
         self.time_target = datetime.datetime.now() + datetime.timedelta()
 
 
+def load_extended_params():
+    """load extended params"""
+    ext_params_ok = True
+    # extern tools
+    ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    lib_cm.set_server(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
+                                                        ac.server_active)
+    return ext_params_ok
+
+
 def load_podcast():
     """check for Podcasts in db"""
     lib_cm.message_write_to_console(ac, u"load_podcast")
@@ -153,7 +165,7 @@ def encode_file(podcast_sendung):
     """recode mp3-files with lower rate"""
     lib_cm.message_write_to_console(ac, u"encode_file")
     # all cmds must be in the right charset
-    c_lame_encoder = db.ac_config_1[2].encode(ac.app_encode_out_strings)
+    c_lame_encoder = db.ac_config_etools[6].encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, u"type c_lame_encoder")
     lib_cm.message_write_to_console(ac, type(c_lame_encoder))
     lib_cm.message_write_to_console(ac, u"type podcast_sendung[1]")
@@ -180,13 +192,13 @@ def encode_file(podcast_sendung):
     lib_cm.message_write_to_console(ac, type(c_id3_author_value))
 
     # source sendung
-    path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[5])
+    path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_servpath_a[6])
     c_source_file = (path_sendung_source.encode(ac.app_encode_out_strings)
                      + podcast_sendung[0].encode(ac.app_encode_out_strings))
     lib_cm.message_write_to_console(ac, c_source_file)
 
     # source infotime und mag
-    path_it_mg_source = lib_cm.check_slashes(ac, db.ac_config_1[4])
+    path_it_mg_source = lib_cm.check_slashes(ac, db.ac_config_servpath_a[5])
 
     # infotime
     if podcast_sendung[4] == "T":
@@ -551,11 +563,15 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # all ok: continue
         if param_check is not None:
-            if db.ac_config_1[1] == "on":
-                lets_rock()
-            else:
-                db.write_log_to_db_a(ac, "Podcast-Beamer ausgeschaltet", "e",
-                    "write_also_to_console")
+            # extended params
+            load_extended_params_ok = load_extended_params()
+            if load_extended_params_ok is not None:
+                if db.ac_config_1[1] == "on":
+                    lets_rock()
+                else:
+                    db.write_log_to_db_a(ac,
+                                "Podcast-Beamer ausgeschaltet", "e",
+                                "write_also_to_console")
 
     # finish
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
