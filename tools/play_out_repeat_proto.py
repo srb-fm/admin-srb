@@ -65,15 +65,15 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "004"
         self.app_desc = u"play_out_repeat_protokoll"
-        # schluessel fuer config in db
-        self.app_config = u"PO_Repeat_Proto_Config_3"
+        # key of config in db
+        self.app_config = u"PO_Repeat_Proto_Config"
         self.app_config_develop = u"PO_Repeat_Proto_Config_3_e"
-        # anzahl parameter
-        self.app_config_params_range = 8
+        # number of main-parameters
+        self.app_config_params_range = 5
         self.app_errorfile = "error_play_out_repeat_protokoll.log"
         # errorlist
         self.app_errorslist = []
@@ -86,7 +86,7 @@ class app_config(object):
         self.app_errorslist.append(u"Error 004 "
             "Fehler beim Loeschen der mp3validator-bak-Datei")
         self.app_errorslist.append(u"Error 005 Fehler bei id3tag: ")
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -94,13 +94,10 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
 
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # using develop-params
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # debug-mod
         self.app_debug_mod = "yes"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
@@ -110,6 +107,20 @@ class app_config(object):
         self.time_target = (datetime.datetime.now()
                             + datetime.timedelta(days=+ 1))
         #self.time_target = datetime.datetime.now()
+
+
+def load_extended_params():
+    """load extended params"""
+    ext_params_ok = True
+    # extern tools
+    ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    lib_cm.set_server(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
+                                                        ac.server_active)
+    ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
+                                                        ac.server_active)
+    return ext_params_ok
 
 
 def load_sg_repeat():
@@ -161,7 +172,7 @@ def audio_validate(file_dest):
     lib_cm.message_write_to_console(ac, u"mp3-File validieren")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    c_validator = db.ac_config_1[6].encode(ac.app_encode_out_strings)
+    c_validator = db.ac_config_etools[7].encode(ac.app_encode_out_strings)
     c_source_file = file_dest.encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, c_source_file)
     # subprozess starten
@@ -203,7 +214,7 @@ def audio_mp3gain(file_dest):
     lib_cm.message_write_to_console(ac, u"mp3-File Gainanpassung")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    c_mp3gain = db.ac_config_1[7].encode(ac.app_encode_out_strings)
+    c_mp3gain = db.ac_config_etools[5].encode(ac.app_encode_out_strings)
     c_source_file = file_dest.encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, c_source_file)
     # subprozess starten
@@ -239,7 +250,7 @@ def audio_id3tag(file_dest, id3_author, id3_title):
     lib_cm.message_write_to_console(ac, u"mp3-id3Tag schreiben")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
-    c_id3tag = db.ac_config_1[8].encode(ac.app_encode_out_strings)
+    c_id3tag = db.ac_config_etools[4].encode(ac.app_encode_out_strings)
     c_source_file = file_dest.encode(ac.app_encode_out_strings)
     # Unterstriche entfernen
     c_id3_author = re.sub("_", " ", id3_author)
@@ -306,7 +317,7 @@ def check_and_work_on_files(repeat_sendung):
                                         + repeat_sendung[12])
         if repeat_sendung[4].strip() == "T" or repeat_sendung[5].strip() == "T":
             # InfoTime
-            path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+            path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
         else:
             # Sendung
             path_dest = lib_cm.check_slashes(ac, db.ac_config_1[3])
@@ -318,10 +329,10 @@ def check_and_work_on_files(repeat_sendung):
             u"SRB-Muster-Filename nicht in db, zusammenbauen")
         if repeat_sendung[4].strip() == "T" or repeat_sendung[5].strip() == "T":
             # InfoTime
-            path_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
+            path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
         else:
             # Sendung
-            path_dest = lib_cm.check_slashes(ac, db.ac_config_1[3])
+            path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_a[2])
 
     # filename: SG-Content-Nr_Nachname_Stichworte
     file_dest = (path_dest + str(repeat_sendung[8]) + "_"
@@ -376,7 +387,7 @@ def check_and_work_on_files(repeat_sendung):
     # Nur Sendungen die zur vollen Stunde beginnen bearbeiten
     lib_cm.message_write_to_console(ac, first_sg_date_time.minute)
     # Pfad-Datei der Protodatei
-    path_source = lib_cm.check_slashes(ac, db.ac_config_1[4])
+    path_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[2])
     if ac.app_windows == "yes":
         file_source = (path_source + first_sg_date_time.strftime('%Y_%m_%d')
             + "\\" + db.ac_config_1[5] + "_"
@@ -503,7 +514,10 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # alles ok: weiter
         if param_check is not None:
-            lets_rock()
+            # extended params
+            load_extended_params_ok = load_extended_params()
+            if load_extended_params_ok is not None:
+                lets_rock()
 
     # fertsch
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
