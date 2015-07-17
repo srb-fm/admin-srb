@@ -158,6 +158,8 @@ def load_extended_params():
     lib_cm.set_server(ac, db)
     ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
                                                         ac.server_active)
+    ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
+                                                        ac.server_active)
     return ext_params_ok
 
 
@@ -186,7 +188,11 @@ def load_sg():
 
 def filepaths():
     """concatenate path and filename"""
-    d_h_pattern, l_path_title = date_hour_pattern(db.ac_config_1[6])
+    #d_h_pattern, l_path_title = date_hour_pattern(db.ac_config_1[6])
+
+    path_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[5])
+    path_file_source_conf = path_source + db.ac_config_1[6]
+    d_h_pattern, l_path_title = date_hour_pattern(path_file_source_conf)
     if d_h_pattern is None:
         return None, None
     #curr_date_hour = ac.time_target_start.strftime("%Y_%m_%d_%H")
