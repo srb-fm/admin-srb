@@ -16,19 +16,19 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "parts/audio_libs/mp3_file_edits.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
-	
+
 $message = "";
 $error_message = "";
-$action_ok = "no";
-	
+$action_ok = false;
+
 // action pruefen	
 if ( isset( $_GET['action'] ) ) {
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 if ( isset( $_POST['action'] ) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
 
 if ( isset( $_GET['file_exist'] ) ) { 
@@ -36,8 +36,8 @@ if ( isset( $_GET['file_exist'] ) ) {
 } else {
 	$file_exist	= "no";
 }
-			
-if ( $action_ok == "yes" ) {	
+
+if ( $action_ok == true ) {	
 	if ( isset( $_GET['ad_id'] ) ) {	
 		$id_ad = $_GET['ad_id'];
 	}
@@ -63,7 +63,7 @@ if ( $action_ok == "yes" ) {
 			$form_input_type = "repeat_add"; //form action einstellen
 			$tbl_row_ad = db_query_display_item_1("AD_MAIN", "AD_ID = " .$id_ad);
 			$tbl_row_sg = db_query_sg_display_item_1($_GET['sg_id']);
-			
+
 			// kann kein first sein				
 			$tbl_row_sg->SG_HF_FIRST_SG = "F";	
 			// On_Air zurueckschalten				
@@ -85,7 +85,7 @@ if ( $action_ok == "yes" ) {
 			$form_input_type = "add"; //form action einstellen
 			$tbl_row_ad = db_query_display_item_1("AD_MAIN", "AD_ID = " .$id_ad);
 			$tbl_row_sg = db_query_sg_display_item_1($_GET['sg_id']);
-				
+
 			// On_Air zurueckschalten				
 			$tbl_row_sg->SG_HF_ON_AIR = "F";
 			// nicht fuer austausch				
@@ -95,7 +95,7 @@ if ( $action_ok == "yes" ) {
 				$tbl_row_sg->SG_HF_CONT_FILENAME = "";
 			}
 			break;
-				
+
 		case "repeat_add":
 			$tbl_fields_sg = "SG_HF_ID, SG_HF_CONTENT_ID, SG_HF_TIME, SG_HF_SOURCE_ID, ";
 			$tbl_fields_sg .="SG_HF_INFOTIME, SG_HF_MAGAZINE, SG_HF_PODCAST, SG_HF_VP_OUT,";
@@ -145,7 +145,7 @@ if ( $action_ok == "yes" ) {
 			$tbl_values_sg .= "'".$_POST['form_sg_duration']."' ";
 			// und ab into
 			db_query_add_item("SG_HF_MAIN", $tbl_fields_sg, $tbl_values_sg);
-				
+
 			// content filename ergaenzen wenn noetig
 			// bei wh von livesendungen zu norm wh wird filename generiert, es sei denn er ist schon eingetragen
 			$source_id = db_query_load_id_by_value("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", rtrim($_POST['form_sg_source']));
@@ -173,12 +173,12 @@ if ( $action_ok == "yes" ) {
 				$tbl_fields_values_sg_cont = "SG_HF_CONT_FILENAME='".$_POST['form_sg_filename']."' ";
 				//$value_filename = $_POST['form_sg_filename'];	
 			}
-								
+
 			// hier ist nicht mit sonderzeichen zu rechnen, deshalb einfaches update	
 			db_query_update_item_a("SG_HF_CONTENT", $tbl_fields_values_sg_cont, "SG_HF_CONT_ID =".$_POST['sg_content_id']);
 			header("Location: sg_hf_detail.php?action=display&sg_id=".$main_id_sg);
 			break;
-                
+
 		case "add":
 			// Sg_main
 			// fields
@@ -245,7 +245,7 @@ if ( $action_ok == "yes" ) {
 			$tbl_values_sg_cont = $main_id_sg_cont.", ".$main_id_sg.", ".$id_ad.", ";
 			$value_genre = db_query_load_id_by_value("SG_GENRE", "SG_GENRE_DESC", $_POST['form_sg_genre']);
 			$value_speech = db_query_load_id_by_value("SG_SPEECH", "SG_SPEECH_DESC", $_POST['form_sg_speech']);
-				
+
 			// checkboxen	
 			if ( isset( $_POST['form_sg_teamprod'] ) ) { 
 				$value_teamprod= $_POST['form_sg_teamprod']; 
@@ -264,26 +264,26 @@ if ( $action_ok == "yes" ) {
 					//$tbl_values_sg_cont .= "'Keine_Audiodatei', ";
 					$value_filename = "Keine_Audiodatei"; 
 				}
-						
+
 			} else {  
 				//$tbl_values_sg_cont .= "'".$_POST['form_sg_filename']."', ";
 				$value_filename = trim($_POST['form_sg_filename']);
 			}
-					
+
 			$a_values = array($main_id_sg_cont, $main_id_sg, $id_ad,
     					$value_genre, $value_speech,	$value_teamprod,
     					$_POST['form_sg_titel'], $_POST['form_sg_untertitel'], $_POST['form_sg_stichworte'], $_POST['form_sg_regie'], 
     					$value_filename,	$_POST['form_sg_web']); 	
-    						
+
 			$insert_ok = db_query_add_item_b("SG_HF_CONTENT", $tbl_fields_sg_cont, "?,?,?,?,?,?,?,?,?,?,?,? ", $a_values);
-				
+
 			// sendung neu, user active schalten in ad_main
 			$tbl_ad_fields_values = "AD_USER_OK_AKTIV='T'";
 			db_query_update_item_a("AD_MAIN", $tbl_ad_fields_values, "AD_ID =".$_POST['ad_id']);
 			// Audiodatei nicht pruefen lassen in sg_hf_detail     
 			header("Location: sg_hf_detail.php?action=display&sg_id=".$main_id_sg."&check_file=no");
 			break;
-				
+
 		case "edit":
 			$message =   "Sendung-Details bearbeiten";
 			$form_input_type = "update"; //form action einstellen
@@ -295,28 +295,47 @@ if ( $action_ok == "yes" ) {
 			// sg
 			$c_audio_length = $_POST['form_sg_duration'];
 			//$c_audio_length_s = get_seconds_from_hms ( $c_audio_length );
-			// Laenge pruefen wenn gewuenscht
+			// check length if 
 			if ( isset( $_POST['form_sg_read_audio_length'] )) {
 				// Pfade fuer audios aus einstellungen
-				$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF_1'");
-					
+				//$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF_1'");
+				$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF'");
+				$tbl_row_config_serv = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
+				// are we on server-line A or B?
+				if ( $tbl_row_config_serv->USER_SP_PARAM_3 == $_SERVER['SERVER_NAME'] ) {
+					$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_A'");
+					$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_A'");
+				}
+				if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
+					$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_B'");
+					$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_B'");
+				}
+
 				// Pfad und Dateiname 
 				if ( isset( $_POST['form_sg_infotime'] ) or isset( $_POST['form_sg_magazine'] ) ) {
-					$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$_POST['form_sg_filename'];
-					$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_2.$_POST['form_sg_filename'];	
-					$patfilename = $tbl_row_config->USER_SP_PARAM_5.$_POST['form_sg_filename'];
+					//$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$_POST['form_sg_filename'];
+					//$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_2.$_POST['form_sg_filename'];	
+					//$patfilename = $tbl_row_config->USER_SP_PARAM_5.$_POST['form_sg_filename'];
+					$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_6.$_POST['form_sg_filename'];
+					$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_8.$_POST['form_sg_filename'];	
+					$patfilename = $tbl_row_config_A->USER_SP_PARAM_5.$_POST['form_sg_filename'];
 				} else {
-					$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_3.$_POST['form_sg_filename'];
-					$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_4.$_POST['form_sg_filename'];
-					$patfilename = $tbl_row_config->USER_SP_PARAM_7.$_POST['form_sg_filename'];				
+					//$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_3.$_POST['form_sg_filename'];
+					//$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_4.$_POST['form_sg_filename'];
+					//$patfilename = $tbl_row_config->USER_SP_PARAM_7.$_POST['form_sg_filename'];
+					$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_7.$_POST['form_sg_filename'];
+					$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_9.$_POST['form_sg_filename'];
+					$patfilename = $tbl_row_config_A->USER_SP_PARAM_6.$_POST['form_sg_filename'];
 					// Sendung in Infotime
-					$remotefilename_bc_in_it = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$_POST['form_sg_filename'];				
-					$remotefilename_bc_in_it_ar = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_2.$_POST['form_sg_filename'];				
+					//$remotefilename_bc_in_it = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$_POST['form_sg_filename'];				
+					//$remotefilename_bc_in_it_ar = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_2.$_POST['form_sg_filename'];
+					$remotefilename_bc_in_it = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_6.$_POST['form_sg_filename'];				
+					$remotefilename_bc_in_it_ar = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_8.$_POST['form_sg_filename'];
 				}
 				// wenn mediafile vorhanden, lange pruefen und uebernehmen
 				//$c_audio_length = read_mp3_length ( $remotefilename );
 				//$c_audio_length = read_length_write_tag ( $remotefilename, $_POST['form_sg_filename'], "\\\\Sende-server-hf\\media_hf_play_out\\HF_Play_Out_Infotime" );
-						
+
 				// mp3Gain pruefen wenn gewuenscht
 				if ( isset( $_POST['form_sg_mp3gain'] )) {
 					$set_mp3gain = "yes"; 
@@ -330,17 +349,17 @@ if ( $action_ok == "yes" ) {
 					$error_message .= "Fehler beim Hoerdauerabgleich "; 
 				}						
 			} // Ende Laenge pruefen wenn gewuenscht
-					
+
 			// mp3Gain pruefen wenn gewuenscht
 			if ( isset( $_POST['form_sg_mp3gain'] )) {
 				$set_mp3gain = "yes"; 
 			} else {	 
 				$set_mp3gain = "no";	
 			} // Ende mp3Gain wenn gewuenscht					
-					
+
 			// load values
 			$tbl_fields_values_sg = "SG_HF_TIME= '".get_date_format_sql($_POST['form_sg_date'])." ".$_POST['form_sg_time']."', ";
-				
+
 			// lookups
 			$source_id = db_query_load_id_by_value("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", $_POST['form_sg_source']);
 			$tbl_fields_values_sg .= "SG_HF_SOURCE_ID='".$source_id."', ";
@@ -391,7 +410,7 @@ if ( $action_ok == "yes" ) {
 			// lookups				
 			$value_genre = db_query_load_id_by_value("SG_GENRE", "SG_GENRE_DESC", $_POST['form_sg_genre']);
 			$value_speech = db_query_load_id_by_value("SG_SPEECH", "SG_SPEECH_DESC", $_POST['form_sg_speech']);
-				
+
 			if ( $_POST['form_sg_filename'] =="" ) { 
 				// wenn play-out dann filename, sonst nichz					
 				if ( $source_id  == "03" ) { 
@@ -402,36 +421,36 @@ if ( $action_ok == "yes" ) {
 					//$tbl_fields_values_sg_cont .= "SG_HF_CONT_FILENAME='Keine_Audiodatei', ";
 					$value_filename = "Keine_Audiodatei";
 				}
-						
+
 			} else {  
 				//$tbl_fields_values_sg_cont .= "SG_HF_CONT_FILENAME='".$_POST['form_sg_filename']."', ";
 				$value_filename = trim($_POST['form_sg_filename']);	
 			}
-				
+
 			// checkboxen
 			if ( isset( $_POST['form_sg_teamprod'] ) ) { 
 				$value_teamprod= $_POST['form_sg_teamprod']; 
 			} else { 
 				$value_teamprod = "F" ;
 			}
-				
+
 			$a_values = array($_POST['ad_id'], $value_genre, $value_speech, $value_teamprod,
     				$_POST['form_sg_titel'], $_POST['form_sg_untertitel'], $_POST['form_sg_stichworte'], $_POST['form_sg_regie'], 
     				$value_filename,	$_POST['form_sg_web']);
-    			
+
     		db_query_update_item_b("SG_HF_CONTENT", $tbl_fields_sg_cont, "SG_HF_CONT_ID =".$_POST['sg_content_id'], $a_values);
-		    						
+	
 			// sendung geaendert, user active schalten in ad_main
 			$tbl_ad_fields_values = "AD_USER_OK_AKTIV='T'";
 			db_query_update_item_a("AD_MAIN", $tbl_ad_fields_values, "AD_ID =".$_POST['ad_id']);
 			header("Location: sg_hf_detail.php?action=display&sg_id=".$_POST['sg_id']."&error_message=".$error_message);
 			break;
-			
+
 		} //endswitch
 	} else {
 		$message = "Keine ID. Nichts zu tun..... "; 
 	}
-	// Hilfe einlesen
+	// read help
 	$sg_help_1 = trim(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_TEXT", "USER_SP_SPECIAL = 'Sendung_Anmeldung_Hilfe_1'"));
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
@@ -505,8 +524,6 @@ if ( $action_ok == "yes" ) {
 	}
 
 	</script>
-
-
 </head>
 <body>
 <?php
@@ -518,7 +535,7 @@ if ( isset($tbl_row_sg->SG_HF_FIRST_SG )) {
 }
 echo "</div>";	
 echo "<div class='content'>";			
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 }
 
@@ -538,7 +555,7 @@ if ( $user_rights == "yes" ) {
 	echo "<input type='hidden' name='sg_content_id' value='".$tbl_row_sg->SG_HF_CONTENT_ID."'>";	
 	echo "<input type='hidden' name='ad_id' value='".$tbl_row_ad->AD_ID."'>";
 	echo "<input type='hidden' name='ad_name' value='".trim($tbl_row_ad->AD_NAME)."'>";
-			
+
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Datum/ Zeit/ Länge</div>";
 	echo "<input type='text' name='form_sg_date' id='datepicker' class='validate[required,custom[date_ge]] text_4' onChange='check_free_time()' value='".get_date_format_deutsch(substr($tbl_row_sg->SG_HF_TIME, 0, 10))."'>	<input type='text' name='sg_timestamp' id='sg_timestamp' class='validate[required,ajax[ajax_sg_time]] text_dummy' value='".trim($tbl_row_sg->SG_HF_TIME)."'>";
@@ -581,7 +598,7 @@ if ( $user_rights == "yes" ) {
 	} else { 
 		echo "<input type='checkbox' name='form_sg_on_air' value='T' title='Wird gesendet'>Auf Sendung ";
 	}
-			
+
 	if ( rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
 		echo "<input id='chk_infotime' type='checkbox' name='form_sg_infotime' value='T' checked='checked' title='InfoTime'>InfoTime ";
 	} else { 
@@ -593,7 +610,7 @@ if ( $user_rights == "yes" ) {
 	} else { 
 		echo "<input id='chk_magazine' type='checkbox' name='form_sg_magazine' value='T' title='Magazin' onChange='check_free_time()'>Magazin ";
 	}
-			
+
 	if ( rtrim($tbl_row_sg->SG_HF_PODCAST) == "T" ) {
 		echo "<input type='checkbox' name='form_sg_podcast' value='T' checked='checked' title='Podcast'>Podcast ";
 	} else { 
@@ -605,7 +622,7 @@ if ( $user_rights == "yes" ) {
 	} else { 
 		echo "<input type='checkbox' name='form_sg_vp_out' value='T' title='VP extern zur Verfügung stellen'>VP-Out ";
 	}
-	
+
 	if ( rtrim($tbl_row_sg->SG_HF_FIRST_SG) != "T") {
 		if ( rtrim($tbl_row_sg->SG_HF_REPEAT_PROTO) == "T") {
 			echo "<input type='checkbox' name='form_sg_repeat_proto' value='T' checked='checked' title='Wiederholung von Audio-Protokoll\n Wenn dies aktiv, wird das Audioprotokoll in Play-Out kopiert'>WH Proto ";
@@ -619,7 +636,7 @@ if ( $user_rights == "yes" ) {
 			echo "<input type='checkbox' name='form_sg_live' value='T' title='Livesendung'>Live ";
 		}
 	}
-					
+
 	if ( rtrim($tbl_row_sg->SG_HF_CONT_TEAMPRODUCTION) == "T") {
 		echo "<input type='checkbox' name='form_sg_teamprod' value='T' checked='checked' title='Teamproduktion'>Teamp. ";
 	} else { 
@@ -665,7 +682,7 @@ if ( $user_rights == "yes" ) {
 	echo "</form>";
 	echo "<div id='wait' style='display:none; margin-top:-22px;'><img src='../parts/pict/wait30trans.gif' width='30' height='30' border='0' alt='gleich gehts weiter'>...gleich gehts weiter...bitte dieses Fenster NICHT schließen</div>";
 	echo "<br> <br>";
-		
+
 } // user_rights			
 echo "<div class='space_line_1'> </div>";
 echo "</div><!--class=column_right-->";

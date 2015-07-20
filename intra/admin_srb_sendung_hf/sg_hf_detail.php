@@ -226,10 +226,19 @@ if ( $action_ok == true ) {
 		if ( isset( $tbl_row_mk->SG_MK_ID )) { 
 			$manuskript_present = true;
 		}
-
 	}
-	// Paths flashplayer-audios from Settings
-	$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF_1'");
+	// Paths player-audios from Settings
+	$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF'");
+	$tbl_row_config_serv = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
+	// are we on server-line A or B?
+	if ( $tbl_row_config_serv->USER_SP_PARAM_3 == $_SERVER['SERVER_NAME'] ) {
+		$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_A'");
+		$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_A'");
+	}
+	if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
+		$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_B'");
+		$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_B'");
+	}
 }
 ?>
 
@@ -248,17 +257,7 @@ if ( $action_ok == true ) {
 	<script type="text/javascript" src="../parts/jquery/jquery_tools/jq_tools.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_my_tools/jq_my_tools_3.js"></script>	
 	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/jplayer/jquery.jplayer.min.js"></script>
-	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/add-on/jquery.jplayer.inspector.min.js"></script>
-	
-	<script type="text/javascript" src="parts/audio-player/audio-player.js"></script>  
-   <script type="text/javascript">  
-             AudioPlayer.setup("parts/audio-player/player.swf", {  
-                 width: 675,
-				 transparentpagebg: "yes",
-				 checkpolicy: "yes"
-             });  
-    </script>  
-	
+	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/add-on/jquery.jplayer.inspector.min.js"></script> 
 </head>
 <body>
 <?php
@@ -283,7 +282,7 @@ if ( $user_rights == "yes" ) {
 			
 	switch ( rtrim($tbl_row_sg->SG_HF_DURATION)) {
 	case "00:00:00":
-		// Laenge von 0 Minuten hervorheben				
+		// highlight length of 0 minutes				
 		echo "<div class='content_column_4 blink' title='Bitte Sendedauer ueberpruefen'>" .rtrim($tbl_row_sg->SG_HF_DURATION). " </div>";
 		break;
 
@@ -418,21 +417,29 @@ if ( $user_rights == "yes" ) {
 				
 		// paths
 		if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" or rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
-			// FLASHPLAYER				
-			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$tbl_row_sg->SG_HF_CONT_FILENAME;
-			$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_2.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;					
+			// PLAYER				
+			//$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			//$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_2.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_6.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_8.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			// php
-			$php_remotefilename = $tbl_row_config->USER_SP_PARAM_5.$tbl_row_sg->SG_HF_CONT_FILENAME;
-			$php_remotefilename_archiv = $tbl_row_config->USER_SP_PARAM_6.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;					
+			//$php_remotefilename = $tbl_row_config->USER_SP_PARAM_5.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			//$php_remotefilename_archiv = $tbl_row_config->USER_SP_PARAM_6.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$php_remotefilename = $tbl_row_config_A->USER_SP_PARAM_5.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$php_remotefilename_archiv = $tbl_row_config_A->USER_SP_PARAM_9.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 		} else {
-			// FLASHPLAYER	
-			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_3.$tbl_row_sg->SG_HF_CONT_FILENAME;					
-			$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_4.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;				
+			// PLAYER	
+			//$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_3.$tbl_row_sg->SG_HF_CONT_FILENAME;					
+			//$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_4.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_7.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_9.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			//php
-			$php_remotefilename = $tbl_row_config->USER_SP_PARAM_7.$tbl_row_sg->SG_HF_CONT_FILENAME;
-			$php_remotefilename_archiv = $tbl_row_config->USER_SP_PARAM_8.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			//$php_remotefilename = $tbl_row_config->USER_SP_PARAM_7.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			//$php_remotefilename_archiv = $tbl_row_config->USER_SP_PARAM_8.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$php_remotefilename = $tbl_row_config_A->USER_SP_PARAM_6.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$php_remotefilename_archiv = $tbl_row_config_A->USER_SP_PARAM_10.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 		}
-			
+
 		if ( file_exists($php_remotefilename)) {
 			$file_exist = "yes";
 		} else {
@@ -441,9 +448,9 @@ if ( $user_rights == "yes" ) {
 					$remotefilename = $remotefilename_archiv;
 					$file_exist = "yes";
 					if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" or rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
-						$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config->USER_SP_PARAM_6.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
+						$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config_A->USER_SP_PARAM_9.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
 					} else {
-						$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config->USER_SP_PARAM_8.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
+						$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config_A->USER_SP_PARAM_10.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
 					}
 				} else { 
 					$error_message .= "Media-Datei weder in Play-Out noch im Archiv vorhanden!"; 
@@ -454,17 +461,7 @@ if ( $user_rights == "yes" ) {
 		}
 	} // file_exist_check
 
-			
 	if ( $file_exist == "yes" ) {
-		// old flash-player
-		//echo "<br><div class='space_line_1'> </div>";
-		//echo "<p id='audioplayer_1'>Alternative content</p>";  
-		//echo "<script type='text/javascript'>";
-		//AudioPlayer.embed("audioplayer_1", {soundFile: "1052854_Sobek_Sommerfest_Sabelschule.mp3"});  
-		//echo "AudioPlayer.embed('audioplayer_1', {soundFile: 'http://streamserver.max.fm:80/srb'});";
-		//echo "AudioPlayer.embed('audioplayer_1', {soundFile: '".$remotefilename."' });"; 
-		//echo "</script>\n  ";
-		
 		echo '<script type="text/javascript">';
 		//echo '//<![CDATA[';
 		echo '$(document).ready(function(){';
