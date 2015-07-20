@@ -67,12 +67,12 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "011"
         self.app_desc = u"Play_Out_Archiv"
         # schluessel fuer config in db
-        self.app_config = u"PO_Archiv_Config_3"
+        self.app_config = u"PO_Archiv_Config"
         self.app_config_develop = u"PO_Archiv_Config_1_e"
         self.app_errorfile = "error_play_out_archiv.log"
         # errorlist
@@ -96,11 +96,21 @@ class app_config(object):
         self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_int")
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # develop-mod
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # debug-mod
         self.app_debug_mod = "no"
         self.app_windows = "no"
+
+
+def load_extended_params():
+    """load extended params"""
+    ext_params_ok = True
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    lib_cm.set_server(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
+                                                        ac.server_active)
+    return ext_params_ok
 
 
 def write_files_to_archive_prepare(sendung_art):
@@ -109,13 +119,13 @@ def write_files_to_archive_prepare(sendung_art):
 
     # Pfade
     if sendung_art == "Info-Time":
-        path_sendung_source = db.ac_config_1[1]
-        path_sendung_dest = db.ac_config_1[3]
+        path_sendung_source = db.ac_config_servpath_a[5]
+        path_sendung_dest = db.ac_config_servpath_a[9]
         log_message = u"Infotime und Magazin archivieren..."
 
     if sendung_art == "Sendung normal":
-        path_sendung_source = db.ac_config_1[2]
-        path_sendung_dest = db.ac_config_1[4]
+        path_sendung_source = db.ac_config_servpath_a[6]
+        path_sendung_dest = db.ac_config_servpath_a[10]
         log_message = u"Sendungen archivieren..."
 
     db.write_log_to_db(ac, log_message, "p")
@@ -326,13 +336,13 @@ def erase_files_from_play_out_prepare(sendung_art):
 
     # Pfade
     if sendung_art == "Info-Time":
-        path_sendung_source = db.ac_config_1[1]
-        path_sendung_dest = db.ac_config_1[3]
+        path_sendung_source = db.ac_config_servpath_a[5]
+        path_sendung_dest = db.ac_config_servpath_a[9]
         log_message = u"Infotime und Magazin in Play_Out loeschen..."
 
     if sendung_art == "Sendung normal":
-        path_sendung_source = db.ac_config_1[2]
-        path_sendung_dest = db.ac_config_1[4]
+        path_sendung_source = db.ac_config_servpath_a[6]
+        path_sendung_dest = db.ac_config_servpath_a[10]
         log_message = u"Sendungen in Play_Out loeschen..."
 
     db.write_log_to_db(ac, log_message, "p")
@@ -674,7 +684,6 @@ def lets_rock():
         db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
             "write_also_to_console")
         return
-
     return
 
 
@@ -690,7 +699,10 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # alles ok: weiter
         if param_check is not None:
-            lets_rock()
+            # extended params
+            load_extended_params_ok = load_extended_params()
+            if load_extended_params_ok is not None:
+                lets_rock()
 
     # fertsch
     db.write_log_to_db(ac, ac.app_desc + " gestoppt", "s")
