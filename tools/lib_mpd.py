@@ -11,17 +11,20 @@ import mpd_config
 
 def mpc_client(db, ac, command, value):
     """execute mpd-commands via mpc-client"""
-    mpd_server = mpd_config.mpd_pw + "@" + mpd_config.mpd_host
+    #mpd_server = mpd_config.mpd_pw + "@" + mpd_config.mpd_host
+    mpd_server = db.ac_config_1[4] + "@" + db.ac_config_1[2]
+    mpd_port = db.ac_config_1[3]
+    cmd_mpd_client = db.ac_config_etools[8].encode(ac.app_encode_out_strings)
     try:
         if value is None:
-            p = subprocess.Popen(["/usr/bin/mpc",
-                            "-h", mpd_server, "-p", mpd_config.mpd_port,
+            p = subprocess.Popen([cmd_mpd_client,
+                            "-h", mpd_server, "-p", mpd_port,
                         command],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE).communicate()
         else:
-            p = subprocess.Popen(["/usr/bin/mpc",
-                            "-h", mpd_server, "-p", mpd_config.mpd_port,
+            p = subprocess.Popen([cmd_mpd_client,
+                            "-h", mpd_server, "-p", mpd_port,
                         command, value],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE).communicate()
@@ -58,13 +61,17 @@ class RunError(Exception):
 class myMPD(object):
     def __init__(self):
         self._host = mpd_config.mpd_host
+        #self._host = db.ac_config_1[2]
         self._port = mpd_config.mpd_port
+        #self._port = db.ac_config_1[3]
         self._password = mpd_config.mpd_pw
+        #self._password = db.ac_config_1[4]
         self._client = MPDClient()
 
     def connect(self, db, ac):
         try:
             self._client.connect(self._host, self._port)
+            #self._client.connect(db.ac_config_1[2], db.ac_config_1[3])
             return True
         # Catch socket errors
         except IOError as err:
@@ -89,8 +96,10 @@ class myMPD(object):
             return None
 
         if self._password:
+        #if db.ac_config_1[4]:
             try:
                 self._client.password(self._password)
+                #self._client.password(db.ac_config_1[4])
                 return True
             except ConnectionError as e:
                 db.write_log_to_db_a(ac, "MPD-Conn-Error 2: %s" % str(e), "x",

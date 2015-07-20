@@ -202,6 +202,7 @@ class app_config(object):
         self.app_msg_2 = None
         self.music_play_list = []
         self.music_play_list_error = 0
+        self.app_encode_out_strings = "cp1252"
 
 
 def load_extended_params():
@@ -262,6 +263,9 @@ def load_extended_params():
             ext_params_ok = None
     else:
         ext_params_ok = None
+
+    # extern tools
+    ext_params_ok = lib_cm.params_provide_tools(ac, db)
     return ext_params_ok
 
 
@@ -1135,6 +1139,7 @@ if __name__ == "__main__":
     db.ac_config_1 = db.params_load_1(ac, db)
 
     if db.ac_config_1 is not None:
+        #mpd = lib_mp.myMPD(db, ac)
         # check main-params
         param_check = lib_cm.params_check_1(ac, db)
         if param_check is not None:
