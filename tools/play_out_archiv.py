@@ -83,16 +83,13 @@ class app_config(object):
             "Fehler beim Lesen oder Schreiben von Archiv-Ordnern oder Dateien ")
         self.app_errorslist.append(u"Error 002 "
             "Fehler beim Loeschen von Dateien in Play-Out")
-        # anzahl parameter
-        self.app_config_params_range = 9
+        # number of parameters
+        self.app_config_params_range = 5
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_int")
@@ -222,12 +219,12 @@ def write_files_to_archive(files_sendung_source,
     """Dateien in Archiv kopieren, Durchfuerung"""
     lib_cm.message_write_to_console(ac, u"write_files_to_archive " + dir_year)
 
-    # Zeiten
-    lib_cm.message_write_to_console(ac, db.ac_config_1[5])
+    # Times
+    lib_cm.message_write_to_console(ac, db.ac_config_1[2])
     date_back = (datetime.datetime.now()
-                 + datetime.timedelta(days=- int(db.ac_config_1[5])))
-    lib_cm.message_write_to_console(ac, db.ac_config_1[7])
-    nr_of_files_to_archive = int(db.ac_config_1[7])
+                 + datetime.timedelta(days=- int(db.ac_config_1[2])))
+    lib_cm.message_write_to_console(ac, db.ac_config_1[4])
+    nr_of_files_to_archive = int(db.ac_config_1[4])
 
     c_date_back = date_back.strftime("%Y-%m-%d")
     db.write_log_to_db_a(ac, u"Sendedatum muss vor "
@@ -416,13 +413,13 @@ def erase_files_from_play_out(files_sendung_source, path_sendung_source,
                               path_sendung_dest, dir_year, sendung_art):
     """Dateien in Play-Out loeschen, Durchfuehrung"""
     lib_cm.message_write_to_console(ac, u"erase_files_from_play_out")
-    # Zeiten
-    lib_cm.message_write_to_console(ac, db.ac_config_1[6])
+    # Times
+    lib_cm.message_write_to_console(ac, db.ac_config_1[3])
     date_back = (datetime.datetime.now()
-                 + datetime.timedelta(days=- int(db.ac_config_1[6])))
+                 + datetime.timedelta(days=- int(db.ac_config_1[3])))
     #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
-    lib_cm.message_write_to_console(ac, db.ac_config_1[7])
-    nr_of_files_to_archive = int(db.ac_config_1[7])
+    lib_cm.message_write_to_console(ac, db.ac_config_1[4])
+    nr_of_files_to_archive = int(db.ac_config_1[4])
 
     # pfad anpassen
     path_sendung_dest += lib_cm.check_slashes(ac, dir_year)
@@ -527,14 +524,14 @@ def erase_files_from_play_out_old_year(files_sendung_source,
     """Dateien vorangegangener Jahre in Play-Out loeschen, Durchfuehrung"""
     lib_cm.message_write_to_console(ac, u"erase_files_from_play_out_old_year")
     # Zeiten
-    lib_cm.message_write_to_console(ac, db.ac_config_1[6])
-    days_back = int(db.ac_config_1[6])
+    lib_cm.message_write_to_console(ac, db.ac_config_1[3])
+    days_back = int(db.ac_config_1[3])
     date_back = (datetime.datetime.now()
                  + datetime.timedelta(days=- days_back))
     #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
 
-    lib_cm.message_write_to_console(ac, db.ac_config_1[7])
-    nr_of_files_to_archive = int(db.ac_config_1[7])
+    lib_cm.message_write_to_console(ac, db.ac_config_1[4])
+    nr_of_files_to_archive = int(db.ac_config_1[4])
 
     # pfad anpassen
     path_sendung_dest += lib_cm.check_slashes(ac, dir_year)
