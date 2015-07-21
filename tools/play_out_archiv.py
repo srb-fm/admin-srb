@@ -702,7 +702,12 @@ if __name__ == "__main__":
             # extended params
             load_extended_params_ok = load_extended_params()
             if load_extended_params_ok is not None:
-                lets_rock()
+                if db.ac_config_1[1] == "on":
+                    lets_rock()
+                else:
+                    db.write_log_to_db_a(ac,
+                                    "Play-Out-Archivierung ausgeschaltet",
+                                    "e", "write_also_to_console")
 
     # fertsch
     db.write_log_to_db(ac, ac.app_desc + " gestoppt", "s")
