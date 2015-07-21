@@ -60,9 +60,8 @@ Param 8: Interval (Abstand) der Infotime-Beitraege in Sekunden (zweistellig)
 
 Von PO_Zeitansage_Config:
 Param 1: Datei mit Stille zum faden
-Param 2:
+Param 2: Pfad von mpd zu Zeitansagen-Audios
 Param 3: Pfad - Files - Zeitansagen von mAirList zu Audios
-Param 4: Pfad von script zu Zeitansagen-Audios
 
 Von PO_Switch_Broadcast_Config:
 Param 1: Pfad\Dateiname Sendeumschalterdatei
@@ -124,9 +123,10 @@ class app_config(object):
         self.app_config = "PO_Loader"
         self.app_config_develop = "PO_Loader"
         self.app_errorfile = "error_play_out_loader.log"
-        self.app_config_params_range = 6
+        self.app_config_params_range = 7
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -962,18 +962,21 @@ def load_magazin():
 def prepare_pl_infotime():
     """Playlist InfoTime vorbereiten"""
     # Fader on top
-    # Dies hier und nicht in read_zeitansage
-    # weil der Fader auch bei deaktivierter Zeitansage rein soll
-    # mairlist
-    path_fader = lib_cm.check_slashes_a(ac,
+    # fader prepaere here and not in read_zeitansage,
+    # because it can added also when no Zeitansage
+
+    # if fader is set to on
+    if db.ac_config_1[7] == "on":
+        # mairlist
+        path_fader = lib_cm.check_slashes_a(ac,
                              db.ac_config_zeitansage[3], ac.pl_win_mairlist)
-    path_file_fader = path_fader + db.ac_config_zeitansage[1]
-    ac.po_it_pl.insert(0, path_file_fader)
-    # mpd
-    path_fader_mpd = lib_cm.check_slashes_a(ac,
+        path_file_fader = path_fader + db.ac_config_zeitansage[1]
+        ac.po_it_pl.insert(0, path_file_fader)
+        # mpd
+        path_fader_mpd = lib_cm.check_slashes_a(ac,
                              db.ac_config_zeitansage[2], ac.pl_win_mpd)
-    path_file_fader_mpd = path_fader_mpd + db.ac_config_zeitansage[1]
-    ac.po_it_pl_mpd.insert(0, path_file_fader_mpd)
+        path_file_fader_mpd = path_fader_mpd + db.ac_config_zeitansage[1]
+        ac.po_it_pl_mpd.insert(0, path_file_fader_mpd)
 
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
     path_filename = db.ac_config_playlist[5] + "_00.m3u"
