@@ -42,14 +42,16 @@ Error 001 Fehler beim Lesen oder Schreiben von Archiv-Ordnern oder Dateien
 Error 002 Fehler beim Loeschen von Dateien in Play-Out
 
 Parameterliste:
+Param 1: On/off
+Param 2: Tage zurueck fuer kopieren in Archiv
+Param 3: Tage zurueck fuer loeschen in PlayOut
+Param 4: Anzahl Dateien die kopiert oder geloescht werden
+
+Extendet
 Param 1: Play_Out_Ordner IT und Maganzine
 Param 2: Play_Out_Ordner Sendungen
 Param 3: Archiv_Ordner IT und Maganzine
 Param 4: Archiv_Ordner Sendungen
-Param 5: Tage zurueck fuer kopieren in Archiv
-Param 6: Tage zurueck fuer loeschen in PlayOut
-Param 7: Anzahl Dateien die kopiert werden
-Param 8: Anzahl Dateien die geloescht werden
 
 Das Script laeuft per chron jeden Tag ca. 6:25.
 
@@ -71,7 +73,7 @@ class app_config(object):
         # app_config
         self.app_id = "011"
         self.app_desc = u"Play_Out_Archiv"
-        # schluessel fuer config in db
+        # key of config in db
         self.app_config = u"PO_Archiv_Config"
         self.app_config_develop = u"PO_Archiv_Config_1_e"
         self.app_errorfile = "error_play_out_archiv.log"
@@ -111,10 +113,10 @@ def load_extended_params():
 
 
 def write_files_to_archive_prepare(sendung_art):
-    """Dateien in Archiv kopieren, Vorbereitung"""
+    """prepaering for archiving"""
     lib_cm.message_write_to_console(ac, u"write_files_to_archive_prepare")
 
-    # Pfade
+    # paths
     if sendung_art == "Info-Time":
         path_sendung_source = db.ac_config_servpath_a[5]
         path_sendung_dest = db.ac_config_servpath_a[9]
@@ -127,14 +129,14 @@ def write_files_to_archive_prepare(sendung_art):
 
     db.write_log_to_db(ac, log_message, "p")
 
-    # pfad anpassen
+    # check slashes
     path_sendung_source = lib_cm.check_slashes(ac, path_sendung_source)
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
 
     lib_cm.message_write_to_console(ac, path_sendung_source)
     lib_cm.message_write_to_console(ac, path_sendung_dest)
 
-    # Archiv-Ordner einlesen
+    # read archive folders
     try:
         files_sendung_source = os.listdir(path_sendung_source)
     except Exception, e:
@@ -153,16 +155,16 @@ def write_files_to_archive_prepare(sendung_art):
 
     lib_cm.message_write_to_console(ac, list_dirs)
 
-    # pruefen ob neues jahr angelegt werden muss
+    # check if new year folder is neccesarry
     current_year = str(datetime.datetime.now().year)
 
-    # pfad anpassen
+    # check slashes
     current_year_path = path_sendung_dest + lib_cm.check_slashes(ac,
                                                 current_year)
 
     try:
         if not os.path.exists(current_year_path):
-            # neuen ordner anlegen
+            # make new folder
             log_message = u"anlegen Archiv-Verzeichnis: " + current_year_path
             lib_cm.message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "k")
@@ -174,9 +176,9 @@ def write_files_to_archive_prepare(sendung_art):
         db.write_log_to_db(ac, log_message, "x")
         return None
 
-    # archivierung entsprechend der jahre durchgenen
+    # loop trough archive depend on years
     for item in list_dirs:
-        # pruefen ob logs aus vergangenen archivierungen vorhanden
+        # check if log from prev. loop exist
         db_tbl_condition = ("USER_LOG_ACTION LIKE 'Dateien archiviert von: "
                             + sendung_art + " - "
                             + item + "%' ORDER BY USER_LOG_ID DESC")
@@ -189,8 +191,7 @@ def write_files_to_archive_prepare(sendung_art):
             for row in log_data:
                 #lib_cm.message_write_to_console( ac, row )
                 #lib_cm.message_write_to_console( ac, row[0][-1] )
-                # archivierungsdurchlaeufe zaehlen
-                # bei denen keine dateien kopiert wurden
+                # count loops with no copy
                 if row[0][-1] == "0":
                     z_non_copys += 1
 
@@ -210,7 +211,6 @@ def write_files_to_archive_prepare(sendung_art):
         else:
             write_files_to_archive(files_sendung_source, path_sendung_source,
                     path_sendung_dest, item, sendung_art)
-
     return "ok"
 
 
