@@ -25,7 +25,7 @@ Parameterliste:
 Von PO_Loader:
 P1 Zeitansage on/off
 P2 Jingle on/off
-P3 Jingle senden wenn InfoTime-Beiträge vorhanden sind ? on/off
+P3 Jingle senden wenn InfoTime-Beitraege vorhanden sind ? on/off
 P4 Infotime on/off
 P5 Instrumental on/off
 P6 Magazin on/off
@@ -59,8 +59,8 @@ Param 7: Beginn Infotime Serie B (stunde zweistellig)
 Param 8: Interval (Abstand) der Infotime-Beitraege in Sekunden (zweistellig)
 
 Von PO_Zeitansage_Config:
-Param 1: on oder off
-Param 2: Datei mit Stille zum faden
+Param 1: Datei mit Stille zum faden
+Param 2:
 Param 3: Pfad - Files - Zeitansagen von mAirList zu Audios
 Param 4: Pfad von script zu Zeitansagen-Audios
 
@@ -287,10 +287,10 @@ def load_extended_params():
         app_params_type_list_zeitansage.append("p_string")
         app_params_type_list_zeitansage.append("p_string")
         app_params_type_list_zeitansage.append("p_string")
-        app_params_type_list_zeitansage.append("p_string")
+
         # Erweiterte Params pruefen
         param_check_zeitansage = lib_cm.params_check_a(
-                        ac, db, 5,
+                        ac, db, 4,
                         app_params_type_list_zeitansage,
                         db.ac_config_zeitansage)
         if param_check_zeitansage is None:
@@ -748,15 +748,15 @@ def read_zeitansage():
     # path from von play_out_loader to Zeitansage
     path_zeitansage = (lib_cm.check_slashes(ac, db.ac_config_servpath_a[12])
                     + str(ac.time_target.hour).zfill(2))
-    # Pfad von mAirlist zu Zeitansage
+    # path from mAirlist to Zeitansage
     path_zeitansage_po = (lib_cm.check_slashes_a(ac,
                          db.ac_config_zeitansage[3], ac.pl_win_mairlist)
                     + str(ac.time_target.hour).zfill(2))
     path_zeitansage_po = (lib_cm.check_slashes_a(ac,
                              path_zeitansage_po, ac.pl_win_mairlist))
-    # Pfad von mpd zu Zeitansage
+    # path from mpd to Zeitansage
     path_zeitansage_po_mpd = (lib_cm.check_slashes_a(ac,
-                         db.ac_config_zeitansage[5], ac.pl_win_mpd)
+                         db.ac_config_zeitansage[2], ac.pl_win_mpd)
                     + str(ac.time_target.hour).zfill(2))
     path_zeitansage_po_mpd = (lib_cm.check_slashes_a(ac,
                              path_zeitansage_po_mpd, ac.pl_win_mpd))
@@ -961,18 +961,18 @@ def load_magazin():
 
 def prepare_pl_infotime():
     """Playlist InfoTime vorbereiten"""
-    # Fader an den Anfang
+    # Fader on top
     # Dies hier und nicht in read_zeitansage
     # weil der Fader auch bei deaktivierter Zeitansage rein soll
     # mairlist
     path_fader = lib_cm.check_slashes_a(ac,
                              db.ac_config_zeitansage[3], ac.pl_win_mairlist)
-    path_file_fader = path_fader + db.ac_config_zeitansage[2]
+    path_file_fader = path_fader + db.ac_config_zeitansage[1]
     ac.po_it_pl.insert(0, path_file_fader)
     # mpd
     path_fader_mpd = lib_cm.check_slashes_a(ac,
-                             db.ac_config_zeitansage[5], ac.pl_win_mpd)
-    path_file_fader_mpd = path_fader_mpd + db.ac_config_zeitansage[2]
+                             db.ac_config_zeitansage[2], ac.pl_win_mpd)
+    path_file_fader_mpd = path_fader_mpd + db.ac_config_zeitansage[1]
     ac.po_it_pl_mpd.insert(0, path_file_fader_mpd)
 
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
