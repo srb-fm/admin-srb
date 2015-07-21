@@ -109,14 +109,14 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "009"
         self.app_desc = "play_out_loader"
         # Developmod (other parameter, e.g. paths)
         self.app_develop = "no"
-        # Meldungen auf konsole ausgeben
-        # muss auf no gestellt werden wenn run per chronjob!
+        # debug-mod
+        # must set to "no" if running per chronjob!
         self.app_debug_mod = "no"
         # Laeuft unter Windows
         self.app_windows = "no"
@@ -316,7 +316,17 @@ def load_extended_params():
             db.write_log_to_db_a(ac, ac.app_errorslist[5], "x",
             "write_also_to_console")
             return None
-    return "ok"
+
+    # extern tools, server-settings
+    ext_params_ok = True
+    ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    lib_cm.set_server(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
+                                                        ac.server_active)
+    ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
+                                                        ac.server_active)
+    return ext_params_ok
 
 
 def load_broadcast(minute_start, minute_end):
@@ -735,8 +745,8 @@ def write_to_file_switch_params():
 
 def read_zeitansage():
     """Zeitansage abarbeiten"""
-    # Pfad von play_out_loader zu Zeitansage
-    path_zeitansage = (lib_cm.check_slashes(ac, db.ac_config_zeitansage[4])
+    # path from von play_out_loader to Zeitansage
+    path_zeitansage = (lib_cm.check_slashes(ac, db.ac_config_servpath_a[12])
                     + str(ac.time_target.hour).zfill(2))
     # Pfad von mAirlist zu Zeitansage
     path_zeitansage_po = (lib_cm.check_slashes_a(ac,
