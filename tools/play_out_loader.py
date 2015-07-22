@@ -861,9 +861,10 @@ def read_infotime():
 
 
 def read_instrumental():
-    """Instrumentals sammeln"""
+    """collect Instrumentals"""
     # Pfad von play_out_loader zu Instrumentals
-    path_instrumental = lib_cm.check_slashes(ac, db.ac_config_it_paths[5])
+    path_rotation = lib_cm.check_slashes(ac, db.ac_config_servpath_a[4])
+    path_instrumental = path_rotation + db.ac_config_it_paths[5]
     # Pfad von mAirlist zu Instrumentals
     path_instrumental_po = (lib_cm.check_slashes_a(ac,
                              db.ac_config_it_paths[6], ac.pl_win_mairlist))
