@@ -119,12 +119,12 @@ class app_config(object):
         self.app_debug_mod = "no"
         # Laeuft unter Windows
         self.app_windows = "no"
-        # Schluessel fuer config in db
+        # key of config in db
         self.app_config = "PO_Loader"
         self.app_config_develop = "PO_Loader"
         self.app_errorfile = "error_play_out_loader.log"
         self.app_config_params_range = 7
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -177,9 +177,9 @@ class app_config(object):
         self.po_mg.append(True)
         self.po_mg.append(True)
         self.po_mg.append(True)
-        # Instrumental senden
+        # transmitt Instrumental
         self.po_instrumental = None
-        # Switch Schaltpunkte
+        # Switch switchpoints
         self.po_switch = []
         self.po_switch.append("03")
         self.po_switch.append("03")
@@ -277,7 +277,7 @@ def load_extended_params():
 
     # Zeitansage
     db.ac_config_zeitansage = db.params_load_1a(
-                            ac, db, "PO_Zeitansage_Config_3")
+                            ac, db, "PO_Zeitansage_Config")
     if db.ac_config_zeitansage is not None:
         # Erweiterte Paramsliste anlegen
         app_params_type_list_zeitansage = []
@@ -775,9 +775,9 @@ def read_zeitansage():
 
 
 def read_jingle():
-    """Jingle abarbeiten"""
-    # Pfad von play_out_loader zu Jingle
-    path_jingle = (lib_cm.check_slashes(ac, db.ac_config_it_paths[2]))
+    """work on Jingles"""
+    # path from play_out_loader to Jingles
+    path_jingle = (lib_cm.check_slashes(ac, db.ac_config_servpath_a[11]))
     # Pfad von mAirlist zu Jingle
     path_jingle_po = (lib_cm.check_slashes_a(ac,
                          db.ac_config_it_paths[4], ac.pl_win_mairlist))
@@ -794,7 +794,7 @@ def read_jingle():
         db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
                                              "write_also_to_console")
     else:
-        if db.ac_config_1[1] == "on":
+        if db.ac_config_1[1].strip() == "on":
             # wenn Zeitansage, dann danach einsortieren
             # mairlist
             ac.po_it_pl.insert(1, path_jingle_po + file_jingle)
@@ -966,7 +966,7 @@ def prepare_pl_infotime():
     # because it can added also when no Zeitansage
 
     # if fader is set to on
-    if db.ac_config_1[7] == "on":
+    if db.ac_config_1[7].strip() == "on":
         # mairlist
         path_fader = lib_cm.check_slashes_a(ac,
                              db.ac_config_zeitansage[3], ac.pl_win_mairlist)
@@ -977,7 +977,9 @@ def prepare_pl_infotime():
                              db.ac_config_zeitansage[2], ac.pl_win_mpd)
         path_file_fader_mpd = path_fader_mpd + db.ac_config_zeitansage[1]
         ac.po_it_pl_mpd.insert(0, path_file_fader_mpd)
-
+    else:
+        db.write_log_to_db_a(ac, "Fader ist deaktiviert",
+                                     "e", "write_also_to_console")
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
     path_filename = db.ac_config_playlist[5] + "_00.m3u"
     write_playlist_it(path_filename)
@@ -985,19 +987,19 @@ def prepare_pl_infotime():
 
 def rock_infotime():
     """Infotime abarbeiten"""
-    if db.ac_config_1[1] == "on":
+    if db.ac_config_1[1].strip() == "on":
         read_zeitansage()
     else:
         db.write_log_to_db_a(ac, "Zeitansage ist deaktiviert",
                                      "e", "write_also_to_console")
-    if db.ac_config_1[4] == "on":
+    if db.ac_config_1[4].strip() == "on":
         transmit_it = read_infotime()
     else:
         db.write_log_to_db_a(ac, "InfoTime ist deaktiviert",
                                      "e", "write_also_to_console")
-    if db.ac_config_1[2] == "on":
+    if db.ac_config_1[2].strip() == "on":
         # Jingle aktiviert
-        if db.ac_config_1[3] == "on":
+        if db.ac_config_1[3].strip() == "on":
             # Jingle auch bei IT-Beitraegen aktiviert
             read_jingle()
         else:
@@ -1013,7 +1015,7 @@ def rock_infotime():
         db.write_log_to_db_a(ac, "Jingle ist deaktiviert",
                                      "e", "write_also_to_console")
 
-    if db.ac_config_1[5] == "on" and ac.po_instrumental is True:
+    if db.ac_config_1[5].strip() == "on" and ac.po_instrumental is True:
         read_instrumental()
     else:
         db.write_log_to_db_a(ac, "Instrumental ist deaktiviert "
@@ -1025,7 +1027,7 @@ def rock_infotime():
 def rock_magazin():
     """Magazin abarbeiten"""
     # Alle PL loeschen
-    if db.ac_config_playlist[4] == "on":
+    if db.ac_config_playlist[4].strip() == "on":
         mag_z = [1, 2, 3]
         for i in mag_z:
             path_pl_file = (db.ac_config_playlist[5]
@@ -1037,7 +1039,7 @@ def rock_magazin():
                 db.write_log_to_db_a(ac, ac.app_errorslist[13], "x",
                                              "write_also_to_console")
     # Einstellungen
-    if db.ac_config_1[6] == "off":
+    if db.ac_config_1[6].strip() == "off":
         db.write_log_to_db_a(ac, "Magazin ist deaktiviert ",
                                      "e", "write_also_to_console")
         return
