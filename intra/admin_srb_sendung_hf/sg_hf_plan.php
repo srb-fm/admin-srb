@@ -19,18 +19,18 @@ $message = "";
 $option = "";
 $displ_dateform = "no";
 
-// action pruefen	
-$action_ok = "no";
+// check action	
+$action_ok = false;
 if ( isset( $_GET['action'] ) ) {	
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 if ( isset( $_POST['action'] ) ) {	
 	$action = $_POST['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
 			
-// Bedingung pruefen	
+// check condition	
 $find_option_ok = "no";
 if ( isset( $_GET['find_option'] ) ) {	
 	$find_option = $_GET['find_option'];
@@ -234,7 +234,7 @@ if ( $find_option_ok = "yes" ) {
 	$message = "Keine Suchbedingung! Kann nichts tun... "; 
 }
 
-if ( $action_ok !="no" ) { 
+if ( $action_ok == true ) { 
 	$db_result = db_query_sg_ad_list_items_1($c_query_condition);				
 }
 
@@ -281,7 +281,7 @@ echo "<div class='head_item_right'>";
 echo $message.$message_find_string; 	
 echo "</div>";
 echo "<div class='content'>"; 
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 } 
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
