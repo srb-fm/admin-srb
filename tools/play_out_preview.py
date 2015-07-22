@@ -48,12 +48,12 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "007"
         self.app_desc = u"Play_Out_Preview"
         # schluessel fuer config in db
-        self.app_config = u"PO_Preview_Config_3"
+        self.app_config = u"PO_Preview_Config"
         self.app_config_develop = u"PO_Preview_Config_3_e"
         self.app_errorfile = "error_play_out_preview.log"
         # errorlist
@@ -69,13 +69,15 @@ class app_config(object):
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_url")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+
+        # develop-mod
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # debug-mod
         self.app_debug_mod = "no"
         # zeit fuer sendungensuche: ab jetzt
         #self.time_target = datetime.datetime.now() + datetime.timedelta()
@@ -112,15 +114,15 @@ def beam_prev_sendungen(list_preview_sendungen):
     """ Sendungen an php-Script auf Webserver uebergeben """
     # urllib noetig
     # config
-    anzahl_sendungen = int(db.ac_config_1[1])
+    anzahl_sendungen = int(db.ac_config_1[2])
     #anzahl_sendungen = 5
-    url = db.ac_config_1[2]
+    url = db.ac_config_1[3]
 
     # Assoziatives Array / Dictionary / Hashmap
     # fuer datenuebertragung append: data_upload['px']='peix''
     data_upload = {'pa': 'hinein',
-        'pc': db.ac_config_1[3],
-        'pd': db.ac_config_1[4]}
+        'pc': db.ac_config_1[4],
+        'pd': db.ac_config_1[5]}
 
     z = 0
     for item in list_preview_sendungen:
@@ -172,7 +174,7 @@ def beam_prev_sendungen(list_preview_sendungen):
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """mainfunktion """
     print "lets_rock "
     # sendungen holen
     list_preview_sendungen = load_prev_sendungen()
@@ -202,7 +204,12 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # alles ok: weiter
         if param_check is not None:
-            lets_rock()
+            if db.ac_config_1[1].strip() == "on":
+                    lets_rock()
+            else:
+                db.write_log_to_db_a(ac, ac.app_desc
+                                    + " ausgeschaltet", "e",
+                                    "write_also_to_console")
 
     # fertsch
     db.write_log_to_db(ac, ac.app_desc + " gestoppt", "s")
