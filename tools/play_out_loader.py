@@ -190,9 +190,9 @@ class app_config(object):
         self.po_it_pl_mpd = []
         # Duration of InfoTime
         self.po_it_duration = 0
-        # for aktuelle Stunde
+        # for now
         #self.time_target = datetime.datetime.now()
-        # for kommende stunde
+        # for comming hour
         self.time_target = datetime.datetime.now() + datetime.timedelta(hours=1)
 
 
@@ -845,12 +845,12 @@ def read_infotime():
     # Laenge fuer Instrumentals
     ac.po_it_duration = list_result[2]
 
-    # Pfad von mAirlist zu InfoTime
+    # path from mAirlist to InfoTime
     path_it_po = lib_cm.check_slashes_a(ac,
-                             db.ac_config_it_paths[3], ac.pl_win_mairlist)
-    # Pfad von mpd zu InfoTime
+                             db.ac_config_playlist[6], ac.pl_win_mairlist)
+    # path from mpd to InfoTime
     path_it_po_mpd = lib_cm.check_slashes_a(ac,
-                             db.ac_config_it_paths[7], ac.pl_win_mpd)
+                             db.ac_config_playlist[1], ac.pl_win_mpd)
     # Filenames mit Path in List
     for item in list_result[0]:
         # mairlist
@@ -864,7 +864,8 @@ def read_instrumental():
     """collect Instrumentals"""
     # Pfad von play_out_loader zu Instrumentals
     path_rotation = lib_cm.check_slashes(ac, db.ac_config_servpath_a[4])
-    path_instrumental = path_rotation + db.ac_config_it_paths[5]
+    path_instrumental = (path_rotation
+                    + lib_cm.check_slashes(ac, db.ac_config_it_paths[5]))
     # Pfad von mAirlist zu Instrumentals
     path_instrumental_po = (lib_cm.check_slashes_a(ac,
                              db.ac_config_it_paths[6], ac.pl_win_mairlist))
@@ -905,9 +906,10 @@ def read_instrumental():
             lib_cm.message_write_to_console(ac, err_message)
             db.write_log_to_db_a(ac, ac.app_errorslist[12], "x",
                                              "write_also_to_console")
-
+            db.write_log_to_db_a(ac, path_instrumental, "x",
+                                             "write_also_to_console")
         lib_cm.message_write_to_console(ac, "Duration Instrumental")
-        lib_cm.message_write_to_console(ac, str(audio_instrumental.info.length))
+        #lib_cm.message_write_to_console(ac, str(audio_instrumental.info.length))
         lib_cm.message_write_to_console(ac, str(duration_minute_instr))
 
 
