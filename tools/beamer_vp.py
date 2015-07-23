@@ -104,6 +104,18 @@ class app_config(object):
         self.time_target = datetime.datetime.now()
 
 
+def load_extended_params():
+    """load extended params"""
+    ext_params_ok = True
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    lib_cm.set_server(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
+                                                        ac.server_active)
+    ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
+                                                        ac.server_active)
+    return ext_params_ok
+
+
 def load_manuskript(sendung):
     """Manuskript suchen"""
     lib_cm.message_write_to_console(ac, u"Manuskript suchen")
@@ -216,8 +228,11 @@ def filepaths(sendung, path_audio):
     try:
         path_source = lib_cm.check_slashes(ac, path_audio)
         path_file_source = (path_source + sendung[12])
+        path_dest_base = lib_cm.check_slashes(ac,
+                                db.ac_config_servpath_b[5])
+        path_dest = (path_dest_base +
+                        lib_cm.check_slashes(ac, db.ac_config_1[5]))
 
-        path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
         filename_dest = (sendung[2].strftime('%Y_%m_%d') + "_"
             + db.ac_config_1[4] + str(sendung[12][7:]))
         path_file_dest = (path_dest + filename_dest)
@@ -293,7 +308,10 @@ def erase_files_from_cloud():
     """alte Dateien in cloud-ordnern loeschen"""
     lib_cm.message_write_to_console(ac, u"erase_files_from_cloud")
     # Paths
-    path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
+    path_sendung_dest_base = lib_cm.check_slashes(ac,
+                                db.ac_config_servpath_b[5])
+    path_sendung_dest = (path_sendung_dest_base +
+                        lib_cm.check_slashes(ac, db.ac_config_1[5]))
     lib_cm.message_write_to_console(ac, path_sendung_dest)
     date_back = (datetime.datetime.now()
                  + datetime.timedelta(days=- int(db.ac_config_1[3])))
@@ -336,24 +354,28 @@ def erase_files_from_cloud():
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
 
     log_message = u"Infotime bearbeiten.."
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("IT")
     if sendungen is not None:
-        check_and_work_on_files(sendungen, db.ac_config_1[1])
+        check_and_work_on_files(sendungen, db.ac_config_servpath_a[1])
 
     log_message = u"Magazin bearbeiten.."
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("MAG")
     if sendungen is not None:
-        check_and_work_on_files(sendungen, db.ac_config_1[1])
+        check_and_work_on_files(sendungen, db.ac_config_servpath_a[1])
 
     log_message = u"Sendung bearbeiten.."
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("SG")
     if sendungen is not None:
-        check_and_work_on_files(sendungen, db.ac_config_1[2])
+        check_and_work_on_files(sendungen, db.ac_config_servpath_a[2])
 
     db.write_log_to_db_a(ac, u"Veraltete Dateien in Cloud loeschen",
                                             "p", "write_also_to_console")

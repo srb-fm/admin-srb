@@ -117,6 +117,18 @@ class app_config(object):
         self.time_target = datetime.datetime.now()
 
 
+def load_extended_params():
+    """load extended params"""
+    ext_params_ok = True
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    lib_cm.set_server(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
+                                                        ac.server_active)
+    ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
+                                                        ac.server_active)
+    return ext_params_ok
+
+
 def load_manuskript(sendung):
     """Manuskript suchen"""
     lib_cm.message_write_to_console(ac, u"Manuskript suchen")
@@ -271,9 +283,9 @@ def filepaths(item, sendung):
     try:
         if sendung[4].strip() == "T" or sendung[5].strip() == "T":
             # IT or MAG
-            path_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
+            path_source = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
         else:
-            path_source = lib_cm.check_slashes(ac, db.ac_config_1[2])
+            path_source = lib_cm.check_slashes(ac, db.ac_config_servpath_a[2])
         path_file_source = (path_source + sendung[12])
 
         filename_dest = (sendung[2].strftime('%Y_%m_%d') + "_"
@@ -281,7 +293,8 @@ def filepaths(item, sendung):
 
         if item[1].strip() == "T":
             # Cloud
-            path_dest_cloud = lib_cm.check_slashes(ac, db.ac_config_1[5])
+            path_dest_cloud = lib_cm.check_slashes(ac,
+                                            db.ac_config_servpath_b[5])
             path_cloud = lib_cm.check_slashes(ac, item[2])
             path_file_cloud = (path_dest_cloud + path_cloud + filename_dest)
         if item[3].strip() == "T":
@@ -474,7 +487,7 @@ def erase_files_prepaere(roboting_sgs):
     for item in roboting_sgs:
         if item[1].strip() == "T":
             # in Cloud
-            path_dest = lib_cm.check_slashes(ac, db.ac_config_1[5])
+            path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_b[5])
             path_cloud = lib_cm.check_slashes(ac, item[2])
             path_dest_cloud = (path_dest + path_cloud)
             try:
@@ -522,6 +535,10 @@ def erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back):
 
 def lets_rock():
     """Mainfunktion """
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
     # search for roboting-shows
     roboting_sgs = load_roboting_sgs()
     if roboting_sgs is None:
