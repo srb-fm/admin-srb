@@ -30,24 +30,20 @@ P4 Infotime on/off
 P5 Instrumental on/off
 P6 Magazin on/off
 P7 Fader on/off
-P8 mAirlist-Playlist on/off
+P8 mAirlist-Playlist schreiben on/off
 
 Von PO_Playlists:
-Param_1: Pfad Playlsit mpd Infotime
-Param_2: Pfad Playlsit mpd Sendung
-Param_3: Pfad Playlsit mpd Rotation
-Param_4: Switch mAirlist playlist (schreiben oder nicht schreiben)
-Param_5: Pfad und Praefix pl-Datei fuer play_out_load.py
-Param_6: Pfad HF_Media Infotime mAirlist
-Param_7: Pfad HF_Media_Sendung fuer mAirlist
-
-Von PO_Info_Time_Config_Paths:
-Param 1: LW:\Pfad\Dateiname - Playlist für mAirList
-Param 2: LW:\Pfad der Jingles von srb-sperver aus
-Param 3: LW:\Pfad - Files - Quelle Play-Out-Files (mAirlist auf PlayOut-Rechner)
-Param 4: LW:\Pfad der Jingles von mAilrlist aus
-Param 5 Pfad zu Instrumentals von server aus
-Param 6 Pfad zu Instrumentsls vom mAirlist aus
+Param_1: Pfad Playlist mpd Infotime
+Param_2: Pfad Playlist mpd Sendung
+Param_3: Pfad Playlist mpd Rotation Instrumentals
+Param_4: Pfad Playlist mpd Jingles
+Param_5: LW:\Pfad\Dateiname - Playlist für mAirList Server A
+Param_6: LW:\Pfad\Dateiname - Playlist für mAirList Server B
+Param_7: Pfad mAirlist_IT fuer mAirlist
+Param_8: Pfad mAirlist Sendung fuer mAirlist
+Param_9: Pfad mAirlist Instrumentals fuer mAirlist
+Param_10: Pfad mAirlist Jingles fuer mAirlist
+Param_11: Sub-Path Instrumentals from server to folder play-out-rotation
 
 Von PO_Time_Config:
 Param 1: Beginn Tagesstunde Infotime und Magazin
