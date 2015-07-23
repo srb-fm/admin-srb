@@ -16,14 +16,14 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 	
-// action pruefen	
-if ( isset( $_GET['action'] ) ) {
+// check action	
+if ( isset($_GET['action']) ) {
 	if ( $_GET['action'] == "print" ) {
-		if ( isset( $_GET['sg_id'] ) ) {
+		if ( isset($_GET['sg_id']) ) {
 			if ( $_GET['sg_id'] !="" ) { 
-				$action_ok = "yes";
+				$action_ok = true;
 			}
 		}
 	}	
@@ -31,16 +31,16 @@ if ( isset( $_GET['action'] ) ) {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
 		
-if ( $action_ok == "yes" ) {
+if ( $action_ok == true ) {
 	$tbl_row_sg = db_query_sg_display_item_1($_GET['sg_id']);
 	if ( !$tbl_row_sg ) { 
 		$message .= "Fehler bei Abfrage Sendung!"; 
-		$action_ok = "no";
+		$action_ok = false;
 	} else {
 		$tbl_row_ad = db_query_display_item_1("AD_MAIN", "AD_ID = " .$tbl_row_sg->SG_HF_CONT_AD_ID);
 		if ( !$tbl_row_ad ) { 
 			$message .= "Fehler bei Abfrage Adresse!"; 
-			$action_ok = "no";
+			$action_ok = false;
 		}
 	}
 }
@@ -59,7 +59,7 @@ if ( $action_ok == "yes" ) {
 </head>
 <body onload="javascript:window.print(); return true;">
 <?php 
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 }
 if ( !$tbl_row_sg ) { 
