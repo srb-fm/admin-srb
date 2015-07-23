@@ -29,6 +29,8 @@ P3 Jingle senden wenn InfoTime-Beitraege vorhanden sind ? on/off
 P4 Infotime on/off
 P5 Instrumental on/off
 P6 Magazin on/off
+P7 Fader on/off
+P8 mAirlist-Playlist on/off
 
 Von PO_Playlists:
 Param_1: Pfad Playlsit mpd Infotime
@@ -123,9 +125,10 @@ class app_config(object):
         self.app_config = "PO_Loader"
         self.app_config_develop = "PO_Loader"
         self.app_errorfile = "error_play_out_loader.log"
-        self.app_config_params_range = 7
+        self.app_config_params_range = 8
         # params-type-list
         self.app_params_type_list = []
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -198,7 +201,7 @@ class app_config(object):
 
 def load_extended_params():
     """Erweiterte Params laden"""
-    # mairlist
+    # paths playlists etc
     db.ac_config_playlist = db.params_load_1a(ac, db, "PO_Playlists_1")
     if db.ac_config_playlist is not None:
         # Erweiterte Paramsliste anlegen
@@ -212,9 +215,13 @@ def load_extended_params():
         app_params_type_list_playlist.append("p_string")
         app_params_type_list_playlist.append("p_string")
         app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
+        app_params_type_list_playlist.append("p_string")
         # Erweiterte Params pruefen
         param_check_mairlist = lib_cm.params_check_a(
-                        ac, db, 7,
+                        ac, db, 11,
                         app_params_type_list_playlist,
                         db.ac_config_playlist)
         if param_check_mairlist is None:
@@ -513,16 +520,16 @@ def prepare_pl_broadcast(minute_start, list_result):
 
     if minute_start == "00":
         nZ_po_switch = 0
-        path_filename = db.ac_config_playlist[5] + "_00.m3u"
+        path_filename = db.ac_config_playlist[6] + "_00.m3u"
     if minute_start > "00" and minute_start < "30":
         nZ_po_switch = 1
-        path_filename = db.ac_config_playlist[5] + "_" + minute_start + ".m3u"
+        path_filename = db.ac_config_playlist[6] + "_" + minute_start + ".m3u"
     if minute_start == "30":
         nZ_po_switch = 2
-        path_filename = db.ac_config_playlist[5] + "_30.m3u"
+        path_filename = db.ac_config_playlist[6] + "_30.m3u"
 
     # delete mAirlist-Playlist
-    if db.ac_config_playlist[4] == "on":
+    if db.ac_config_1[8].strip() == "on":
         lib_cm.message_write_to_console(ac, path_filename)
         delete_pl_ok = lib_cm.erase_file_a(ac, db, path_filename,
             u"Playlist geloescht ")
@@ -573,7 +580,7 @@ def write_playlist(
         z += 1
 
     # mAirlist
-    if db.ac_config_playlist[4] != "on":
+    if db.ac_config_1[8].strip() != "on":
         log_message = ("mAirlist-Playlist ist deaktiviert.."
                             + "keine Playlist geschrieben!")
         db.write_log_to_db(ac, log_message, "e")
@@ -595,7 +602,7 @@ def write_playlist(
         return
 
     path_mediafile = lib_cm.check_slashes_a(ac,
-                             db.ac_config_playlist[7], ac.pl_win_mairlist)
+                             db.ac_config_playlist[8], ac.pl_win_mairlist)
     z = 0
     action_msg = ""
     log_message_pl = ""
@@ -631,7 +638,7 @@ def write_playlist_it(path_filename):
         if waste is None:
             db.write_log_to_db(ac, action_msg, "i")
 
-    if db.ac_config_playlist[4] != "on":
+    if db.ac_config_1[8].strip() != "on":
         log_message = ("mAirlist-Playlist ist deaktiviert.."
                             + "keine Playlist geschrieben!")
         db.write_log_to_db(ac, log_message, "e")
@@ -669,7 +676,7 @@ def write_playlist_mg(path_file_pl, file_mg, mg_number):
     log_message = "Magazin: " + file_mg
     db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
 
-    if db.ac_config_playlist[4] != "on":
+    if db.ac_config_1[8].strip() != "on":
         log_message = ("mAirlist-Playlist ist deaktiviert.."
                             + "keine Playlist geschrieben!")
         db.write_log_to_db(ac, log_message, "e")
@@ -691,7 +698,7 @@ def write_playlist_mg(path_file_pl, file_mg, mg_number):
         return
 
     path_mg = lib_cm.check_slashes_a(ac,
-                         db.ac_config_playlist[6], ac.pl_win_mairlist)
+                         db.ac_config_playlist[7], ac.pl_win_mairlist)
 
     path_file_mg = path_mg + file_mg
     f_playlist.write(path_file_mg + "\r\n")
@@ -778,24 +785,24 @@ def read_jingle():
     """work on Jingles"""
     # path from play_out_loader to Jingles
     path_jingle = (lib_cm.check_slashes(ac, db.ac_config_servpath_a[11]))
-    # Pfad von mAirlist zu Jingle
+    # path from mAirlist to Jingle
     path_jingle_po = (lib_cm.check_slashes_a(ac,
-                         db.ac_config_it_paths[4], ac.pl_win_mairlist))
-    path_jingle_po = (lib_cm.check_slashes_a(ac,
-                                     path_jingle_po, ac.pl_win_mairlist))
+                         db.ac_config_playlist[10], ac.pl_win_mairlist))
+    #path_jingle_po = (lib_cm.check_slashes_a(ac,
+    #                                 path_jingle_po, ac.pl_win_mairlist))
     # Pfad von mpd zu Jingle
     path_jingle_po_mpd = (lib_cm.check_slashes_a(ac,
-                         db.ac_config_it_paths[8], ac.pl_win_mpd))
-    path_jingle_po_mpd = (lib_cm.check_slashes_a(ac,
-                                     path_jingle_po_mpd, ac.pl_win_mpd))
-    # Jingle per Zufall aus Pool holen
+                         db.ac_config_playlist[4], ac.pl_win_mpd))
+    #path_jingle_po_mpd = (lib_cm.check_slashes_a(ac,
+    #                                 path_jingle_po_mpd, ac.pl_win_mpd))
+    # random jingle
     file_jingle = lib_cm.read_random_file_from_dir(ac, db, path_jingle)
     if file_jingle is None:
         db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
                                              "write_also_to_console")
     else:
         if db.ac_config_1[1].strip() == "on":
-            # wenn Zeitansage, dann danach einsortieren
+            # if Zeitansage, jingle after zeitansage
             # mairlist
             ac.po_it_pl.insert(1, path_jingle_po + file_jingle)
             # mpd
@@ -847,7 +854,7 @@ def read_infotime():
 
     # path from mAirlist to InfoTime
     path_it_po = lib_cm.check_slashes_a(ac,
-                             db.ac_config_playlist[6], ac.pl_win_mairlist)
+                             db.ac_config_playlist[7], ac.pl_win_mairlist)
     # path from mpd to InfoTime
     path_it_po_mpd = lib_cm.check_slashes_a(ac,
                              db.ac_config_playlist[1], ac.pl_win_mpd)
@@ -862,17 +869,17 @@ def read_infotime():
 
 def read_instrumental():
     """collect Instrumentals"""
-    # Pfad von play_out_loader zu Instrumentals
+    # path from play_out_loader to Instrumentals
     path_rotation = lib_cm.check_slashes(ac, db.ac_config_servpath_a[4])
     path_instrumental = (path_rotation
-                    + lib_cm.check_slashes(ac, db.ac_config_it_paths[5]))
-    # Pfad von mAirlist zu Instrumentals
+                    + lib_cm.check_slashes(ac, db.ac_config_playlist[11]))
+    # path from mAirlist to Instrumentals
     path_instrumental_po = (lib_cm.check_slashes_a(ac,
-                             db.ac_config_it_paths[6], ac.pl_win_mairlist))
-    # Pfad von mpd zu Instrumentals
+                             db.ac_config_playlist[9], ac.pl_win_mairlist))
+    # path from mpd to Instrumentals
     path_instrumental_po_mpd = (lib_cm.check_slashes_a(ac,
-                             db.ac_config_it_paths[9], ac.pl_win_mpd))
-    # fuer Gesamtlaenge
+                             db.ac_config_playlist[3], ac.pl_win_mpd))
+    # for summary length
     duration_minute_instr = 0
     duration_minute_target = int(db.ac_config_times[4]) - ac.po_it_duration
     lib_cm.message_write_to_console(ac, "Duration in Minuten")
@@ -908,6 +915,7 @@ def read_instrumental():
                                              "write_also_to_console")
             db.write_log_to_db_a(ac, path_instrumental, "x",
                                              "write_also_to_console")
+            ac.random_file_error += 1
         lib_cm.message_write_to_console(ac, "Duration Instrumental")
         #lib_cm.message_write_to_console(ac, str(audio_instrumental.info.length))
         lib_cm.message_write_to_console(ac, str(duration_minute_instr))
@@ -984,7 +992,7 @@ def prepare_pl_infotime():
         db.write_log_to_db_a(ac, "Fader ist deaktiviert",
                                      "e", "write_also_to_console")
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
-    path_filename = db.ac_config_playlist[5] + "_00.m3u"
+    path_filename = db.ac_config_playlist[6] + "_00.m3u"
     write_playlist_it(path_filename)
 
 
@@ -1030,10 +1038,10 @@ def rock_infotime():
 def rock_magazin():
     """Magazin abarbeiten"""
     # Alle PL loeschen
-    if db.ac_config_playlist[4].strip() == "on":
+    if db.ac_config_1[8].strip() == "on":
         mag_z = [1, 2, 3]
         for i in mag_z:
-            path_pl_file = (db.ac_config_playlist[5]
+            path_pl_file = (db.ac_config_playlist[6]
                                 + "_magazine_0" + str(i) + ".m3u")
             lib_cm.message_write_to_console(ac, path_pl_file)
             delete_pl_ok = lib_cm.erase_file_a(ac, db, path_pl_file,
@@ -1079,7 +1087,7 @@ def rock_magazin():
         for item in list_result[0]:
             #sendung = item
             if ac.po_mg[zz - 1] is True:
-                path_file_pl = (db.ac_config_playlist[5]
+                path_file_pl = (db.ac_config_playlist[6]
                                     + "_magazine_0" + str(zz) + ".m3u")
                 write_playlist_mg(path_file_pl, item, zz)
             else:
@@ -1102,7 +1110,7 @@ def rock_magazin():
             for index, item in enumerate(list_sendung):
                 if index < 3:
                     if ac.po_mg[zz - 1] is True:
-                        path_file_pl = (db.ac_config_playlist[5]
+                        path_file_pl = (db.ac_config_playlist[6]
                                     + "_magazine_0" + str(zz) + ".m3u")
                         write_playlist_mg(path_file_pl, item, zz)
                     else:
@@ -1118,7 +1126,7 @@ def rock_magazin():
             for index, item in enumerate(list_sendung):
                 if index > 2:
                     if ac.po_mg[zz - 1] is True:
-                        path_file_pl = (db.ac_config_playlist[5]
+                        path_file_pl = (db.ac_config_playlist[6]
                                     + "_magazine_0" + str(zz) + ".m3u")
                         write_playlist_mg(path_file_pl, item, zz)
                     else:
