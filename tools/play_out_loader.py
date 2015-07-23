@@ -173,7 +173,7 @@ class app_config(object):
         self.pl_win_mairlist = "yes"
         # mpd-Playlist running under Windows
         self.pl_win_mpd = "no"
-        # IT senden
+        # transmitt IT
         self.po_it = None
         # Magazines play-out
         self.po_mg = []
@@ -200,9 +200,9 @@ class app_config(object):
 
 
 def load_extended_params():
-    """Erweiterte Params laden"""
+    """load extended params"""
     # paths playlists etc
-    db.ac_config_playlist = db.params_load_1a(ac, db, "PO_Playlists_1")
+    db.ac_config_playlist = db.params_load_1a(ac, db, "PO_Playlists")
     if db.ac_config_playlist is not None:
         # Erweiterte Paramsliste anlegen
         app_params_type_list_playlist = []
@@ -226,33 +226,6 @@ def load_extended_params():
                         db.ac_config_playlist)
         if param_check_mairlist is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-            "write_also_to_console")
-            return None
-
-    # InfoTime-Pfade
-    db.ac_config_it_paths = db.params_load_1a(
-                            ac, db, "PO_Info_Time_Config_Paths")
-    if db.ac_config_it_paths is not None:
-        # Erweiterte Paramsliste anlegen
-        app_params_type_list_it_paths = []
-        # Erweiterte Params-Type-List,
-        # Typ entsprechend der Params-Liste in der Config
-        app_params_type_list_it_paths.append("p_string")
-        app_params_type_list_it_paths.append("p_string")
-        app_params_type_list_it_paths.append("p_string")
-        app_params_type_list_it_paths.append("p_string")
-        app_params_type_list_it_paths.append("p_string")
-        app_params_type_list_it_paths.append("p_string")
-        app_params_type_list_it_paths.append("p_string")
-        app_params_type_list_it_paths.append("p_string")
-        app_params_type_list_it_paths.append("p_string")
-        # Erweiterte Params pruefen
-        param_check_it_paths = lib_cm.params_check_a(
-                        ac, db, 9,
-                        app_params_type_list_it_paths,
-                        db.ac_config_it_paths)
-        if param_check_it_paths is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
             "write_also_to_console")
             return None
 
