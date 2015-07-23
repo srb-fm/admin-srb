@@ -128,6 +128,7 @@ from ScrolledText import ScrolledText
 from mutagen.mp3 import MP3
 from time import sleep
 import sys
+import socket
 import datetime
 import string
 import random
@@ -142,7 +143,7 @@ class app_config(object):
         # app_config
         self.app_id = "022"
         self.app_desc = u"Play Out Scheduler"
-        self.app_config = u"PO_Scheduler_Config_Server_3"
+        self.app_config = u"PO_Scheduler_Config"
         self.app_config_develop = u"PO_Scheduler_Config_e"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
@@ -238,7 +239,7 @@ def load_extended_params():
         return ext_params_ok
 
     # Rotation
-    db.ac_config_rotation = db.params_load_1a(ac, db, "PO_Rotation_Server_3")
+    db.ac_config_rotation = db.params_load_1a(ac, db, "PO_Rotation_Server")
     if db.ac_config_rotation is not None:
         # create extended Paramslist
         app_params_type_list_rotation = []
@@ -759,7 +760,8 @@ def work_on_extra_music_sources(music_sources):
 def load_extra_music(path_extra_music):
     "add extra music to playlist"
     # Path from play_out_scheduler to Rotation
-    main_path_rotation = lib_cm.check_slashes(ac, db.ac_config_rotation[1])
+    main_path_rotation = (ac.app_homepath
+                + lib_cm.check_slashes(ac, db.ac_config_rotation[1]))
     path_rotation_music = main_path_rotation + lib_cm.check_slashes(
                                             ac, path_extra_music)
     # Path from mpd to Rotation
@@ -815,7 +817,8 @@ def create_music_playlist():
     if path_playlist_alternate is None:
         # Standard
         # Path from play_out_scheduler to Rotation
-        main_path_rotation = lib_cm.check_slashes(ac, db.ac_config_rotation[1])
+        main_path_rotation = (ac.app_homepath
+                        + lib_cm.check_slashes(ac, db.ac_config_rotation[1]))
         path_rotation_music = main_path_rotation + lib_cm.check_slashes(
                                             ac, db.ac_config_rotation[2])
         # Path from mpd to Rotation
@@ -826,7 +829,8 @@ def create_music_playlist():
     else:
         # Alternate
         # Path from play_out_scheduler to Rotation
-        main_path_rotation = lib_cm.check_slashes(ac, db.ac_config_rotation[1])
+        main_path_rotation = (ac.app_homepath
+                    + lib_cm.check_slashes(ac, db.ac_config_rotation[1]))
         path_rotation_music = main_path_rotation + lib_cm.check_slashes(
                                             ac, path_playlist_alternate)
         # Path from mpd to Rotation
@@ -1024,8 +1028,12 @@ class my_form(Frame):
 
     def lets_rock(self):
         """mainfunction"""
+        # prepare path
+        ac.app_homepath = "/home/" + socket.gethostname() + "/"
 
+        # playlist at startup
         if ac.app_counter == 2:
+            ac.app_msg_1 = "Creating music playlist"
             mpd_setup()
             create_music_playlist()
 
@@ -1120,7 +1128,8 @@ class my_form(Frame):
                 if time_now.second == 10:
                     mpd.exec_command(db, ac, "reload-1", "mpd")
                 if time_now.second == 15:
-                    mpd.exec_command(db, ac, "reload-2", db.ac_config_1[11])
+                    path_file_mpd_log = ac.app_homepath + db.ac_config_1[11]
+                    mpd.exec_command(db, ac, "reload-2", path_file_mpd_log)
                     db.write_log_to_db(ac, "MPD - neu gestartet", "k")
                 if time_now.second == 25:
                     mpd_setup()
