@@ -90,17 +90,24 @@ class app_config(object):
         self.app_debug_mod = "no"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append("Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(
-                        "Fehler beim Verbinden zum Podcast-ftp-Server")
-        self.app_errorslist.append(
-                        "Fehler beim Recodieren der Podcast-mp3-Datei")
-        self.app_errorslist.append(
-                        "Recodierte Podcast-mp3-Datei nicht gefunden")
-        self.app_errorslist.append(
-                        "Fehler beim Loeschen der Temp-Podcast-Datei")
-        self.app_errorslist.append(
-                        "Podcast-mp3-Datei in Play-Out nicht gefunden:")
+        self.app_errorslist.append(self.app_desc +
+            "Parameter-Typ oder Inhalt stimmt nicht ")
+        self.app_errorslist.append(self.app_desc +
+            "Fehler beim Verbinden zum ftp-Server")
+        self.app_errorslist.append(self.app_desc +
+            "Fehler beim Recodieren der mp3-Datei")
+        self.app_errorslist.append(self.app_desc +
+            "Recodierte Podcast-mp3-Datei nicht gefunden")
+        self.app_errorslist.append(self.app_desc +
+            "Fehler beim Loeschen der Temp-Datei")
+        self.app_errorslist.append(self.app_desc +
+             "mp3-Datei in Play-Out nicht gefunden:")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim LogIn zu FTP-Server")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Zugriff auf FTP-Ordner")
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -291,10 +298,27 @@ def check_files_online(podcast_sendungen):
     except (socket.error, socket.gaierror):
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
                                         + db.ac_config_1[8])
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+                                        "write_also_to_console")
         return None
 
-    ftp.login(db.ac_config_1[9], db.ac_config_1[10])
-    ftp.cwd(db.ac_config_1[11])
+    try:
+        ftp.login(db.ac_config_1[9], db.ac_config_1[10])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no login to: "
+                                        + db.ac_config_1[8])
+        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[8])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    try:
+        ftp.cwd(db.ac_config_1[11])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
+                                        + db.ac_config_1[8])
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[11])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
 
     files_online = []
     try:
@@ -304,7 +328,8 @@ def check_files_online(podcast_sendungen):
             lib_cm.message_write_to_console(ac,
             u"ftp: no files in this directory")
         else:
-            raise
+            log_message = (ac.app_errorslist[8] + " - " + str(resp))
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
     ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
@@ -337,7 +362,7 @@ def check_files_online(podcast_sendungen):
 
 
 def upload_file(podcast_sendung):
-    """ upload files"""
+    """upload files"""
     lib_cm.message_write_to_console(ac, u"upload_file")
     try:
         ftp = ftplib.FTP(db.ac_config_1[8])
@@ -472,8 +497,6 @@ def lets_rock():
     podcast_offline = check_files_online(podcast_sendungen)
     if podcast_offline is None:
         # Error 1
-        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-            "write_also_to_console")
         return
 
     if podcast_offline == "No files offline":
