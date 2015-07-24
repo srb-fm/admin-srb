@@ -190,10 +190,12 @@ if ( $action_ok == true ) {
 				}
 				// load access mpc
 				$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config'");
+				$tbl_row_mpd_config_etools = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'ext_tools'");
 				if ( substr($po_filename, 0, 5) == "http:" ) {
-					$cmd = $tbl_row_mpd_config->USER_SP_PARAM_2." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_3." add ".$po_filename;
+					// cmd = mpc -h 
+					$cmd = $tbl_row_mpd_config_etools->USER_SP_PARAM_8." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_2." add ".$po_filename;
 				} else {
-					$cmd = $tbl_row_mpd_config->USER_SP_PARAM_2." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_3." add ".$po_path."/".$po_filename;
+					$cmd = $tbl_row_mpd_config_etools->USER_SP_PARAM_8." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_2." add ".$po_path."/".$po_filename;
 				}
 				$message .= shell_exec($cmd); 
 			} else {
