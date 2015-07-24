@@ -92,6 +92,8 @@ class app_config(object):
             " Fehler beim Zugriff auf FTP-Ordner")
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Speichern in FTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Loeschen in FTP-Ordner")
 
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
@@ -510,7 +512,9 @@ def erase_files_prepaere(roboting_sgs):
                                 + c_date_back, "t", "write_also_to_console")
     for item in roboting_sgs:
         if item[1].strip() == "T":
-            # in Cloud
+            # on Cloud
+            msg = "Veraltete Dateien in Cloud loeschen: " + item[2]
+            db.write_log_to_db_a(ac, msg, "p", "write_also_to_console")
             path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_b[5])
             path_cloud = lib_cm.check_slashes(ac, item[2])
             path_dest_cloud = (path_dest + path_cloud)
@@ -521,7 +525,17 @@ def erase_files_prepaere(roboting_sgs):
                 lib_cm.message_write_to_console(ac, log_message)
                 db.write_log_to_db(ac, log_message, "x")
                 return
-        erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back)
+            erase_files_from_cloud(path_dest_cloud,
+                                files_sendung_dest, c_date_back)
+
+        if item[3].strip() == "T":
+            # on ftp
+            msg = "Veraltete Dateien auf ftp loeschen: " + item[4]
+            db.write_log_to_db_a(ac, msg, "p", "write_also_to_console")
+            path_dest = lib_cm.check_slashes(ac, db.ac_config_1[6])
+            path_ftp = lib_cm.check_slashes(ac, item[4])
+            path_dest_ftp = (path_dest + path_ftp)
+            erase_files_from_ftp(path_dest_ftp, c_date_back)
     return
 
 
@@ -557,6 +571,65 @@ def erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back):
     return
 
 
+def erase_files_from_ftp(path_dest_ftp, c_date_back):
+    """erase files from ftp"""
+    lib_cm.message_write_to_console(ac, "erase files from ftp")
+    try:
+        ftp = ftplib.FTP(db.ac_config_1[7])
+    except (socket.error, socket.gaierror):
+        lib_cm.message_write_to_console(ac, "ftp: no connect to: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    try:
+        ftp.login(db.ac_config_1[8], db.ac_config_1[9])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no login to: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    try:
+        ftp.cwd(path_dest_ftp)
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[8] + " - " + path_dest_ftp)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    files_online = []
+    try:
+        files_online = ftp.nlst()
+    except ftplib.error_perm, resp:
+        if str(resp) == "550 No files found":
+            lib_cm.message_write_to_console(ac,
+            u"ftp: no files in this directory")
+        else:
+            log_message = (ac.app_errorslist[9])
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+            return None
+
+    for item in files_online:
+        if item[0:10] < c_date_back:
+            try:
+                ftp.delete(item)
+                log_message = ("Auf ftp-Server geloescht: " + item)
+                db.write_log_to_db_a(ac, log_message, "k",
+                                    "write_also_to_console")
+            except ftplib.error_perm, resp:
+                log_message = (ac.app_errorslist[11] + " - " + item)
+                db.write_log_to_db_a(ac, log_message, "x",
+                                    "write_also_to_console")
+                continue
+
+    ftp.quit()
+    lib_cm.message_write_to_console(ac, files_online)
+
+
 def lets_rock():
     """Mainfunktion """
     # extendet params
@@ -571,9 +644,7 @@ def lets_rock():
     # beaming files if they not there
     work_on_files(roboting_sgs)
 
-    # delete old files in cloud
-    db.write_log_to_db_a(ac, "Veraltete Dateien in Cloud loeschen",
-                                            "p", "write_also_to_console")
+    # delete old files from cloud or ftp
     erase_files_prepaere(roboting_sgs)
     return
 
