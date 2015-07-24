@@ -58,11 +58,11 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "020"
         self.app_desc = u"beamer_vp_periodisch"
-        # schluessel fuer config in db
+        # key of config in db
         self.app_config = u"Beamer_VP_period"
         self.app_config_develop = u"Beamer_VP_period_e"
         # number parameters
@@ -90,6 +90,8 @@ class app_config(object):
             " Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden")
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Zugriff auf FTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Speichern in FTP-Ordner")
 
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
@@ -103,9 +105,9 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
-        # developmod (andere parameter, z.b. bei verzeichnissen)
+        # develop-mod (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # debug-mod
         self.app_debug_mod = "yes"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
@@ -130,7 +132,7 @@ def load_extended_params():
 
 
 def load_manuskript(sendung):
-    """Manuskript suchen"""
+    """Search manuscript"""
     lib_cm.message_write_to_console(ac, u"Manuskript suchen")
     manuskript_data = db.read_tbl_row_with_cond(ac, db,
         "SG_MANUSKRIPT",
@@ -164,7 +166,7 @@ def load_roboting_sgs():
 
 
 def load_sg(sg_titel):
-    """Sendung suchen"""
+    """search show"""
     lib_cm.message_write_to_console(ac, u"Sendung suchen")
     db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
         + str(ac.time_target.date()) + "' " + "AND A.SG_HF_FIRST_SG='T' "
@@ -209,26 +211,48 @@ def audio_upload(path_f_source, path_ftp, filename_dest):
     try:
         ftp = ftplib.FTP(db.ac_config_1[7])
     except (socket.error, socket.gaierror):
-        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return success_upload
 
-    ftp.login(db.ac_config_1[8], db.ac_config_1[9])
+    try:
+        ftp.login(db.ac_config_1[8], db.ac_config_1[9])
+    except ftplib.error_perm, resp:
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return success_upload
 
     if os.path.isfile(path_f_source):
         if ac.app_windows == "yes":
             f = open(path_f_source, "rb")
         else:
             f = open(path_f_source, "r")
+    else:
+        return success_upload
+
+    try:
         ftp.cwd(path_ftp)
         log_message = u"upload_file: " + path_f_source
         db.write_log_to_db(ac, log_message, "k")
+    except ftplib.error_perm, resp:
+        log_message = (ac.app_errorslist[8] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        f.close()
+        return success_upload
+
+    try:
         c_ftp_cmd = "STOR " + filename_dest
         ftp.storbinary(c_ftp_cmd, f)
+    except ftplib.error_perm, resp:
+        log_message = (ac.app_errorslist[9] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         f.close()
-        db.write_log_to_db_a(ac, u"VP per FTP hochgeladen: "
+        return success_upload
+
+    f.close()
+    db.write_log_to_db_a(ac, u"VP per FTP hochgeladen: "
                         + filename_dest, "i", "write_also_to_console")
-        success_upload = True
+    success_upload = True
     ftp.quit()
     return success_upload
 
