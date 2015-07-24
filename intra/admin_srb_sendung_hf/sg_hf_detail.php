@@ -37,25 +37,25 @@ $action_ok = false;
 $file_exist_check = "yes";
 	
 // check action	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
 	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];
 	$action_ok = true;
 }
 			
 if ( $action_ok == true ) {
-	if ( isset( $_GET['sg_id'] ) ) {	
+	if ( isset($_GET['sg_id']) ) {	
 		$id = $_GET['sg_id'];
 	}
-	if ( isset( $_POST['sg_id'] ) ) {
+	if ( isset($_POST['sg_id']) ) {
 		$id = $_POST['sg_id'];
 	}
 		
-	// Check file or not (after new/add not checking, then, it can't be there)
-	if ( isset( $_GET['check_file'] ) ) {	
+	// Check if file or not (after new/add not checking, then, it can't be there)
+	if ( isset($_GET['check_file']) ) {	
 		$file_exist_check = $_GET['check_file'];
 	}
 			
@@ -111,14 +111,14 @@ if ( $action_ok == true ) {
 			}
 			break;
 
-		case "delete":		
+		case "delete":	
 			$message .= "Sendung wirklich löschen? ";
 			if ( isset( $_GET['kill_possible'] ) ) { 
 				$kill_possible = $_GET['kill_possible'];
 			}
 			break;
 
-		case "kill_wh":		
+		case "kill_wh":
 			$message .= "Sendung löschen. ";
 			// correct?
 			$c_kill = db_query_load_item("USER_SECURITY", 0);
@@ -136,7 +136,7 @@ if ( $action_ok == true ) {
 				$message .= "Keine Löschberechtigung!";
 			}
 			break;
-				
+
 		case "kill_es":		
 			$message .= "Erstsendung löschen. ";
 			// correct?
@@ -165,7 +165,7 @@ if ( $action_ok == true ) {
 			$message .= "Sendung ausspielen? ";
 			$play_now = "T";
 			break;
-		
+
 		case "play_now":
 			// check if valid user
 			$c_play = db_query_load_item("USER_SECURITY", 0);
@@ -174,7 +174,7 @@ if ( $action_ok == true ) {
 				if ( isset( $_POST['po_filename'] ) ) { 
 					$po_filename = $_POST['po_filename'];
 				}
-			
+
 				$message .= "Sendung ausspielen... ";
 				// choose play-out-path
 				$po_path = "Play_Out_Sendung";
@@ -200,7 +200,7 @@ if ( $action_ok == true ) {
 				$message .= "Keine Playberechtigung!";
 			}
 			break;
-		
+
 		}//endswitch;
 	}
 } else {
@@ -209,7 +209,7 @@ if ( $action_ok == true ) {
 
 // End $action_ok == true
 // if $action_ok "no", continue checking  
-		
+
 if ( $action_ok == true ) {
 	$tbl_row_sg = db_query_sg_display_item_1($id);
 	if ( !$tbl_row_sg ) { 
@@ -407,7 +407,7 @@ if ( $user_rights == "yes" ) {
 	}
 
 	if ( $file_exist_check == "yes" ) {
-		$search_in_archiv = $tbl_row_config->USER_SP_PARAM_9;
+		$search_in_archiv = $tbl_row_config->USER_SP_PARAM_1;
 		// archive-year
 		if ( rtrim($tbl_row_sg->SG_HF_FIRST_SG) == "T" ) {
 			$archiv_sg_year = substr($tbl_row_sg->SG_HF_TIME, 0, 4)."/";
@@ -426,13 +426,13 @@ if ( $user_rights == "yes" ) {
 			//$php_remotefilename = $tbl_row_config->USER_SP_PARAM_5.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			//$php_remotefilename_archiv = $tbl_row_config->USER_SP_PARAM_6.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			$php_remotefilename = $tbl_row_config_A->USER_SP_PARAM_5.$tbl_row_sg->SG_HF_CONT_FILENAME;
-			$php_remotefilename_archiv = $tbl_row_config_A->USER_SP_PARAM_9.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$php_remotefilename_archiv = $tbl_row_config_A->USER_SP_PARAM_1.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 		} else {
 			// PLAYER	
 			//$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_3.$tbl_row_sg->SG_HF_CONT_FILENAME;					
 			//$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_4.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_7.$tbl_row_sg->SG_HF_CONT_FILENAME;
-			$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_9.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_1.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			//php
 			//$php_remotefilename = $tbl_row_config->USER_SP_PARAM_7.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			//$php_remotefilename_archiv = $tbl_row_config->USER_SP_PARAM_8.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
@@ -448,7 +448,7 @@ if ( $user_rights == "yes" ) {
 					$remotefilename = $remotefilename_archiv;
 					$file_exist = "yes";
 					if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" or rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
-						$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config_A->USER_SP_PARAM_9.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
+						$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config_A->USER_SP_PARAM_1.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
 					} else {
 						$error_message .= "Media-Datei befindet sich im Archiv:".$tbl_row_config_A->USER_SP_PARAM_10.$archiv_sg_year." ! <br>Zum Ausspielen bitte in Play-Out kopieren.";
 					}

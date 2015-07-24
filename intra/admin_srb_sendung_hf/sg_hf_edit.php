@@ -21,27 +21,27 @@ $message = "";
 $error_message = "";
 $action_ok = false;
 
-// action pruefen	
-if ( isset( $_GET['action'] ) ) {
+// check action
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
 	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action']; 
 	$action_ok = true;
 }
 
-if ( isset( $_GET['file_exist'] ) ) { 
+if ( isset($_GET['file_exist']) ) { 
 	$file_exist = $_GET['file_exist'];
 } else {
 	$file_exist	= "no";
 }
 
 if ( $action_ok == true ) {	
-	if ( isset( $_GET['ad_id'] ) ) {	
+	if ( isset($_GET['ad_id']) ) {	
 		$id_ad = $_GET['ad_id'];
 	}
-	if ( isset( $_POST['ad_id'] ) ) {
+	if ( isset($_POST['ad_id']) ) {
 		$id_ad = $_POST['ad_id'];
 	}
 
@@ -134,7 +134,7 @@ if ( $action_ok == true ) {
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-				
+
 			$tbl_values_sg .= "'F', "; // FIRST_SG kann hier nur false sein;
 			if ( isset( $_POST['form_sg_on_air'] ) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_on_air']."', "; 
@@ -225,7 +225,7 @@ if ( $action_ok == true ) {
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-				
+
 			$tbl_values_sg .= "'T', "; // FIRST_SG kann nur true sein;
 			if ( isset( $_POST['form_sg_on_air'] ) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_on_air']."', "; 
@@ -290,7 +290,7 @@ if ( $action_ok == true ) {
 			$tbl_row_ad = db_query_display_item_1("AD_MAIN", "AD_ID = " .$id_ad);
 			$tbl_row_sg = db_query_sg_display_item_1($_GET['sg_id']);
 			break;
-				
+
 		case "update":
 			// sg
 			$c_audio_length = $_POST['form_sg_duration'];
@@ -324,7 +324,7 @@ if ( $action_ok == true ) {
 					//$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_4.$_POST['form_sg_filename'];
 					//$patfilename = $tbl_row_config->USER_SP_PARAM_7.$_POST['form_sg_filename'];
 					$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_7.$_POST['form_sg_filename'];
-					$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_9.$_POST['form_sg_filename'];
+					$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_1.$_POST['form_sg_filename'];
 					$patfilename = $tbl_row_config_A->USER_SP_PARAM_6.$_POST['form_sg_filename'];
 					// Sendung in Infotime
 					//$remotefilename_bc_in_it = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$_POST['form_sg_filename'];				
@@ -604,7 +604,7 @@ if ( $user_rights == "yes" ) {
 	} else { 
 		echo "<input id='chk_infotime' type='checkbox' name='form_sg_infotime' value='T' title='InfoTime'>InfoTime ";
 	}
-			
+
 	if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" ) {
 		echo "<input id='chk_magazine' type='checkbox' name='form_sg_magazine' value='T' checked='checked' title='Magazin' onChange='check_free_time()'>Magazin ";
 	} else { 
@@ -666,7 +666,7 @@ if ( $user_rights == "yes" ) {
 	}
 	echo "</div>";
 	echo "<div class='content_footer'>"; 
-								
+
 	echo "<div id='save_button'>";
 	echo "<div style='float: left'><input type='submit' value='Speichern' ></div>"; 
 	if ( $action == "edit" ) { 
