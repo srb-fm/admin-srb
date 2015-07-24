@@ -113,7 +113,7 @@ if ( $action_ok == true ) {
 
 		case "delete":	
 			$message .= "Sendung wirklich löschen? ";
-			if ( isset( $_GET['kill_possible'] ) ) { 
+			if ( isset($_GET['kill_possible']) ) { 
 				$kill_possible = $_GET['kill_possible'];
 			}
 			break;
@@ -146,10 +146,10 @@ if ( $action_ok == true ) {
 				$_ok_a = db_query_delete_item("SG_HF_MAIN", "SG_HF_ID", $id);
 				$_ok_b = db_query_delete_item("SG_HF_CONTENT", "SG_HF_CONT_SG_ID", $id);
 				if ( $_ok_a == "true" ) {
-					$action_ok = false ;// damit geloeschte Sendung nicht aufgrufen wird;	
+					$action_ok = false ; // prevent loading of deleted item	
 					if ( $_ok_b == "true" ) {
 						$message = "Erstsendung gelöscht!";
-						$action_ok = false ;// damit geloeschte Sendung nicht aufgrufen wird;	
+						$action_ok = false ; // prevent loading of deleted item	
 					} else { 
 						$message .= "Content löschen fehlgeschlagen";
 					}
@@ -189,7 +189,7 @@ if ( $action_ok == true ) {
 					}
 				}
 				// load access mpc
-				$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config_Server_3'");
+				$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config'");
 				if ( substr($po_filename, 0, 5) == "http:" ) {
 					$cmd = $tbl_row_mpd_config->USER_SP_PARAM_2." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_3." add ".$po_filename;
 				} else {
@@ -200,7 +200,6 @@ if ( $action_ok == true ) {
 				$message .= "Keine Playberechtigung!";
 			}
 			break;
-
 		}//endswitch;
 	}
 } else {
@@ -486,30 +485,30 @@ if ( $user_rights == "yes" ) {
 
 		echo '</script>';
 
-echo '<div id="jquery_jplayer_1" class="jp-jplayer"></div>';
-echo '<div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">';
-	echo '<div class="jp-type-single">';
-		echo '<div class="jp-gui jp-interface">';
-			echo '<div class="jp-controls">';
-				echo '<button class="jp-play" role="button" tabindex="0">play</button>';
-				echo '<button class="jp-stop" role="button" tabindex="0">stop</button>';
-			echo '</div>';
-			echo '<div class="jp-progress">';
-				echo '<div class="jp-seek-bar">';
-					echo '<div class="jp-play-bar"></div>';
+		echo '<div id="jquery_jplayer_1" class="jp-jplayer"></div>';
+		echo '<div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">';
+			echo '<div class="jp-type-single">';
+				echo '<div class="jp-gui jp-interface">';
+					echo '<div class="jp-controls">';
+						echo '<button class="jp-play" role="button" tabindex="0">play</button>';
+						echo '<button class="jp-stop" role="button" tabindex="0">stop</button>';
+					echo '</div>';
+					echo '<div class="jp-progress">';
+						echo '<div class="jp-seek-bar">';
+							echo '<div class="jp-play-bar"></div>';
+						echo '</div>';
+					echo '</div>';
+					echo '<div class="jp-time-holder">';
+						echo '<div class="jp-current-time" role="timer" aria-label="time">&nbsp;</div>';
+						echo '<div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>';
+					echo '</div>';
+				echo '</div>';
+				echo '<div class="jp-no-solution">';
+					echo '<span>Update Required</span>';
+					echo 'To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.';
 				echo '</div>';
 			echo '</div>';
-			echo '<div class="jp-time-holder">';
-				echo '<div class="jp-current-time" role="timer" aria-label="time">&nbsp;</div>';
-				echo '<div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>';
-			echo '</div>';
-		echo '</div>';
-		echo '<div class="jp-no-solution">';
-			echo '<span>Update Required</span>';
-			echo 'To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.';
-		echo '</div>';
-	echo '</div>';
-echo '</div>';	
+		echo '</div>';	
 //echo '<div id="jplayer_inspector"></div>';		
 	}
 
@@ -545,7 +544,7 @@ echo '</div>';
 			echo "<input type='submit' class='b_1' value='Jetzt löschen'></form><div class='space_line_1'> </div></div>";
 		}
 	}
-	
+
 	// play-out
 	if ( $action == "play_out" ) { 
 		if ($play_now == "T" ) {
@@ -610,7 +609,7 @@ echo '</div>';
 			
 	echo "</ul>\n</div>\n<!--menu_bottom-->";  
 	echo "\n</div><!--content wieder zu-->"; 
-			
+
 	// begin repetition
 	if ( $action == "show_dubs" ) {
 		$c_query_condition_dubs = " SG_HF_CONTENT_ID = ".$tbl_row_sg->SG_HF_CONTENT_ID." AND SG_HF_FIRST_SG = 'F'";
@@ -636,7 +635,7 @@ echo '</div>';
 		}
 		echo "</div>"; // content wieder zu
 	}
-			
+
 	// Repetition End
 } // user_rights
 echo "</div><!--class=column_right-->";
