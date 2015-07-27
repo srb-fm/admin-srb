@@ -18,25 +18,26 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
 $user_app_drop_down = "yes";
 $displ_dateform = "no";
-	
-// action pruefen	
-if ( isset( $_GET['action'] ) ) {	
+$action_ok = false;
+
+// check action	
+if ( isset($_GET['action']) ) {	
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
-			
-if ( $action_ok == "yes" ) {	
-	// App-ID ermitteln/ 000 gleich alle Apps
-	if ( isset( $_POST['form_user_app'] ) ) {
+
+if ( $action_ok == true ) {	
+	// read App-ID/ 000 = all Apps
+	if ( isset($_POST['form_user_app']) ) {
 		$tbl_value_app_id = db_query_load_id_by_value("USER_APPS", "USER_APP_DESC", $_POST['form_user_app']);			
 	} else {
-		$tbl_value_app_id = "000";	
+		$tbl_value_app_id = "000";
 	}
-		
+
 	switch ( $action ) {
 
 	case "list_last_hour_all": 
@@ -66,8 +67,8 @@ if ( $action_ok == "yes" ) {
 	case "list_date_all": 
 		$d_date_dest = date("Y-m-d");
 		$displ_dateform = "yes";
-		// Pruefen ob Datum übergeben, sohnst aktuelles nehmen
-		if ( isset( $_POST['form_k_datum'] ) ) {
+		// check if date is submitted, if not use current
+		if ( isset($_POST['form_k_datum']) ) {
 			if ( $_POST['form_k_datum'] != "" ) {
 				$d_date_dest = get_date_format_sql($_POST['form_k_datum']);
 				$j = substr($d_date_dest, 0, 4);
@@ -85,7 +86,7 @@ if ( $action_ok == "yes" ) {
 			$c_query_condition = "SUBSTRING( USER_LOG_TIME FROM 1 FOR 10) = '".$d_date_dest. "' ORDER BY USER_LOG_ID";
 		}
 		break;
-				
+		
 	case "list_today_all": 
 		if ( $tbl_value_app_id != "000" ) {
 			$message = "Alle ".$_POST['form_user_app']." - Logs des Tages (ohne Errors)";
@@ -108,7 +109,7 @@ if ( $action_ok == "yes" ) {
 			$c_query_condition = "SUBSTRING( USER_LOG_TIME FROM 1 FOR 10) = '".$c_date. "' ORDER BY USER_LOG_ID";
 		}
 		break;
-				
+
 	case "list_today_play_out": 
 		$displ_dateform = "yes";
 		$user_app_drop_down = "no";
@@ -124,8 +125,8 @@ if ( $action_ok == "yes" ) {
 	case "list_date_error": 
 		$displ_dateform = "yes";
 		$d_date_dest = date('Y-m-d');
-		// Pruefen ob Datum übergeben, sonst aktuelles nehmen
-		if ( isset( $_POST['form_k_datum'] ) ) {
+		// check if date is submitted, if not use current
+		if ( isset($_POST['form_k_datum']) ) {
 			if ( $_POST['form_k_datum'] != "" ) {
 				$d_date_dest = get_date_format_sql($_POST['form_k_datum']);
 				$j = substr($d_date_dest, 0, 4);
@@ -147,8 +148,8 @@ if ( $action_ok == "yes" ) {
 	case "list_date_informations": 
 		$displ_dateform = "yes";
 		$d_date_dest = date('Y-m-d');
-		// Pruefen ob Datum übergeben, sonst aktuelles nehmen
-		if ( isset( $_POST['form_k_datum'] ) ) {
+		// check if date is submitted, if not use current
+		if ( isset($_POST['form_k_datum']) ) {
 			if ( $_POST['form_k_datum'] != "" ) {
 				$d_date_dest = get_date_format_sql($_POST['form_k_datum']);
 				$j = substr($d_date_dest, 0, 4);
@@ -161,12 +162,12 @@ if ( $action_ok == "yes" ) {
 		$message = "Alle Informations des Tages";
 		$c_query_condition = "SUBSTRING( USER_LOG_ICON FROM 1 FOR 1 ) = 'i' AND SUBSTRING( USER_LOG_TIME FROM 1 FOR 10) = '".$d_date_dest. "' ORDER BY USER_LOG_ID";
 		break;
-				
+
 	case "list_date_notifications": 
 		$displ_dateform = "yes";
 		$d_date_dest = date('Y-m-d');
-		// Pruefen ob Datum übergeben, sonst aktuelles nehmen
-		if ( isset( $_POST['form_k_datum'] ) ) {
+		// check if date is submitted, if not use current
+		if ( isset($_POST['form_k_datum']) ) {
 			if ( $_POST['form_k_datum'] != "" ) {
 				$d_date_dest = get_date_format_sql($_POST['form_k_datum']);
 				$j = substr($d_date_dest, 0, 4);
@@ -179,7 +180,7 @@ if ( $action_ok == "yes" ) {
 		$message = "Alle Notifications des Tages";
 		$c_query_condition = "SUBSTRING( USER_LOG_ICON FROM 1 FOR 1 ) = 'n' AND SUBSTRING( USER_LOG_TIME FROM 1 FOR 10) = '".$d_date_dest. "' ORDER BY USER_LOG_ID";
 		break;
-				
+
 	case "list_today_error": 
 		if ( $tbl_value_app_id != "000" ) {
 			$message = "Alle ".$_POST['form_user_app']." - Error-Logs des Tages";
@@ -189,7 +190,7 @@ if ( $action_ok == "yes" ) {
 			$c_query_condition = "SUBSTRING( USER_LOG_ICON FROM 1 FOR 1 ) = 'x' AND SUBSTRING( USER_LOG_TIME FROM 1 FOR 10) = '".date("Y-m-d"). "' ORDER BY USER_LOG_ID";
 		}
 		break;
-				
+
 	case "list_yesterday_error": 
 		$date_back = time() - (1 * 24 * 60 * 60);
 		$c_date = date("Y-m-d", $date_back);
@@ -214,17 +215,16 @@ if ( $action_ok == "yes" ) {
 			$c_query_condition = "SUBSTRING( USER_LOG_ICON FROM 1 FOR 1 ) = 'x' AND SUBSTRING( USER_LOG_TIME FROM 1 FOR 10) = '".$c_date."' ORDER BY USER_LOG_ID";
 		}
 		break;
-				
-			
-			//endswitch
+
+	//endswitch
 	}
 	// Anzeige query
 	$message_find_string = $c_query_condition;
-			
+		
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-		
+	
 $db_result = db_log_query_list_items_1("USER_LOG_ID, USER_LOG_TIME, USER_LOG_ACTION, USER_LOG_ICON, USER_LOG_MODUL_ID ", "USER_LOGS", $c_query_condition);
 ?>
 
@@ -251,7 +251,7 @@ include "../parts/site_elements/header_srb_2.inc";
 include "../parts/menu/menu_srb_root_1_eb_1.inc";
 echo "<div class='column_left'>";
 echo "<div class='head_item_left'>Administration</div>";
-if ( isset( $_GET['call_from_sendung'] ) ) {
+if ( isset($_GET['call_from_sendung']) ) {
 	if ( $_GET['call_from_sendung'] == "yes" ) {
 		include "../admin_srb_sendung_hf/parts/sg_hf_menu.inc";
 	}	
@@ -264,7 +264,7 @@ echo "<div class='column_right'>";
 echo "<div class='head_item_right'>";
 echo $message;
 echo "</div>";
-if ( isset( $_GET['call_from_sendung'] ) ) {
+if ( isset($_GET['call_from_sendung']) ) {
 	if ( $_GET['call_from_sendung'] == "yes" ) {
 		include "../admin_srb_sendung_hf/parts/sg_hf_toolbar.inc";
 	}
@@ -274,13 +274,12 @@ if ( isset( $_GET['call_from_sendung'] ) ) {
 
 echo "<div class='content'>";	
 	
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 }
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
 if ( $user_rights == "yes" ) { 
-	//echo "<p>Einstellungen der Bedingung: " .$message_find_string. "</p> <div id='line'> </div>\n";
-	// Auswahl App
+	// choose App
 	echo "<form name='form1' action='play_out_log_find_list.php' method='POST' enctype='application/x-www-form-urlencoded'>\n";
 	echo "<input type='hidden' name='action' value='".$action."'>\n";
 	if ( $user_app_drop_down == "yes" ) {
@@ -290,15 +289,15 @@ if ( $user_rights == "yes" ) {
 			echo html_dropdown_from_table_1("USER_APPS", "USER_APP_DESC", "form_user_app", "input_text_a_6", "000");
 		}
 	}
-			
-	// Auswahl datum
+
+	// choose date
 	if ( $displ_dateform == "yes" ) {
 		echo "Datum: <input type='TEXT' id='datepicker' name='form_k_datum' value='' size='10' maxlength='10'>";
 	}
 
 	echo "<input type='submit' value='Anzeigen'></form><br>";
 	echo "<div class='line_a'> </div>\n";
-		
+	
 	$z = 0;
 	if ( $db_result) {		
 		foreach ( $db_result as $item ) {
