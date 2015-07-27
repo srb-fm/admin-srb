@@ -23,15 +23,8 @@ Schluesselwort fuer Einstellungen: PO_Repeat_Proto_Config_3
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
-Param 1: Pfad vom Server zu Protokolldateien
-Param 2: Pfad vom Server zu Playout-IT
-Param 3: Pfad vom Server zu Playout-Sendung
-Param 4: Pfad vom Server zu Protokolldateien
-    (gleich wie in PO_Protokoll_Config_3)
-Param 5: Dateiprefix Protokoll (gleich wie in PO_Protokoll_Config_1)
-Param 6: Pfad/Programm mp3-validator
-Param 7: Pfad/Programm mp3-gain
-Param 8: Pfad/Programm id3tag
+Param 1: on/off switch
+Param 2: Dateiprefix Protokoll (gleich wie in PO_Protokoll_Config)
 
 Fehlerliste:
 Error 000 Parameter-Typ oder Inhalt stimmt nich
@@ -73,7 +66,7 @@ class app_config(object):
         self.app_config = u"PO_Repeat_Proto_Config"
         self.app_config_develop = u"PO_Repeat_Proto_Config_3_e"
         # number of main-parameters
-        self.app_config_params_range = 5
+        self.app_config_params_range = 2
         self.app_errorfile = "error_play_out_repeat_protokoll.log"
         # errorlist
         self.app_errorslist = []
@@ -88,9 +81,6 @@ class app_config(object):
         self.app_errorslist.append(u"Error 005 Fehler bei id3tag: ")
         # params-type-list
         self.app_params_type_list = []
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -124,7 +114,7 @@ def load_extended_params():
 
 
 def load_sg_repeat():
-    """Pruefen ob Sendungen zur WH vorgesehen"""
+    """check if shows for repeating present"""
     lib_cm.message_write_to_console(ac, u"load_podcast")
     # wenn in Stunde 0, dann mit aktuellem Tag suchen,
     # damit Sendungen von 23 bis 0 Uhr beruecksichtigt werden
@@ -151,7 +141,7 @@ def load_sg_repeat():
 
 
 def load_sg_first(sg_cont_nr):
-    """Erstsednung zur WH suchen"""
+    """search first-sg for repeat"""
     lib_cm.message_write_to_console(ac, u"Erstsednung zur WH suchen")
 
     db_tbl_condition = ("A.SG_HF_FIRST_SG = 'T' AND A.SG_HF_CONTENT_ID='"
@@ -168,7 +158,7 @@ def load_sg_first(sg_cont_nr):
 
 
 def audio_validate(file_dest):
-    """mp3-File validieren"""
+    """validate mp3-File"""
     lib_cm.message_write_to_console(ac, u"mp3-File validieren")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
@@ -210,7 +200,7 @@ def audio_validate(file_dest):
 
 
 def audio_mp3gain(file_dest):
-    """mp3-File Gainanpassung"""
+    """mp3-gain"""
     lib_cm.message_write_to_console(ac, u"mp3-File Gainanpassung")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
@@ -225,16 +215,16 @@ def audio_mp3gain(file_dest):
         log_message = ac.app_errorslist[3] + u" %s" % str(e)
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return
-    lib_cm.message_write_to_console(ac, u"returncode 0")
-    lib_cm.message_write_to_console(ac, p[0])
-    lib_cm.message_write_to_console(ac, u"returncode 1")
-    lib_cm.message_write_to_console(ac, p[1])
+    #lib_cm.message_write_to_console(ac, u"returncode 0")
+    #lib_cm.message_write_to_console(ac, p[0])
+    #lib_cm.message_write_to_console(ac, u"returncode 1")
+    #lib_cm.message_write_to_console(ac, p[1])
 
     # erfolgsmeldung suchen, wenn nicht gefunden: -1
     mp3gain_output = string.find(p[1], "99%")
     mp3gain_output_1 = string.find(p[1], "written")
-    lib_cm.message_write_to_console(ac, mp3gain_output)
-    lib_cm.message_write_to_console(ac, mp3gain_output_1)
+    #lib_cm.message_write_to_console(ac, mp3gain_output)
+    #lib_cm.message_write_to_console(ac, mp3gain_output_1)
     # wenn gefunden, position, sonst -1
     if mp3gain_output != -1 and mp3gain_output_1 != -1:
         log_message = u"mp3gain angepasst: " + c_source_file
@@ -246,7 +236,7 @@ def audio_mp3gain(file_dest):
 
 
 def audio_id3tag(file_dest, id3_author, id3_title):
-    """mp3-id3Tag schreiben"""
+    """write mp3-id3Tags"""
     lib_cm.message_write_to_console(ac, u"mp3-id3Tag schreiben")
     # damit die uebergabe der befehle richtig klappt,
     # muessen alle cmds im richtigen zeichensatz encoded sein
@@ -265,15 +255,15 @@ def audio_id3tag(file_dest, id3_author, id3_title):
         log_message = ac.app_errorslist[5] + str(e)
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return
-    lib_cm.message_write_to_console(ac, u"returncode 0")
-    lib_cm.message_write_to_console(ac, p[0])
-    lib_cm.message_write_to_console(ac, u"returncode 1")
-    lib_cm.message_write_to_console(ac, p[1])
+    #lib_cm.message_write_to_console(ac, u"returncode 0")
+    #lib_cm.message_write_to_console(ac, p[0])
+    #lib_cm.message_write_to_console(ac, u"returncode 1")
+    #lib_cm.message_write_to_console(ac, p[1])
 
     # erfolgsmeldung suchen, wenn nicht gefunden: -1
     id3tag_output = string.find(p[0], "tagged")
     #id3tag_output_1 = string.find( p[1],  "Artist" )
-    lib_cm.message_write_to_console(ac, id3tag_output)
+    #lib_cm.message_write_to_console(ac, id3tag_output)
     #lib_cm.message_write_to_console( ac, id3tag_output_1 )
     # wenn gefunden, position, sonst -1
     if id3tag_output != -1:
@@ -287,13 +277,13 @@ def audio_id3tag(file_dest, id3_author, id3_title):
 
 
 def check_and_work_on_files(repeat_sendung):
-    """ Dateien bearbeiten """
+    """work on files"""
     lib_cm.message_write_to_console(ac, u"check_and_work_on_files")
 
     # Filename splitten um zu pruefen ob Filename nach SRB-Muster vorhanden
-    lib_cm.message_write_to_console(ac, type(repeat_sendung[12].split("_")[0]))
-    lib_cm.message_write_to_console(ac, repeat_sendung[8])
-    lib_cm.message_write_to_console(ac, type(repeat_sendung[8]))
+    #lib_cm.message_write_to_console(ac, type(repeat_sendung[12].split("_")[0]))
+    #lib_cm.message_write_to_console(ac, repeat_sendung[8])
+    #lib_cm.message_write_to_console(ac, type(repeat_sendung[8]))
     # wenn Filename nicht gsplittet werden kann, wird nur ein splitt erzeugt
     try:
         # wenn keine nr im filename fehler abfangen
@@ -367,9 +357,9 @@ def check_and_work_on_files(repeat_sendung):
     db.write_log_to_db(ac, u"Erstsendung zu Wiederholungssendung gefunden: "
         + first_sg_date_time.strftime('%Y_%m_%d_%H') + " "
         + repeat_sendung[11], "t")
-    lib_cm.message_write_to_console(ac, first_sg_date_time)
-    lib_cm.message_write_to_console(ac, first_sg_date_time.minute)
-    lib_cm.message_write_to_console(ac, datetime.datetime.now())
+    #lib_cm.message_write_to_console(ac, first_sg_date_time)
+    #lib_cm.message_write_to_console(ac, first_sg_date_time.minute)
+    #lib_cm.message_write_to_console(ac, datetime.datetime.now())
     if first_sg_date_time > datetime.datetime.now():
         db.write_log_to_db_a(ac,
             u"Erstsendung noch nicht gelaufen, Verarbeitung abgebrochen: "
@@ -384,21 +374,21 @@ def check_and_work_on_files(repeat_sendung):
         + first_sg_date_time.strftime('%Y_%m_%d_%H_%M'), "t",
         "write_also_to_console")
         return
-    # Nur Sendungen die zur vollen Stunde beginnen bearbeiten
+    # Only shows on top of the hour
     lib_cm.message_write_to_console(ac, first_sg_date_time.minute)
-    # Pfad-Datei der Protodatei
+    # Path-File of Protofile
     path_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[2])
     if ac.app_windows == "yes":
         file_source = (path_source + first_sg_date_time.strftime('%Y_%m_%d')
-            + "\\" + db.ac_config_1[5] + "_"
+            + "\\" + db.ac_config_1[2] + "_"
             + first_sg_date_time.strftime('%Y_%m_%d_%H') + ".mp3")
     else:
         file_source = (path_source + first_sg_date_time.strftime('%Y_%m_%d')
-            + "/" + db.ac_config_1[5] + "_"
+            + "/" + db.ac_config_1[2] + "_"
             + first_sg_date_time.strftime('%Y_%m_%d_%H') + ".mp3")
     lib_cm.message_write_to_console(ac, file_source)
 
-    # In Play-Out kopieren
+    # copy to Play-Out
     try:
         shutil.copy(file_source, file_dest)
         db.write_log_to_db_a(ac, u"Protokoll fuer Wiederholung: "
@@ -445,6 +435,10 @@ def check_and_work_on_files(repeat_sendung):
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
 
     # Sendungen holen die fuer Wiederholung aus Proto vorgesehen
     repeat_sendungen = load_sg_repeat()
@@ -514,10 +508,12 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # alles ok: weiter
         if param_check is not None:
-            # extended params
-            load_extended_params_ok = load_extended_params()
-            if load_extended_params_ok is not None:
+            if db.ac_config_1[1] == "on":
                 lets_rock()
+            else:
+                db.write_log_to_db_a(ac,
+                                "Wiederholung von Protokoll ausgeschaltet", "e",
+                                "write_also_to_console")
 
     # fertsch
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
