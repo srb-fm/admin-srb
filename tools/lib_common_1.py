@@ -1043,19 +1043,20 @@ def params_provide_tools(ac, db):
 
 
 def params_check_1(ac, db):
-    """ Pruefen ob Params geladen wurden und richtigen Typ haben"""
-    message_write_to_console(ac, "check_params ")
+    """check if loading params with right type"""
+    message_write_to_console(ac, "check_params_type ")
 
-    #if db.ac_config_1 is not None:
-    #    message_write_to_console(ac, "params_check not none")
+    z = 0
     for i in range(ac.app_config_params_range):
         param_check = params_check_type(
             ac, db, ac.app_params_type_list[i], db.ac_config_1[i])
         if param_check is None:
-            err_message = ac.app_errorslist[0] + " " + db.ac_config_1[i]
+            err_message = (ac.app_errorslist[0]
+                                + " " + str(z) + " " + db.ac_config_1[i])
             message_write_to_console(ac, err_message)
             db.write_log_to_db(ac, err_message, "x")
             break
+        z += 1
 
     message_write_to_console(ac, param_check)
     return param_check
