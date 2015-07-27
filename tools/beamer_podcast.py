@@ -41,17 +41,12 @@ E 5 Podcast-mp3-Datei in Play-Out nicht gefunden:
 
 Parameterliste:
 Param 1: On/Off Switch
-Param 2: Pfad/Programm mp3-encoder
-Param 3: none
-Param 4: Pfad Sendungen Infotime/Magazin
-Param 5: Pfad Sendungen normal
-Param 6: Pfad temporaere Dateien fuer Encoder
-Param 7: Bitrate fuer Encoder (momentan nicht genutzt)
-Param 8: ftp-Host
-Param 9: ftp-Benutzer
-Param 10: ftp-PW
-Param 11: ftp-Verzeichnis
-Param 12: Anzahl Dateien, die max auf dem Podcast-Server bleiben
+Param 2: Anzahl Dateien, die max auf dem Podcast-Server bleiben
+Param 3: ftp-Host
+Param 4: ftp-Benutzer
+Param 5: ftp-PW
+Param 6: ftp-Verzeichnis
+Param 7: Pfad temporaere Dateien fuer Encoder
 
 Das Script wird zeitgesteuert zwischen 6 und 20 Uhr
 jeweils zu Minute 15 ausgefuehrt.
@@ -82,9 +77,9 @@ class app_config(object):
         self.app_config = u"PC_Beamer_Config"
         self.app_config_develop = u"PC_Beamer_Config_1_e"
         # amount parameter
-        self.app_config_params_range = 12
+        self.app_config_params_range = 8
         self.app_errorfile = "error_podcast_beamer.log"
-        # dev-mod (andere parameter, z.b. bei verzeichnissen)
+        # dev-mod
         self.app_develop = "no"
         # show messages on console
         self.app_debug_mod = "no"
@@ -112,17 +107,12 @@ class app_config(object):
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
 
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
@@ -152,7 +142,7 @@ def load_podcast():
                         + "SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '"
                         + str(ac.time_target.date()) + "' "
                         + "AND A.SG_HF_PODCAST='T' ")
-    # ORDER BY A.SG_HF_TIME kommt dazu in read_tbl_rows_sg_cont_ad_with_cond_a
+    # ORDER BY A.SG_HF_TIME is added in read_tbl_rows_sg_cont_ad_with_cond_a
     sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_a(ac,
                                                         db, db_tbl_condition)
 
@@ -230,7 +220,7 @@ def encode_file(podcast_sendung):
         return None
 
     # dest recoded file
-    path_dest = lib_cm.check_slashes(ac, db.ac_config_1[6])
+    path_dest = lib_cm.check_slashes(ac, db.ac_config_1[7])
 
     c_dest_file = (path_dest.encode(ac.app_encode_out_strings)
                    + podcast_sendung[0].encode(ac.app_encode_out_strings))
@@ -294,29 +284,29 @@ def check_files_online(podcast_sendungen):
     lib_cm.message_write_to_console(ac, u"check_files_online")
 
     try:
-        ftp = ftplib.FTP(db.ac_config_1[8])
+        ftp = ftplib.FTP(db.ac_config_1[3])
     except (socket.error, socket.gaierror):
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[8])
+                                        + db.ac_config_1[3])
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
                                         "write_also_to_console")
         return None
 
     try:
-        ftp.login(db.ac_config_1[9], db.ac_config_1[10])
+        ftp.login(db.ac_config_1[4], db.ac_config_1[5])
     except ftplib.error_perm, resp:
         lib_cm.message_write_to_console(ac, "ftp: no login to: "
-                                        + db.ac_config_1[8])
-        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[8])
+                                        + db.ac_config_1[3])
+        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[3])
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
 
     try:
-        ftp.cwd(db.ac_config_1[11])
+        ftp.cwd(db.ac_config_1[6])
     except ftplib.error_perm, resp:
         lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
-                                        + db.ac_config_1[8])
-        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[11])
+                                        + db.ac_config_1[3])
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[6])
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
 
@@ -365,16 +355,16 @@ def upload_file(podcast_sendung):
     """upload files"""
     lib_cm.message_write_to_console(ac, u"upload_file")
     try:
-        ftp = ftplib.FTP(db.ac_config_1[8])
+        ftp = ftplib.FTP(db.ac_config_1[3])
     except (socket.error, socket.gaierror):
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[8])
+                                        + db.ac_config_1[3])
         return None
 
-    ftp.login(db.ac_config_1[9], db.ac_config_1[10])
+    ftp.login(db.ac_config_1[4], db.ac_config_1[5])
 
     # dest recoded file
-    path_source = lib_cm.check_slashes(ac, db.ac_config_1[6])
+    path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
     c_source_file = path_source + podcast_sendung[0]
     lib_cm.message_write_to_console(ac, c_source_file)
 
@@ -384,7 +374,7 @@ def upload_file(podcast_sendung):
         else:
             f = open(c_source_file, "r")
 
-        ftp.cwd(db.ac_config_1[11])
+        ftp.cwd(db.ac_config_1[6])
         log_message = u"upload_file: " + c_source_file
         db.write_log_to_db(ac, log_message, "k")
         c_ftp_cmd = "STOR " + podcast_sendung[0]
@@ -409,14 +399,14 @@ def delete_files_online():
     """delete old files at Webspace"""
     lib_cm.message_write_to_console(ac, u"delete_files_online")
     try:
-        ftp = ftplib.FTP(db.ac_config_1[8])
+        ftp = ftplib.FTP(db.ac_config_1[3])
     except (socket.error, socket.gaierror):
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[8])
+                                        + db.ac_config_1[3])
         return None
 
-    ftp.login(db.ac_config_1[9], db.ac_config_1[10])
-    ftp.cwd(db.ac_config_1[11])
+    ftp.login(db.ac_config_1[4], db.ac_config_1[5])
+    ftp.cwd(db.ac_config_1[6])
 
     # read online-files
     files_online = []
@@ -486,6 +476,10 @@ def delete_files_online():
 def lets_rock():
     """Mainfunction """
     print "lets_rock "
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
 
     # load from db
     podcast_sendungen = load_podcast()
@@ -586,13 +580,10 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # all ok: continue
         if param_check is not None:
-            # extended params
-            load_extended_params_ok = load_extended_params()
-            if load_extended_params_ok is not None:
-                if db.ac_config_1[1] == "on":
-                    lets_rock()
-                else:
-                    db.write_log_to_db_a(ac,
+            if db.ac_config_1[1] == "on":
+                lets_rock()
+            else:
+                db.write_log_to_db_a(ac,
                                 "Podcast-Beamer ausgeschaltet", "e",
                                 "write_also_to_console")
 
