@@ -17,14 +17,14 @@ in das Protokoll-Verzeichnis.
 Alte Dateien werden nach der eingestellten Anzahl von Tagen geloescht.
 
 Dateiname Script: play_out_protokoll.py
-Schluesselwort fuer Einstellungen: PO_Protokoll_Config_1
+Schluesselwort fuer Einstellungen: PO_Protokoll_Config
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 Arbeitet zusammen mit: wave-recorder o.ae. (nicht direkt)
 
 Parameterliste:
-P 1: Ordner Audio-Protokolldateien (wave_recorder, rotter)
-P 2: Ordner Protokolldateien in media_hf (Fileserver)
+P 1: on/off switch
+P 2: Recorder WaveRecorder oder rotter
 P 3: Tage zurueck, loeschen Audio-Prot-Dateien muss dreistellig sein!!!
 (z.B. 030)
 P 4: Tage zurueck, loeschen Protokoll-Dateien in media_hf
@@ -32,7 +32,6 @@ und logs in DB user_logs
 P 5: Pefix fuer Protokolldateien in media_hf
 P 6: Endung fuer Protokolldateien in media_hf
 P 7: Tage zurueck, kontrollieren ob Protokoll vollstaendig
-P 8: Recorder WaveRecorder oder rotter
 
 Liste der moeglichen Haupt-Fehlermeldungen:
 Error 000 Parameter-Typ oder Inhalt stimmt nicht
@@ -71,7 +70,7 @@ class app_config(object):
         self.app_config = u"PO_Protokoll_Config"
         self.app_config_develop = u"PO_Protokoll_Config_1_e"
         # number of parameters
-        self.app_config_params_range = 8
+        self.app_config_params_range = 7
         self.app_errorfile = "error_play_out_protokoll.log"
         # errorlist
         self.app_errorslist = []
@@ -97,7 +96,7 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
-        self.app_params_type_list.append("p_string")
+
         # develop-mod
         self.app_develop = "no"
         # display debugmessages on console or no: "no"
@@ -200,9 +199,7 @@ def write_files_to_protokoll():
     # one hour back
     date_proto = datetime.datetime.now() + datetime.timedelta(hours=- 1)
     # Path slashes
-    #path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
     path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[1])
-    #path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
     path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_b[2])
     path_sendung_dest += date_proto.strftime("%Y_%m_%d")
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
@@ -210,7 +207,7 @@ def write_files_to_protokoll():
     lib_cm.message_write_to_console(ac, path_sendung_source)
     lib_cm.message_write_to_console(ac, path_sendung_dest)
 
-    if db.ac_config_1[8] == "WaveRecorder":
+    if db.ac_config_1[2] == "WaveRecorder":
         file_source = (db.ac_config_1[5] + "_"
             + date_proto.strftime("%Y-%m-%d") + "_"
             + date_proto.strftime("%H.00.01") + "." + db.ac_config_1[6])
@@ -218,7 +215,7 @@ def write_files_to_protokoll():
             + date_proto.strftime("%Y_%m_%d") + "_"
             + date_proto.strftime("%H.00.01") + "." + db.ac_config_1[6])
 
-    if db.ac_config_1[8] == "rotter":
+    if db.ac_config_1[2] == "rotter":
         file_source = (db.ac_config_1[5] + "-"
             + date_proto.strftime("%Y-%m-%d") + "-"
             + date_proto.strftime("%H") + "." + db.ac_config_1[6])
@@ -278,7 +275,6 @@ def erase_files_from_protokoll():
     """erase old archived file"""
     lib_cm.message_write_to_console(ac, u"erase_files_from_protokoll")
 
-    #path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
     path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_b[2])
     lib_cm.message_write_to_console(ac, path_sendung_dest)
 
@@ -398,9 +394,7 @@ def check_files_in_protokoll_completely(n_days_back):
     lib_cm.message_write_to_console(ac, log_message)
     db.write_log_to_db(ac, log_message, "t")
 
-    #path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_1[1])
     path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[1])
-    #path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_1[2])
     path_sendung_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_b[2])
     path_sendung_dest += date_proto.strftime("%Y_%m_%d")
     path_sendung_dest = lib_cm.check_slashes(ac, path_sendung_dest)
@@ -460,13 +454,13 @@ def check_files_in_protokoll_completely(n_days_back):
         #   "_", "-", item[len(db.ac_config_1[5])+1:len(db.ac_config_1[5])+11]))
 
         #file_source = item[0:04] +  file_date +  item[14:27]
-        if db.ac_config_1[8] == "WaveRecorder":
+        if db.ac_config_1[2] == "WaveRecorder":
             file_source = (db.ac_config_1[5] + "_"
                            + date_proto.strftime("%Y-%m-%d") + "_"
                            + date_proto.strftime("%H.00.01") + "."
                            + db.ac_config_1[6])
 
-        if db.ac_config_1[8] == "rotter":
+        if db.ac_config_1[2] == "rotter":
             file_source = (db.ac_config_1[5] + "-"
                            + date_proto.strftime("%Y-%m-%d") + "-"
                            + date_proto.strftime("%H") + "."
@@ -506,6 +500,11 @@ def check_files_in_protokoll_completely(n_days_back):
 def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
+
     # copy files in Protokoll-Archive
     write_ok = write_files_to_protokoll()
     if write_ok is None:
@@ -563,10 +562,12 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # ok: continue
         if param_check is not None:
-            # extended params
-            load_extended_params_ok = load_extended_params()
-            if load_extended_params_ok is not None:
+            if db.ac_config_1[1] == "on":
                 lets_rock()
+            else:
+                db.write_log_to_db_a(ac,
+                                "Protokoll-Archivierung ausgeschaltet", "e",
+                                "write_also_to_console")
 
     # finish
     if ac.action_summary is not None:
