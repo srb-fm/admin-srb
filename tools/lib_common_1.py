@@ -910,8 +910,10 @@ def set_server(ac, db):
     """server-setting"""
     if db.ac_config_servset[1] == socket.gethostname():
         ac.server_active = "A"
+        db.write_log_to_db(ac, "Active Server: A", "k")
     if db.ac_config_servset[2] == socket.gethostname():
         ac.server_active = "B"
+        db.write_log_to_db(ac, "Active Server: B", "k")
 
 
 def params_provide_server_settings(ac, db):
@@ -1120,7 +1122,7 @@ def error_write_to_file(ac, err_message):
 
 
 def message_write_to_console(ac, debug_message):
-    """Meldung auf Console ausgeben"""
+    """display message on console if debug is yes"""
     if ac.app_debug_mod == "yes":
         print debug_message
     return
