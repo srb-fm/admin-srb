@@ -61,6 +61,7 @@ auf dem Streamserver ausgefuehrt.
 """
 
 import sys
+import socket
 import datetime
 import lib_common_1 as lib_cm
 
@@ -80,7 +81,7 @@ class app_config(object):
         # show messages on console
         self.app_debug_mod = "yes"
 
-        # anzahl parameter
+        # number of params
         self.app_config_params_range = 7
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
@@ -102,6 +103,18 @@ class app_config(object):
         # ab naechste stunde
         self.time_target = (datetime.datetime.now()
                             + datetime.timedelta(hours=+1))
+
+
+def load_extended_params():
+    """load extended params"""
+    ext_params_ok = True
+    # extern tools
+    ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    lib_cm.set_server(ac, db)
+    ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
+                                                        ac.server_active)
+    return ext_params_ok
 
 
 def load_live_sendungen(up_to_target_hour):
@@ -184,13 +197,15 @@ def write_to_file_record_params(r_duration, list_live_sendungen):
 
     c_date_time_from = (str(ac.time_target.date()) + "_"
                         + str(ac.time_target.hour).zfill(2))
-    file_recording_config = db.ac_config_1[5]
+    file_recording_config = ac.app_homepath + db.ac_config_1[5]
     r_name = lib_cm.replace_uchar_sonderzeichen_with_latein(
                         list_live_sendungen[0][15]).replace(" ", "")
     r_title = lib_cm.replace_uchar_sonderzeichen_with_latein(
                         list_live_sendungen[0][11][0:8]).replace(" ", "")
 
-    r_path = db.ac_config_1[6]
+    #r_path = db.ac_config_1[6]
+    r_path = ("/home/" + db.ac_config_servset[5]
+                        + lib_cm.check_slashes(ac, db.ac_config_1[6]))
     r_path_file = (r_path + c_date_time_from + "_" + r_name + "_"
                                                     + r_title + ".wav")
     # startdelay when transmitting begins not with 0 minute and 0 sec
@@ -230,8 +245,15 @@ def write_to_file_record_params(r_duration, list_live_sendungen):
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """mainfunktion """
     print "lets_rock "
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
+    # prepare path
+    ac.app_homepath = "/home/" + socket.gethostname()
+
     # load live-show for the upcomming hour
     list_live_sendung = load_live_sendungen(0)
     if list_live_sendung is not None:
