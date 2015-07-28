@@ -66,7 +66,7 @@ class app_config(object):
         self.app_config = u"PO_Repeat_Proto_Config"
         self.app_config_develop = u"PO_Repeat_Proto_Config_3_e"
         # number of main-parameters
-        self.app_config_params_range = 2
+        self.app_config_params_range = 1
         self.app_errorfile = "error_play_out_repeat_protokoll.log"
         # errorlist
         self.app_errorslist = []
@@ -83,12 +83,11 @@ class app_config(object):
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
 
         # using develop-params
         self.app_develop = "no"
         # debug-mod
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -102,6 +101,32 @@ class app_config(object):
 def load_extended_params():
     """load extended params"""
     ext_params_ok = True
+    # protocol-params
+    db.ac_config_protocol = db.params_load_1a(
+                            ac, db, "PO_Protokoll_Config")
+    if db.ac_config_protocol is not None:
+        # Erweiterte Paramsliste anlegen
+        app_params_type_list = []
+        # Erweiterte Params-Type-List,
+        # Typ entsprechend der Params-Liste in der Config
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_int")
+        app_params_type_list.append("p_int")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_int")
+        # Erweiterte Params pruefen
+        param_check_times = lib_cm.params_check_a(
+                        ac, db, 7,
+                        app_params_type_list,
+                        db.ac_config_protocol)
+        if param_check_times is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[3], "x",
+            "write_also_to_console")
+            return None
+
     # extern tools
     ext_params_ok = lib_cm.params_provide_tools(ac, db)
     ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
@@ -380,11 +405,11 @@ def check_and_work_on_files(repeat_sendung):
     path_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[2])
     if ac.app_windows == "yes":
         file_source = (path_source + first_sg_date_time.strftime('%Y_%m_%d')
-            + "\\" + db.ac_config_1[2] + "_"
+            + "\\" + db.ac_config_protocol[5] + "_"
             + first_sg_date_time.strftime('%Y_%m_%d_%H') + ".mp3")
     else:
         file_source = (path_source + first_sg_date_time.strftime('%Y_%m_%d')
-            + "/" + db.ac_config_1[2] + "_"
+            + "/" + db.ac_config_protocol[5] + "_"
             + first_sg_date_time.strftime('%Y_%m_%d_%H') + ".mp3")
     lib_cm.message_write_to_console(ac, file_source)
 
@@ -410,7 +435,7 @@ def check_and_work_on_files(repeat_sendung):
         lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[16]),
         lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[13]))
 
-    # filename rechts von slash extrahieren
+    # extract filename
     if ac.app_windows == "no":
         filename = file_dest[string.rfind(file_dest, "/") + 1:]
     else:
@@ -515,7 +540,7 @@ if __name__ == "__main__":
                                 "Wiederholung von Protokoll ausgeschaltet", "e",
                                 "write_also_to_console")
 
-    # fertsch
+    # finish
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
     print "lets_lay_down"
     sys.exit()
