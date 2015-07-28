@@ -880,7 +880,7 @@ class dbase(object):
 
 
 def convert_to_unicode(my_string):
-    """String in unicode konvertieren"""
+    """convert string in unicode"""
     encodings = ('utf-8', 'cp1252', 'iso-8859-7')
     for enc in encodings:
         try:
@@ -926,9 +926,12 @@ def params_provide_server_settings(ac, db):
         # Types of extended-List
         app_params_type_list.append("p_string")
         app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
         # check extended Params
         param_check_config = params_check_a(
-                        ac, db, 2,
+                        ac, db, 5,
                         app_params_type_list,
                         db.ac_config_servset)
         if param_check_config is None:
