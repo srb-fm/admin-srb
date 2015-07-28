@@ -272,8 +272,6 @@ def encode_file(podcast_sendung):
         lib_cm.message_write_to_console(ac, "ok")
         return c_dest_file
     else:
-        #log_message = u"recode_file Error: " + c_source_file
-        #db.write_log_to_db(ac, log_message, "x")
         db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
             "write_also_to_console")
         return None
@@ -283,31 +281,8 @@ def check_files_online(podcast_sendungen):
     """check what's online"""
     lib_cm.message_write_to_console(ac, u"check_files_online")
 
-    try:
-        ftp = ftplib.FTP(db.ac_config_1[3])
-    except (socket.error, socket.gaierror):
-        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[3])
-        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-                                        "write_also_to_console")
-        return None
-
-    try:
-        ftp.login(db.ac_config_1[4], db.ac_config_1[5])
-    except ftplib.error_perm, resp:
-        lib_cm.message_write_to_console(ac, "ftp: no login to: "
-                                        + db.ac_config_1[3])
-        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[3])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
-
-    try:
-        ftp.cwd(db.ac_config_1[6])
-    except ftplib.error_perm, resp:
-        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
-                                        + db.ac_config_1[3])
-        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[6])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+    ftp = ftp_connect_and_dir()
+    if ftp is None:
         return None
 
     files_online = []
@@ -354,15 +329,6 @@ def check_files_online(podcast_sendungen):
 def upload_file(podcast_sendung):
     """upload files"""
     lib_cm.message_write_to_console(ac, u"upload_file")
-    try:
-        ftp = ftplib.FTP(db.ac_config_1[3])
-    except (socket.error, socket.gaierror):
-        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[3])
-        return None
-
-    ftp.login(db.ac_config_1[4], db.ac_config_1[5])
-
     # dest recoded file
     path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
     c_source_file = path_source + podcast_sendung[0]
@@ -374,11 +340,15 @@ def upload_file(podcast_sendung):
         else:
             f = open(c_source_file, "r")
 
-        ftp.cwd(db.ac_config_1[6])
+        ftp = ftp_connect_and_dir()
+        if ftp is None:
+            return None
+        #ftp.cwd(db.ac_config_1[6])
         log_message = u"upload_file: " + c_source_file
         db.write_log_to_db(ac, log_message, "k")
         c_ftp_cmd = "STOR " + podcast_sendung[0]
         ftp.storbinary(c_ftp_cmd, f)
+        ftp.quit()
         f.close()
         db.write_log_to_db_a(ac, u"Podcast hochgeladen: "
                         + podcast_sendung[0], "i", "write_also_to_console")
@@ -391,22 +361,15 @@ def upload_file(podcast_sendung):
         db.write_log_to_db(ac, log_message, "x")
         return msg
 
-    ftp.quit()
     return log_message
 
 
 def delete_files_online():
     """delete old files at Webspace"""
     lib_cm.message_write_to_console(ac, u"delete_files_online")
-    try:
-        ftp = ftplib.FTP(db.ac_config_1[3])
-    except (socket.error, socket.gaierror):
-        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[3])
+    ftp = ftp_connect_and_dir()
+    if ftp is None:
         return None
-
-    ftp.login(db.ac_config_1[4], db.ac_config_1[5])
-    ftp.cwd(db.ac_config_1[6])
 
     # read online-files
     files_online = []
@@ -417,7 +380,8 @@ def delete_files_online():
             lib_cm.message_write_to_console(ac,
             u"ftp: no files in this directory")
         else:
-            raise
+            log_message = (ac.app_errorslist[8] + " - " + str(resp))
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
     #ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
@@ -450,8 +414,8 @@ def delete_files_online():
         n_anzahl_online += 1
 
     zz = 0
-    n_anzahl_files_to_delete = n_anzahl_online - int(db.ac_config_1[12])
-    if n_anzahl_online > int(db.ac_config_1[12]):
+    n_anzahl_files_to_delete = n_anzahl_online - int(db.ac_config_1[2])
+    if n_anzahl_online > int(db.ac_config_1[2]):
         log_message = u"Alte Podcasts auf Server loeschen.."
         lib_cm.message_write_to_console(ac, log_message)
         db.write_log_to_db(ac, log_message, "c")
@@ -471,6 +435,37 @@ def delete_files_online():
 
     ftp.quit()
     return n_anzahl_files_to_delete
+
+
+def ftp_connect_and_dir():
+    """connect to ftp, login and change dir"""
+    try:
+        ftp = ftplib.FTP(db.ac_config_1[3])
+    except (socket.error, socket.gaierror):
+        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
+                                        + db.ac_config_1[3])
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+                                        "write_also_to_console")
+        return None
+
+    try:
+        ftp.login(db.ac_config_1[4], db.ac_config_1[5])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no login to: "
+                                        + db.ac_config_1[3])
+        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[3])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    try:
+        ftp.cwd(db.ac_config_1[6])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
+                                        + db.ac_config_1[3])
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[6])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+    return ftp
 
 
 def lets_rock():
