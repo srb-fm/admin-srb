@@ -72,15 +72,15 @@ class app_config(object):
         """Settings"""
         # app_config
         self.app_id = "019"
-        self.app_desc = u"Live_Recording"
+        self.app_desc = u"Live_Record_Preparation"
         # key for config in db
-        self.app_config = u"Live_Recording"
+        self.app_config = u"Live_Record_Preparation"
         self.app_config_develop = u"Live_Recording_e"
         self.app_errorfile = "error_live_recording.log"
         self.app_develop = "no"
         # show messages on console
         self.app_debug_mod = "yes"
-
+        self.app_windows = "no"
         # number of params
         self.app_config_params_range = 7
         # params-type-list, typ entsprechend der params-liste in der config
