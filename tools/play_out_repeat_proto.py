@@ -24,7 +24,6 @@ Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
 Param 1: on/off switch
-Param 2: Dateiprefix Protokoll (gleich wie in PO_Protokoll_Config)
 
 Fehlerliste:
 Error 000 Parameter-Typ oder Inhalt stimmt nich
@@ -158,7 +157,6 @@ def load_sg_repeat():
         db.write_log_to_db(ac, log_message, "t")
         return sendung_data
 
-    # log schreiben
     log_message = (u"Wiederholungssendungen aus Protokoll noetig für: "
                    + str(ac.time_target.date()))
     db.write_log_to_db(ac, log_message, "e")
