@@ -941,38 +941,11 @@ def params_provide_server_settings(ac, db):
         ext_params_ok = None
     return ext_params_ok
 
-def params_provide_server_settings(ac, db):
-    """Providing server-settings"""
-    ext_params_ok = True
-    db.ac_config_servset = db.params_load_1a(ac, db, "server_settings")
-    if db.ac_config_servset is not None:
-        # create extended Paramslist
-        app_params_type_list = []
-        # Types of extended-List
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        # check extended Params
-        param_check_config = params_check_a(
-                        ac, db, 5,
-                        app_params_type_list,
-                        db.ac_config_servset)
-        if param_check_config is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-            "write_also_to_console")
-            ext_params_ok = None
-    else:
-        ext_params_ok = None
-    return ext_params_ok
 
-
-def params_server_active(ac, db, running_server):
+def params_server_active(ac, db):
     """load params with active-settings"""
     ext_params_ok = True
-    config_string = "server_active" + running_server.strip()
-    db.ac_config_server_active = db.params_load_1a(ac, db, config_string)
+    db.ac_config_server_active = db.params_load_1a(ac, db, "server_active")
     if db.ac_config_server_active is not None:
         # create extended Paramslist
         app_params_type_list = []
@@ -986,6 +959,41 @@ def params_server_active(ac, db, running_server):
                         ac, db, 3,
                         app_params_type_list,
                         db.ac_config_server_active)
+        if param_check_config is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+    return ext_params_ok
+
+
+def params_provide_server_paths_a(ac, db, running_server):
+    """Providing server-paths a"""
+    ext_params_ok = True
+    config_string = "server_settings_paths_a_" + running_server.strip()
+    db.ac_config_servpath_a = db.params_load_1a(ac, db, config_string)
+    if db.ac_config_servpath_a is not None:
+        # create extended Paramslist
+        app_params_type_list = []
+        # Types of extended-List
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        # check extended Params
+        param_check_config = params_check_a(
+                        ac, db, 12,
+                        app_params_type_list,
+                        db.ac_config_servpath_a)
         if param_check_config is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
             "write_also_to_console")
