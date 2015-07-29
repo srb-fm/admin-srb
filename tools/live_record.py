@@ -51,7 +51,8 @@ Param 2: Stunden fuer zusammenhaengende Sendungen (z.B. 04)
 Param 3: Sekunden Aufnahmebeginn vor Sendung (30)
 Param 4: Sekunden Aufnahmeende nach Sendung (30)
 Param 5: Pfad/Dateiname Configdatei fuer jack_capture
-Param 6: Pfad fuer Recordings
+        (ohne /home/user des servers)
+Param 6: Pfad fuer Recordings (ohne /home/user des stream-servers)
 
 
 Dieses Script wird zeitgesteuert jede Stunde zur 58. Minute ausgefuehrt.
@@ -117,7 +118,7 @@ def load_extended_params():
     return ext_params_ok
 
 
-def load_live_sendungen(up_to_target_hour):
+def load_live_sendungen(up_to_target_hour, live):
     """
     search for live-shows for the upcomming hour
     """
@@ -128,14 +129,23 @@ def load_live_sendungen(up_to_target_hour):
                         + str(ac.time_target.hour).zfill(2))
     c_date_time_to = (str(ac.time_target.date()) + " "
                         + str(ac.time_target.hour + up_to_target_hour).zfill(2))
-    db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
-        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '"
-        + c_date_time_from + "' "
-        "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) <= '"
-        + c_date_time_to + "' "
-        "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F' "
-        "AND A.SG_HF_LIVE='T'"
-        )
+    if live is True:
+        db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
+            "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '"
+            + c_date_time_from + "' "
+            "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) <= '"
+            + c_date_time_to + "' "
+            "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F' "
+            "AND A.SG_HF_LIVE='T'"
+            )
+    else:
+        db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' "
+            "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) >= '"
+            + c_date_time_from + "' "
+            "AND SUBSTRING(A.SG_HF_TIME FROM 1 FOR 13) <= '"
+            + c_date_time_to + "' "
+            "AND A.SG_HF_INFOTIME='F' AND A.SG_HF_MAGAZINE='F'"
+            )
 
     sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_a(ac,
                                         db, db_tbl_condition)
@@ -150,8 +160,28 @@ def load_live_sendungen(up_to_target_hour):
     return sendung_data
 
 
+def check_live_sendungen(sg_id):
+    """
+    check if  show is live
+    """
+    lib_cm.message_write_to_console(ac, "check_live_sendungen")
+    # zfill. filling with 0 if hour under 10
+
+    db_tbl_condition = ("A.SG_HF_ID= '" + sg_id + "' AND A.SG_HF_LIVE='T'")
+
+    sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond_a(ac,
+                                        db, db_tbl_condition)
+    if sendung_data is None:
+        log_message = (u"Keine Live-Sendungen: " + sg_id)
+    else:
+        log_message = (u"Live-Sendungen: " + sg_id)
+
+    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    return sendung_data
+
+
 def check_recording(sg_id):
-    """ search for currently running recordings"""
+    """search for currently running recordings"""
     c_date_time_from = (str(ac.time_target.date()) + " "
                         + str(ac.time_target.hour - 4).zfill(2))
     db_tbl_condition = ("USER_LOG_ACTION = 'Live-Sendung: " + str(sg_id)
@@ -174,7 +204,11 @@ def log_duration(list_live_sendungen):
     title = list_live_sendungen[0][11]
     for item in list_live_sendungen:
         if item[11] == title:
+            live = check_live_sendungen(list_live_sendungen[0])
             # sum duration
+            if live is None:
+                # it's not live, so we must go away here
+                break
             duration += lib_cm.get_seconds_from_tstr(item[3])
             lib_cm.message_write_to_console(ac, duration)
             # logging
@@ -211,7 +245,7 @@ def write_to_file_record_params(r_duration, list_live_sendungen):
     # startdelay when transmitting begins not with 0 minute and 0 sec
     r_wait = list_live_sendungen[0][2].minute * 60
     r_wait += list_live_sendungen[0][2].second
-    # recordbegin a few seconds before transmitt begins
+    # begin record a few seconds before transmitt begins
     r_wait -= int(db.ac_config_1[3])
     # crotab starts record script in minute 59, so 60 sec must added
     r_wait += 60
@@ -255,14 +289,14 @@ def lets_rock():
     ac.app_homepath = "/home/" + socket.gethostname()
 
     # load live-show for the upcomming hour
-    list_live_sendung = load_live_sendungen(0)
+    list_live_sendung = load_live_sendungen(0, True)
     if list_live_sendung is not None:
         # check if show is always recorded
         recording_now = check_recording(list_live_sendung[0][0])
         if recording_now is None:
-            # load live-shows for the upcomming hour
+            # load all shows for the upcomming hours
             list_live_sendungen = load_live_sendungen(
-                                        int(db.ac_config_1[2]) - 1)
+                                        int(db.ac_config_1[2]) - 1, False)
             if list_live_sendungen is not None:
                 duration = log_duration(list_live_sendungen)
                 # add duration with pre-rec-seconds
