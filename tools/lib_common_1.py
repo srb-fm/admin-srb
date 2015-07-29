@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # bibo fuer srb-tools
 
-import sys
+#import sys
 import kinterbasdb
 import datetime
 import string
@@ -822,7 +822,7 @@ class dbase(object):
 
     def read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(
                                 self, ac, db, limit, condition, order):
-        # zeile aus tabelle sendung lesen
+        # read rows
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition: ")
 
         sql_string = ("SELECT " + limit
@@ -858,7 +858,6 @@ class dbase(object):
                 rows.append(row)
                 z += 1
 
-            # wenn kein satz vorhanden
             if z == 0:
                 #rows ="nix"
                 log_message = ("read_tbl_rows_sg_cont_ad: nichts gefunden..."
@@ -942,13 +941,11 @@ def params_provide_server_settings(ac, db):
         ext_params_ok = None
     return ext_params_ok
 
-
-def params_provide_server_paths_a(ac, db, running_server):
-    """Providing server-paths a"""
+def params_provide_server_settings(ac, db):
+    """Providing server-settings"""
     ext_params_ok = True
-    config_string = "server_settings_paths_a_" + running_server.strip()
-    db.ac_config_servpath_a = db.params_load_1a(ac, db, config_string)
-    if db.ac_config_servpath_a is not None:
+    db.ac_config_servset = db.params_load_1a(ac, db, "server_settings")
+    if db.ac_config_servset is not None:
         # create extended Paramslist
         app_params_type_list = []
         # Types of extended-List
@@ -957,18 +954,38 @@ def params_provide_server_paths_a(ac, db, running_server):
         app_params_type_list.append("p_string")
         app_params_type_list.append("p_string")
         app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
-        app_params_type_list.append("p_string")
         # check extended Params
         param_check_config = params_check_a(
-                        ac, db, 12,
+                        ac, db, 5,
                         app_params_type_list,
-                        db.ac_config_servpath_a)
+                        db.ac_config_servset)
+        if param_check_config is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+            ext_params_ok = None
+    else:
+        ext_params_ok = None
+    return ext_params_ok
+
+
+def params_server_active(ac, db, running_server):
+    """load params with active-settings"""
+    ext_params_ok = True
+    config_string = "server_active" + running_server.strip()
+    db.ac_config_server_active = db.params_load_1a(ac, db, config_string)
+    if db.ac_config_server_active is not None:
+        # create extended Paramslist
+        app_params_type_list = []
+        # Types of extended-List
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+        app_params_type_list.append("p_string")
+
+        # check extended Params
+        param_check_config = params_check_a(
+                        ac, db, 3,
+                        app_params_type_list,
+                        db.ac_config_server_active)
         if param_check_config is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
             "write_also_to_console")
