@@ -19,7 +19,7 @@ im Play-Out-Server zur Verfuegung.
 Dabei werden sie durch diverse Tools bearbeitet (z.B. mp3Gain)
 
 Dateiname Script: play_out_repeat_proto.py
-Schluesselwort fuer Einstellungen: PO_Repeat_Proto_Config_3
+Schluesselwort fuer Einstellungen: PO_Repeat_Proto_Config
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
@@ -333,11 +333,11 @@ def check_and_work_on_files(repeat_sendung):
             path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
         else:
             # Sendung
-            path_dest = lib_cm.check_slashes(ac, db.ac_config_1[3])
+            path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_a[2])
 
         file_dest = path_dest + repeat_sendung[12]
     else:
-        # kein Filename nach SRB-Muster vorhanden, Muster zusammenbauen:
+        # no Filename like SRB Pattern, make pattern
         lib_cm.message_write_to_console(ac,
             u"SRB-Muster-Filename nicht in db, zusammenbauen")
         if repeat_sendung[4].strip() == "T" or repeat_sendung[5].strip() == "T":
@@ -392,8 +392,8 @@ def check_and_work_on_files(repeat_sendung):
 
     if first_sg_date_time.minute != 0:
         db.write_log_to_db_a(ac,
-        u"Nur WH-Sendungen, die zur vollen Stunde beginnen, "
-        + "koennen verarbeitet werden: "
+        u"Nur Sendungen, die zur vollen Stunde beginnen, "
+        + "koennen fuer WH verarbeitet werden: "
         + first_sg_date_time.strftime('%Y_%m_%d_%H_%M'), "t",
         "write_also_to_console")
         return
