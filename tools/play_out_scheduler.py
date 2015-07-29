@@ -83,16 +83,17 @@ E 09 MPD-Status kann nicht ermittelt werden
 E 10 MPD-Song kann nicht ermittelt werden
 
 Parameterliste:
-P 01 Pfad zu mpd
-P 02 Pfad zu mpc
-P 03 IP mpd
-P 04 PW mpd
+P 01 none
+P 02 mpd IP
+P 03 mpd Port
+P 04 mpd PW
 P 05 Crossfade in Sekunden
 P 06 Playlist Consume 1/0
 P 07 repeat 1/0
 P 08 random 0/1
 P 09 single 1/0
 P 10 replay_gain_mode: track/album
+P 11 path to mpd.conf (without /home/user)
 
 PO_Time_Config_1:
 P 01 Beginn Tagesstunde Infotime und Magazin
