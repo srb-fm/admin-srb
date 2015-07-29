@@ -111,10 +111,19 @@ def load_extended_params():
     ext_params_ok = True
     # extern tools
     ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    if ext_params_ok is None:
+        return None
     ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    if ext_params_ok is None:
+        return None
     lib_cm.set_server(ac, db)
     ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
                                                         ac.server_active)
+    if ext_params_ok is None:
+        return None
+    ext_params_ok = lib_cm.params_server_active(ac, db)
+    if ext_params_ok is None:
+        return None
     return ext_params_ok
 
 
@@ -204,7 +213,7 @@ def log_duration(list_live_sendungen):
     title = list_live_sendungen[0][11]
     for item in list_live_sendungen:
         if item[11] == title:
-            live = check_live_sendungen(list_live_sendungen[0])
+            live = check_live_sendungen(str(list_live_sendungen[0][0]))
             # sum duration
             if live is None:
                 # it's not live, so we must go away here
@@ -237,8 +246,12 @@ def write_to_file_record_params(r_duration, list_live_sendungen):
     r_title = lib_cm.replace_uchar_sonderzeichen_with_latein(
                         list_live_sendungen[0][11][0:8]).replace(" ", "")
 
-    #r_path = db.ac_config_1[6]
-    r_path = ("/home/" + db.ac_config_servset[5]
+    # home path of active stream-server
+    if db.ac_config_server_active[3] == "A":
+        r_path = ("/home/" + db.ac_config_servset[9]
+                        + lib_cm.check_slashes(ac, db.ac_config_1[6]))
+    if db.ac_config_server_active[3] == "B":
+        r_path = ("/home/" + db.ac_config_servset[10]
                         + lib_cm.check_slashes(ac, db.ac_config_1[6]))
     r_path_file = (r_path + c_date_time_from + "_" + r_name + "_"
                                                     + r_title + ".wav")
