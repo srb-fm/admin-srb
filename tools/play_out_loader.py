@@ -296,17 +296,23 @@ def load_extended_params():
     # extern tools, server-settings
     ext_params_ok = True
     ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    if ext_params_ok is None:
+        return None
     ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    if ext_params_ok is None:
+        return None
     lib_cm.set_server(ac, db)
     ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
                                                         ac.server_active)
+    if ext_params_ok is None:
+        return None
     ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
                                                         ac.server_active)
     return ext_params_ok
 
 
 def load_broadcast(minute_start, minute_end):
-    """Sendungen aus db holen"""
+    """load shows from db"""
 
     list_sendung_filename = []
     list_sendung_duration = []
@@ -365,7 +371,7 @@ def load_broadcast(minute_start, minute_end):
 
 
 def load_infotime(sende_stunde_start):
-    """InfoTime-Sendungen aus db holen"""
+    """load InfoTime-reports from db"""
     list_sendung_filename = []
     list_sendung_duration = []
     int_sum_duration = 0
@@ -414,7 +420,7 @@ def load_infotime(sende_stunde_start):
 
 
 def rock_sendung(minute_start, minute_end):
-    """SENDUNGEN sammeln"""
+    """collect shows"""
     # load broadcast from db
     lib_cm.message_write_to_console(ac, minute_start + minute_end)
     list_result = load_broadcast(minute_start, minute_end)
