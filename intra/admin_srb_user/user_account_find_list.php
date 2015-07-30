@@ -16,28 +16,28 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
-$action_ok = "no";
-	
+$action_ok = false;
+
 // info ausgabebegrenzung auf 25 datensaetze:
 // hier anders als sonst!!
 // der abfrage_condition wird beim ersten aufruf das limit von 25 datensaetzen zugefuegt: ausgabebegrenzung 1
 // fuer den link zu den naechsten satzen wird die skip-anzahl in der url zugrechnet: (ausgabebegrenzung 2) 
 // beim naechsten aufruf wird dann das limit aus dem get in die abfrage uebernommen (ausgabebegrenzung 3)
-	
-// action pruefen
+
+// check action
 if ( isset( $_GET['action'] ) ) {
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 if ( isset( $_POST['action'] ) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
-		
-if ( $action_ok != "yes" ) { 
+
+if ( $action_ok == false ) { 
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-	
+
 // ausgabebegrenzung
 if ( isset( $_GET['find_limit_skip'] ) ) {
 	$find_limit_skip = $_GET['find_limit_skip'];
@@ -53,19 +53,20 @@ if ( 	$find_limit_skip == "no" ) {
 	$c_limit = "FIRST 25 SKIP ".$find_limit_skip;		
 	$z = $find_limit_skip;
 } 
-		
-// Bedingung pruefen	
-$find_option_ok = "no";
-if ( isset( $_GET['find_option'] ) ) {	
+
+// check condition	
+$find_option_ok = false;
+
+if ( isset($_GET['find_option']) ) {	
 	$find_option = $_GET['find_option'];
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }
-if ( isset( $_POST['find_option'] ) ) {
+if ( isset($_POST['find_option']) ) {
 	$find_option = $_POST['find_option'];	
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }		
-	
-if ( $find_option_ok = "yes" ) {
+
+if ( $find_option_ok == true and $action_ok == true ) {
 	switch( $action ) {			
 	case "list": 
 		switch( $find_option ) {
@@ -83,10 +84,10 @@ if ( $find_option_ok = "yes" ) {
 	}
 } else {
 		$message = "Keine Suchbedingung! Kann nichts tun... "; 
-} //$find_option_ok = "yes" 
-	
+} //$find_option_ok == true 
+
 $db_result = db_query_list_items_limit_1($tbl_fields, $tbl, $c_query_condition, $c_limit);
-	
+
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -107,7 +108,7 @@ $db_result = db_query_list_items_limit_1($tbl_fields, $tbl, $c_query_condition, 
 
 </head>
 <body>
- 
+
 <div class="main">
 <?php 
 require "../parts/site_elements/header_srb_2.inc";
@@ -124,7 +125,7 @@ echo "<div class='head_item_right'>";
 echo $message_find_string."\n";
 echo "</div>";
 echo "<div class='content' id='jq_slide_by_click'>";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 } 
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "A");
