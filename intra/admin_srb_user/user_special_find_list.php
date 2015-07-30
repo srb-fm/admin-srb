@@ -16,17 +16,19 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	
 $message = "";
 
-// action pruefen	
-if ( isset( $_GET['action'] ) ) {	
+// check action
+$action_ok = false;
+
+if ( isset($_GET['action']) ) {	
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
-			
-if ( $action_ok == "yes" ) {	
+
+if ( $action_ok == true ) {	
 	switch ( $action ) {
 	case "find": 
 		$message .= "Gefundene Spezial-Einstellungen anzeigen. "; 
@@ -41,7 +43,7 @@ if ( $action_ok == "yes" ) {
 	// Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 	// also hier nur pruefen in welchem feld was ist
 	if ( $action == "find" ) {
-		if ( isset( $_POST['sp_desc'] ) ) {
+		if ( isset($_POST['sp_desc']) ) {
 			if ( $_POST['sp_desc'] !="") { 
 				$c_field_message ="Bezeichnung";
 				$c_field_desc = "USER_SP_DESC";
@@ -49,7 +51,7 @@ if ( $action_ok == "yes" ) {
 			}
 		}
 
-		if ( isset( $_POST['sp_special'] ) ) {
+		if ( isset($_POST['sp_special']) ) {
 			if ( $_POST['sp_special'] !="") { 
 				$c_field_message ="Bezeichnung intern";
 				$c_field_desc = "USER_SP_SPECIAL";
@@ -57,19 +59,20 @@ if ( $action_ok == "yes" ) {
 			}
 		}
 	}// Ende if action== find
-				
-	// Bedingung pruefen	
-	$find_option_ok = "no";
-	if ( isset( $_GET['find_option'] ) ) {	
+
+	// check condition	
+	$find_option_ok = false;
+
+	if ( isset($_GET['find_option']) ) {	
 		$find_option = $_GET['find_option']; 
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}
-	if ( isset( $_POST['find_option'] ) ) {	
+	if ( isset($_POST['find_option']) ) {	
 		$find_option = $_POST['find_option'];	
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}		
 	
-	if ( $find_option_ok = "yes" ) {
+	if ( $find_option_ok == true and $action_ok == true ) {
 		switch ( $action ) {
 		case "find": 
 		
@@ -94,7 +97,7 @@ if ( $action_ok == "yes" ) {
 	} else {
 		$message = "Keine Suchbedingung! Kann nichts tun... "; 
 	}
-	
+
 	$db_result = db_query_list_items_1("USER_SP_ID, USER_SP_DESC, USER_SP_SPECIAL ", "USER_SPECIALS", $c_query_condition);
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
@@ -132,7 +135,7 @@ echo "<div class='head_item_right'>";
 echo $message; 
 echo "</div>";
 echo "<div class='content'>";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 }
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "A");
