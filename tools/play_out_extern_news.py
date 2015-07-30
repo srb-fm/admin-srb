@@ -71,6 +71,7 @@ This script is running via cron, several minutes before transmitting
 
 import sys
 import os
+import socket
 import string
 import subprocess
 import shutil
@@ -154,10 +155,16 @@ def load_extended_params():
     ext_params_ok = True
     # extern tools
     ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    if ext_params_ok is None:
+        return None
     ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    if ext_params_ok is None:
+        return None
     lib_cm.set_server(ac, db)
     ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
                                                         ac.server_active)
+    if ext_params_ok is None:
+        return None
     ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
                                                         ac.server_active)
     return ext_params_ok
@@ -339,10 +346,7 @@ def trim_bed(c_lenght):
     cmd = db.ac_config_etools[2].encode(ac.app_encode_out_strings)
     #cmd = "sox"
     lib_cm.message_write_to_console(ac, c_lenght)
-    if ac.server_active == "A":
-        source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
-    if ac.server_active == "B":
-        source_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
+    source_path = ac.app_homepath + lib_cm.check_slashes(ac, db.ac_config_1[10])
     source_file = source_path + ac.app_file_bed
     dest_file = ac.app_file_bed_trim
     # start subprocess
@@ -504,10 +508,7 @@ def concatenate_media(filename):
     news_file = ac.app_file_orig_temp + ".wav"
     news_file_temp = news_file.replace(".wav", "_temp.wav")
     #source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
-    if ac.server_active == "A":
-        source_path = lib_cm.check_slashes(ac, db.ac_config_1[10])
-    if ac.server_active == "B":
-        source_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
+    source_path = ac.app_homepath + lib_cm.check_slashes(ac, db.ac_config_1[10])
     #source_file_intro = source_path + "News_ext_Automation_Intro.wav"
     source_file_intro = source_path + ac.app_file_intro
     #source_file_closer = source_path + "News_ext_Automation_Closer.wav"
@@ -620,6 +621,8 @@ def collect_garbage(garbage_counter):
 def lets_rock():
     """mainfunction """
     print "lets_rock "
+    # prepare path
+    ac.app_homepath = "/home/" + socket.gethostname()
 
     sendung_data = load_sg()
     if sendung_data is None:
