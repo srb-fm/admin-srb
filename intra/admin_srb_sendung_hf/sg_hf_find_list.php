@@ -18,12 +18,12 @@ $message = "";
 $action_ok = false;
 $find_limit_skip = "no";
 $condition_delivery = "no";
-	
+
 // info ausgabebegrenzung auf 25 datensaetze:
 // der abfrage_condition wird das limit von 25 datensaetzen zugefuegt: ausgabebegrenzung 1
 // fuer den link zu den naechsten satzen wird die skip-anzahl in der url zugrechnet: (ausgabebegrenzung 2) und dann in die abfrage uebernommen (// ausgabebegrenzung 1)
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
-	
+
 // check action
 if ( isset($_GET['action'] ) ) {
 	$action = $_GET['action'];	
@@ -33,29 +33,29 @@ if ( isset($_POST['action'] ) ) {
 	$action = $_POST['action']; 
 	$action_ok = true;
 }
-		
+
 if ( $action_ok == false ) { 
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-			
+
 // check condition_delivery (outputlimit)
 if ( isset($_GET['condition'] ) ) {
 	$c_query_condition = rawurldecode($_GET['condition']);
 	$condition_delivery = "yes";
 }	
-	
+
 // ausgabebegrenzung			
-// limit  ueber limitweiterschaltung
+// limit  via limitweiterschaltung
 
 if ( isset($_GET['find_limit_skip'] ) ) { 
 	$find_limit_skip = $_GET['find_limit_skip'];
 }
-		
+
 if ( $condition_delivery != "yes" ) {
 	 	
 	// Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 	// also hier nur pruefen in welchem feld was ist
-	
+
 	if ( isset($_POST['sg_titel'] ) ) {
 		if ( $_POST['sg_titel'] !="" ) { 
 			$c_field_desc = "SG_HF_CONT_TITEL";
@@ -76,7 +76,7 @@ if ( $condition_delivery != "yes" ) {
 			$c_field_value = $_POST['sg_stichwort']; 
 		}
 	}
-	
+
 	if ( isset($_POST['sg_regieanweisung'] ) ) {
 		if ( $_POST['sg_regieanweisung'] !="") { 
 			$c_field_desc = "SG_HF_CONT_REGIEANWEISUNG";
@@ -144,7 +144,6 @@ if ( $condition_delivery != "yes" ) {
 			$c_field_value = $_POST['sg_cont_id']; 
 		}
 	}
-
 
 	// check condition
 	$find_option_ok = false;
@@ -365,12 +364,11 @@ if ( $condition_delivery != "yes" ) {
 		}
 	} else {
 		$message = "Keine Suchbedingung! Kann nichts tun... "; 
-	} //$find_option_ok = "yes" 
+	} //$find_option_ok == true 
 	
 } else {// $condition_delivery != "yes"
 	$message_find_string = $_GET['find_string'] ;
 } // $condition_delivery != "yes"
-	
 
 // ausgabebegrenzung 1
 if ( 	$find_limit_skip == "no" ) {			
@@ -420,7 +418,7 @@ echo "<div class='content' id='jq_slide_by_click'>";
 if ( $action_ok == false ) { 
 	return;
 } 
-	
+
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
 if ( $user_rights == "yes" ) { 		
 	if ( 	$db_result	) {	
