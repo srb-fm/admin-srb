@@ -16,7 +16,7 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 $find_limit_skip = "no";
 $condition_delivery = "no";
 	
@@ -26,25 +26,25 @@ $condition_delivery = "no";
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 	
 // action pruefen	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
-		
-if ( $action_ok != "yes" ) { 
+	
+if ( $action_ok == false ) { 
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-			
+
 // condition_delivery pruefen (	ausgabelimit)
 if ( isset( $_GET['condition'] ) ) {
 	$c_query_condition = rawurldecode($_GET['condition']);
 	$condition_delivery = "yes";
 }	
-	
+
 // ausgabebegrenzung
 // limit  ueber limitweiterschaltung
 
@@ -62,64 +62,62 @@ if ( isset( $_GET['table'] ) ) {
 if ( $condition_delivery != "yes" ) {
 	// Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 	// also hier nur pruefen in welchem feld was ist
-	
-	if ( isset( $_POST['sg_titel'] ) ) {
+
+	if ( isset($_POST['sg_titel']) ) {
 		if ( $_POST['sg_titel'] !="") { 
 			$c_field_desc = "SG_TV_CONT_TITEL";
 			$c_field_value = $_POST['sg_titel']; 
 		}
 	}
 
-	if ( isset( $_POST['sg_untertitel'] ) ) {
+	if ( isset($_POST['sg_untertitel']) ) {
 		if ( $_POST['sg_untertitel'] !="") { 
 			$c_field_desc = "SG_TV_CONT_UNTERTITEL";
 			$c_field_value = $_POST['sg_untertitel']; 
 		}
 	}
 
-	if ( isset( $_POST['sg_stichwort'] ) ) {
+	if ( isset($_POST['sg_stichwort']) ) {
 		if ( $_POST['sg_stichwort'] !="") { 
 			$c_field_desc = "SG_TV_CONT_STICHWORTE";
 			$c_field_value = $_POST['sg_stichwort']; 
 		}
 	}
-	
-	if ( isset( $_POST['sg_dateiname'] ) ) {
+
+	if ( isset($_POST['sg_dateiname']) ) {
 		if ( $_POST['sg_dateiname'] !="") { 
 			$c_field_desc = "SG_TV_CONT_FILENAME";
 			$c_field_value = $_POST['sg_dateiname']; 
 		}
 	}
-			
-	if ( isset( $_POST['sg_cass_nr'] ) ) {
+
+	if ( isset($_POST['sg_cass_nr']) ) {
 		if ( $_POST['sg_cass_nr'] !="") { 
 			$c_field_desc = "SG_TV_CONT_CARRIER_NR";
 			$c_field_value = $_POST['sg_cass_nr']; 
 		}
-	}		
+	}
 			
-			
-	if ( isset( $_POST['sg_datum'] ) ) {
+	if ( isset($_POST['sg_datum']) ) {
 		if ( $_POST['sg_datum'] !="") { 
 			$query_main_table = "SG_TV_MAIN";
 			$c_field_desc = "SG_TV_TIME";
 			$c_field_value = get_date_format_sql($_POST['sg_datum']); 
 		}
 	}
-			
-		
-	// Bedingung pruefen	
-	$find_option_ok = "no";
-	if ( isset( $_GET['find_option'] ) ) {	
+
+	// check condition
+	$find_option_ok = false;
+	if ( isset($_GET['find_option']) ) {	
 		$find_option = $_GET['find_option'];
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}
-	if ( isset( $_POST['find_option'] ) ) { 
+	if ( isset($_POST['find_option']) ) { 
 		$find_option = $_POST['find_option']; 
-		$find_option_ok = "yes";
+		$find_option_ok = true;
 	}		
-	
-	if ( $find_option_ok = "yes" ) {
+
+	if ( $find_option_ok == true and $action_ok == true ) {
 		switch ( $action ) {
 		case "find": 
 			if ( $find_option == "begin" ) {
@@ -164,14 +162,14 @@ if ( $condition_delivery != "yes" ) {
 		}
 	} else {
 		$message .= "Keine Suchbedingung! Kann nichts tun... "; 
-	} //$find_option_ok = "yes" 
+	} //$find_option_ok == true 
 	
 } else {// $condition_delivery != "yes"
 	$message_find_string = $_GET['find_string'] ;
 } // $condition_delivery != "yes"
 	
 
-if ( $action_ok == "yes" ) {
+if ( $action_ok == true ) {
 	if ( $query_main_table == "SG_TV_CONTENT" ) {
 		// ausgabebegrenzung 1
 		if ( $find_limit_skip == "no" ) {			
@@ -226,7 +224,7 @@ echo $message_find_string."\n";
 echo "</div>";
 		
 echo "<div class='content' id='jq_slide_by_click'>";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 } 
 			
