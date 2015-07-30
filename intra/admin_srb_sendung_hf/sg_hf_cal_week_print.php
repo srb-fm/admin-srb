@@ -17,29 +17,31 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
 
-// action pruefen	
-$action_ok = "no";
-if ( isset( $_GET['action'] ) ) {
+// check action	
+$action_ok = false;
+
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) {
+if ( isset($_POST['action']) ) {
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
-		
-// Bedingung pruefen	
-$find_option_ok = "no";
-if ( isset( $_GET['find_option'] ) ) {
+
+// check condition	
+$find_option_ok = false;
+
+if ( isset($_GET['find_option']) ) {
 	$find_option = $_GET['find_option'];
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }
-if ( isset( $_POST['find_option'] ) ) {
+if ( isset($_POST['find_option']) ) {
 	$find_option = $_POST['find_option'];
-	$find_option_ok = "yes";
-}		
-	
-if ( $find_option_ok = "yes" ) {
+	$find_option_ok = true;
+}
+
+if ( $find_option_ok == true and $action_ok == true ) {
 	switch ( $action ) {
 			
 	// mit dem aktuellen Wochentag Montag und Sonntag errechnen:
@@ -107,7 +109,6 @@ if ( $find_option_ok = "yes" ) {
 
 		//endswitch;
 	}
-
 					
 	switch ( $find_option ) {
 	case "print_week_infotime":
@@ -151,9 +152,9 @@ echo html_header_srb_print_b();
 echo "</div>";		
 echo "<div class='cal_content'>\n";
 					
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
-} 
+}
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
 if ( $user_rights == "yes" ) { 		
 	$z = 0;
