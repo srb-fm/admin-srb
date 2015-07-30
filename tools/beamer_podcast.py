@@ -127,7 +127,11 @@ def load_extended_params():
     ext_params_ok = True
     # extern tools
     ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    if ext_params_ok is None:
+        return None
     ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    if ext_params_ok is None:
+        return None
     lib_cm.set_server(ac, db)
     ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
                                                         ac.server_active)
@@ -203,7 +207,7 @@ def encode_file(podcast_sendung):
         c_source_file = (path_it_mg_source.encode(ac.app_encode_out_strings)
                     + podcast_sendung[0].encode(ac.app_encode_out_strings))
 
-    # magazin
+    # magazine
     if podcast_sendung[5] == "T":
         #c_source_file = path_it_mg_source + podcast_sendung[0]
         c_source_file = (path_it_mg_source.encode(ac.app_encode_out_strings)
@@ -343,7 +347,7 @@ def upload_file(podcast_sendung):
         ftp = ftp_connect_and_dir()
         if ftp is None:
             return None
-        #ftp.cwd(db.ac_config_1[6])
+
         log_message = u"upload_file: " + c_source_file
         db.write_log_to_db(ac, log_message, "k")
         c_ftp_cmd = "STOR " + podcast_sendung[0]
