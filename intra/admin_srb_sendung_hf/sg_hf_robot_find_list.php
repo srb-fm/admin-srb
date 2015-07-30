@@ -55,17 +55,17 @@ if ( 	$find_limit_skip == "no" ) {
 } 
 		
 // check condition	
-$find_option_ok = "no";
+$find_option_ok = false;
 if ( isset($_GET['find_option'] ) ) {
 	$find_option = $_GET['find_option'];	
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }
 if ( isset($_POST['find_option'] ) ) {
 	$find_option = $_POST['find_option'];	
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }		
 	
-if ( $find_option_ok = "yes" ) {
+if ( $find_option_ok == true and $action_ok == true ) {
 	switch ( $action ) {			
 	case "list": 
 		switch ( $find_option ) {
