@@ -15,24 +15,24 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 	
-// action pruefen	
-if ( isset( $_GET['action'] ) ) {	
+// check action	
+if ( isset($_GET['action']) ) {	
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( isset( $_GET['sg_titel'] ) ) { 
+if ( isset($_GET['sg_titel']) ) { 
 	$sg_titel = $_GET['sg_titel'];
 } else { 
 	$sg_titel = "Kein Titel uebernommen";
 }
 	
-if ( $action_ok == "yes" ) {	
-	if ( isset( $_GET['sg_id'] ) ) { 
+if ( $action_ok == true ) {	
+	if ( isset($_GET['sg_id']) ) { 
 		$sg_id = $_GET['sg_id'];
 	}
-	if ( isset( $_GET['sg_mk_id'] ) ) { 
+	if ( isset($_GET['sg_mk_id']) ) { 
 		$sg_mk_id = $_GET['sg_mk_id'];
 	}
 	if ( $sg_id !="" )	{ 
@@ -170,7 +170,7 @@ echo "<div class='head_item_right'>";
 echo $message.": ".$sg_titel; 
 echo "</div>";
 echo "<div class='content'>";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 }
 
@@ -178,7 +178,7 @@ if ( ! isset($tbl_row->SG_MK_SG_CONT_ID)) {
 	echo "Fehler bei Abfrage!"; 
 	return;
 }
-		
+
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
 if ( $user_rights == "yes" ) { 
 	echo "<form name=\"form1\" action=\"\" method=\"POST\" >\n";
