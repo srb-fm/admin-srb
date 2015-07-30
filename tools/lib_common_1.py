@@ -909,10 +909,10 @@ def set_server(ac, db):
     """server-setting"""
     if db.ac_config_servset[1] == socket.gethostname():
         ac.server_active = "A"
-        db.write_log_to_db(ac, "Active Server: A", "k")
+        #db.write_log_to_db(ac, "Active Server: A", "k")
     if db.ac_config_servset[2] == socket.gethostname():
         ac.server_active = "B"
-        db.write_log_to_db(ac, "Active Server: B", "k")
+        #db.write_log_to_db(ac, "Active Server: B", "k")
 
 
 def params_provide_server_settings(ac, db):
