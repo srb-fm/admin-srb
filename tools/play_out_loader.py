@@ -495,13 +495,24 @@ def prepare_pl_broadcast(minute_start, list_result):
 
     if minute_start == "00":
         nZ_po_switch = 0
-        path_filename = db.ac_config_playlist[6] + "_00.m3u"
+        if ac.server_active == "A":
+            path_filename = db.ac_config_playlist[5] + "_00.m3u"
+        if ac.server_active == "B":
+            path_filename = db.ac_config_playlist[6] + "_00.m3u"
     if minute_start > "00" and minute_start < "30":
         nZ_po_switch = 1
-        path_filename = db.ac_config_playlist[6] + "_" + minute_start + ".m3u"
+        if ac.server_active == "A":
+            path_filename = (db.ac_config_playlist[5] + "_"
+                                + minute_start + ".m3u")
+        if ac.server_active == "B":
+            path_filename = (db.ac_config_playlist[6] + "_"
+                                + minute_start + ".m3u")
     if minute_start == "30":
         nZ_po_switch = 2
-        path_filename = db.ac_config_playlist[6] + "_30.m3u"
+        if ac.server_active == "A":
+            path_filename = db.ac_config_playlist[5] + "_30.m3u"
+        if ac.server_active == "B":
+            path_filename = db.ac_config_playlist[6] + "_30.m3u"
 
     # delete mAirlist-Playlist
     if db.ac_config_1[8].strip() == "on":
@@ -967,7 +978,10 @@ def prepare_pl_infotime():
         db.write_log_to_db_a(ac, "Fader ist deaktiviert",
                                      "e", "write_also_to_console")
     lib_cm.message_write_to_console(ac, ac.po_it_pl)
-    path_filename = db.ac_config_playlist[6] + "_00.m3u"
+    if ac.server_active == "A":
+        path_filename = db.ac_config_playlist[5] + "_00.m3u"
+    if ac.server_active == "B":
+        path_filename = db.ac_config_playlist[6] + "_00.m3u"
     write_playlist_it(path_filename)
 
 
@@ -1016,7 +1030,11 @@ def rock_magazin():
     if db.ac_config_1[8].strip() == "on":
         mag_z = [1, 2, 3]
         for i in mag_z:
-            path_pl_file = (db.ac_config_playlist[6]
+            if ac.server_active == "A":
+                path_pl_file = (db.ac_config_playlist[5]
+                                + "_magazine_0" + str(i) + ".m3u")
+            if ac.server_active == "B":
+                path_pl_file = (db.ac_config_playlist[6]
                                 + "_magazine_0" + str(i) + ".m3u")
             lib_cm.message_write_to_console(ac, path_pl_file)
             delete_pl_ok = lib_cm.erase_file_a(ac, db, path_pl_file,
@@ -1062,7 +1080,11 @@ def rock_magazin():
         for item in list_result[0]:
             #sendung = item
             if ac.po_mg[zz - 1] is True:
-                path_file_pl = (db.ac_config_playlist[6]
+                if ac.server_active == "A":
+                    path_file_pl = (db.ac_config_playlist[5]
+                                    + "_magazine_0" + str(zz) + ".m3u")
+                if ac.server_active == "B":
+                    path_file_pl = (db.ac_config_playlist[6]
                                     + "_magazine_0" + str(zz) + ".m3u")
                 write_playlist_mg(path_file_pl, item, zz)
             else:
@@ -1085,7 +1107,11 @@ def rock_magazin():
             for index, item in enumerate(list_sendung):
                 if index < 3:
                     if ac.po_mg[zz - 1] is True:
-                        path_file_pl = (db.ac_config_playlist[6]
+                        if ac.server_active == "A":
+                            path_file_pl = (db.ac_config_playlist[5]
+                                    + "_magazine_0" + str(zz) + ".m3u")
+                        if ac.server_active == "B":
+                            path_file_pl = (db.ac_config_playlist[6]
                                     + "_magazine_0" + str(zz) + ".m3u")
                         write_playlist_mg(path_file_pl, item, zz)
                     else:
@@ -1101,7 +1127,11 @@ def rock_magazin():
             for index, item in enumerate(list_sendung):
                 if index > 2:
                     if ac.po_mg[zz - 1] is True:
-                        path_file_pl = (db.ac_config_playlist[6]
+                        if ac.server_active == "A":
+                            path_file_pl = (db.ac_config_playlist[5]
+                                    + "_magazine_0" + str(zz) + ".m3u")
+                        if ac.server_active == "B":
+                            path_file_pl = (db.ac_config_playlist[6]
                                     + "_magazine_0" + str(zz) + ".m3u")
                         write_playlist_mg(path_file_pl, item, zz)
                     else:
@@ -1111,7 +1141,7 @@ def rock_magazin():
                                              "write_also_to_console")
                     zz += 1
 
-    # Bis 9 Stueck
+    # up to 9 items
     if nZ_Magazins > 6:
         zz = 1
         list_sendung = list_result[0]
@@ -1137,7 +1167,11 @@ def rock_magazin():
                                              "write_also_to_console")
         for index, item in enumerate(list_sendung_mag):
             if ac.po_mg[zz - 1] is True:
-                path_file_pl = (db.ac_config_playlist[5]
+                if ac.server_active == "A":
+                    path_file_pl = (db.ac_config_playlist[5]
+                                    + "_magazine_0" + str(zz) + ".m3u")
+                if ac.server_active == "B":
+                    path_file_pl = (db.ac_config_playlist[6]
                                     + "_magazine_0" + str(zz) + ".m3u")
                 write_playlist_mg(path_file_pl, item, zz)
             else:
