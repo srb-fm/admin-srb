@@ -106,9 +106,13 @@ def load_extended_params():
     """load extended params"""
     ext_params_ok = True
     ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    if ext_params_ok is None:
+        return None
     lib_cm.set_server(ac, db)
     ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
                                                         ac.server_active)
+    if ext_params_ok is None:
+        return None
     return ext_params_ok
 
 
@@ -195,9 +199,8 @@ def write_files_to_archive_prepare(sendung_art):
                 if row[0][-1] == "0":
                     z_non_copys += 1
 
-            # sind bei den Durchlaeufen mehr als x mal
-            # keine Dateien kopiert worden,
-            # erstmal aussetzen indem ein Dummy-Satz eingetragen
+            # skip if more then x was no file copied
+            # register dummy
             if z_non_copys >= 3:
                 log_message = ("Archivierung der Dateien von: "
                                + sendung_art + " - "
@@ -216,7 +219,7 @@ def write_files_to_archive_prepare(sendung_art):
 
 def write_files_to_archive(files_sendung_source,
         path_sendung_source, path_sendung_dest, dir_year, sendung_art):
-    """Dateien in Archiv kopieren, Durchfuerung"""
+    """write files to archive"""
     lib_cm.message_write_to_console(ac, u"write_files_to_archive " + dir_year)
 
     # Times
@@ -272,11 +275,8 @@ def write_files_to_archive(files_sendung_source,
             lib_cm.message_write_to_console(ac, "nix")
             continue
 
-        #db.write_log_to_db(ac, "we are here", "t")
-
         for row in sendung_data:
             y += 1
-            #print row
             #db.write_log_to_db(ac, "we are here 1", "t")
             sendung_year = row[2].year
             lib_cm.message_write_to_console(ac, sendung_year)
