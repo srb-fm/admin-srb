@@ -276,16 +276,17 @@ def load_extended_params():
 
     # Audioswitch
     db.ac_config_audioswitch = db.params_load_1a(
-                            ac, db, "PO_Switch_Broadcast_Config_3")
+                            ac, db, "PO_Switch_Broadcast_Config")
     if db.ac_config_audioswitch is not None:
         # Erweiterte Paramsliste anlegen
         app_params_type_list_audioswitch = []
         # Erweiterte Params-Type-List,
         # Typ entsprechend der Params-Liste in der Config
         app_params_type_list_audioswitch.append("p_string")
+        app_params_type_list_audioswitch.append("p_string")
         # Erweiterte Params pruefen
         param_check_audioswitch = lib_cm.params_check_a(
-                        ac, db, 1,
+                        ac, db, 2,
                         app_params_type_list_audioswitch,
                         db.ac_config_audioswitch)
         if param_check_audioswitch is None:
@@ -697,7 +698,10 @@ def write_to_file_switch_params():
                          + ac.po_switch[1] + ac.po_switch[2])
     db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
-    file_audio_switch = db.ac_config_audioswitch[1]
+    if ac.server_active == "A":
+        file_audio_switch = db.ac_config_audioswitch[1]
+    if ac.server_active == "B":
+        file_audio_switch = db.ac_config_audioswitch[2]
     data_audio_switch = read_from_file_lines_in_list(file_audio_switch)
     if data_audio_switch is None:
         log_message = (u"Datei für Sendequellenumschalter "
