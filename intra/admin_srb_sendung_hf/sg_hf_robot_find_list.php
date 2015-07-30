@@ -17,7 +17,7 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
 $action_ok = false;
-	
+
 // info ausgabebegrenzung auf 25 datensaetze:
 // hier anders als sonst!!
 // der abfrage_condition wird beim ersten aufruf das limit von 25 datensaetzen zugefuegt: ausgabebegrenzung 1
@@ -33,11 +33,11 @@ if ( isset($_POST['action'] ) ) {
 	$action = $_POST['action']; 
 	$action_ok = true;
 }
-		
+
 if ( $action_ok != true ) { 
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-	
+
 // ausgabebegrenzung
 if ( isset( $_GET['find_limit_skip'] ) ) {
 	$find_limit_skip = $_GET['find_limit_skip'];
@@ -53,7 +53,7 @@ if ( 	$find_limit_skip == "no" ) {
 	$c_limit = "FIRST 25 SKIP ".$find_limit_skip;		
 	$z = $find_limit_skip;
 } 
-		
+
 // check condition	
 $find_option_ok = false;
 if ( isset($_GET['find_option'] ) ) {
@@ -64,7 +64,7 @@ if ( isset($_POST['find_option'] ) ) {
 	$find_option = $_POST['find_option'];	
 	$find_option_ok = true;
 }		
-	
+
 if ( $find_option_ok == true and $action_ok == true ) {
 	switch ( $action ) {			
 	case "list": 
@@ -83,9 +83,8 @@ if ( $find_option_ok == true and $action_ok == true ) {
 	}
 } else {
 	$message = "Keine Suchbedingung! Kann nichts tun... "; 
-} //$find_option_ok = "yes" 
-	
-	
+} //$find_option_ok == true 
+
 $db_result = db_query_list_items_limit_1($tbl_fields, $tbl, $c_query_condition, $c_limit);
 ?>
 
