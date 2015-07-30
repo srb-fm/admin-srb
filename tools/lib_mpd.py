@@ -12,8 +12,8 @@ import mpd_config
 def mpc_client(db, ac, command, value):
     """execute mpd-commands via mpc-client"""
     #mpd_server = mpd_config.mpd_pw + "@" + mpd_config.mpd_host
-    mpd_server = db.ac_config_1[4] + "@" + db.ac_config_1[2]
-    mpd_port = db.ac_config_1[3]
+    mpd_server = db.ac_config_1[4] + "@" + db.ac_config_1[1]
+    mpd_port = db.ac_config_1[2]
     cmd_mpd_client = db.ac_config_etools[8].encode(ac.app_encode_out_strings)
     try:
         if value is None:
@@ -61,9 +61,9 @@ class RunError(Exception):
 class myMPD(object):
     def __init__(self):
         self._host = mpd_config.mpd_host
-        #self._host = db.ac_config_1[2]
+        #self._host = db.ac_config_1[1]
         self._port = mpd_config.mpd_port
-        #self._port = db.ac_config_1[3]
+        #self._port = db.ac_config_1[2]
         self._password = mpd_config.mpd_pw
         #self._password = db.ac_config_1[4]
         self._client = MPDClient()
@@ -71,7 +71,7 @@ class myMPD(object):
     def connect(self, db, ac):
         try:
             self._client.connect(self._host, self._port)
-            #self._client.connect(db.ac_config_1[2], db.ac_config_1[3])
+            #self._client.connect(db.ac_config_1[1], db.ac_config_1[2])
             return True
         # Catch socket errors
         except IOError as err:
