@@ -29,26 +29,26 @@ if ( isset( $_POST['action'] ) ) {
 	$action = $_POST['action'];
 	$action_ok = true;
 }
-			
+
 // check condition	
-$find_option_ok = "no";
-if ( isset( $_GET['find_option'] ) ) {	
+$find_option_ok = false;
+if ( isset($_GET['find_option']) ) {	
 	$find_option = $_GET['find_option'];
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }
-if ( isset( $_POST['find_option'] ) ) {
+if ( isset($_POST['find_option']) ) {
 	$find_option = $_POST['find_option'];
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }		
-	
-if ( $find_option_ok = "yes" ) {
+
+if ( $find_option_ok == true and $action_ok == true ) {
 	switch ( $action ) {
 	case "list": 
 		$query_main_table = "SG_HF_MAIN";
 		$j = date('Y');
 		$m = date('m');
 		$d = date('d');
-			
+
 		switch ( $find_option ) {
 		case "info_time_yesterday_a":
 			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
@@ -58,7 +58,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Info-Time gestern - ". get_german_day_name($d_word). ", ". get_date_format_deutsch($d_gestern)." ES und WH - Serie A";
 			$option = "infotime";
 			break;
-				
+
 		case "info_time_yesterday_b":
 			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_gestern = date('Y-m-d', mktime(0, 0, 0, $m, $d-1, $j));
@@ -67,7 +67,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Info-Time gestern - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_gestern)." ES und WH - Serie B";
 			$option = "infotime";
 			break;
-					
+
 		case "info_time_today_a":
 			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_word = date('l');
@@ -92,7 +92,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Info-Time morgen - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_tomorrow)." - ES und WH - Serie A";
 			$option = "infotime";
 			break;					
-				
+
 		case "info_time_tomorrow_b":
 			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+1, $j));
@@ -101,7 +101,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Info-Time morgen - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_tomorrow)." - ES und WH - Serie B";
 			$option = "infotime";
 			break;					
-								
+			
 		case "info_time_after_tomorrow_a":
 			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+2, $j));
@@ -110,7 +110,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Info-Time übermorgen - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_a_tomorrow)." - ES und WH - Serie A";
 			$option = "infotime";
 			break;
-				
+
 		case "info_time_after_tomorrow_b":
 			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+2, $j));
@@ -128,7 +128,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Info-Time über-übermorgen - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_a_tomorrow)." - ES und WH - Serie A";
 			$option = "infotime";
 			break;
-					
+
 		case "info_time_four_days_a":
 			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_1", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+4, $j));
@@ -137,7 +137,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Info-Time 4 Tage vor - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_a_tomorrow)." - ES und WH - Serie A";
 			$option = "infotime";
 			break;
-				
+
 		case "info_time_after_after_tomorrow_b":
 			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+3, $j));
@@ -146,7 +146,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Info-Time über-übermorgen - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_a_tomorrow)." - ES und WH - Serie B";
 			$option = "infotime";
 			break;
-					
+
 		case "info_time_four_days_b":
 			$it_start_hour = substr(db_query_load_fieldvalue_by_condition("USER_SPECIALS", "USER_SP_PARAM_7", "USER_SP_SPECIAL = 'PO_Time_Config_1'"), 0, 2);
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+4, $j));
@@ -155,7 +155,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Info-Time 4 Tage vor - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_a_tomorrow)." - ES und WH - Serie B";
 			$option = "infotime";
 			break;
-					
+
 		case "magazine_yesterday":
 			$d_gestern = date('Y-m-d', mktime(0, 0, 0, $m, $d-1, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d-1, $j));
@@ -163,7 +163,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Magazin gestern - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_gestern)." - ES und WH ";
 			$option = "magazin";
 			break;
-					
+
 		case "magazine_today":
 			$d_word = date('l');
 			$c_query_condition = "SG_HF_ON_AIR = 'T' AND SG_HF_MAGAZINE = 'T' AND SG_HF_INFOTIME = 'F' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) = '".date("Y-m-d")."' ORDER BY SG_HF_TIME";
@@ -178,7 +178,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Magazin morgen - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_tomorrow)." - ES und WH ";
 			$option = "magazin";
 			break;
-				
+
 		case "magazine_after_tomorrow":
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+2, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+2, $j));
@@ -194,7 +194,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Magazin über-übermorgen - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_a_tomorrow)." - ES und WH ";
 			$option = "magazin";
 			break;
-					
+
 		case "magazine_four_days":
 			$d_a_tomorrow = date('Y-m-d', mktime(0, 0, 0, $m, $d+4, $j));
 			$d_word = date('l', mktime(0, 0, 0, $m, $d+4, $j));
@@ -202,7 +202,7 @@ if ( $find_option_ok = "yes" ) {
 			$message_find_string = "Magazin 4 Tage vor - ".get_german_day_name($d_word). ", ".get_date_format_deutsch($d_a_tomorrow)." - ES und WH ";
 			$option = "magazin";
 			break;
-		
+
 		case "magazine_date":
 			$displ_dateform = "yes";
 			$d_date_dest = date('Y-m-d');
