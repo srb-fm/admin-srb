@@ -18,14 +18,14 @@ require "../../cgi-bin/admin_srb_libs/lib_statistik.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
 
-// action pruefen	
-$action_ok = "no";
-if ( isset( $_GET['action'] ) ) {
+// check action
+$action_ok = false;
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 		
-if ( $action_ok == "yes" ) {	
+if ( $action_ok == true ) {	
 	switch ( $action ):
 	case "display": 
 		$message .= "Statistik Sendung"; 
@@ -59,7 +59,7 @@ echo "<div class='head_item_right'>";
 echo $message."\n";
 echo "</div>";
 	
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 } 
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");

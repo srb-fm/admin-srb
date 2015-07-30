@@ -16,7 +16,7 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 	
 // info ausgabebegrenzung auf 25 datensaetze:
 // hier anders als sonst!!
@@ -24,17 +24,17 @@ $action_ok = "no";
 // fuer den link zu den nächsten satzen wird die skip-anzahl in der url zugrechnet: (ausgabebegrenzung 2) 
 // beim naechsten aufruf wird dann das limit aus dem get in die abfrage uebernommen (ausgabebegrenzung 3)
 	
-// action pruefen	
+// check action	
 if ( isset($_GET['action'] ) ) {	
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
 if ( isset($_POST['action'] ) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
 		
-if ( $action_ok != "yes" ) { 
+if ( $action_ok != true ) { 
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
 	
@@ -54,7 +54,7 @@ if ( 	$find_limit_skip == "no" ) {
 	$z = $find_limit_skip;
 } 
 		
-// Bedingung pruefen	
+// check condition	
 $find_option_ok = "no";
 if ( isset($_GET['find_option'] ) ) {
 	$find_option = $_GET['find_option'];	
@@ -128,7 +128,7 @@ echo "<div class='head_item_right'>";
 echo $message_find_string."\n";
 echo "</div>";
 echo "<div class='content' id='jq_slide_by_click'>";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 } 
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
