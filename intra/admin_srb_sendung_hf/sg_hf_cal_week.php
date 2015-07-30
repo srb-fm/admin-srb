@@ -17,32 +17,34 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "Sendungen ";
 
-// action pruefen	
-$action_ok = "no";
-if ( isset( $_GET['action'] ) ) {	
+// check action	
+$action_ok = false;
+
+if ( isset($_GET['action']) ) {	
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) {
+if ( isset($_POST['action']) ) {
 	$action = $_POST['action'];
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( $action_ok != "yes" ) { 
+if ( $action_ok == false ) { 
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
 			
-// Bedingung pruefen	
-$find_option_ok = "no";
-if ( isset( $_GET['find_option'] ) ) {	
+// check condition	
+$find_option_ok = false;
+
+if ( isset($_GET['find_option']) ) {	
 	$find_option = $_GET['find_option']; 
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }
-if ( isset( $_POST['find_option'] ) ) {	
+if ( isset($_POST['find_option']) ) {	
 	$find_option = $_POST['find_option']; 
-	$find_option_ok = "yes";
+	$find_option_ok = true;
 }
 	
-if ( $find_option_ok = "yes" ) {
+if ( $find_option_ok == true and $action_ok == true ) {
 	switch ( $find_option ) {
 		
 	case "broadcast_week_date_all":
@@ -95,7 +97,7 @@ if ( $find_option_ok = "yes" ) {
 		$message = "Keine Suchbedingung! Kann nichts tun... "; 
 }
 
-if ( $action_ok !="no" ) { 
+if ( $action_ok == true ) { 
 	$wochentage = array("Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag");	
 	$c_query_condition_it = "A.SG_HF_INFOTIME = 'T' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."' ORDER BY A.SG_HF_TIME";
 	$c_query_condition_mg = "A.SG_HF_MAGAZINE = 'T' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' AND SUBSTRING( SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."' ORDER BY A.SG_HF_TIME";
@@ -136,7 +138,7 @@ if ( $user_rights == "yes" ) {
 	echo "</div>\n";
 	echo "<div class='cal_content'>";
 
-	if ( $action_ok == "no" ) { 
+	if ( $action_ok == false ) { 
 		return;
 	} 
 
