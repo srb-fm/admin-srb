@@ -96,6 +96,7 @@ from Tkinter import Frame, Label, NW, END
 from ScrolledText import ScrolledText
 import os
 import sys
+import socket
 import string
 import re
 import datetime
@@ -107,7 +108,7 @@ import lib_mpd as lib_mp
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "003"
         self.app_desc = u"Play Out Logging"
@@ -236,13 +237,11 @@ def check_source(self, c_time, time_now):
 
 
 def check_mairlist_log(self, source_id, time_now, log_data):
-    """load data from marilistlogfile"""
+    """load data from marilist logfile"""
 
-    # Dateinamen der mAirlist-Logdatei zusammenbauen
-    if source_id == "03":
-        file_mairlist_log = db.ac_config_1[1] + "_" + source_id + ".log"
-    else:
-        file_mairlist_log = db.ac_config_1[8] + "_" + source_id + ".log"
+    # concatenate filename mAirlist-Logfile
+    file_mairlist_log = (ac.app_homepath + db.ac_config_1[8]
+                                            + "_" + source_id + ".log")
     lib_cm.message_write_to_console(ac, file_mairlist_log)
 
     # Daten aus mAirlist_Logdatei holen
@@ -693,7 +692,7 @@ class my_form(Frame):
         return
 
     def lets_rock(self):
-        """Hauptfunktion"""
+        """man funktion"""
         lib_cm.message_write_to_console(ac, u"lets rock")
         ac.app_counter += 1
         log_data = None
@@ -805,6 +804,8 @@ if __name__ == "__main__":
             # Haupt-Params ok: weiter
             load_extended_params_ok = load_extended_params()
             if load_extended_params_ok is not None:
+                # prepare path
+                ac.app_homepath = "/home/" + socket.gethostname()
                 mything = my_form()
                 mything.master.title("Play-Out-Logging und Play-Out-Load-Web")
                 mything.mainloop()
