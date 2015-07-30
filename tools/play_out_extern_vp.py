@@ -122,10 +122,16 @@ def load_extended_params():
     ext_params_ok = True
     # extern tools
     ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    if ext_params_ok is None:
+        return None
     ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    if ext_params_ok is None:
+        return None
     lib_cm.set_server(ac, db)
     ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
                                                         ac.server_active)
+    if ext_params_ok is None:
+        return None
     ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
                                                         ac.server_active)
     return ext_params_ok
@@ -187,7 +193,7 @@ def audio_copy(path_file_source, path_file_dest):
 
 
 def audio_validate(file_dest):
-    """mp3-File validieren"""
+    """validate mp3-File"""
     lib_cm.message_write_to_console(ac, u"mp3-File validieren")
     # all cmds must be in the right charset
     c_validator = db.ac_config_etools[7].encode(ac.app_encode_out_strings)
@@ -229,7 +235,7 @@ def audio_validate(file_dest):
 
 
 def audio_mp3gain(path_file_dest):
-    """mp3-File Gainanpassung"""
+    """mp3-Gain"""
     lib_cm.message_write_to_console(ac, u"mp3-File Gainanpassung")
     # damit die uebergabe der befehle richtig klappt
     # muessen alle cmds im richtigen zeichensatz encoded sein
@@ -469,9 +475,13 @@ def check_and_work_on_files(roboting_sgs):
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """main funktion """
     print "lets_rock "
-    # Sendungen suchen, die bearbeitet werden sollen
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
+    # serach shows for processing
     roboting_sgs = load_roboting_sgs()
     if roboting_sgs is None:
         return
@@ -493,10 +503,7 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # alles ok: weiter
         if param_check is not None:
-            # extended params
-            load_extended_params_ok = load_extended_params()
-            if load_extended_params_ok is not None:
-                lets_rock()
+            lets_rock()
 
     # finish
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
