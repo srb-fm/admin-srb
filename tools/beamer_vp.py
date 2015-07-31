@@ -108,9 +108,13 @@ def load_extended_params():
     """load extended params"""
     ext_params_ok = True
     ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    if ext_params_ok is None:
+        return None
     lib_cm.set_server(ac, db)
     ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
                                                         ac.server_active)
+    if ext_params_ok is None:
+        return None
     ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
                                                         ac.server_active)
     return ext_params_ok
