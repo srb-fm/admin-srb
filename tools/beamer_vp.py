@@ -56,15 +56,15 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "021"
         self.app_desc = u"beamer_vp"
-        # schluessel fuer config in db
+        # key of config in db
         self.app_config = u"Beamer_VP"
         self.app_config_develop = u"Beamer_VP_e"
-        # anzahl parameter
-        self.app_config_params_range = 6
+        # number parameters
+        self.app_config_params_range = 11
         self.app_errorfile = "error_beamer_vp.log"
         # errorlist
         self.app_errorslist = []
@@ -81,7 +81,7 @@ class app_config(object):
         self.app_errorslist.append(self.app_desc +
             "Fehler beim Loeschen einer veralteten Datei ")
 
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -89,10 +89,15 @@ class app_config(object):
         self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
 
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # develop-mod
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # debug-mod
         self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
@@ -121,7 +126,7 @@ def load_extended_params():
 
 
 def load_manuskript(sendung):
-    """Manuskript suchen"""
+    """search Manuskript"""
     lib_cm.message_write_to_console(ac, u"Manuskript suchen")
     manuskript_data = db.read_tbl_row_with_cond(ac, db,
         "SG_MANUSKRIPT",
@@ -137,7 +142,7 @@ def load_manuskript(sendung):
 
 
 def load_sg(sg_option):
-    """Sendung suchen"""
+    """serch show"""
 
     if sg_option == "IT":
         db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
@@ -168,7 +173,7 @@ def load_sg(sg_option):
 
 
 def audio_copy(path_file_source, path_file_dest):
-    """audiofile kopieren"""
+    """copy audiofile and infofile"""
     success_copy = None
     try:
         shutil.copy(path_file_source, path_file_dest)
@@ -188,7 +193,7 @@ def audio_copy(path_file_source, path_file_dest):
 
 
 def write_to_info_file(path_file_dest, sendung):
-    """info-file schreiben"""
+    """write info-file"""
     success_write = True
     manuskript_data = load_manuskript(sendung)
     if manuskript_data is not None:
@@ -227,7 +232,7 @@ def write_to_info_file(path_file_dest, sendung):
 
 
 def filepaths(sendung, path_audio):
-    """Pfade und Dateinamen zusammenbauen"""
+    """concatenate path and filenames"""
     success_file = True
     try:
         path_source = lib_cm.check_slashes(ac, path_audio)
@@ -356,7 +361,7 @@ def erase_files_from_cloud():
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """main funktion """
     print "lets_rock "
     # extendet params
     load_extended_params_ok = load_extended_params()
