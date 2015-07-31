@@ -12,7 +12,7 @@ import mpd_config
 def mpc_client(db, ac, command, value):
     """execute mpd-commands via mpc-client"""
     #mpd_server = mpd_config.mpd_pw + "@" + mpd_config.mpd_host
-    mpd_server = db.ac_config_1[4] + "@" + db.ac_config_1[1]
+    mpd_server = db.ac_config_1[3] + "@" + db.ac_config_1[1]
     mpd_port = db.ac_config_1[2]
     cmd_mpd_client = db.ac_config_etools[8].encode(ac.app_encode_out_strings)
     try:
@@ -61,12 +61,15 @@ class RunError(Exception):
 class myMPD(object):
     def __init__(self):
         self._host = mpd_config.mpd_host
-        #self._host = db.ac_config_1[1]
         self._port = mpd_config.mpd_port
-        #self._port = db.ac_config_1[2]
         self._password = mpd_config.mpd_pw
-        #self._password = db.ac_config_1[4]
         self._client = MPDClient()
+
+    def mpd_access(self, db, ac):
+        """provide access-data"""
+        self._host = db.ac_config_1[1]
+        self._port = db.ac_config_1[2]
+        self._password = db.ac_config_1[3]
 
     def connect(self, db, ac):
         try:
@@ -96,10 +99,10 @@ class myMPD(object):
             return None
 
         if self._password:
-        #if db.ac_config_1[4]:
+        #if db.ac_config_1[3]:
             try:
                 self._client.password(self._password)
-                #self._client.password(db.ac_config_1[4])
+                #self._client.password(db.ac_config_1[3])
                 return True
             except ConnectionError as e:
                 db.write_log_to_db_a(ac, "MPD-Conn-Error 2: %s" % str(e), "x",
@@ -144,6 +147,8 @@ class myMPD(object):
     def exec_command(self, db, ac, command, value):
         result = None
         try:
+            if command == "access":
+                result = self.mpd_access(db, ac)
             if command == "play":
                 result = self._client.play()
             if command == "update":
