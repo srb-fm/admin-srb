@@ -214,19 +214,7 @@ def audio_upload(path_f_source, path_ftp, filename_dest):
     """upload file"""
     success_upload = False
     lib_cm.message_write_to_console(ac, u"upload_file")
-    try:
-        ftp = ftplib.FTP(db.ac_config_1[7])
-    except (socket.error, socket.gaierror):
-        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[7])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return success_upload
-
-    try:
-        ftp.login(db.ac_config_1[8], db.ac_config_1[9])
-    except ftplib.error_perm, resp:
-        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return success_upload
+    ftp = ftp_connect_and_dir(path_ftp)
 
     if os.path.isfile(path_f_source):
         if ac.app_windows == "yes":
@@ -234,16 +222,6 @@ def audio_upload(path_f_source, path_ftp, filename_dest):
         else:
             f = open(path_f_source, "r")
     else:
-        return success_upload
-
-    try:
-        ftp.cwd(path_ftp)
-        log_message = u"upload_file: " + path_f_source
-        db.write_log_to_db(ac, log_message, "k")
-    except ftplib.error_perm, resp:
-        log_message = (ac.app_errorslist[8] + " - " + db.ac_config_1[7])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        f.close()
         return success_upload
 
     try:
@@ -381,32 +359,7 @@ def check_file_dest_ftp(path_ftp, filename_dest):
     """check if file exist in destination-ftp"""
     lib_cm.message_write_to_console(ac, "check_files_online_ftp")
     file_online = False
-    try:
-        ftp = ftplib.FTP(db.ac_config_1[7])
-    except (socket.error, socket.gaierror):
-        lib_cm.message_write_to_console(ac, "ftp: no connect to: "
-                                        + db.ac_config_1[7])
-        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[7])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
-
-    try:
-        ftp.login(db.ac_config_1[8], db.ac_config_1[9])
-    except ftplib.error_perm, resp:
-        lib_cm.message_write_to_console(ac, "ftp: no login to: "
-                                        + db.ac_config_1[7])
-        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
-
-    try:
-        ftp.cwd(path_ftp)
-    except ftplib.error_perm, resp:
-        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
-                                        + db.ac_config_1[7])
-        log_message = (ac.app_errorslist[8] + " - " + path_ftp)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
+    ftp = ftp_connect_and_dir(path_ftp)
 
     files_online = []
     try:
@@ -578,32 +531,7 @@ def erase_files_from_cloud(path_dest_cloud, files_sendung_dest, c_date_back):
 def erase_files_from_ftp(path_dest_ftp, c_date_back):
     """erase files from ftp"""
     lib_cm.message_write_to_console(ac, "erase files from ftp")
-    try:
-        ftp = ftplib.FTP(db.ac_config_1[7])
-    except (socket.error, socket.gaierror):
-        lib_cm.message_write_to_console(ac, "ftp: no connect to: "
-                                        + db.ac_config_1[7])
-        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[7])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
-
-    try:
-        ftp.login(db.ac_config_1[8], db.ac_config_1[9])
-    except ftplib.error_perm, resp:
-        lib_cm.message_write_to_console(ac, "ftp: no login to: "
-                                        + db.ac_config_1[7])
-        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
-
-    try:
-        ftp.cwd(path_dest_ftp)
-    except ftplib.error_perm, resp:
-        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
-                                        + db.ac_config_1[7])
-        log_message = (ac.app_errorslist[8] + " - " + path_dest_ftp)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
+    ftp = ftp_connect_and_dir(path_dest_ftp)
 
     files_online = []
     try:
@@ -632,6 +560,37 @@ def erase_files_from_ftp(path_dest_ftp, c_date_back):
 
     ftp.quit()
     lib_cm.message_write_to_console(ac, files_online)
+
+
+def ftp_connect_and_dir(path_ftp):
+    """connect to ftp, login and change dir"""
+    try:
+        ftp = ftplib.FTP(db.ac_config_1[7])
+    except (socket.error, socket.gaierror):
+        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
+                                        + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
+                                        "write_also_to_console")
+        return None
+
+    try:
+        ftp.login(db.ac_config_1[8], db.ac_config_1[9])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no login to: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    try:
+        ftp.cwd(path_ftp)
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[8] + " - " + path_ftp)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+    return ftp
 
 
 def lets_rock():
