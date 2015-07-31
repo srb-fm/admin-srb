@@ -1143,18 +1143,22 @@ if __name__ == "__main__":
     db = lib_cm.dbase()
     ac = app_config()
     mpd = lib_mp.myMPD()
+
     print  "lets_work: " + ac.app_desc
     db.write_log_to_db(ac, ac.app_desc + u" gestartet", "a")
     # Config_Params 1
     db.ac_config_1 = db.params_load_1(ac, db)
 
     if db.ac_config_1 is not None:
-        #mpd = lib_mp.myMPD(db, ac)
         # check main-params
         param_check = lib_cm.params_check_1(ac, db)
         if param_check is not None:
             load_extended_params_ok = load_extended_params()
             if load_extended_params_ok is not None:
+                #mpd.exec_command(db, ac, "access", None)
+                #mpd._host = db.ac_config_1[1]
+                #mpd._port = db.ac_config_1[2]
+                #mpd._password = db.ac_config_1[3]
                 mything = my_form()
                 mything.master.title("Play-Out-Scheduler")
                 mything.mainloop()
