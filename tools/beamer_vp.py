@@ -399,7 +399,11 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # alles ok: weiter
         if param_check is not None:
-            lets_rock()
+            if db.ac_config_1[1] == "on":
+                lets_rock()
+            else:
+                db.write_log_to_db_a(ac, "VP-Beamer ausgeschaltet", "e",
+                    "write_also_to_console")
 
     # fertsch
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
