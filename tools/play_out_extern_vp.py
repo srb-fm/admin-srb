@@ -72,7 +72,7 @@ class app_config(object):
         self.app_config = u"PO_VP_extern_Config"
         self.app_config_develop = u"PO_VP_extern_Config_3_e"
         # nunber of parameters
-        self.app_config_params_range = 5
+        self.app_config_params_range = 1
         self.app_errorfile = "error_play_out_load_vp_extern.log"
         # errorlist
         self.app_errorslist = []
@@ -97,10 +97,6 @@ class app_config(object):
             "beim Aktualisieren der Sendebuchung der VP von extern")
         # params-type-list
         self.app_params_type_list = []
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
-        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
 
         # develop-mod
@@ -486,7 +482,7 @@ def lets_rock():
     if roboting_sgs is None:
         return
 
-    # pruefen was noch nicht im play_out ist und kopieren und bearbeiten
+    # check, if not in play_out, copy and editing
     check_and_work_on_files(roboting_sgs)
     return
 
@@ -503,7 +499,12 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # alles ok: weiter
         if param_check is not None:
-            lets_rock()
+            if db.ac_config_1[1] == "on":
+                lets_rock()
+            else:
+                db.write_log_to_db_a(ac,
+                                    "Play-Out-Extern-VP ausgeschaltet",
+                                    "e", "write_also_to_console")
 
     # finish
     db.write_log_to_db(ac, ac.app_desc + u" gestoppt", "s")
