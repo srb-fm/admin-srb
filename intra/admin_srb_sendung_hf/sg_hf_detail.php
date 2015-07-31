@@ -177,25 +177,42 @@ if ( $action_ok == true ) {
 
 				$message .= "Sendung ausspielen... ";
 				// choose play-out-path
-				$po_path = "Play_Out_Sendung";
+				$tbl_row_play_out_path_mpd = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Playlists'");
+				$po_path = $tbl_row_play_out_path_mpd->USER_SP_PARAM_2;
 				if ( isset($_POST['po_it']) ) {  
 					if ( $_POST['po_it'] == "T" ) {
-						$po_path = "Play_Out_Infotime";
+						$po_path = $tbl_row_play_out_path_mpd->USER_SP_PARAM_1;
 					}
 				}
 				if ( isset($_POST['po_mg']) ) { 
 					if ( $_POST['po_mg'] == "T" ) {
-						$po_path = "Play_Out_Infotime";
+						$po_path = $tbl_row_play_out_path_mpd->USER_SP_PARAM_1;
 					}
 				}
 				// load access mpc
+				$tbl_row_server_active = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_active'");
+				$tbl_row_server_setting = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
 				$tbl_row_mpd_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Scheduler_Config'");
 				$tbl_row_mpd_config_etools = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'ext_tools'");
+				
+				if ( $tbl_row_server_active->USER_SP_PARAM_1 == "A" ) {
+					$mpd_server_ip = $tbl_row_server_setting->USER_SP_PARAM_7;
+					$mpd_server_port = $tbl_row_mpd_config->USER_SP_PARAM_2;
+					$mpd_server_pw = $tbl_row_mpd_config->USER_SP_PARAM_3;
+					
+				}
+				if ( $tbl_row_server_active->USER_SP_PARAM_1 == "B" ) {
+					$mpd_server_ip = $tbl_row_server_setting->USER_SP_PARAM_8;
+					$mpd_server_port = $tbl_row_mpd_config->USER_SP_PARAM_2;
+					$mpd_server_pw = $tbl_row_mpd_config->USER_SP_PARAM_4;					
+				}
+				
 				if ( substr($po_filename, 0, 5) == "http:" ) {
 					// cmd = mpc -h 
-					$cmd = $tbl_row_mpd_config_etools->USER_SP_PARAM_8." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_2." add ".$po_filename;
+					#$cmd = $tbl_row_mpd_config_etools->USER_SP_PARAM_8." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_2." add ".$po_filename;
+					$cmd = $tbl_row_mpd_config_etools->USER_SP_PARAM_8." -h ".$mpd_server_pw."@".$mpd_server_ip." add ".$po_filename;
 				} else {
-					$cmd = $tbl_row_mpd_config_etools->USER_SP_PARAM_8." -h ".$tbl_row_mpd_config->USER_SP_PARAM_4."@".$tbl_row_mpd_config->USER_SP_PARAM_2." add ".$po_path."/".$po_filename;
+					$cmd = $tbl_row_mpd_config_etools->USER_SP_PARAM_8." -h ".$mpd_server_pw."@".$mpd_server_ip." add ".$po_path."/".$po_filename;
 				}
 				$message .= shell_exec($cmd); 
 			} else {
