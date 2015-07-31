@@ -190,7 +190,7 @@ def load_sg(sg_titel):
     return sendung_data
 
 
-def audio_copy(path_file_source, path_file_cloud):
+def copy_to_cloud(path_file_source, path_file_cloud):
     """copy audiofile"""
     success_copy = False
     try:
@@ -210,7 +210,7 @@ def audio_copy(path_file_source, path_file_cloud):
     return success_copy
 
 
-def audio_upload(path_f_source, path_ftp, filename_dest):
+def ftp_upload(path_f_source, path_ftp, filename_dest):
     """upload file"""
     success_upload = False
     lib_cm.message_write_to_console(ac, u"upload_file")
@@ -236,12 +236,12 @@ def audio_upload(path_f_source, path_ftp, filename_dest):
     f.close()
     db.write_log_to_db_a(ac, u"VP per FTP hochgeladen: "
                         + filename_dest, "i", "write_also_to_console")
-    success_upload = True
     ftp.quit()
+    success_upload = True
     return success_upload
 
 
-def write_to_info_file(path_file_cloud, item, sendung):
+def write_to_info_file(filename_dest, item, sendung):
     """writing info-file"""
     success_write = True
     manuskript_data = load_manuskript(sendung)
@@ -251,34 +251,36 @@ def write_to_info_file(path_file_cloud, item, sendung):
     #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
     try:
         #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
-        path_text_file_dest = os.path.splitext(path_file_cloud)[0] + ".txt"
-        f_info_txt = open(path_text_file_dest, 'w')
-        db.write_log_to_db_a(ac, "Info-Text schreiben " + path_file_cloud,
+        #path_text_file_dest = os.path.splitext(path_file_cloud)[0] + ".txt"
+        path_file_temp = (lib_cm.check_slashes(ac, db.ac_config_1[2])
+                                 + filename_dest.replace("mp3", "txt"))
+        f_info_txt = open(path_file_temp, 'w')
+        db.write_log_to_db_a(ac, "Info-Text schreiben " + path_file_temp,
                 "v", "write_also_to_console")
     except IOError as (errno, strerror):
         log_message = ("write_to_file_record_params: I/O error({0}): {1}"
-                        .format(errno, strerror) + ": " + path_file_cloud)
+                        .format(errno, strerror) + ": " + path_file_temp)
         db.write_log_to_db(ac, log_message, "x")
         db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
                                              "write_also_to_console")
         success_write = False
     else:
         # filename rechts von slash extrahieren
-        filename = lib_cm.extract_filename(ac, path_file_cloud)
+        #filename = lib_cm.extract_filename(ac, path_file_temp)
 
         f_info_txt.write("Titel: " + sendung[11].encode('utf-8')
                         + "\r\n")
         f_info_txt.write("Autor: " + sendung[15].encode('utf-8')
                             + " " + sendung[16].encode('utf-8')
                             + "\r\n")
-        f_info_txt.write("Dateiname: " + filename + "\r\n")
+        f_info_txt.write("Dateiname: " + filename_dest + "\r\n")
         f_info_txt.write("Interne ID: " + sendung[12][0:7] + "\r\n")
 
         if manuskript_data is not None:
             f_info_txt.write("Info/ Manuskript: " + "\r\n")
             f_info_txt.write(manuskript_text.encode('utf-8'))
         f_info_txt.close
-    return success_write
+    return success_write, path_file_temp
 
 
 def filepaths(item, sendung):
@@ -426,15 +428,21 @@ def work_on_files(roboting_sgs):
                     continue
 
                 # copy to dropbox
-                success_copy = audio_copy(path_f_source, path_file_cloud)
+                success_copy = copy_to_cloud(path_f_source, path_file_cloud)
                 if success_copy is False:
                     continue
 
                 # info-txt-file
-                success_write = write_to_info_file(
-                                                path_file_cloud, item, sendung)
+                success_write, path_file_temp = write_to_info_file(
+                                filename_dest, item, sendung)
                 if success_write is False:
-                    # probs mit datei
+                    # probs with file
+                    continue
+
+                # copy info-file to dropbox
+                filename_info = path_file_cloud.replace("mp3", "txt")
+                success_copy = copy_to_cloud(path_file_temp, filename_info)
+                if success_copy is False:
                     continue
 
                 db.write_log_to_db_a(ac,
@@ -454,10 +462,31 @@ def work_on_files(roboting_sgs):
                     continue
 
                 # ftp-upload
-                success_upload = audio_upload(
+                success_upload = ftp_upload(
                                 path_f_source, path_ftp, filename_dest)
                 if success_upload is False:
                     continue
+
+                # info-txt-file
+                success_write, path_file_temp = write_to_info_file(
+                                filename_dest, item, sendung)
+                if success_write is False:
+                    # probs with file
+                    continue
+
+                # ftp-upload info-file
+                filename_info = filename_dest.replace("mp3", "txt")
+                success_upload = ftp_upload(
+                                path_file_temp, path_ftp, filename_info)
+                if success_upload is False:
+                    continue
+
+                db.write_log_to_db_a(ac,
+                    "VP auf ftp uebertragen: " + filename_dest, "i",
+                                                    "write_also_to_console")
+                db.write_log_to_db_a(ac,
+                    "VP auf ftp v: " + filename_dest, "n",
+                                                    "write_also_to_console")
 
 
 def erase_files_prepaere(roboting_sgs):
