@@ -50,6 +50,7 @@ import sys
 import os
 import datetime
 import shutil
+import ftplib
 import lib_common_1 as lib_cm
 
 
@@ -80,6 +81,18 @@ class app_config(object):
             "Fehler beim Ermitteln zu loeschender Dateien ")
         self.app_errorslist.append(self.app_desc +
             "Fehler beim Loeschen einer veralteten Datei ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Connect zu FTP-Server")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim LogIn zu FTP-Server")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Zugriff auf FTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Speichern in FTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Loeschen in FTP-Ordner")
 
         # params-type-list
         self.app_params_type_list = []
@@ -202,6 +215,37 @@ def check_file_dest_cloud(path_file_cloud):
     return file_is_online
 
 
+def check_file_dest_ftp(path_ftp, filename_dest):
+    """check if file exist in destination-ftp"""
+    lib_cm.message_write_to_console(ac, "check_files_online_ftp")
+    file_online = False
+    ftp = ftp_connect_and_dir(path_ftp)
+
+    files_online = []
+    try:
+        files_online = ftp.nlst()
+    except ftplib.error_perm, resp:
+        if str(resp) == "550 No files found":
+            lib_cm.message_write_to_console(ac,
+            u"ftp: no files in this directory")
+        else:
+            log_message = (ac.app_errorslist[9])
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+
+    ftp.quit()
+    lib_cm.message_write_to_console(ac, files_online)
+
+    for item in files_online:
+        if item == filename_dest:
+            file_online = True
+            lib_cm.message_write_to_console(ac, u"vorhanden: " + filename_dest)
+            db.write_log_to_db_a(ac,
+                u"Vorproduktion fuer extern auf FTP bereits vorhanden: "
+                + filename_dest,
+                "k", "write_also_to_console")
+    return file_online
+
+
 def copy_to_cloud(path_file_source, path_file_dest):
     """copy audiofile and infofile"""
     success_copy = None
@@ -258,6 +302,68 @@ def write_to_info_file(filename_dest, sendung):
     return success_write, path_file_temp
 
 
+def ftp_connect_and_dir(path_ftp):
+    """connect to ftp, login and change dir"""
+    try:
+        ftp = ftplib.FTP(db.ac_config_1[7])
+    except (socket.error, socket.gaierror):
+        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
+                                        + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, ac.app_errorslist[6], "x",
+                                        "write_also_to_console")
+        return None
+
+    try:
+        ftp.login(db.ac_config_1[8], db.ac_config_1[9])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no login to: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    try:
+        ftp.cwd(path_ftp)
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
+                                        + db.ac_config_1[7])
+        log_message = (ac.app_errorslist[8] + " - " + path_ftp)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+    return ftp
+
+
+def ftp_upload(path_f_source, path_ftp, filename_dest):
+    """upload file"""
+    success_upload = False
+    lib_cm.message_write_to_console(ac, u"upload_file")
+    ftp = ftp_connect_and_dir(path_ftp)
+
+    if os.path.isfile(path_f_source):
+        if ac.app_windows == "yes":
+            f = open(path_f_source, "rb")
+        else:
+            f = open(path_f_source, "r")
+    else:
+        return success_upload
+
+    try:
+        c_ftp_cmd = "STOR " + filename_dest
+        ftp.storbinary(c_ftp_cmd, f)
+    except ftplib.error_perm, resp:
+        log_message = (ac.app_errorslist[9] + " - " + db.ac_config_1[7])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        f.close()
+        return success_upload
+
+    f.close()
+    db.write_log_to_db_a(ac, u"VP per FTP hochgeladen: "
+                        + filename_dest, "i", "write_also_to_console")
+    ftp.quit()
+    success_upload = True
+    return success_upload
+
+
 def filepaths(sendung, base_path_source):
     """concatenate path and filenames"""
     success_file = True
@@ -276,7 +382,7 @@ def filepaths(sendung, base_path_source):
         path_file_cloud = (path_cloud + filename_dest)
 
         # ftp
-        path_ftp = None
+        path_ftp = lib_cm.check_slashes(ac, db.ac_config_1[6])
 
     except Exception, e:
         log_message = (ac.app_errorslist[3] + "fuer: "
@@ -313,49 +419,93 @@ def work_on_files(sendungen, base_path_source):
         if success_file is False:
             continue
 
-        file_is_in_cloud = check_file_dest_cloud(path_file_cloud)
-        if file_is_in_cloud is True:
-            continue
-
-        # copy to cloud
-        success_copy = copy_to_cloud(path_f_source, path_file_cloud)
-        if success_copy is None:
-            continue
-
+        # info-file
         success_write, path_file_temp = write_to_info_file(
                                 filename_dest, sendung)
         if success_write is False:
             # probs with file
             continue
 
-        # copy info-file to dropbox
-        filename_info = path_file_cloud.replace("mp3", "txt")
-        success_copy = copy_to_cloud(path_file_temp, filename_info)
-        if success_copy is False:
-            continue
-
-        db.write_log_to_db_a(ac,
-                "VP nach extern bearbeitet: " + filename_dest, "i",
+        # dropbox
+        if db.ac_config_1[10] == "on":
+            db.write_log_to_db_a(ac, "VP nach Dropbox bearbeiten: ", "p",
                                                     "write_also_to_console")
-        #db.write_log_to_db_a(ac,
-        #        "VP nach extern bearbeitet: " + filename_dest, "n",
-        #                                            "write_also_to_console")
+
+            file_is_in_cloud = check_file_dest_cloud(path_file_cloud)
+            if file_is_in_cloud is True:
+                continue
+
+            # copy to cloud
+            success_copy = copy_to_cloud(path_f_source, path_file_cloud)
+            if success_copy is None:
+                continue
+
+            # copy info-file to dropbox
+            filename_info = path_file_cloud.replace("mp3", "txt")
+            success_copy = copy_to_cloud(path_file_temp, filename_info)
+            if success_copy is False:
+                continue
+
+            db.write_log_to_db_a(ac,
+                "VP in Dropbox kopiert: " + filename_dest, "i",
+                                                    "write_also_to_console")
+
+        # ftp
+        if db.ac_config_1[11] == "on":
+            db.write_log_to_db_a(ac, "VP nach ftp bearbeiten: ", "p",
+                                                    "write_also_to_console")
+            file_is_online = check_file_dest_ftp(path_ftp, filename_dest)
+            if file_is_online is True:
+                continue
+            if file_is_online is None:
+                # an error occures
+                continue
+
+            # ftp-upload
+            success_upload = ftp_upload(
+                                path_f_source, path_ftp, filename_dest)
+            if success_upload is False:
+                continue
+
+            # ftp-upload info-file
+            filename_info = filename_dest.replace("mp3", "txt")
+            success_upload = ftp_upload(
+                                path_file_temp, path_ftp, filename_info)
+            if success_upload is False:
+                continue
+
+            db.write_log_to_db_a(ac,
+                    "VP auf ftp uebertragen: " + filename_dest, "i",
+                                                    "write_also_to_console")
+            erase_files_prepaere()
 
 
-def erase_files_from_cloud():
-    """alte Dateien in cloud-ordnern loeschen"""
-    lib_cm.message_write_to_console(ac, u"erase_files_from_cloud")
+def erase_files_prepaere():
+    """erase files in cloud and ftp"""
+    # date for delete files
+    date_back = (datetime.datetime.now()
+                 + datetime.timedelta(days=- int(db.ac_config_1[3])))
+    c_date_back = date_back.strftime("%Y_%m_%d")
+    db.write_log_to_db_a(ac, u"Sendedatum muss aelter sein als: "
+                                + c_date_back, "t", "write_also_to_console")
+    # dropbox
+    if db.ac_config_1[10] == "on":
+        erase_files_from_cloud(c_date_back)
+    # ftp
+    if db.ac_config_1[11] == "on":
+        erase_files_from_ftp(c_date_back)
+
+
+def erase_files_from_cloud(c_date_back):
+    """erase files from cloud"""
+    db.write_log_to_db_a(ac, u"Veraltete Dateien in Cloud loeschen",
+                                            "p", "write_also_to_console")
     # Paths
     path_sendung_dest_base = lib_cm.check_slashes(ac,
                                 db.ac_config_servpath_b[5])
     path_sendung_dest = (path_sendung_dest_base +
                         lib_cm.check_slashes(ac, db.ac_config_1[5]))
     lib_cm.message_write_to_console(ac, path_sendung_dest)
-    date_back = (datetime.datetime.now()
-                 + datetime.timedelta(days=- int(db.ac_config_1[3])))
-    c_date_back = date_back.strftime("%Y_%m_%d")
-    db.write_log_to_db_a(ac, u"Sendedatum muss aelter sein als: "
-                                + c_date_back, "t", "write_also_to_console")
 
     try:
         files_sendung_dest = os.listdir(path_sendung_dest)
@@ -389,6 +539,41 @@ def erase_files_from_cloud():
     return
 
 
+def erase_files_from_ftp(c_date_back):
+    """erase files from ftp"""
+    lib_cm.message_write_to_console(ac, "erase files from ftp")
+    path_ftp = lib_cm.check_slashes(ac, db.ac_config_1[6])
+    ftp = ftp_connect_and_dir(path_ftp)
+
+    files_online = []
+    try:
+        files_online = ftp.nlst()
+    except ftplib.error_perm, resp:
+        if str(resp) == "550 No files found":
+            lib_cm.message_write_to_console(ac,
+            u"ftp: no files in this directory")
+        else:
+            log_message = (ac.app_errorslist[9])
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+            return None
+
+    for item in files_online:
+        if item[0:10] < c_date_back:
+            try:
+                ftp.delete(item)
+                log_message = ("Auf ftp-Server geloescht: " + item)
+                db.write_log_to_db_a(ac, log_message, "k",
+                                    "write_also_to_console")
+            except ftplib.error_perm, resp:
+                log_message = (ac.app_errorslist[11] + " - " + item)
+                db.write_log_to_db_a(ac, log_message, "x",
+                                    "write_also_to_console")
+                continue
+
+    ftp.quit()
+    lib_cm.message_write_to_console(ac, files_online)
+
+
 def lets_rock():
     """main funktion """
     print "lets_rock "
@@ -402,22 +587,19 @@ def lets_rock():
     sendungen = load_sg("IT")
     if sendungen is not None:
         work_on_files(sendungen, db.ac_config_servpath_a[1])
-    return
+
     log_message = u"Magazin bearbeiten.."
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("MAG")
     if sendungen is not None:
-        check_and_work_on_files(sendungen, db.ac_config_servpath_a[1])
+        work_on_files(sendungen, db.ac_config_servpath_a[1])
 
     log_message = u"Sendung bearbeiten.."
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("SG")
     if sendungen is not None:
-        check_and_work_on_files(sendungen, db.ac_config_servpath_a[2])
+        work_on_files(sendungen, db.ac_config_servpath_a[2])
 
-    db.write_log_to_db_a(ac, u"Veraltete Dateien in Cloud loeschen",
-                                            "p", "write_also_to_console")
-    erase_files_from_cloud()
     return
 
 
