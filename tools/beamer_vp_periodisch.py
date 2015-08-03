@@ -344,13 +344,13 @@ def check_file_source(path_f_source, sendung):
 
 def check_file_dest_cloud(path_file_cloud):
     """check if file exist in destination"""
-    lib_cm.message_write_to_console(ac, u"check_files_cloud")
+    lib_cm.message_write_to_console(ac, "check_files_cloud")
     file_is_online = False
     if os.path.isfile(path_file_cloud):
         filename = lib_cm.extract_filename(ac, path_file_cloud)
-        lib_cm.message_write_to_console(ac, u"vorhanden: " + path_file_cloud)
+        lib_cm.message_write_to_console(ac, "vorhanden: " + path_file_cloud)
         db.write_log_to_db_a(ac,
-            u"Vorproduktion fuer extern in Cloud bereits vorhanden: "
+            "Vorproduktion fuer extern in Cloud bereits vorhanden: "
             + filename,
             "k", "write_also_to_console")
         file_is_online = True
@@ -433,9 +433,9 @@ def work_on_files(roboting_sgs):
                     continue
 
                 # info-txt-file
-                success_write, path_file_temp = write_to_info_file(
+                success_write_temp, path_file_temp = write_to_info_file(
                                 filename_dest, item, sendung)
-                if success_write is False:
+                if success_write_temp is False:
                     # probs with file
                     continue
 
@@ -448,9 +448,14 @@ def work_on_files(roboting_sgs):
                 db.write_log_to_db_a(ac,
                     "VP in Dropbox kopiert: " + filename_dest, "i",
                                                     "write_also_to_console")
-                db.write_log_to_db_a(ac,
-                    "VP in Dropbox kopiert: " + filename_dest, "n",
-                                                    "write_also_to_console")
+                #db.write_log_to_db_a(ac,
+                #    "VP in Dropbox kopiert: " + filename_dest, "n",
+                #                                    "write_also_to_console")
+
+                # delete tmp-info-file
+                if success_write_temp is not False:
+                    lib_cm.erase_file(ac, db, path_file_temp)
+
             if item[3].strip() == "T":
                 # to ftp
                 lib_cm.message_write_to_console(ac, "ftp")
@@ -468,9 +473,9 @@ def work_on_files(roboting_sgs):
                     continue
 
                 # info-txt-file
-                success_write, path_file_temp = write_to_info_file(
+                success_write_temp, path_file_temp = write_to_info_file(
                                 filename_dest, item, sendung)
-                if success_write is False:
+                if success_write_temp is False:
                     # probs with file
                     continue
 
@@ -484,9 +489,13 @@ def work_on_files(roboting_sgs):
                 db.write_log_to_db_a(ac,
                     "VP auf ftp uebertragen: " + filename_dest, "i",
                                                     "write_also_to_console")
-                db.write_log_to_db_a(ac,
-                    "VP auf ftp v: " + filename_dest, "n",
-                                                    "write_also_to_console")
+                #db.write_log_to_db_a(ac,
+                #    "VP auf ftp v: " + filename_dest, "n",
+                #                                    "write_also_to_console")
+
+                # delete tmp-info-file
+                if success_write_temp is not False:
+                    lib_cm.erase_file(ac, db, path_file_temp)
 
 
 def erase_files_prepaere(roboting_sgs):
