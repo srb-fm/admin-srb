@@ -222,43 +222,40 @@ def copy_to_cloud(path_file_source, path_file_dest):
     return success_copy
 
 
-def write_to_info_file(path_file_dest, sendung):
+def write_to_info_file(filename_dest, sendung):
     """write info-file"""
     success_write = True
     manuskript_data = load_manuskript(sendung)
     if manuskript_data is not None:
         manuskript_text = lib_cm.simple_cleanup_html(manuskript_data[0])
-    #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
+
     try:
-        #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
-        path_text_file_dest = os.path.splitext(path_file_dest)[0] + ".txt"
-        f_info_txt = open(path_text_file_dest, 'w')
-        db.write_log_to_db_a(ac, u"Info-Text schreiben " + path_file_dest,
+        path_file_temp = (lib_cm.check_slashes(ac, db.ac_config_1[2])
+                                 + filename_dest.replace("mp3", "txt"))
+        f_info_txt = open(path_file_temp, 'w')
+        db.write_log_to_db_a(ac, "Info-Text schreiben " + path_file_temp,
                 "v", "write_also_to_console")
     except IOError as (errno, strerror):
         log_message = ("write_to_file_record_params: I/O error({0}): {1}"
-                        .format(errno, strerror) + ": " + path_file_dest)
+                        .format(errno, strerror) + ": " + path_file_temp)
         db.write_log_to_db(ac, log_message, "x")
-        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
                                              "write_also_to_console")
-        success_write = None
+        success_write = False
     else:
-        # filename rechts von slash extrahieren
-        filename = lib_cm.extract_filename(ac, path_file_dest)
-
         f_info_txt.write("Titel: " + sendung[11].encode('utf-8')
                         + "\r\n")
         f_info_txt.write("Autor: " + sendung[15].encode('utf-8')
                             + " " + sendung[16].encode('utf-8')
                             + "\r\n")
-        f_info_txt.write("Dateiname: " + filename + "\r\n")
+        f_info_txt.write("Dateiname: " + filename_dest + "\r\n")
         f_info_txt.write("Interne ID: " + sendung[12][0:7] + "\r\n")
 
         if manuskript_data is not None:
             f_info_txt.write("Info/ Manuskript: " + "\r\n")
             f_info_txt.write(manuskript_text.encode('utf-8'))
         f_info_txt.close
-    return success_write
+    return success_write, path_file_temp
 
 
 def filepaths(sendung, base_path_source):
@@ -307,12 +304,6 @@ def work_on_files(sendungen, base_path_source):
                     + sendung[11].encode('ascii', 'ignore'), "t",
                     "write_also_to_console")
 
-        # Pfade und Dateinamen zusammenbauen
-        #success_file, path_file_source, path_file_dest = filepaths(
-        #                             sendung, path_audio)
-        #if success_file is None:
-        #    continue
-
         (success, path_f_source, path_file_cloud,
                 path_ftp, filename_dest) = filepaths(sendung, base_path_source)
         if success is False:
@@ -330,23 +321,25 @@ def work_on_files(sendungen, base_path_source):
         success_copy = copy_to_cloud(path_f_source, path_file_cloud)
         if success_copy is None:
             continue
-        return
-        # info-txt-Datei
-        success_write = write_to_info_file(path_file_dest, sendung)
-        if success_write is None:
-            # probs mit datei
+
+        success_write, path_file_temp = write_to_info_file(
+                                filename_dest, sendung)
+        if success_write is False:
+            # probs with file
             continue
 
-
-        # filename rechts von slash extrahieren
-        filename = lib_cm.extract_filename(ac, path_file_dest)
+        # copy info-file to dropbox
+        filename_info = path_file_cloud.replace("mp3", "txt")
+        success_copy = copy_to_cloud(path_file_temp, filename_info)
+        if success_copy is False:
+            continue
 
         db.write_log_to_db_a(ac,
-                "VP nach extern bearbeitet: " + filename, "i",
+                "VP nach extern bearbeitet: " + filename_dest, "i",
                                                     "write_also_to_console")
-        db.write_log_to_db_a(ac,
-                "VP nach extern bearbeitet: " + filename, "n",
-                                                    "write_also_to_console")
+        #db.write_log_to_db_a(ac,
+        #        "VP nach extern bearbeitet: " + filename_dest, "n",
+        #                                            "write_also_to_console")
 
 
 def erase_files_from_cloud():
