@@ -375,9 +375,14 @@ def filepaths(d_pattern, l_path_title, item, sendung):
         lib_cm.message_write_to_console(ac, new_date.strftime(d_pattern))
 
         path_file_source = (path_source + l_path_title[0]
-        #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
+            #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
             + new_date.strftime(d_pattern) + l_path_title[1].rstrip())
-        path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_a[2])
+
+        # it or mag else sendung
+        if sendung[4].strip() == "T" or sendung[5].strip() == "T":
+            path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
+        else:
+            path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_a[2])
 
         # replace sonderzeichen
         # replace_uchar_sonderzeichen_with_latein
