@@ -98,7 +98,7 @@ class app_config(object):
         # develop-mod
         self.app_develop = "no"
         # debug-mod
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -172,7 +172,37 @@ def load_sg(sg_option):
     return sendung_data
 
 
-def audio_copy(path_file_source, path_file_dest):
+def check_file_source(path_f_source, sendung):
+    """check if file exist in source"""
+    lib_cm.message_write_to_console(ac, "check if file exist in source")
+    success_file = True
+    if not os.path.isfile(path_f_source):
+        filename = lib_cm.extract_filename(ac, path_f_source)
+        lib_cm.message_write_to_console(ac, u"nicht vorhanden: "
+                    + filename)
+        db.write_log_to_db_a(ac,
+            u"Vorproduktion fuer extern noch nicht in Play_Out vorhanden: "
+            + sendung[12], "f", "write_also_to_console")
+        success_file = False
+    return success_file
+
+
+def check_file_dest_cloud(path_file_cloud):
+    """check if file exist in destination"""
+    lib_cm.message_write_to_console(ac, "check_files_cloud")
+    file_is_online = False
+    if os.path.isfile(path_file_cloud):
+        filename = lib_cm.extract_filename(ac, path_file_cloud)
+        lib_cm.message_write_to_console(ac, "vorhanden: " + path_file_cloud)
+        db.write_log_to_db_a(ac,
+            "Vorproduktion fuer extern in Cloud bereits vorhanden: "
+            + filename,
+            "k", "write_also_to_console")
+        file_is_online = True
+    return file_is_online
+
+
+def copy_to_cloud(path_file_source, path_file_dest):
     """copy audiofile and infofile"""
     success_copy = None
     try:
@@ -231,20 +261,26 @@ def write_to_info_file(path_file_dest, sendung):
     return success_write
 
 
-def filepaths(sendung, path_audio):
+def filepaths(sendung, base_path_source):
     """concatenate path and filenames"""
     success_file = True
     try:
-        path_source = lib_cm.check_slashes(ac, path_audio)
+        path_source = lib_cm.check_slashes(ac, base_path_source)
         path_file_source = (path_source + sendung[12])
-        path_dest_base = lib_cm.check_slashes(ac,
-                                db.ac_config_servpath_b[5])
-        path_dest = (path_dest_base +
-                        lib_cm.check_slashes(ac, db.ac_config_1[5]))
-
+        # filename
         filename_dest = (sendung[2].strftime('%Y_%m_%d') + "_"
             + db.ac_config_1[4] + str(sendung[12][7:]))
-        path_file_dest = (path_dest + filename_dest)
+
+        # Cloud
+        path_dest_base = lib_cm.check_slashes(ac,
+                                db.ac_config_servpath_b[5])
+        path_cloud = (path_dest_base +
+                        lib_cm.check_slashes(ac, db.ac_config_1[5]))
+        path_file_cloud = (path_cloud + filename_dest)
+
+        # ftp
+        path_ftp = None
+
     except Exception, e:
         log_message = (ac.app_errorslist[3] + "fuer: "
             + sendung[11].encode('ascii', 'ignore') + " " + str(e))
@@ -252,28 +288,14 @@ def filepaths(sendung, path_audio):
         success_file = None
 
     lib_cm.message_write_to_console(ac, path_file_source)
-    lib_cm.message_write_to_console(ac, path_file_dest)
+    lib_cm.message_write_to_console(ac, path_file_cloud)
     #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
 
-    if not os.path.isfile(path_file_source):
-        lib_cm.message_write_to_console(ac, u"nicht vorhanden: "
-                    + path_file_dest)
-        db.write_log_to_db_a(ac,
-            u"Vorproduktion fuer extern noch nicht in Play_Out vorhanden: "
-            + sendung[12], "f", "write_also_to_console")
-        success_file = None
-
-    if os.path.isfile(path_file_dest):
-        lib_cm.message_write_to_console(ac, u"vorhanden: " + path_file_dest)
-        db.write_log_to_db_a(ac,
-            u"Vorproduktion fuer extern in Cloud bereits vorhanden: "
-            + filename_dest,
-            "k", "write_also_to_console")
-        success_file = None
-    return success_file, path_file_source, path_file_dest
+    return (success_file, path_file_source, path_file_cloud, path_ftp,
+                                                filename_dest)
 
 
-def check_and_work_on_files(sendungen, path_audio):
+def work_on_files(sendungen, base_path_source):
     """
     - Zugehoerige Audios suchen
     - wenn vorhanden, bearbeiten
@@ -286,21 +308,35 @@ def check_and_work_on_files(sendungen, path_audio):
                     "write_also_to_console")
 
         # Pfade und Dateinamen zusammenbauen
-        success_file, path_file_source, path_file_dest = filepaths(
-                                     sendung, path_audio)
-        if success_file is None:
+        #success_file, path_file_source, path_file_dest = filepaths(
+        #                             sendung, path_audio)
+        #if success_file is None:
+        #    continue
+
+        (success, path_f_source, path_file_cloud,
+                path_ftp, filename_dest) = filepaths(sendung, base_path_source)
+        if success is False:
             continue
 
-        # In Cloud kopieren
-        success_copy = audio_copy(path_file_source, path_file_dest)
+        success_file = check_file_source(path_f_source, sendung)
+        if success_file is False:
+            continue
+
+        file_is_in_cloud = check_file_dest_cloud(path_file_cloud)
+        if file_is_in_cloud is True:
+            continue
+
+        # copy to cloud
+        success_copy = copy_to_cloud(path_f_source, path_file_cloud)
         if success_copy is None:
             continue
-
+        return
         # info-txt-Datei
         success_write = write_to_info_file(path_file_dest, sendung)
         if success_write is None:
             # probs mit datei
             continue
+
 
         # filename rechts von slash extrahieren
         filename = lib_cm.extract_filename(ac, path_file_dest)
@@ -372,8 +408,8 @@ def lets_rock():
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("IT")
     if sendungen is not None:
-        check_and_work_on_files(sendungen, db.ac_config_servpath_a[1])
-
+        work_on_files(sendungen, db.ac_config_servpath_a[1])
+    return
     log_message = u"Magazin bearbeiten.."
     db.write_log_to_db_a(ac, log_message, "p", "write_also_to_console")
     sendungen = load_sg("MAG")
