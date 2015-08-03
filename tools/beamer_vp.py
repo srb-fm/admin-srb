@@ -420,9 +420,9 @@ def work_on_files(sendungen, base_path_source):
             continue
 
         # info-file
-        success_write, path_file_temp = write_to_info_file(
+        success_write_temp, path_file_temp = write_to_info_file(
                                 filename_dest, sendung)
-        if success_write is False:
+        if success_write_temp is False:
             # probs with file
             continue
 
@@ -449,6 +449,9 @@ def work_on_files(sendungen, base_path_source):
             db.write_log_to_db_a(ac,
                 "VP in Dropbox kopiert: " + filename_dest, "i",
                                                     "write_also_to_console")
+
+            # delete files in cloud
+            erase_files_prepaere()
 
         # ftp
         if db.ac_config_1[11] == "on":
@@ -477,7 +480,12 @@ def work_on_files(sendungen, base_path_source):
             db.write_log_to_db_a(ac,
                     "VP auf ftp uebertragen: " + filename_dest, "i",
                                                     "write_also_to_console")
+            # delete fiels on ftp
             erase_files_prepaere()
+
+        # delete tmp-info-file
+        if success_write_temp is not False:
+            lib_cm.erase_file(ac, db, path_file_temp)
 
 
 def erase_files_prepaere():
