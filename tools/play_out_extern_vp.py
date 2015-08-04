@@ -58,6 +58,7 @@ import string
 import datetime
 import shutil
 import subprocess
+import ftplib
 import lib_common_1 as lib_cm
 
 
@@ -72,7 +73,7 @@ class app_config(object):
         self.app_config = u"PO_VP_extern_Config"
         self.app_config_develop = u"PO_VP_extern_Config_3_e"
         # nunber of parameters
-        self.app_config_params_range = 1
+        self.app_config_params_range = 6
         self.app_errorfile = "error_play_out_load_vp_extern.log"
         # errorlist
         self.app_errorslist = []
@@ -95,14 +96,27 @@ class app_config(object):
             "beim ermitteln der Laenge VP von extern")
         self.app_errorslist.append(u"Error 009 "
             "beim Aktualisieren der Sendebuchung der VP von extern")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Connect zu FTP-Server")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim LogIn zu FTP-Server")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Zugriff auf FTP-Ordner")
         # params-type-list
         self.app_params_type_list = []
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
 
         # develop-mod
         self.app_develop = "no"
         # debug-mod
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -135,11 +149,13 @@ def load_extended_params():
 
 def load_roboting_sgs():
     """search shows"""
-    lib_cm.message_write_to_console(ac,
-        "search for radio-shows")
+    lib_cm.message_write_to_console(ac, "search for radio-shows")
     sendungen_data = db.read_tbl_rows_with_cond(ac, db,
         "SG_HF_ROBOT",
-        "SG_HF_ROB_TITEL, SG_HF_ROB_FILE_IN_DB, SG_HF_ROB_SHIFT",
+        "SG_HF_ROB_TITEL, "
+        "SG_HF_ROB_IN_DROPB, SG_HF_ROB_FILE_IN_DB, "
+        "SG_HF_ROB_IN_FTP, SG_HF_ROB_FILE_IN_FTP, "
+        " SG_HF_ROB_SHIFT",
         "SG_HF_ROB_VP_IN ='T'")
 
     if sendungen_data is None:
@@ -369,12 +385,21 @@ def filepaths(d_pattern, l_path_title, item, sendung):
     """concatenate paths and filenames"""
     success_file = True
     try:
-        path_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[5])
         # Verschiebung von Datum Erstsendung
-        new_date = sendung[2] + datetime.timedelta(days=-item[2])
+        new_date = sendung[2] + datetime.timedelta(days=-item[5])
         lib_cm.message_write_to_console(ac, new_date.strftime(d_pattern))
 
-        path_file_source = (path_source + l_path_title[0]
+        if item[1].strip() == "T":
+            # from dropbox
+            path_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[5])
+            path_file_source = (path_source + l_path_title[0]
+            #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
+            + new_date.strftime(d_pattern) + l_path_title[1].rstrip())
+
+        if item[3].strip() == "T":
+            # from ftp
+            path_source = lib_cm.check_slashes(ac, db.ac_config_1[3])
+            path_file_source = (path_source + l_path_title[0]
             #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
             + new_date.strftime(d_pattern) + l_path_title[1].rstrip())
 
@@ -399,23 +424,69 @@ def filepaths(d_pattern, l_path_title, item, sendung):
 
     lib_cm.message_write_to_console(ac, path_file_source)
     lib_cm.message_write_to_console(ac, path_file_dest)
-    #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
 
-    if not os.path.isfile(path_file_source):
-        lib_cm.message_write_to_console(ac, u"nicht vorhanden: "
-                    + path_file_dest)
-        db.write_log_to_db_a(ac,
-            u"Audio Vorproduktion noch nicht vorhanden: "
-            + path_file_source, "f", "write_also_to_console")
-        success_file = None
-
-    if os.path.isfile(path_file_dest):
-        lib_cm.message_write_to_console(ac, u"vorhanden: " + path_file_dest)
-        db.write_log_to_db_a(ac,
-            u"Audiodatei fuer Sendung bereits vorhanden: " + path_file_dest,
-            "k", "write_also_to_console")
-        success_file = None
     return success_file, path_file_source, path_file_dest
+
+
+def check_file_dest_play_out(path_file_dest, sendung):
+    """check if file exist in play-out"""
+    lib_cm.message_write_to_console(ac, "check if file exist in play-out")
+    success_file = None
+    if os.path.isfile(path_file_dest):
+        filename = lib_cm.extract_filename(ac, path_file_dest)
+        lib_cm.message_write_to_console(ac, "vorhanden: "
+                    + filename)
+        db.write_log_to_db_a(ac,
+            "Vorproduktion von extern bereits in Play_Out vorhanden: "
+            + sendung[12], "f", "write_also_to_console")
+        success_file = True
+    return success_file
+
+
+def check_file_source_cloud(path_file_source):
+    """check if file exist in dropbox"""
+    lib_cm.message_write_to_console(ac, "check_files_cloud")
+    file_is_online = False
+    if os.path.isfile(path_file_source):
+        filename = lib_cm.extract_filename(ac, path_file_source)
+        lib_cm.message_write_to_console(ac, "vorhanden: " + path_file_source)
+        db.write_log_to_db_a(ac,
+            "Vorproduktion von extern in Cloud vorhanden: "
+            + filename,
+            "k", "write_also_to_console")
+        file_is_online = True
+    return file_is_online
+
+
+def ftp_connect_and_dir(path_ftp):
+    """connect to ftp, login and change dir"""
+    try:
+        ftp = ftplib.FTP(db.ac_config_1[4])
+    except (socket.error, socket.gaierror):
+        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
+                                        + db.ac_config_1[4])
+        db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
+                                        "write_also_to_console")
+        return None
+
+    try:
+        ftp.login(db.ac_config_1[5], db.ac_config_1[6])
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no login to: "
+                                        + db.ac_config_1[4])
+        log_message = (ac.app_errorslist[11] + " - " + db.ac_config_1[4])
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    try:
+        ftp.cwd(path_ftp)
+    except ftplib.error_perm, resp:
+        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
+                                        + db.ac_config_1[4])
+        log_message = (ac.app_errorslist[12] + " - " + path_ftp)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+    return ftp
 
 
 def check_and_work_on_files(roboting_sgs):
@@ -428,33 +499,47 @@ def check_and_work_on_files(roboting_sgs):
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
         titel = item[0]
-        # Sendung suchen
+        # search shows
         sendungen = load_sg(titel)
 
         if sendungen is None:
-            lib_cm.message_write_to_console(ac, u"Keine Sendungen gefunden")
+            lib_cm.message_write_to_console(ac, "Keine Sendungen gefunden")
             continue
 
         for sendung in sendungen:
-            db.write_log_to_db_a(ac, u"Sendung fuer VP-Uebernahme gefunden: "
+            db.write_log_to_db_a(ac, "Sendung fuer VP-Uebernahme gefunden: "
                     + sendung[11].encode('ascii', 'ignore'), "t",
                     "write_also_to_console")
 
-            # Pfad-Datei und Titel nach Datums-Muster teilen
-            d_pattern, l_path_title = date_pattern(item[1])
+            # path-file split with date-pattern
+            if item[1].strip() == "T":
+                d_pattern, l_path_title = date_pattern(item[2])
+            if item[3].strip() == "T":
+                d_pattern, l_path_title = date_pattern(item[4])
             if d_pattern is None:
                 continue
 
-            # Pfade und Dateinamen zusammenbauen
+            # concatenate path and filename
             success_file, path_file_source, path_file_dest = filepaths(
                                     d_pattern, l_path_title, item, sendung)
             if success_file is None:
                 continue
 
-            # In Play-Out kopieren
-            success_copy = audio_copy(path_file_source, path_file_dest)
-            if success_copy is None:
+            # check if file always in play-out
+            file_in_play_out = check_file_dest_play_out(path_file_dest, sendung)
+            if file_in_play_out is True:
                 continue
+
+            if item[1].strip() == "T":
+                # check if file in dropbox
+                file_in_cloud = check_file_source_cloud(path_file_source)
+                if file_in_cloud is False:
+                    continue
+
+                # In Play-Out kopieren
+                success_copy = audio_copy(path_file_source, path_file_dest)
+                if success_copy is None:
+                    continue
 
             audio_validate(path_file_dest)
             audio_mp3gain(path_file_dest)
@@ -469,8 +554,8 @@ def check_and_work_on_files(roboting_sgs):
                 filename = path_file_dest[string.rfind(path_file_dest,
                                                                 "\\") + 1:]
 
-            db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "i",
-                                                    "write_also_to_console")
+            #db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "i",
+            #                                        "write_also_to_console")
             db.write_log_to_db_a(ac, "VP bearbeitet: " + filename, "n",
                                                     "write_also_to_console")
 
