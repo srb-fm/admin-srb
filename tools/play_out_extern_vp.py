@@ -141,6 +141,7 @@ def load_extended_params():
 
 def load_roboting_sgs():
     """search shows"""
+<<<<<<< HEAD
     lib_cm.message_write_to_console(ac, "search for radio-shows")
     sendungen_data = db.read_tbl_rows_with_cond(ac, db,
         "SG_HF_ROBOT",
@@ -148,6 +149,13 @@ def load_roboting_sgs():
         "SG_HF_ROB_IN_DROPB, SG_HF_ROB_FILE_IN_DB, "
         "SG_HF_ROB_IN_FTP, SG_HF_ROB_FILE_IN_FTP, "
         " SG_HF_ROB_SHIFT",
+=======
+    lib_cm.message_write_to_console(ac,
+        u"Sendungen suchen, die bearbeitet werden sollen")
+    sendungen_data = db.read_tbl_rows_with_cond(ac, db,
+        "SG_HF_ROBOT",
+        "SG_HF_ROB_TITEL, SG_HF_ROB_FILE_IN_DB, SG_HF_ROB_SHIFT",
+>>>>>>> en_003_beamer_vp_add_ftp
         "SG_HF_ROB_VP_IN ='T'")
 
     if sendungen_data is None:

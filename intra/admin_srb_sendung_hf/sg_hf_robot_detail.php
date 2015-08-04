@@ -17,28 +17,28 @@ require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 	
 $message = "";
-$action_ok = "no";
+$action_ok = false;
 	
-// action pruefen	
-if ( isset( $_GET['action'] ) ) { 
+// check action	
+if ( isset($_GET['action']) ) { 
 	$action = $_GET['action'];	
-	$action_ok = "yes";
+	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action']; 
-	$action_ok = "yes";
+	$action_ok = true;
 }
 			
-if ( $action_ok == "yes" ) {
-	if ( isset( $_GET['sg_robot_id'] ) ) {	
+if ( $action_ok == true ) {
+	if ( isset($_GET['sg_robot_id']) ) {	
 		$id = $_GET['sg_robot_id'];
 	}
-	if ( isset( $_POST['sg_robot_id'] ) ) { 
+	if ( isset($_POST['sg_robot_id']) ) { 
 		$id = $_POST['sg_robot_id'];
 	}
 		
-	// action switchen
-	if ( $id !="" ) { 
+	// switch action
+	if ( $id !="" ) {
 		switch ( $action ) {
 		case "display":		
 			$message = "Automatisierte Sendung: Details anzeigen. ";
@@ -49,6 +49,7 @@ if ( $action_ok == "yes" ) {
 			$message = "Automatisierte Sendung: zum Löschen prüfen! ";
 			$query_condition = "SG_HF_ROB_ID = ".$id;
 			header("Location: sg_hf_robot_detail.php?action=delete&sg_robot_id=".$id);
+			exit;
 			break;
 
 		case "delete":		
@@ -58,14 +59,14 @@ if ( $action_ok == "yes" ) {
 
 		case "kill":		
 			$message = "Automatisierte Sendung löschen. ";
-			// pruefen ob bestätigung passt
+			// check if confirmation is ok
 			$c_kill = db_query_load_item("USER_SECURITY", 0);
 
 			if ( $_POST['form_kill_code'] == trim($c_kill) ) {
 				$_ok = db_query_delete_item("SG_HF_ROBOT", "SG_HF_ROB_ID", $id);
 				if ( $_ok == "true" ) {
 					$message = "Automatisierte Sendung gelöscht!";
-					$action_ok = "no";	
+					$action_ok = false;	
 				} else { 
 					$message = "Löschen fehlgeschlagen";
 					$query_condition = "SG_HF_ROB_ID = ".$id;
@@ -82,9 +83,9 @@ if ( $action_ok == "yes" ) {
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-	
-// Alles ok, Daten holen
-if ( $action_ok == "yes" ) {
+
+// ok, retrieve data
+if ( $action_ok == true ) {
 	$tbl_row = db_query_display_item_1("SG_HF_ROBOT", $query_condition);
 }
 ?>
@@ -109,7 +110,7 @@ echo "<div class='head_item_right'>";
 echo $message; 
 echo "</div>";
 echo "<div class='content'>";
-if ( $action_ok == "no" ) { 
+if ( $action_ok == false ) { 
 	return;
 }
 if ( !$tbl_row ) { 
@@ -126,22 +127,7 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_1'>Stichworte</div>";
 	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_STICHWORTE.  "</div>";
 	echo "</div>\n";
-	
-	echo "<div class='content_row_a_1'>";
-	echo "<div class='content_column_1'>VP-Übernahme von extern</div>";
-	echo "<div class='content_column_2'>" ;
-	if ( rtrim($tbl_row->SG_HF_ROB_VP_IN) == "T") {
-		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' checked='checked' title='Wird übernommen'>";
-	} else { 
-		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen'>";
-	}				
-	echo "</div></div>\n";			
-	
-	echo "<div class='content_row_b_1'>";
-	echo "<div class='content_column_1'>Pfad/Dateiname von extern</div>";
-	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILENAME_IN. "</div>";
-	echo "</div>\n";
-	
+
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Duplizierung</div>";
 	echo "<div class='content_column_2'>" .db_query_load_value_by_id("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_ID", $tbl_row->SG_HF_ROB_DUB_ID);
@@ -150,22 +136,73 @@ if ( $user_rights == "yes" ) {
 	echo "</div>\n";
 	
 	echo "<div class='content_row_b_1'>";
-	echo "<div class='content_column_1'>VP nach extern</div>";
-	echo "<div class='content_column_2'>" ;
-	if ( rtrim($tbl_row->SG_HF_ROB_VP_OUT) == "T") {
-		echo "<input type='checkbox' name='form_sg_rob_vp_out' value='T' checked='checked' title='Wird zur Verfügung gestellt'>";
+	echo "<div class='content_column_1'>Übernahme von extern</div>";
+	echo "<div class='content_column_2'><label for='check1'>" ;
+	if ( rtrim($tbl_row->SG_HF_ROB_VP_IN) == "T") {
+		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' checked='checked' title='Wird übernommen' id='check1'> VP von extern";
 	} else { 
-		echo "<input type='checkbox' name='form_sg_rob_vp_out' value='T' title='Wird nicht zur Verfügung gestellt'>";
-	}				
-	echo "</div></div>\n";			
-	
+		echo "<input type='checkbox' name='form_sg_rob_vp' value='T' title='Wird nicht übernommen' id='check1'> VP-Übernahme von extern";
+	}
+	echo "</label> <label for='check2'>";
+	if ( rtrim($tbl_row->SG_HF_ROB_IN_DROPB) == "T") {
+		echo "<input type='checkbox' name='form_sg_rob_in_dropb' value='T' checked='checked' title='Via Dropbox' id='check2'> Dropbox";
+	} else {
+		echo "<input type='checkbox' name='form_sg_rob_in_dropb' value='T' title='Nicht via Dropbox' id='check2'> Dropbox";
+	}
+	echo "</label> <label for='check3'>";
+	if ( rtrim($tbl_row->SG_HF_ROB_IN_FTP) == "T") {
+		echo "<input type='checkbox' name='form_sg_rob_in_ftp' value='T' checked='checked' title='Via ftp' id='check3'> FTP";
+	} else { 
+		echo "<input type='checkbox' name='form_sg_rob_in_ftp' value='T' title='Nicht via ftp' id='check3'> FTP";
+	}
+	echo "</label></div></div>\n";			
+
 	echo "<div class='content_row_a_1'>";
-	echo "<div class='content_column_1'>Pfad/Dateiname nach extern</div>";
-	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILENAME_OUT. "</div>";
+	echo "<div class='content_column_1'>Ordner/Datei von Dropbox</div>";
+	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILE_IN_DB. "</div>";
+	echo "</div>\n";
+
+	echo "<div class='content_row_b_1'>";
+	echo "<div class='content_column_1'>Ordner/Datei von FTP</div>";
+	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILE_IN_FTP. "</div>";
+	echo "</div>\n";
+	
+
+	echo "<div class='content_row_a_1'>";
+	echo "<div class='content_column_1'>Übergabe nach extern</div>";
+	echo "<div class='content_column_2'><label for='check4'>" ;
+	if ( rtrim($tbl_row->SG_HF_ROB_VP_OUT) == "T") {
+		echo "<input type='checkbox' name='form_sg_rob_vp_out' value='T' checked='checked' title='Wird zur Verfügung gestellt' id='check4'> VP nach extern";
+	} else { 
+		echo "<input type='checkbox' name='form_sg_rob_vp_out' value='T' title='Wird nicht zur Verfügung gestellt' id='check4'> VP nach extern";
+	}
+	echo "</label> <label for='check5'>";
+	if ( rtrim($tbl_row->SG_HF_ROB_OUT_DROPB) == "T") {
+		echo "<input type='checkbox' name='form_sg_rob_out_dropb' value='T' checked='checked' title='Via Dropbox' id='check5'> Dropbox";
+	} else { 
+		echo "<input type='checkbox' name='form_sg_rob_out_dropb' value='T' title='Nicht via Dropbox' id='check5'> Dropbox";
+	}
+	echo "</label> <label for='check6'>";
+	if ( rtrim($tbl_row->SG_HF_ROB_OUT_FTP) == "T") {
+		echo "<input type='checkbox' name='form_sg_rob_out_ftp' value='T' checked='checked' title='Via ftp' id='check6'> FTP";
+	} else { 
+		echo "<input type='checkbox' name='form_sg_rob_out_ftp' value='T' title='Nicht via ftp' id='check6'> FTP";
+	}
+
+	echo "</label></div></div>\n";
+
+	echo "<div class='content_row_b_1'>";
+	echo "<div class='content_column_1'>Ordner Dropbox nach extern</div>";
+	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILE_OUT_DB. "</div>";
+	echo "</div>\n";
+
+	echo "<div class='content_row_a_1'>";
+	echo "<div class='content_column_1'>Ordner FTP nach extern</div>";
+	echo "<div class='content_column_2'>" .$tbl_row->SG_HF_ROB_FILE_OUT_FTP. "</div>";
 	echo "</div>\n";
 	
 	echo "<div class='line_a'> </div>\n";
-			
+		
 	if ( $action == "delete" ) { 
 		echo "<script>";
 		echo '$( "#dialog-form" ).dialog( "open" )';
