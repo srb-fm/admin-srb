@@ -445,12 +445,12 @@ def work_on_files(roboting_sgs):
                 if success_copy is False:
                     continue
 
-                db.write_log_to_db_a(ac,
-                    "VP in Dropbox kopiert: " + filename_dest, "i",
-                                                    "write_also_to_console")
                 #db.write_log_to_db_a(ac,
-                #    "VP in Dropbox kopiert: " + filename_dest, "n",
-                #                                    "write_also_to_console")
+                #    "VP in Dropbox kopiert: " + filename_dest, "i",
+                                                    "write_also_to_console")
+                db.write_log_to_db_a(ac,
+                    "VP in Dropbox kopiert: " + filename_dest, "n",
+                                                    "write_also_to_console")
 
                 # delete tmp-info-file
                 if success_write_temp is not False:
@@ -486,12 +486,12 @@ def work_on_files(roboting_sgs):
                 if success_upload is False:
                     continue
 
-                db.write_log_to_db_a(ac,
-                    "VP auf ftp uebertragen: " + filename_dest, "i",
-                                                    "write_also_to_console")
                 #db.write_log_to_db_a(ac,
-                #    "VP auf ftp v: " + filename_dest, "n",
+                #    "VP auf ftp uebertragen: " + filename_dest, "i",
                 #                                    "write_also_to_console")
+                db.write_log_to_db_a(ac,
+                    "VP auf ftp v: " + filename_dest, "n",
+                                                    "write_also_to_console")
 
                 # delete tmp-info-file
                 if success_write_temp is not False:

@@ -447,7 +447,7 @@ def work_on_files(sendungen, base_path_source):
                 continue
 
             db.write_log_to_db_a(ac,
-                "VP in Dropbox kopiert: " + filename_dest, "i",
+                "VP in Dropbox kopiert: " + filename_dest, "n",
                                                     "write_also_to_console")
 
             # delete files in cloud
@@ -478,7 +478,7 @@ def work_on_files(sendungen, base_path_source):
                 continue
 
             db.write_log_to_db_a(ac,
-                    "VP auf ftp uebertragen: " + filename_dest, "i",
+                    "VP auf ftp uebertragen: " + filename_dest, "n",
                                                     "write_also_to_console")
             # delete fiels on ftp
             erase_files_prepaere()
