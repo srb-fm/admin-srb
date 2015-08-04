@@ -58,7 +58,6 @@ import string
 import datetime
 import shutil
 import subprocess
-import ftplib
 import lib_common_1 as lib_cm
 
 
@@ -96,14 +95,7 @@ class app_config(object):
             "beim ermitteln der Laenge VP von extern")
         self.app_errorslist.append(u"Error 009 "
             "beim Aktualisieren der Sendebuchung der VP von extern")
-        self.app_errorslist.append(self.app_desc +
-            " Fehler beim Connect zu FTP-Server")
-        self.app_errorslist.append(self.app_desc +
-            " Fehler beim LogIn zu FTP-Server")
-        self.app_errorslist.append(self.app_desc +
-            " Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden")
-        self.app_errorslist.append(self.app_desc +
-            " Fehler beim Zugriff auf FTP-Ordner")
+
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -116,7 +108,7 @@ class app_config(object):
         # develop-mod
         self.app_develop = "no"
         # debug-mod
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -398,6 +390,8 @@ def filepaths(d_pattern, l_path_title, item, sendung):
 
         if item[3].strip() == "T":
             # from ftp
+            #url_base = db.ac_config_1[3].encode(ac.app_encode_out_strings)
+            #url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
             path_source = lib_cm.check_slashes(ac, db.ac_config_1[3])
             path_file_source = (path_source + l_path_title[0]
             #+ sendung[0][2].strftime('%Y_%m_%d') + l_path_title[1].rstrip())
@@ -458,35 +452,67 @@ def check_file_source_cloud(path_file_source):
     return file_is_online
 
 
-def ftp_connect_and_dir(path_ftp):
-    """connect to ftp, login and change dir"""
+def fetch_media_ftp(dest_file, url_source_file):
+    """mp3-File von Server holen"""
+    lib_cm.message_write_to_console(ac, u"mp3-File von Server holen")
+    # all cmds must be in the right charset
+    cmd = db.ac_config_etools[1].encode(ac.app_encode_out_strings)
+    #cmd = "wget"
+    #url_base = db.ac_config_1[3].encode(ac.app_encode_out_strings)
+    #url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
+    url_user = "--user=" + db.ac_config_1[5].encode(ac.app_encode_out_strings)
+    url_pw = "--password=" + db.ac_config_1[6].encode(ac.app_encode_out_strings)
+    # starting subprozess
     try:
-        ftp = ftplib.FTP(db.ac_config_1[4])
-    except (socket.error, socket.gaierror):
-        lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[4])
-        db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
-                                        "write_also_to_console")
+        p = subprocess.Popen([cmd, url_user, url_pw, url_source_file],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    except Exception, e:
+        log_message = ac.app_errorslist[1] + u": %s" % str(e)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return
+
+    lib_cm.message_write_to_console(ac, u"returncode 0")
+    lib_cm.message_write_to_console(ac, p[0])
+    lib_cm.message_write_to_console(ac, u"returncode 1")
+    lib_cm.message_write_to_console(ac, p[1])
+
+    # search for success-msg, if not found: -1
+    cmd_output_1 = string.find(p[1], "100%")
+    lib_cm.message_write_to_console(ac, cmd_output_1)
+    # if found, position, otherwise -1
+    if cmd_output_1 != -1:
+        log_message = "Externe VP heruntergeladen... "
+        db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
+        file_orig = lib_cm.extract_filename(ac, db.ac_config_1[7])
+        lib_cm.message_write_to_console(ac, file_orig)
+        lib_cm.message_write_to_console(ac, dest_file)
+        #os.rename(file_orig, dest_file)
+        return True
+    else:
+        db.write_log_to_db_a(ac, ac.app_errorslist[1]
+            + u"100% beim Download nicht erreicht...",
+            "x", "write_also_to_console")
         return None
 
-    try:
-        ftp.login(db.ac_config_1[5], db.ac_config_1[6])
-    except ftplib.error_perm, resp:
-        lib_cm.message_write_to_console(ac, "ftp: no login to: "
-                                        + db.ac_config_1[4])
-        log_message = (ac.app_errorslist[11] + " - " + db.ac_config_1[4])
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
 
+def copy_media_to_play_out(path_file_source, dest_file):
+    """copy audiofile"""
+    success_copy = None
     try:
-        ftp.cwd(path_ftp)
-    except ftplib.error_perm, resp:
-        lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
-                                        + db.ac_config_1[4])
-        log_message = (ac.app_errorslist[12] + " - " + path_ftp)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
-    return ftp
+        shutil.copy(path_file_source, dest_file)
+        db.write_log_to_db_a(ac, u"Audio Vorproduktion: "
+                + path_file_source.encode('ascii', 'ignore'),
+                "v", "write_also_to_console")
+        db.write_log_to_db_a(ac, u"Audio kopiert: "
+                + dest_file, "c", "write_also_to_console")
+        success_copy = True
+    except Exception, e:
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
+        log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
+        lib_cm.message_write_to_console(ac, log_message)
+        db.write_log_to_db(ac, log_message, "x")
+    return success_copy
 
 
 def check_and_work_on_files(roboting_sgs):
@@ -539,6 +565,22 @@ def check_and_work_on_files(roboting_sgs):
                 # In Play-Out kopieren
                 success_copy = audio_copy(path_file_source, path_file_dest)
                 if success_copy is None:
+                    continue
+
+            if item[3].strip() == "T":
+                # fetch file from ftp
+                filename_ftp_temp = lib_cm.extract_filename(ac,
+                                                        path_file_source)
+                file_from_ftp = (fetch_media_ftp(
+                                    path_file_dest, path_file_source))
+                if file_from_ftp is None:
+                    lib_cm.erase_file_a(ac, db, filename_ftp_temp,
+                                    "temp-Datei geloescht ")
+                    continue
+
+                copy_success = copy_media_to_play_out(
+                                    filename_ftp_temp, path_file_dest)
+                if copy_success is None:
                     continue
 
             audio_validate(path_file_dest)
