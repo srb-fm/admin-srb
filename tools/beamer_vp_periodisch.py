@@ -110,7 +110,7 @@ class app_config(object):
         # develop-mod (andere parameter, z.b. bei verzeichnissen)
         self.app_develop = "no"
         # debug-mod
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -215,7 +215,8 @@ def ftp_upload(path_f_source, path_ftp, filename_dest):
     success_upload = False
     lib_cm.message_write_to_console(ac, u"upload_file")
     ftp = ftp_connect_and_dir(path_ftp)
-
+    if ftp is None:
+        return
     if os.path.isfile(path_f_source):
         if ac.app_windows == "yes":
             f = open(path_f_source, "rb")
@@ -362,7 +363,8 @@ def check_file_dest_ftp(path_ftp, filename_dest):
     lib_cm.message_write_to_console(ac, "check_files_online_ftp")
     file_online = False
     ftp = ftp_connect_and_dir(path_ftp)
-
+    if ftp is None:
+        return
     files_online = []
     try:
         files_online = ftp.nlst()
@@ -570,7 +572,8 @@ def erase_files_from_ftp(path_dest_ftp, c_date_back):
     """erase files from ftp"""
     lib_cm.message_write_to_console(ac, "erase files from ftp")
     ftp = ftp_connect_and_dir(path_dest_ftp)
-
+    if ftp is None:
+        return
     files_online = []
     try:
         files_online = ftp.nlst()
