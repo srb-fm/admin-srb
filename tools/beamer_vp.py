@@ -572,9 +572,16 @@ def erase_files_from_ftp(c_date_back):
     for item in files_online:
         if item[0:10] < c_date_back:
             try:
-                ftp.delete(item)
-                log_message = ("Auf ftp-Server geloescht: " + item)
+                log_message = ("Debug: " + item[11:15])
                 db.write_log_to_db_a(ac, log_message, "k",
+                                    "write_also_to_console")
+                if item[11:14] == db.ac_config_1[4]:
+                    # on tbradio ftp, all files from all contributors
+                    # are in one folder, so
+                    # delete only files with the own sign
+                    ftp.delete(item)
+                    log_message = ("Auf ftp-Server geloescht: " + item)
+                    db.write_log_to_db_a(ac, log_message, "k",
                                     "write_also_to_console")
             except ftplib.error_perm, resp:
                 log_message = (ac.app_errorslist[11] + " - " + item)
