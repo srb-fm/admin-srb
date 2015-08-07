@@ -422,13 +422,6 @@ def work_on_files(sendungen, base_path_source):
         if success_file is False:
             continue
 
-        # info-file
-        success_write_temp, path_file_temp = write_to_info_file(
-                                filename_dest, sendung)
-        if success_write_temp is False:
-            # probs with file
-            continue
-
         # dropbox
         if db.ac_config_1[10] == "on":
             db.write_log_to_db_a(ac, "VP nach Dropbox bearbeiten: ", "p",
@@ -441,6 +434,13 @@ def work_on_files(sendungen, base_path_source):
             # copy to cloud
             success_copy = copy_to_cloud(path_f_source, path_file_cloud)
             if success_copy is None:
+                continue
+
+            # info-file
+            success_write_temp, path_file_temp = write_to_info_file(
+                                filename_dest, sendung)
+            if success_write_temp is False:
+                # probs with file
                 continue
 
             # copy info-file to dropbox
@@ -471,6 +471,13 @@ def work_on_files(sendungen, base_path_source):
             success_upload = ftp_upload(
                                 path_f_source, path_ftp, filename_dest)
             if success_upload is False:
+                continue
+
+            # info-file
+            success_write_temp, path_file_temp = write_to_info_file(
+                                filename_dest, sendung)
+            if success_write_temp is False:
+                # probs with file
                 continue
 
             # ftp-upload info-file
@@ -572,9 +579,6 @@ def erase_files_from_ftp(c_date_back):
     for item in files_online:
         if item[0:10] < c_date_back:
             try:
-                log_message = ("Debug: " + item[11:15])
-                db.write_log_to_db_a(ac, log_message, "k",
-                                    "write_also_to_console")
                 if item[11:14] == db.ac_config_1[4]:
                     # on tbradio ftp, all files from all contributors
                     # are in one folder, so
