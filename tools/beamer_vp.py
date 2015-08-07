@@ -360,8 +360,8 @@ def ftp_upload(path_f_source, path_ftp, filename_dest):
         return success_upload
 
     f.close()
-    db.write_log_to_db_a(ac, u"VP per FTP hochgeladen: "
-                        + filename_dest, "i", "write_also_to_console")
+    #db.write_log_to_db_a(ac, u"VP per FTP hochgeladen: "
+    #                    + filename_dest, "i", "write_also_to_console")
     ftp.quit()
     success_upload = True
     return success_upload
@@ -408,6 +408,7 @@ def work_on_files(sendungen, base_path_source):
     """
     lib_cm.message_write_to_console(ac, u"check_and_work_on_files")
 
+    # dropbox
     for sendung in sendungen:
         db.write_log_to_db_a(ac, u"Sendung fuer VP nach extern gefunden: "
                     + sendung[11].encode('ascii', 'ignore'), "t",
@@ -456,6 +457,26 @@ def work_on_files(sendungen, base_path_source):
             # delete files in cloud
             erase_files_prepaere()
 
+            # delete tmp-info-file
+            if success_write_temp is not False:
+                lib_cm.erase_file(ac, db, path_file_temp)
+
+
+    # ftp
+    for sendung in sendungen:
+        db.write_log_to_db_a(ac, u"Sendung fuer VP nach extern gefunden: "
+                    + sendung[11].encode('ascii', 'ignore'), "t",
+                    "write_also_to_console")
+
+        (success, path_f_source, path_file_cloud,
+                path_ftp, filename_dest) = filepaths(sendung, base_path_source)
+        if success is False:
+            continue
+
+        success_file = check_file_source(path_f_source, sendung)
+        if success_file is False:
+            continue
+
         # ftp
         if db.ac_config_1[11] == "on":
             db.write_log_to_db_a(ac, "VP nach ftp bearbeiten: ", "p",
@@ -493,9 +514,9 @@ def work_on_files(sendungen, base_path_source):
             # delete fiels on ftp
             erase_files_prepaere()
 
-        # delete tmp-info-file
-        if success_write_temp is not False:
-            lib_cm.erase_file(ac, db, path_file_temp)
+            # delete tmp-info-file
+            if success_write_temp is not False:
+                lib_cm.erase_file(ac, db, path_file_temp)
 
 
 def erase_files_prepaere():
