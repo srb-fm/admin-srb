@@ -16,6 +16,8 @@ Dieses Script uebertraegt Sendungen (mp3-Dateien),
 die in der Datenbank als Podcast markiert wurden,
 auf den Web-Server.
 
+This script is for transfer mp3-files to a ftp-server.
+
 Dateiname Script: podcast_beamer.py
 Schluesselwort fuer Einstellungen: PC_Beamer_Config_1
 Benoetigt: lib_common.py im gleichen Verzeichnis
@@ -38,6 +40,9 @@ E 2 Fehler beim Recodieren der Podcast-mp3-Datei
 E 3 Recodierte Podcast-mp3-Datei nicht gefunden
 E 4 Fehler beim Loeschen der Temp-Podcast-Datei
 E 5 Podcast-mp3-Datei in Play-Out nicht gefunden:
+E 6 Fehler beim LogIn zu FTP-Server
+E 7 Fehler beim FTP-Ordnerwechsel
+E 8 Fehler beim Zugriff auf FTP-Ordner
 
 Parameterliste:
 Param 1: On/Off Switch
@@ -47,6 +52,11 @@ Param 4: ftp-Benutzer
 Param 5: ftp-PW
 Param 6: ftp-Verzeichnis
 Param 7: Pfad temporaere Dateien fuer Encoder
+
+Extern Parameters:
+ext_tools
+server_settings
+server_settings_paths_a_A
 
 Das Script wird zeitgesteuert zwischen 6 und 20 Uhr
 jeweils zu Minute 15 ausgefuehrt.
@@ -86,15 +96,15 @@ class app_config(object):
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(self.app_desc +
-            "Parameter-Typ oder Inhalt stimmt nicht ")
+            " Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Verbinden zum ftp-Server")
+            " Fehler beim Verbinden zum ftp-Server")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Recodieren der mp3-Datei")
+            " Fehler beim Recodieren der mp3-Datei")
         self.app_errorslist.append(self.app_desc +
-            "Recodierte Podcast-mp3-Datei nicht gefunden")
+            " Recodierte Podcast-mp3-Datei nicht gefunden")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Loeschen der Temp-Datei")
+            " Fehler beim Loeschen der Temp-Datei")
         self.app_errorslist.append(self.app_desc +
              "mp3-Datei in Play-Out nicht gefunden:")
         self.app_errorslist.append(self.app_desc +
@@ -537,7 +547,7 @@ def lets_rock():
                 "write_also_to_console")
             return
 
-    # upload waths not online
+    # upload whats not online
     upload_ok = upload_file(podcast_sendung)
     if upload_ok is None:
         # Error 1
