@@ -19,6 +19,8 @@ Zusaetzlich wird eine Text-Datei mit Meta-Daten gespeichert.
 Festgelegt sind die Sendungen durch SG_HF_VP_OUT
 in der Tabelle SG_HF_MAIN. (VP-out in der Seneanmeldung)
 
+This script is for transfer mp3-files to a dropbox-folder or a ftp-server.
+
 Dateiname Script: beamer_vp.py
 Schluesselwort fuer Einstellungen: Beamer_VP
 Benoetigt: lib_common_1.py im gleichen Verzeichnis
@@ -26,20 +28,36 @@ Bezieht Daten aus: Firebird-Datenbank
 
 
 Fehlerliste:
-Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 beim Kopieren der Vorproduktion in Cloud
-Error 002 beim Kopieren der Meta-Datei in Cloud
-Error 003 beim Generieren des Dateinamens
-Error 004 beim Ermitteln zu loeschender Dateien
-Error 005 beim Loeschen einer veralteten Datei
+E 00 Parameter-Typ oder Inhalt stimmt nich
+E 01 beim Kopieren der Vorproduktion in Cloud
+E 02 beim Kopieren der Meta-Datei in Cloud
+E 03 beim Generieren des Dateinamens
+E 04 beim Ermitteln zu loeschender Dateien
+E 05 beim Loeschen einer veralteten Datei
+E 06 Fehler beim Connect zu FTP-Server
+E 07 Fehler beim LogIn zu FTP-Server
+E 08 Fehler beim FTP-Ordnerwechsel
+E 09 Fehler beim Zugriff auf FTP-Ordner
+E 10 Fehler beim Speichern in FTP-Ordner
+E 11 Fehler beim Loeschen in FTP-Ordner
 
 Parameterliste:
-Param 1: Pfad vom Server zu Playout-Infotime
-Param 2: Pfad vom Server zu Playout-Sendung
-Param 3: Tage zurueck loeschen alter Dateien in Cloud
-Param 4: Kuerzel Sender
-Param 5: Pfad vom Server zu Dropbox-Hauptordner
+Param 01: On/Off Switch
+Param 02: temp-Ordner fuer Info-File
+Param 03: Tage zurueck loeschen alter Dateien in Cloud oder ftp
+Param 04: Kuerzel Sender fuer Dateiname
+Param 05: Unterpfad Dropbox
+Param 06: Unterpfad ftp
+Param 07: Domain ftp-Server
+Param 08: ftp-User
+Param 09: ftp-PW
+Param 10: In Drobbox uebertragen on/off
+Param 10: Auf ftp uebertragen on/off
 
+Extern Parameters:
+server_settings
+server_settings_paths_a
+server_settings_paths_b
 
 Ausfuehrung: jede Stunde zur Minute 18
 
@@ -71,17 +89,17 @@ class app_config(object):
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(self.app_desc +
-            "Parameter-Typ oder Inhalt stimmt nicht ")
+            " Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Kopieren der Vorproduktion in Cloud")
+            " Fehler beim Kopieren der Vorproduktion in Cloud")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Kopieren der Meta-Datei in Cloud")
+            " Fehler beim Kopieren der Meta-Datei in Cloud")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Generieren des Dateinamens")
+            " Fehler beim Generieren des Dateinamens")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Ermitteln zu loeschender Dateien ")
+            " Fehler beim Ermitteln zu loeschender Dateien ")
         self.app_errorslist.append(self.app_desc +
-            "Fehler beim Loeschen einer veralteten Datei ")
+            " Fehler beim Loeschen einer veralteten Datei ")
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Connect zu FTP-Server")
         self.app_errorslist.append(self.app_desc +
@@ -140,7 +158,7 @@ def load_extended_params():
 
 
 def load_manuskript(sendung):
-    """search Manuskript"""
+    """search manuscript"""
     lib_cm.message_write_to_console(ac, u"Manuskript suchen")
     manuskript_data = db.read_tbl_row_with_cond(ac, db,
         "SG_MANUSKRIPT",
@@ -403,8 +421,8 @@ def filepaths(sendung, base_path_source):
 
 def work_on_files(sendungen, base_path_source):
     """
-    - Zugehoerige Audios suchen
-    - wenn vorhanden, bearbeiten
+    - search for audio files of shows
+    - if found, work on it
     """
     lib_cm.message_write_to_console(ac, u"check_and_work_on_files")
 
@@ -460,7 +478,6 @@ def work_on_files(sendungen, base_path_source):
             # delete tmp-info-file
             if success_write_temp is not False:
                 lib_cm.erase_file(ac, db, path_file_temp)
-
 
     # ftp
     for sendung in sendungen:
@@ -601,7 +618,7 @@ def erase_files_from_ftp(c_date_back):
         if item[0:10] < c_date_back:
             try:
                 if item[11:14] == db.ac_config_1[4]:
-                    # on tbradio ftp, all files from all contributors
+                    # on ftp, all files from all contributors
                     # are in one folder, so
                     # delete only files with the own sign
                     ftp.delete(item)
