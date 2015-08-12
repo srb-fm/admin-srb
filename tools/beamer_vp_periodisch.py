@@ -24,22 +24,38 @@ Schluesselwort fuer Einstellungen: Beamer_VP_period
 Benoetigt: lib_common_1.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
+This script is for transfer mp3-files to a dropbox-folder or a ftp-server.
+It's processing on periodically shows.
 
 Fehlerliste:
-Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 Fehler beim Kopieren der Vorproduktion in Cloud
-Error 002 Fehler beim Kopieren der Meta-Datei in Cloud
-Error 003 Fehler beim Generieren des Dateinamens
-
-Error 006 Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden
+E 00 Parameter-Typ oder Inhalt stimmt nich
+E 01 beim Kopieren der Vorproduktion in Cloud
+E 02 beim Kopieren der Meta-Datei in Cloud
+E 03 beim Generieren des Dateinamens
+E 04 beim Ermitteln zu loeschender Dateien
+E 05 beim Loeschen einer veralteten Datei
+E 06 Fehler beim Connect zu FTP-Server
+E 07 Fehler beim LogIn zu FTP-Server
+E 08 Fehler beim FTP-Ordnerwechsel
+E 09 Fehler beim Zugriff auf FTP-Ordner
+E 10 Fehler beim Speichern in FTP-Ordner
+E 11 Fehler beim Loeschen in FTP-Ordner
 
 Parameterliste:
-Param 1: Pfad vom Server zu Playout-IT/MAG
-Param 2: Pfad vom Server zu Playout-Sendung
-Param 3: Tage zurueck loeschen alter Dateien in Cloud
-Param 4: Kuerzel Sender
-Param 5: Pfad vom Server zu Dropbox-Hauptordner
+Param 01: On/Off Switch
+Param 02: temp-Ordner fuer Info-File
+Param 03: Tage zurueck loeschen alter Dateien in Cloud oder ftp
+Param 04: Kuerzel Sender fuer Dateiname
+Param 05: none
+Param 06: Hauptpfad ftp
+Param 07: Domain ftp-Server
+Param 08: ftp-User
+Param 09: ftp-PW
 
+Extern Parameters:
+server_settings
+server_settings_paths_a
+server_settings_paths_b
 
 Ausfuehrung: jede Stunde zur Minute 12
 
@@ -183,7 +199,6 @@ def load_sg(sg_titel):
     if sendung_data is None:
         log_message = (u"Keine Sendung mit diesem Titel gefunden: "
                             + sg_titel.encode('ascii', 'ignore'))
-        #db.write_log_to_db( ac,  log_message, "t" )
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
         return sendung_data
 
@@ -449,7 +464,7 @@ def work_on_files(roboting_sgs):
 
                 #db.write_log_to_db_a(ac,
                 #    "VP in Dropbox kopiert: " + filename_dest, "i",
-                                                    "write_also_to_console")
+                #                                    "write_also_to_console")
                 db.write_log_to_db_a(ac,
                     "VP in Dropbox kopiert: " + filename_dest, "n",
                                                     "write_also_to_console")

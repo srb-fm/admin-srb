@@ -52,7 +52,7 @@ Param 07: Domain ftp-Server
 Param 08: ftp-User
 Param 09: ftp-PW
 Param 10: In Drobbox uebertragen on/off
-Param 10: Auf ftp uebertragen on/off
+Param 11: Auf ftp uebertragen on/off
 
 Extern Parameters:
 server_settings
