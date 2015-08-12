@@ -21,7 +21,7 @@ oder zu streamende URLs vor.
 Durch den play_out_loader.py wird jede auzuspielende Datei
 (Sendebuchungen und weitere aus Pools zufallgenerierte) in der Log-Tabelle
 registiert. Diese log-Eintraege werden durch den Scheduler abgefragt um
-eine Wartschlange mit den Audiodateien zu erzeugen.
+eine Warteschlange mit den Audiodateien zu erzeugen.
 Zusaetzlich werden aus einem Musikpool Musikdateien
 fuer die Warteschlange vorbereitet.
 
@@ -83,10 +83,10 @@ E 09 MPD-Status kann nicht ermittelt werden
 E 10 MPD-Song kann nicht ermittelt werden
 
 Parameterliste:
-P 01 none
-P 02 mpd IP
-P 03 mpd Port
-P 04 mpd PW
+P 01 mpd Host
+P 02 mpd Port
+P 03 mpd PW
+P 04 none
 P 05 Crossfade in Sekunden
 P 06 Playlist Consume 1/0
 P 07 repeat 1/0
@@ -106,12 +106,17 @@ P 06 Interval (Abstand) der Magazin-Beitraege in Minuten (zweistellig)
 P 07 Beginn Infotime Serie B (stunde zweistellig)
 P 08 Interval (Abstand) der Infotime-Beitraege in Sekunden (zweistellig)
 
-PO_Rotation:
+PO_Rotation_Server:
 P 01 Haupt-Pfad mpd-db
 P 02 Pfad Musik
 P 03 Pfad Instrumental
 P 04 Alternative Musik-Quelle benutzen on/off
 P 05 Extra (zusätzliche) Musik-Quelle benutzen on/off
+P 06 Laenge Standard-PL in Minuten
+P 07 Laenge Extra-Titel in Minuten
+
+Extern Params:
+extern_tools
 
 Das Script laeuft mit graphischer Oberflaeche staendig.
 
@@ -472,8 +477,11 @@ def prepare_mpd_0(time_now, minute_start):
                                 + str(ac.song_time_elapsed) + " Sekunden")
             db.write_log_to_db_a(ac, log_message, "t",
                                              "write_also_to_console")
-            # fade
+            # fade and crossfade
             if ac.play_out_current_continue is not True:
+                mpd.exec_command(db, ac, "crossfade", "0")
+                db.write_log_to_db_a(ac, "Set crossfade to 0",
+                                "t", "write_also_to_console")
                 if ac.song_time_elapsed > 4:
                     mpd_fade_out()
                 if ac.song_time_elapsed < - 10:
@@ -975,6 +983,19 @@ def mpd_play():
     db.write_log_to_db(ac, "Check if MPD is playing and volume at 100 %", "k")
 
 
+def mpd_reset_crossfade():
+    """resetting crossfade"""
+    mpd_result = mpd.connect(db, ac)
+    if mpd_result is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[5], "x",
+                                                    "write_also_to_console")
+        return
+    mpd.exec_command(db, ac, "crossfade", db.ac_config_1[5])
+    mpd.disconnect()
+    ac.app_msg_1 = "Resetting Crossfade..." + "\n"
+    db.write_log_to_db(ac, "Resetting Crossfade", "k")
+
+
 class my_form(Frame):
     """Form"""
     def __init__(self, master=None):
@@ -1073,6 +1094,7 @@ class my_form(Frame):
         # cleaning up 5x 1.
         if time_now.minute == int(db.ac_config_times[4]) + 1:
             if time_now.second == 2:
+                mpd_reset_crossfade()
                 if ac.play_out_items is not None:
                     # free for next run
                     ac.play_out_items = None
