@@ -56,7 +56,10 @@ function read_length_write_tag ( $remotefilename, $pathfilename, $artist , $titl
 
 	$log_message .= $need_change_id3."\n";
 
-	if ( $need_change_id3 = "yes" ) {		
+	if ( $need_change_id3 = "yes" ) {
+		// Settings
+		$tbl_row_user_special = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Logging_Config'");
+			
 		// prepare tag
 		$TaggingFormat = 'UTF-8';
 		//$TaggingFormat = 'ISO-8859-1';
@@ -74,7 +77,8 @@ function read_length_write_tag ( $remotefilename, $pathfilename, $artist , $titl
 		// populate data array
 		$TagData['title'][]   = $title;
 		$TagData['artist'][]  = $artist;
-		$TagData['album'][]   = 'SRB - Das Buergerradio';
+		#$TagData['album'][]   = 'SRB - Das Buergerradio';
+		$TagData['album'][]   = $tbl_row_user_special->USER_SP_PARAM_3." - ".$tbl_row_user_special->USER_SP_PARAM_4;
 		$TagData['year'][]    = date("Y");
 		$tagwriter->tag_data = $TagData;
 
