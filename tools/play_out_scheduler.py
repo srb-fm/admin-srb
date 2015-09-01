@@ -203,6 +203,7 @@ class app_config(object):
         self.play_out_items = None
         self.play_out_items_mag = None
         self.play_out_infotime = False
+        self.play_out_stream = None
         self.play_out_current_continue = False
         self.song_time_elapsed = None
         self.app_msg_1 = None
@@ -447,6 +448,16 @@ def prepare_mpd_0(time_now, minute_start):
                     mpd.exec_command(db, ac, "add", item[2][19:])
                 else:
                     msg_2 = msg_2 + item[2][21:] + "\n"
+                    if item[2][21:25] == "http":
+                        # reg stream-url for check
+                        # check will fail, if stream is not the first item!
+                        # but this is rarely the case
+                        ac.play_out_stream = item[2][21:]
+                        db.write_log_to_db_a(ac, "Playing Out Stream", "t",
+                                             "write_also_to_console")
+                    else:
+                        ac.play_out_stream = None
+
                     # trying seamless play
                     if current_song_file.decode('utf_8') == item[2][21:]:
                         # if streaming over one hour,
@@ -546,6 +557,15 @@ def prepare_mpd_5x(time_now, minute_start):
             # add items to playlist
             for item in ac.play_out_items:
                 msg_2 = msg_2 + item[2][21:] + "\n"
+                if item[2][21:25] == "http":
+                    # reg stream-url for check
+                    # check will fail, if stream is not the first item!
+                    # but this is rarely the case
+                    ac.play_out_stream = item[2][21:]
+                    db.write_log_to_db_a(ac, "Playing Out Stream", "t",
+                                             "write_also_to_console")
+                else:
+                    ac.play_out_stream = None
                 if current_song_file.decode('utf_8') == item[2][21:]:
                     ac.play_out_current_continue = True
                     ac.app_msg_1 = "Playing current continue..."
@@ -1130,7 +1150,7 @@ class my_form(Frame):
                     # shuffling music-playlist
                     random.shuffle(ac.music_play_list)
                 db.write_log_to_db_a(ac,
-                            "Vorbereitung Rotation abgeschlossen", "i",
+                            "Rotation vorbereitet", "i",
                                              "write_also_to_console")
 
         # check if mpd is playing
