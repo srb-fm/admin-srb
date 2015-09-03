@@ -412,6 +412,7 @@ def work_on_files(roboting_sgs):
     """
     lib_cm.message_write_to_console(ac, "work_on_files")
 
+    # dropbox
     for item in roboting_sgs:
         lib_cm.message_write_to_console(ac, item[0].encode('ascii', 'ignore'))
         titel = item[0]
@@ -472,6 +473,22 @@ def work_on_files(roboting_sgs):
                 # delete tmp-info-file
                 if success_write_temp is not False:
                     lib_cm.erase_file(ac, db, path_file_temp)
+
+        # ftp
+        for sendung in sendungen:
+            db.write_log_to_db_a(ac, "Sendung fuer VP nach extern gefunden: "
+                    + sendung[11].encode('ascii', 'ignore'), "t",
+                    "write_also_to_console")
+
+            # create path and filename
+            (success, path_f_source, path_file_cloud,
+                path_ftp, filename_dest) = filepaths(item, sendung)
+            if success is False:
+                continue
+
+            success_file = check_file_source(path_f_source, sendung)
+            if success_file is False:
+                continue
 
             if item[3].strip() == "T":
                 # to ftp
