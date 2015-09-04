@@ -456,7 +456,11 @@ def prepare_mpd_0(time_now, minute_start):
                         db.write_log_to_db_a(ac, "Playing Out Stream", "t",
                                              "write_also_to_console")
                     else:
-                        ac.play_out_stream = None
+                        if ac.play_out_stream is not None:
+                            ac.play_out_stream = None
+                            db.write_log_to_db_a(ac,
+                                    "End of Playing Out Stream", "t",
+                                             "write_also_to_console")
 
                     # trying seamless play
                     if current_song_file.decode('utf_8') == item[2][21:]:
@@ -565,7 +569,12 @@ def prepare_mpd_5x(time_now, minute_start):
                     db.write_log_to_db_a(ac, "Playing Out Stream", "t",
                                              "write_also_to_console")
                 else:
-                    ac.play_out_stream = None
+                    if ac.play_out_stream is not None:
+                        ac.play_out_stream = None
+                        db.write_log_to_db_a(ac,
+                                    "End of Playing Out Stream", "t",
+                                             "write_also_to_console")
+
                 if current_song_file.decode('utf_8') == item[2][21:]:
                     ac.play_out_current_continue = True
                     ac.app_msg_1 = "Playing current continue..."
