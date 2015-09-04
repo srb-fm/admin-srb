@@ -32,7 +32,8 @@ P6 Magazin on/off
 P7 Fader on/off
 P8 mAirlist-Playlist schreiben on/off
 
-Von PO_Playlists:
+Extern Parameters:
+PO_Playlists:
 Param_1: Pfad Playlist mpd Infotime
 Param_2: Pfad Playlist mpd Sendung
 Param_3: Pfad Playlist mpd Rotation Instrumentals
@@ -45,7 +46,7 @@ Param_9: Pfad mAirlist Instrumentals fuer mAirlist
 Param_10: Pfad mAirlist Jingles fuer mAirlist
 Param_11: Sub-Path Instrumentals from server to folder play-out-rotation
 
-Von PO_Time_Config:
+PO_Time_Config:
 Param 1: Beginn Tagesstunde Infotime und Magazin
 Param 2: Ende Tagesstunde Infotime und Magazin
 Param 3: Beginn normale Sendung 1 oder Beginn Info-Time
@@ -56,13 +57,17 @@ Param 6: Interval (Abstand) der Magazin-Beitraege in Minuten (zweistellig)
 Param 7: Beginn Infotime Serie B (stunde zweistellig)
 Param 8: Interval (Abstand) der Infotime-Beitraege in Sekunden (zweistellig)
 
-Von PO_Zeitansage_Config:
+PO_Zeitansage_Config:
 Param 1: Datei mit Stille zum faden
 Param 2: Pfad von mpd zu Zeitansagen-Audios
 Param 3: Pfad - Files - Zeitansagen von mAirList zu Audios
 
-Von PO_Switch_Broadcast_Config:
+PO_Switch_Broadcast_Config:
 Param 1: Pfad\Dateiname Sendeumschalterdatei
+
+server_settings
+server_settings_paths_a
+server_settings_paths_b
 
 Fehlerliste:
 Error 000 Parameter-Typ oder Inhalt stimmt nicht
@@ -86,7 +91,11 @@ Funktionsweise
 2. Loeschen der alten Playlisten
 3. Bereitstellen der "Schaltpunkte" fuer Audioquellenswitch
 4. Bereitstellen von Infotime-Sendungen wenn vorgesehen
-5. Bereitstellen von Magazinsendungen-Sendungen wenn vorgesehen
+5. Bereitstellen von Magazin-Sendungen wenn vorgesehen
+
+This script is preparing all audios for playing out.
+Times and filenames are registerd for play-out-scheduler.
+It writes a control file for audioswitch.
 
 Dieses Script wird zeitgesteuert (crontab)
 kurz vor der vollen Stunde vor der Ausstrahlung ausgefuehrt.
@@ -134,36 +143,36 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
+        self.app_errorslist.append(self.app_desc +
             "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
-            "beim Lesen Parameter mAirlist")
-        self.app_errorslist.append(u"Error 002 "
-            "beim Lesen Parameter InfoTime Pfade")
-        self.app_errorslist.append(u"Error 003 "
-            "beim Lesen Parameter Times")
-        self.app_errorslist.append(u"Error 004 "
-            "beim Lesen Parameter Zeitansage")
-        self.app_errorslist.append(u"Error 005 "
-            "beim Lesen Parameter Audioswitch")
-        self.app_errorslist.append(u"Error 006 "
-            "beim Loeschen der Playlist")
-        self.app_errorslist.append(u"Error 007 "
-            "beim Schreiben der Playlist")
-        self.app_errorslist.append(u"Error 008 "
-            "beim Schreiben der Audio-Switch Steuerdatei")
-        self.app_errorslist.append(u"Error 009 "
-            "beim Lesen der Zeitansage")
-        self.app_errorslist.append(u"Error 010 "
-            "beim Lesen des Jingles")
-        self.app_errorslist.append(u"Error 011 "
-            "beim Lesen des Instrumentals")
-        self.app_errorslist.append(u"Error 012 "
-            "beim Lesen der Laenge von Instrumentals")
-        self.app_errorslist.append(u"Error 013 "
-            "beim Loeschen der Magazin-Playlist")
-        self.app_errorslist.append(u"Error 014 "
-            "Instrumental-Playlist Erstellung abgebrochen")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen Parameter mAirlist")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen Parameter InfoTime Pfade")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen Parameter Times")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen Parameter Zeitansage")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen Parameter Audioswitch")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Loeschen der Playlist")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Schreiben der Playlist")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Schreiben der Audio-Switch Steuerdatei")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen der Zeitansage")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen des Jingles")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen des Instrumentals")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen der Laenge von Instrumentals")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Loeschen der Magazin-Playlist")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler bei Instrumental-Playlist-Erstellung")
         self.random_file_error = 0
         # mAirlist-Playlist running under Windows
         self.pl_win_mairlist = "yes"
@@ -1187,7 +1196,7 @@ def rock_magazin():
 
 
 def read_from_file_lines_in_list(filename):
-    """Zeilen aus Datei in Liste schreiben"""
+    """write rows from file in list"""
     try:
         f = open(filename, 'r')
         lines = f.readlines()
@@ -1202,30 +1211,33 @@ def read_from_file_lines_in_list(filename):
 
 def lets_rock():
     print "lets_rock "
-    # Weitere Params
+    # ext params
     load_extended_params_ok = load_extended_params()
     if load_extended_params_ok is None:
         return
-    # Sendungen volle Stunde
+    # Shows 1. startpoint (top of the hour)
     # Minute Start, Minute Ende
     # Minute Ende ist Minute Anfang des naechsten Punktes -1, zw. 59
     minute_start = db.ac_config_times[3]
     minute_end = str(int(db.ac_config_times[4]) - 1).zfill(2)
     rock_sendung(minute_start, minute_end)
 
+    # Shows 2. startpoint
     minute_start = db.ac_config_times[4]
     minute_end = str(int(db.ac_config_times[5]) - 1).zfill(2)
     rock_sendung(minute_start, minute_end)
 
+    # Shows 3. startpoint
     minute_start = db.ac_config_times[5]
     minute_end = "59"
     rock_sendung(minute_start, minute_end)
+
     # Audioswitch
     write_to_file_switch_params()
     # InfoTime
     if ac.po_it is not None:
         rock_infotime()
-    # Magazin
+    # Magazine
     rock_magazin()
 
 
