@@ -25,6 +25,13 @@ Bezieht Daten aus: Firebird-Datenbank
 
 Param 1: on/off switch
 
+Esterne Params:
+PO_Protokoll_Config
+ext_tools
+server_settings
+server_settings_paths_a
+server_settings_paths_b
+
 Fehlerliste:
 Error 000 Parameter-Typ oder Inhalt stimmt nich
 Error 001 Fehler beim Kopieren der Protokolldatei in Play-Out
@@ -69,15 +76,18 @@ class app_config(object):
         self.app_errorfile = "error_play_out_repeat_protokoll.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
-            "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
-            "Fehler beim Kopieren der Protokolldatei in Play-Out")
-        self.app_errorslist.append(u"Error 002 Fehler beim mp3-Validator: ")
-        self.app_errorslist.append(u"Error 003 Fehler bei mp3gain: ")
-        self.app_errorslist.append(u"Error 004 "
-            "Fehler beim Loeschen der mp3validator-bak-Datei")
-        self.app_errorslist.append(u"Error 005 Fehler bei id3tag: ")
+        self.app_errorslist.append(self.app_desc +
+            " Parameter-Typ oder Inhalt stimmt nicht ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Kopieren der Protokolldatei in Play-Out")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim mp3-Validator: ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler bei mp3gain: ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Loeschen der mp3validator-bak-Datei")
+        self.app_errorslist.append(self.app_desc +
+            "Fehler bei id3tag: ")
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -145,7 +155,7 @@ def load_extended_params():
 
 def load_sg_repeat():
     """check if shows for repeating present"""
-    lib_cm.message_write_to_console(ac, u"load_podcast")
+    lib_cm.message_write_to_console(ac, "load_podcast")
     # wenn in Stunde 0, dann mit aktuellem Tag suchen,
     # damit Sendungen von 23 bis 0 Uhr beruecksichtigt werden
     if datetime.datetime.now().hour == 0:
