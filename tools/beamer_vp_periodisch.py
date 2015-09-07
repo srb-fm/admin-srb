@@ -264,10 +264,7 @@ def write_to_info_file(filename_dest, item, sendung):
     if manuskript_data is not None:
         manuskript_text = lib_cm.simple_cleanup_html(manuskript_data[0])
 
-    #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
     try:
-        #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
-        #path_text_file_dest = os.path.splitext(path_file_cloud)[0] + ".txt"
         path_file_temp = (lib_cm.check_slashes(ac, db.ac_config_1[2])
                                  + filename_dest.replace("mp3", "txt"))
         f_info_txt = open(path_file_temp, 'w')
@@ -281,9 +278,6 @@ def write_to_info_file(filename_dest, item, sendung):
                                              "write_also_to_console")
         success_write = False
     else:
-        # filename rechts von slash extrahieren
-        #filename = lib_cm.extract_filename(ac, path_file_temp)
-
         f_info_txt.write("Titel: " + sendung[11].encode('utf-8')
                         + "\r\n")
         f_info_txt.write("Autor: " + sendung[15].encode('utf-8')
@@ -336,9 +330,6 @@ def filepaths(item, sendung):
         db.write_log_to_db_a(ac, str(e), "x", "write_also_to_console")
         success_file = False
 
-    lib_cm.message_write_to_console(ac, path_file_source)
-    lib_cm.message_write_to_console(ac, path_file_cloud)
-    #db.write_log_to_db_a(ac, "Testpoint", "p", "write_also_to_console")
     return (success_file, path_file_source, path_file_cloud, path_ftp,
                                                 filename_dest)
 
@@ -524,7 +515,7 @@ def work_on_files(roboting_sgs):
                 #    "VP auf ftp uebertragen: " + filename_dest, "i",
                 #                                    "write_also_to_console")
                 db.write_log_to_db_a(ac,
-                    "VP auf ftp v: " + filename_dest, "n",
+                    "VP auf ftp uebertragen: " + filename_dest, "n",
                                                     "write_also_to_console")
 
                 # delete tmp-info-file
