@@ -348,6 +348,24 @@ def check_mpd_stat(option):
         return current_status
 
 
+def check_stream():
+    """check if play-out-stream is playing"""
+    #TODO: remove success stream msg to db when finished develop
+    if ac.play_out_stream is not None:
+        current_song = check_mpd_song("file")
+        if current_song != ac.play_out_stream:
+            db.write_log_to_db_a(ac, "Is the stream interrupted: "
+                + current_song, "x",
+                                             "write_also_to_console")
+            ac.app_msg_1 = "Is the stream interrupted?"
+        else:
+            db.write_log_to_db_a(ac, "Stream is playing: "
+                + current_song, "t",
+                                             "write_also_to_console")
+            ac.app_msg_1 = "Stream is playing.."
+    return
+
+
 def check_mpd_song(option):
     """read song-status"""
     current_song = mpd.exec_command(db, ac, "song", None)
@@ -1166,12 +1184,18 @@ class my_form(Frame):
         if time_now.minute == 10:
             if time_now.second == 30:
                 mpd_play()
+                check_stream()
         if time_now.minute == 35:
             if time_now.second == 30:
                 mpd_play()
+                check_stream()
         if time_now.minute == 54:
             if time_now.second == 30:
                 mpd_play()
+                check_stream()
+
+        # check if stream is playing
+        #check_stream()
 
         # reload mpd
         # this is for freeing mpd.log to rotate them
