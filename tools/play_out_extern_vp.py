@@ -38,10 +38,12 @@ E 09 Fehler beim Aktualisieren der Sendebuchung der VP von extern
 
 
 Parameterliste:
-Param 1: Pfad vom Server zu Dropbox-Hauptordner
-Param 2: Pfad vom Server zu Playout-Sendung
-Param 3: Pfad/Programm mp3-validator
-Param 4: Pfad/Programm mp3-gain
+P 1: On/Off Switch
+P 2: none
+P 3: ftp-Verzeichnis
+P 4: ftp-Host
+P 5: ftp-Benutzer
+P 6: ftp-PW
 
 Ausfuehrung: jede Stunde zur Minute 45
 
