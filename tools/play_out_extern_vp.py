@@ -141,7 +141,6 @@ def load_extended_params():
 
 def load_roboting_sgs():
     """search shows"""
-<<<<<<< HEAD
     lib_cm.message_write_to_console(ac, "search for radio-shows")
     sendungen_data = db.read_tbl_rows_with_cond(ac, db,
         "SG_HF_ROBOT",
@@ -149,20 +148,12 @@ def load_roboting_sgs():
         "SG_HF_ROB_IN_DROPB, SG_HF_ROB_FILE_IN_DB, "
         "SG_HF_ROB_IN_FTP, SG_HF_ROB_FILE_IN_FTP, "
         " SG_HF_ROB_SHIFT",
-=======
-    lib_cm.message_write_to_console(ac,
-        u"Sendungen suchen, die bearbeitet werden sollen")
-    sendungen_data = db.read_tbl_rows_with_cond(ac, db,
-        "SG_HF_ROBOT",
-        "SG_HF_ROB_TITEL, SG_HF_ROB_FILE_IN_DB, SG_HF_ROB_SHIFT",
->>>>>>> en_003_beamer_vp_add_ftp
         "SG_HF_ROB_VP_IN ='T'")
 
     if sendungen_data is None:
-        log_message = u"Keine Sendungen fuer Uebernahme als VPs vorgesehen.. "
+        log_message = "Keine VP-Uebernahme vorgesehen.. "
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
         return sendungen_data
-
     return sendungen_data
 
 
@@ -176,7 +167,7 @@ def load_sg(sg_titel):
                     db, db_tbl_condition)
 
     if sendung_data is None:
-        log_message = (u"Keine Sendung mit diesem Titel gefunden: "
+        log_message = ("Keine Sendung mit diesem Titel gefunden: "
                             + sg_titel.encode('ascii', 'ignore'))
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
         return sendung_data
@@ -189,10 +180,10 @@ def audio_copy(path_file_source, path_file_dest):
     success_copy = None
     try:
         shutil.copy(path_file_source, path_file_dest)
-        db.write_log_to_db_a(ac, u"Audio Vorproduktion: "
+        db.write_log_to_db_a(ac, "Audio Vorproduktion: "
                 + path_file_source.encode('ascii', 'ignore'),
                 "v", "write_also_to_console")
-        db.write_log_to_db_a(ac, u"Audio kopiert nach: "
+        db.write_log_to_db_a(ac, "Audio kopiert nach: "
                 + path_file_dest, "c", "write_also_to_console")
         success_copy = True
     except Exception, e:
