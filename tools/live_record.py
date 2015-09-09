@@ -32,7 +32,7 @@ koennen nicht nocheinmal mitgeschnitten werden.
 und bereits von der ersten Zeit ein Mitschnitt laeuft)
 
 
-Dateiname Script: play_out_reminder.py
+Dateiname Script: live_record.py
 Keine weiteren Einstellungen noetig.
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
@@ -47,13 +47,18 @@ Error 001 beim Schreiben der Recorder-Config-Datei
 
 Parameterliste:
 Param 1: On/Off Switch
-Param 2: Stunden fuer zusammenhaengende Sendungen (z.B. 04)
+Param 2: Max Stunden fuer zusammenhaengende Sendungen (z.B. 04)
 Param 3: Sekunden Aufnahmebeginn vor Sendung (30)
 Param 4: Sekunden Aufnahmeende nach Sendung (30)
 Param 5: Pfad/Dateiname Configdatei fuer jack_capture
         (ohne /home/user des servers)
 Param 6: Pfad fuer Recordings (ohne /home/user des stream-servers)
 
+Extern Parameters:
+ext_tools
+server_settings
+server_settings_paths_a
+server_settings_paths_b
 
 Dieses Script wird zeitgesteuert jede Stunde zur 58. Minute ausgefuehrt.
 Das Script live_recording.sh wird jede Stunde zur 59. Minute
