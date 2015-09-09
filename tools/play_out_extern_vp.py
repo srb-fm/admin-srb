@@ -25,13 +25,17 @@ Bezieht Daten aus: Firebird-Datenbank
 
 
 Fehlerliste:
-Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 Fehler beim Kopieren der Vorproduktion in Play-Out
-Error 002 beim mp3-Validator:
-Error 003 bei mp3gain:
-Error 004 Fehler beim Loeschen der mp3validator-bak-Datei
-Error 005 Fehler beim Generieren des Dateinamens:
-Error 006 Fehler beim Datums-Muster
+E 00 Parameter-Typ oder Inhalt stimmt nicht
+E 01 Fehler beim Kopieren der Vorproduktion in Play-Out
+E 02 beim mp3-Validator:
+E 03 bei mp3gain:
+E 04 Fehler beim Loeschen der mp3validator-bak-Datei
+E 05 Fehler beim Generieren des Dateinamens:
+E 06 Fehler beim Datums-Muster
+E 07 Fehler beim Schreiben von id3Tags in VP von extern
+E 08 Fehler beim Ermitteln der Laenge VP von extern
+E 09 Fehler beim Aktualisieren der Sendebuchung der VP von extern
+
 
 Parameterliste:
 Param 1: Pfad vom Server zu Dropbox-Hauptordner
@@ -76,25 +80,25 @@ class app_config(object):
         self.app_errorfile = "error_play_out_load_vp_extern.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
+        self.app_errorslist.append(self.app_desc +
             "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
-            "Fehler beim Kopieren der Vorproduktion in Play-Out")
-        self.app_errorslist.append(u"Error 002 "
-            "beim mp3-Validator: ")
-        self.app_errorslist.append(u"Error 003 bei mp3gain: ")
-        self.app_errorslist.append(u"Error 004 "
-            "Fehler beim Loeschen der mp3validator-bak-Datei")
-        self.app_errorslist.append(u"Error 005 "
-            "Fehler beim Generieren des Dateinamens ")
-        self.app_errorslist.append(u"Error 006 "
-            "Fehler beim Datums-Muster: ")
-        self.app_errorslist.append(u"Error 007 "
-            "beim Schreiben von id3Tags in VP von extern")
-        self.app_errorslist.append(u"Error 008 "
-            "beim ermitteln der Laenge VP von extern")
-        self.app_errorslist.append(u"Error 009 "
-            "beim Aktualisieren der Sendebuchung der VP von extern")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Kopieren der Vorproduktion in Play-Out")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim mp3-Validator: ")
+        self.app_errorslist.append(self.app_desc + "Fehler bei mp3gain: ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Loeschen der mp3validator-bak-Datei")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Generieren des Dateinamens ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Datums-Muster: ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Schreiben von id3Tags in VP von extern")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Ermitteln der Laenge VP von extern")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Aktualisieren der Sendebuchung der VP von extern")
 
         # params-type-list
         self.app_params_type_list = []
