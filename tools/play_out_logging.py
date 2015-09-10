@@ -49,22 +49,19 @@ Liste der moeglichen Haupt-Fehlermeldungen:
 E 0 Parameter-Typ oder Inhalt stimmt nicht
 E 1 Sende-Quelle kann aus Datenbank nicht ermittelt werden
 E 2 Play-Out-Log-Datei kann nicht gelesen werden
-E 3 Webserver fuer PlayOut-Logging lieferte bei
-Uebertragung Fehler zurueck
-E 4 Webserver fuer PlayOut-Logging nicht erreichbar
+E 3 Webserver lieferte bei Uebertragung Fehler zurueck
+E 4 Webserver fuer nicht erreichbar
 E 5 Externes PlayOut-Logging ausgesetzt, Webserver nicht erreichbar
-E 6 PlayOut-Logging-Fehler bei MPD-Connect
-E 7 PlayOut-Logging-Fehler bei MPD-Song-Abfrage
-E 8 PlayOut-Logging-Fehler bei MPD-Status-Abfrage
+E 6 Fehler bei MPD-Connect
+E 7-Fehler bei MPD-Song-Abfrage
+E 8-Fehler bei MPD-Status-Abfrage
 
 Parameterliste:
-Param 1: mAirList Logdatei aktueller Titel
-(Erweiterung um Nummer und Endung "log" wird durch das
-logging-Programm vorgenommen)
+Param 1: none
 Param 2: Aktualisierungsintervall in Sekunden
 Param 3: Not-Autor
 Param 4: Not-Titel
-Param 5: URL Webseite
+Param 5: URL Webscript
 Param 6: Benutzer
 Param 7: Passwort
 Param 8: mAirList Logdatei der Studio-Rechner, aktueller Titel
@@ -72,6 +69,7 @@ Param 8: mAirList Logdatei der Studio-Rechner, aktueller Titel
 wird durch das logging-Programm vorgenommen)
 Hinweis: Autor und Titel (param 3 und 4)
 wird eingesetzt wenn tatsaechlicher nicht ermittelbar
+Param 9: mpd oder mairlist
 
 Erweiterte Parameter werden bezogen von:
 PO_Time_Config_1
@@ -122,23 +120,23 @@ class app_config(object):
         self.app_errorfile = "error_play_out_logging.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Parameter-Typ "
+        self.app_errorslist.append(self.app_desc + " Parameter-Typ "
             "oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Sende-Quelle "
+        self.app_errorslist.append(self.app_desc + "Sende-Quelle "
             "kann fuer PlayOut-Logging nicht aus Datenbank ermittelt werden ")
-        self.app_errorslist.append(u""
-            "Play-Out-Log-Datei kann nicht gelesen werden")
-        self.app_errorslist.append(u"Webserver fuer PlayOut-Logging"
-            " lieferte bei Uebertragung Fehler zurueck")
-        self.app_errorslist.append(u"Webserver "
-            "fuer PlayOut-Logging nicht erreichbar")
-        self.app_errorslist.append(u"Externes PlayOut-Logging ausgesetzt, "
-            "Webserver nicht erreichbar")
-        self.app_errorslist.append(u"PlayOut-Logging-Fehler bei MPD-Connect")
-        self.app_errorslist.append(u"PlayOut-Logging-Fehler "
-            "bei MPD-Song-Abfrage")
-        self.app_errorslist.append(u"PlayOut-Logging-Fehler "
-            "bei MPD-Status-Abfrage")
+        self.app_errorslist.append(self.app_desc +
+            " Play-Out-Log-Datei kann nicht gelesen werden")
+        self.app_errorslist.append(self.app_desc +
+            " Webserver lieferte bei Uebertragung Fehler zurueck")
+        self.app_errorslist.append(self.app_desc +
+            " Webserver nicht erreichbar")
+        self.app_errorslist.append(self.app_desc +
+            " Externes Logging ausgesetzt, Webserver nicht erreichbar")
+        self.app_errorslist.append(self.app_desc + "-Fehler bei MPD-Connect")
+        self.app_errorslist.append(self.app_desc +
+            "-Fehler bei MPD-Song-Abfrage")
+        self.app_errorslist.append(self.app_desc +
+            "-Fehler bei MPD-Status-Abfrage")
         # anzahl parameter list 0
         self.app_config_params_range = 10
         # params-type-list, typ entsprechend der params-liste in der config
