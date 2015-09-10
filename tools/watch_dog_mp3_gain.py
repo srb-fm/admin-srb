@@ -24,14 +24,18 @@ Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
 Fehlerliste:
-Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 bei mp3gain
-Error 002 Fehler beim Kopieren der bearbeiteten Datei:
+E 00 Parameter-Typ oder Inhalt stimmt nich
+E 01 bei mp3gain
+E 02 Fehler beim Kopieren der bearbeiteten Datei:
 
 Parameterliste:
-Param 1: Pfad/Programm mp3gain
-Param 2: Pfad in dem die mp3's zum Bearbeiten sind
-Param 3: Pfad in den die bearbeiteten mp3's verschoben werden sollen
+Param 1:  On/Off Switch
+
+Extern Parameters:
+ext_tools
+server_settings
+server_settings_paths_a_A
+
 
 Dieses Script wird zeitgesteuert alle 2 Minuten ausgefuehrt.
 
@@ -64,12 +68,12 @@ class app_config(object):
         self.app_errorfile = "error_watch_dog_mp3gain.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
-            "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
-            "bei mp3gain:")
-        self.app_errorslist.append(u"Error 002 "
-            "Fehler beim Kopieren nach mp3Gaining: ")
+        self.app_errorslist.append(self.app_desc +
+            " Parameter-Typ oder Inhalt stimmt nicht ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler bei mp3gain:")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Kopieren nach mp3Gaining: ")
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -138,12 +142,16 @@ def audio_mp3gain(path_file):
 def lets_rock():
     """main function """
     print "lets_rock "
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
     lib_cm.message_write_to_console(ac, u"lets_rock check_and_work_on_files")
     path_source = lib_cm.check_slashes(ac, db.ac_config_servpath_b[3])
     path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_b[4])
 
-    lib_cm.message_write_to_console(ac, path_source)
-    lib_cm.message_write_to_console(ac, path_dest)
+    #lib_cm.message_write_to_console(ac, path_source)
+    #lib_cm.message_write_to_console(ac, path_dest)
 
     # read mp3gain-folder
     try:
@@ -202,8 +210,6 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # ok: continue
         if param_check is not None:
-            # extended params
-            load_extended_params_ok = load_extended_params()
             if db.ac_config_1[1] == "on":
                 lets_rock()
             else:
