@@ -144,7 +144,7 @@ class app_config(object):
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(self.app_desc +
-            " Parameter-Typ oder Inhalt stimmt nicht ")
+            " Parameter-Typ oder Inhalt stimmt nicht")
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Lesen Parameter mAirlist")
         self.app_errorslist.append(self.app_desc +
