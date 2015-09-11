@@ -934,7 +934,8 @@ def params_provide_server_settings(ac, db):
                         app_params_type_list,
                         db.ac_config_servset)
         if param_check_config is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            err_msg = ac.app_errorslist[0] + " server_settings"
+            db.write_log_to_db_a(ac, err_msg, "x",
             "write_also_to_console")
             ext_params_ok = None
     else:
@@ -960,7 +961,8 @@ def params_server_active(ac, db):
                         app_params_type_list,
                         db.ac_config_server_active)
         if param_check_config is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            err_msg = ac.app_errorslist[0] + " server_active"
+            db.write_log_to_db_a(ac, err_msg, "x",
             "write_also_to_console")
             ext_params_ok = None
     else:
@@ -995,7 +997,8 @@ def params_provide_server_paths_a(ac, db, running_server):
                         app_params_type_list,
                         db.ac_config_servpath_a)
         if param_check_config is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            err_msg = ac.app_errorslist[0] + " server_settings_paths_a_"
+            db.write_log_to_db_a(ac, err_msg, "x",
             "write_also_to_console")
             ext_params_ok = None
     else:
@@ -1030,7 +1033,8 @@ def params_provide_server_paths_b(ac, db, running_server):
                         app_params_type_list,
                         db.ac_config_servpath_b)
         if param_check_config is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            err_msg = ac.app_errorslist[0] + " server_settings_paths_b_"
+            db.write_log_to_db_a(ac, err_msg, "x",
             "write_also_to_console")
             ext_params_ok = None
     else:
@@ -1064,7 +1068,8 @@ def params_provide_tools(ac, db):
                         app_params_type_list_etools,
                         db.ac_config_etools)
         if param_check_etools_config is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            err_msg = ac.app_errorslist[0] + " ext_tools"
+            db.write_log_to_db_a(ac, err_msg, "x",
             "write_also_to_console")
             ext_params_ok = None
     else:
@@ -1093,17 +1098,15 @@ def params_check_1(ac, db):
 
 
 def params_check_a(ac, db, params_range, params_type_list, params_list):
-    """ Fuer Zusatzparams:
-    Pruefen ob Params geladen wurden und richtigen Typ haben"""
-    message_write_to_console(ac, "check_params ")
-
-    #if db.ac_config_2 is not None:
-     #   message_write_to_console(ac, "params_check not none")
+    """ check type of extendet params """
+    message_write_to_console(ac, "check_type_of_ext_params ")
+    z = -1
     for i in range(params_range):
+        z += 1
         param_check = params_check_type(
             ac, db, params_type_list[i], params_list[i])
         if param_check is None:
-            err_message = ac.app_errorslist[0] + " " + params_list[i]
+            err_message = "Parameter-Typ stimmt nicht, Nr. " + str(z)
             message_write_to_console(ac, err_message)
             db.write_log_to_db(ac, err_message, "x")
             break
