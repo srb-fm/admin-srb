@@ -144,7 +144,7 @@ class app_config(object):
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(self.app_desc +
-            "Parameter-Typ oder Inhalt stimmt nicht ")
+            " Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Lesen Parameter mAirlist")
         self.app_errorslist.append(self.app_desc +
@@ -209,10 +209,9 @@ def load_extended_params():
     # paths playlists etc
     db.ac_config_playlist = db.params_load_1a(ac, db, "PO_Playlists")
     if db.ac_config_playlist is not None:
-        # Erweiterte Paramsliste anlegen
+        # Set additionaly Params
         app_params_type_list_playlist = []
-        # Erweiterte Params-Type-List,
-        # Typ entsprechend der Params-Liste in der Config
+        # Types of Params
         app_params_type_list_playlist.append("p_string")
         app_params_type_list_playlist.append("p_string")
         app_params_type_list_playlist.append("p_string")
@@ -224,7 +223,7 @@ def load_extended_params():
         app_params_type_list_playlist.append("p_string")
         app_params_type_list_playlist.append("p_string")
         app_params_type_list_playlist.append("p_string")
-        # Erweiterte Params pruefen
+        # Check types
         param_check_mairlist = lib_cm.params_check_a(
                         ac, db, 11,
                         app_params_type_list_playlist,
@@ -238,10 +237,9 @@ def load_extended_params():
     db.ac_config_times = db.params_load_1a(
                             ac, db, "PO_Time_Config_1")
     if db.ac_config_times is not None:
-        # Erweiterte Paramsliste anlegen
+        # Set additionaly Params
         app_params_type_list_times = []
-        # Erweiterte Params-Type-List,
-        # Typ entsprechend der Params-Liste in der Config
+        # Types of Params
         app_params_type_list_times.append("p_string")
         app_params_type_list_times.append("p_string")
         app_params_type_list_times.append("p_string")
@@ -250,7 +248,7 @@ def load_extended_params():
         app_params_type_list_times.append("p_string")
         app_params_type_list_times.append("p_string")
         app_params_type_list_times.append("p_string")
-        # Erweiterte Params pruefen
+        # Check types
         param_check_times = lib_cm.params_check_a(
                         ac, db, 8,
                         app_params_type_list_times,
@@ -323,7 +321,6 @@ def load_extended_params():
 
 def load_broadcast(minute_start, minute_end):
     """load shows from db"""
-
     list_sendung_filename = []
     list_sendung_duration = []
     list_sendung_source = []
