@@ -351,18 +351,25 @@ def check_mpd_stat(option):
 def check_stream():
     """check if play-out-stream is playing"""
     #TODO: remove success stream msg to db when finished develop
-    if ac.play_out_stream is not None:
-        current_song = check_mpd_song("file")
-        if current_song != ac.play_out_stream:
-            db.write_log_to_db_a(ac, "Is the stream interrupted: "
-                + current_song, "x",
-                                             "write_also_to_console")
-            ac.app_msg_1 = "Is the stream interrupted?"
-        else:
-            db.write_log_to_db_a(ac, "Stream is playing: "
-                + current_song, "t",
-                                             "write_also_to_console")
-            ac.app_msg_1 = "Stream is playing.."
+    if ac.play_out_stream is None:
+        return
+
+    mpd_result = mpd.connect(db, ac)
+    if mpd_result is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[5], "x",
+                                                    "write_also_to_console")
+        return
+    current_song = check_mpd_song("file")
+    mpd.disconnect()
+
+    if current_song != ac.play_out_stream:
+        db.write_log_to_db_a(ac, "Is the stream interrupted: "
+                + current_song, "x", "write_also_to_console")
+        ac.app_msg_1 = "Is the stream interrupted?"
+    else:
+        db.write_log_to_db_a(ac, "Stream is playing: "
+            + current_song, "t", "write_also_to_console")
+        ac.app_msg_1 = "Stream is playing.."
     return
 
 
@@ -377,7 +384,7 @@ def check_mpd_song(option):
     if option is not None:
         if option == "file":
             if "file" in current_song:
-                # can fail if filename can not eincode to ascii
+                # can fail if filename can not encode to ascii
                 #lib_cm.message_write_to_console(ac,
                 #            current_song["file"].encode('ascii', 'ignore'))
                 return current_song["file"]
