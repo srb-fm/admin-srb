@@ -18,6 +18,9 @@ sodass der Log_Tweeter erinnern kann.
 - Sendungen die nicht freigeschalten sind
 - Sendungen die live aus den Sudios erfolgen
 
+This script is for providing reminders.
+- Shows they are registered but not unlocked
+- Live shows
 
 Dateiname Script: play_out_reminder.py
 Keine weiteren Einstellungen noetig.
@@ -45,26 +48,22 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "015"
         self.app_desc = u"Play_Out_Reminder"
         self.app_errorfile = "error_play_out_reminder.log"
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # show messages on console
         self.app_debug_mod = "no"
-        # zeit fuer sendungensuche: ab jetzt
-        #self.time_target = datetime.datetime.now() + datetime.timedelta()
-        # ab naechste stunde
+        # for current hour
+        # for next hour
         self.time_target = (datetime.datetime.now()
                             + datetime.timedelta(hours=+1))
 
 
 def load_off_air_sendungen():
-    """
-    In DB nachsehen,
-    ob nicht freigeschaltene Sendungen fuer die kommende Stunde vorgesehen sind
-    """
+    """seek for unlock shows"""
     lib_cm.message_write_to_console(ac, "load_prev_sendungen")
     # zfill fuellt nullen auf bei einstelliger stundenzahl
 
@@ -93,10 +92,7 @@ def load_off_air_sendungen():
 
 
 def load_studio_sendungen():
-    """
-    In DB nachsehen,
-    ob Studio-Sendungen fuer die kommende Stunde vorgesehen sind
-    """
+    """seek for live shows"""
     lib_cm.message_write_to_console(ac, "load_studio_live_sendungen")
     # zfill fuellt nullen auf bei einstelliger stundenzahl
 
@@ -125,7 +121,7 @@ def load_studio_sendungen():
 
 
 def log_off_air_sendungen(list_off_air_sendungen):
-    """ Off-Air Sendungen in Log registrieren """
+    """reg in Off-Air Shows in Log """
     for item in list_off_air_sendungen:
         db.write_log_to_db(ac,
             u"Achtung, Sendung nicht freigeschalten: "
@@ -133,7 +129,7 @@ def log_off_air_sendungen(list_off_air_sendungen):
 
 
 def log_studio_sendungen(list_studio_sendungen):
-    """ Studio Sendungen in Log registrieren """
+    """reg live shows in Log"""
     for item in list_studio_sendungen:
         db.write_log_to_db(ac,
             u"Achtung, Sendung aus Studio/ von ISDN o.a. vorgesehen: "
@@ -141,18 +137,18 @@ def log_studio_sendungen(list_studio_sendungen):
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """Mainfunktion"""
     print "lets_rock "
-    # off-air-sendungen holen
+    # off-air-shows
     list_off_air_sendungen = load_off_air_sendungen()
     if list_off_air_sendungen is not None:
-        # sendungen in log-tabelle schreiben
+        # reg shows in db
         log_off_air_sendungen(list_off_air_sendungen)
 
-    # studio-sendungen holen
+    # live studio shows
     list_studio_sendungen = load_studio_sendungen()
     if list_studio_sendungen is not None:
-        # sendungen in log-tabelle schreiben
+        # reg shows in db
         log_studio_sendungen(list_studio_sendungen)
 
 
