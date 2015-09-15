@@ -53,35 +53,32 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "010"
         self.app_desc = u"Statistik aktive Macher"
-        #schluessel fuer config in db
-        #self.app_config = nicht nenoetigt
-        #self.app_config_develop = nicht nenoetigt
-        # anzahl parameter
-        #self.app_config_params_range = 0
+        # key for config in db not necessary
+
         self.app_errorfile = "error_statistik_user_active.log"
         self.app_errorslist = []
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # dev-mod
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # show messages on console
         self.app_debug_mod = "yes"
         self.app_windows = "yes"
         # errorlist
-        self.app_errorslist.append(u"000 Fehler "
-            "beim Ermitteln der aktiven Macher ")
-        self.app_errorslist.append(u"001 Fehler "
-            "beim Registrieren der Aktiven Macher in der Datenbank: ")
-        self.app_errorslist.append(u"002 Fehler "
-            "beim Zuruecksetzen der Aktiven Macher in der Datenbank")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Ermitteln der aktiven Macher ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Registrieren der Aktiven Macher in der Datenbank: ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Zuruecksetzen der Aktiven Macher in der Datenbank")
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """Main funktion """
     print "lets_rock "
-    # Aktive User in Adress-Tabelle lesen
+    # Read acive user in table adress
     user_active_number = db.count_rows(ac, db,
         "AD_MAIN", "AD_USER_OK_AKTIV='T'")
     if user_active_number is None:
@@ -94,7 +91,7 @@ def lets_rock():
     db.write_log_to_db(ac, log_message, "t")
     lib_cm.message_write_to_console(ac, log_message)
 
-    # Anzahl speichern
+    # Save Number
     sql_command = ("INSERT INTO ST_USER_OK_ACTIVE ( ST_USER_OK_ACTIVE_NUMBER ) "
         "VALUES ( '" + str(user_active_number) + "')")
     db_ok = db.exec_sql(ac, db, sql_command)
@@ -105,7 +102,7 @@ def lets_rock():
         db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
         return
 
-    # user_active zuruecksetzen
+    # reset user_active
     sql_command = "UPDATE AD_MAIN SET AD_USER_OK_AKTIV='F' "
     db_ok_1 = db.exec_sql(ac, db, sql_command)
     if db_ok_1 is None:
