@@ -16,6 +16,8 @@ Dieses Script kopiert die Audios der Sendungen vom Play-Out-Server ins Archiv.
 Wurden sie laenger als eine bestimmte Anzahl von Tagen nicht gesendet,
 werden sie im Play-Out-Server geloescht.
 
+This script is for archiving broadcasted audio files.
+
 Dateiname Script: play_out_archiv.py
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
@@ -37,9 +39,9 @@ dass keine Dateien zum archivieren vorhanden sind.
 Pruefung erfolgt in write_files_to_archive_prepare.
 
 Fehlerliste:
-Error 000 Parameter-Typ oder Inhalt stimmt nicht
-Error 001 Fehler beim Lesen oder Schreiben von Archiv-Ordnern oder Dateien
-Error 002 Fehler beim Loeschen von Dateien in Play-Out
+E 00 Parameter-Typ oder Inhalt stimmt nicht
+E 01 Fehler beim Lesen oder Schreiben von Archiv-Ordnern oder Dateien
+E 02 Fehler beim Loeschen von Dateien in Play-Out
 
 Parameterliste:
 Param 1: On/off
@@ -48,10 +50,8 @@ Param 3: Tage zurueck fuer loeschen in PlayOut
 Param 4: Anzahl Dateien die kopiert oder geloescht werden
 
 Extendet
-Param 1: Play_Out_Ordner IT und Maganzine
-Param 2: Play_Out_Ordner Sendungen
-Param 3: Archiv_Ordner IT und Maganzine
-Param 4: Archiv_Ordner Sendungen
+server_settings
+server_settings_paths_a
 
 Das Script laeuft per chron jeden Tag ca. 6:25.
 
@@ -79,15 +79,15 @@ class app_config(object):
         self.app_errorfile = "error_play_out_archiv.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
-            "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
-            "Fehler beim Lesen oder Schreiben von Archiv-Ordnern oder Dateien ")
-        self.app_errorslist.append(u"Error 002 "
-            "Fehler beim Loeschen von Dateien in Play-Out")
-        # number of parameters
+        self.app_errorslist.append(self.app_desc +
+            " Parameter-Typ oder Inhalt stimmt nicht ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Lesen oder Schreiben von Archiv-Ordnern oder Dateien")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Loeschen von Dateien in Play-Out")
+        # number parameters
         self.app_config_params_range = 5
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -193,8 +193,6 @@ def write_files_to_archive_prepare(sendung_art):
             lib_cm.message_write_to_console(ac, log_data)
             z_non_copys = 0
             for row in log_data:
-                #lib_cm.message_write_to_console( ac, row )
-                #lib_cm.message_write_to_console( ac, row[0][-1] )
                 # count loops with no copy
                 if row[0][-1] == "0":
                     z_non_copys += 1
@@ -277,16 +275,10 @@ def write_files_to_archive(files_sendung_source,
 
         for row in sendung_data:
             y += 1
-            #db.write_log_to_db(ac, "we are here 1", "t")
             sendung_year = row[2].year
             lib_cm.message_write_to_console(ac, sendung_year)
 
             sendung_date = row[2]
-            #db.write_log_to_db(ac, "we are here 2", "t")
-            #lib_cm.message_write_to_console(ac, sendung_date)
-            #lib_cm.message_write_to_console(ac, item)
-            #db.write_log_to_db(ac, "we are here 3", "t")
-            # nur
 
             if (sendung_date < date_back and sendung_year == int(dir_year)):
                 lib_cm.message_write_to_console(ac, u"archivieren: " + row[12])
@@ -528,9 +520,8 @@ def erase_files_from_play_out_old_year(files_sendung_source,
     days_back = int(db.ac_config_1[3])
     date_back = (datetime.datetime.now()
                  + datetime.timedelta(days=- days_back))
-    #date_back = datetime.datetime.now() + datetime.timedelta( days=-100 )
 
-    lib_cm.message_write_to_console(ac, db.ac_config_1[4])
+    #lib_cm.message_write_to_console(ac, db.ac_config_1[4])
     nr_of_files_to_archive = int(db.ac_config_1[4])
 
     # pfad anpassen
@@ -650,6 +641,11 @@ def lets_rock():
     """Hauptfunktion """
     print "lets_rock "
 
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
+
     sendung_art = "Info-Time"
     archiv_ok = write_files_to_archive_prepare(sendung_art)
     if archiv_ok is None:
@@ -696,13 +692,10 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # alles ok: weiter
         if param_check is not None:
-            # extended params
-            load_extended_params_ok = load_extended_params()
-            if load_extended_params_ok is not None:
-                if db.ac_config_1[1] == "on":
-                    lets_rock()
-                else:
-                    db.write_log_to_db_a(ac,
+            if db.ac_config_1[1] == "on":
+                lets_rock()
+            else:
+                db.write_log_to_db_a(ac,
                                     "Play-Out-Archivierung ausgeschaltet",
                                     "e", "write_also_to_console")
 
