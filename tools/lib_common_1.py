@@ -305,7 +305,7 @@ class dbase(object):
             error_write_to_file(ac, err_message)
 
     def write_twitter_log_to_db_1(self, ac, log_id, log_console):
-        """Twitter-Log-IDs DB-log schreiben"""
+        """Write twitter log-IDs to DB-log"""
         message_write_to_console(ac, "write_twitter_log_to_db_log")
         # gleiche log_message in console schreiben
         if log_console is not None:
@@ -330,6 +330,35 @@ class dbase(object):
                  "write_twitter_log_to_db_log Error: %s</p>" % str(e))
             err_message = "Error 2 write_twitter_log_to_db_log: %s" % str(e)
             error_write_to_file(ac, err_message)
+
+    def write_exchange_log_to_db(self, ac, files_online, log_console):
+        """Write ftp exchange files in log db-log"""
+        message_write_to_console(ac, "write_exchange_log_to_db")
+        # log_message to console
+        #if log_console is not None:
+        #    message_write_to_console(ac, log_id)
+
+        self.dbase_log_connect(ac)
+        if self.db_log_con is None:
+            err_message = ("No connect to db for write_exchange_log_to_db:")
+            error_write_to_file(ac, err_message)
+            return
+
+        # loop through file list
+        for item in files_online:
+            ACTION = ("INSERT INTO EXCHANGE_LOGS(EX_LOG_FILE) VALUES('"
+                 + item + "')")
+
+            try:
+                db_cur = self.db_log_con.cursor()
+                db_cur.execute(ACTION)
+                self.db_log_con.commit()
+            except Exception, e:
+                message_write_to_console(ac,
+                     "write_exchange_log_to_db Error: %s</p>" % str(e))
+                err_message = "Error 2 write_exchange_log_to_db: %s" % str(e)
+                error_write_to_file(ac, err_message)
+        self.db_log_con.close()
 
     def read_tbl_rows_with_cond_log(self, ac, db, table, fields, condition):
         """ Zeilen nach uebergebener Bedingung aus Tabelle in db-log lesen """
