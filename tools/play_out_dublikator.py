@@ -124,7 +124,7 @@ class app_config(object):
 
 
 def search_sg(sg_titel, t_sg_time):
-    """Pruefen ob geplante Sendebuchung schon vorhanden"""
+    """check if show already exist"""
     lib_cm.message_write_to_console(ac,
         u"Pruefen ob geplante Sendebuchung schon vorhanden")
     db_tbl_condition = ("A.SG_HF_FIRST_SG ='T' AND "
@@ -146,7 +146,7 @@ def search_sg(sg_titel, t_sg_time):
 
 
 def load_roboting_sgs(dub_way):
-    """Sendungen suchen, die bearbeitet werden sollen"""
+    """search for shows"""
     lib_cm.message_write_to_console(ac,
         u"Sendungen suchen, die bearbeitet werden sollen")
     sendungen_data = db.read_tbl_rows_with_cond(ac, db,
@@ -161,7 +161,7 @@ def load_roboting_sgs(dub_way):
 
 
 def load_sg(sg_titel, dub_way):
-    """Erstsendung als Vorlage suchen"""
+    """search first-sg for template"""
     lib_cm.message_write_to_console(ac, u"Sendung als Vorlage suchen")
 
     db_tbl_condition = ("A.SG_HF_FIRST_SG ='T' "
@@ -184,7 +184,7 @@ def load_sg(sg_titel, dub_way):
 
 
 def write_sg_main(l_data_sg_main):
-    """Sendung Main eintragen"""
+    """register main-sg"""
     lib_cm.message_write_to_console(ac, u"Sendung eintragen")
     sql_command_sg_main = ("INSERT INTO SG_HF_MAIN( SG_HF_ID, "
             "SG_HF_CONTENT_ID, SG_HF_TIME, "
@@ -203,7 +203,7 @@ def write_sg_main(l_data_sg_main):
 
 
 def write_sg_cont(l_data_sg_content):
-    """Sendung Content eintragen"""
+    """register content-sg"""
     sql_command_sg_cont = ("INSERT INTO SG_HF_CONTENT( SG_HF_CONT_ID, "
         "SG_HF_CONT_SG_ID, "
         "SG_HF_CONT_AD_ID, SG_HF_CONT_TITEL, "
@@ -223,7 +223,7 @@ def write_sg_cont(l_data_sg_content):
 
 
 def delete_failed_sg_in_db(main_id_sg):
-    """In SG_MAIN wieder loeschen wenn SG_CONT fehlgeschlagen"""
+    """delete sg-main if register sg-content fails"""
     lib_cm.message_write_to_console(ac,
         u"delete_failed_sg_in_db with nr: " + str(main_id_sg))
     ACTION = ("DELETE FROM SG_HF_MAIN WHERE SG_HF_ID = "
@@ -254,7 +254,7 @@ def delete_failed_sg_in_db(main_id_sg):
 
 
 def create_filename(sendung, sg_stichwort, main_id_sg_cont):
-    """Filename zusammenbauen"""
+    """concatenate filename"""
     if sendung[8].strip() == "03":
         # Vorproduziert oder stream
         if sendung[15][0:7] == "http://":
@@ -273,7 +273,7 @@ def create_filename(sendung, sg_stichwort, main_id_sg_cont):
 
 
 def create_keyword(sendung, roboting_sg, dt_sg_new_date):
-    """Stichwort zusammenbauen"""
+    """concatenate keyword"""
     try:
         lib_cm.message_write_to_console(ac,
             lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[16]))
@@ -334,7 +334,7 @@ def create_keyword(sendung, roboting_sg, dt_sg_new_date):
 
 
 def calk_date(sendung, n_days_add):
-    """Datum um x Tage vorzaehlen"""
+    """count date"""
     lib_cm.message_write_to_console(ac, sendung[2].day)
     lib_cm.message_write_to_console(ac,
                         sendung[2] + datetime.timedelta(days=+n_days_add))
@@ -346,7 +346,7 @@ def calk_date(sendung, n_days_add):
 
 
 def calk_date_month(option):
-    """Differenz zu bestimmten Wochentag des kommenden Monats errechnen"""
+    """calc diff between weekdays for upcomming month"""
     # thanx to
     # http://code.activestate.com/recipes/425607-findng-the-xth-day-in-a-month/
     lib_cm.message_write_to_console(ac, ac.time_target_start.date())
@@ -382,7 +382,7 @@ def calk_date_month(option):
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """Main funktion"""
     print "lets_rock "
     lib_cm.message_write_to_console(ac, u"lets_rock")
 
