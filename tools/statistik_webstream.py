@@ -96,41 +96,38 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "008"
         self.app_desc = u"Statistik Webstream Hoerer"
-        # schluessel fuer config in db
+        # key for config in db
         self.app_config = u"ST_Webstream_Config"
         self.app_config_develop = u"ST_Webstream_Config_e"
-        # anzahl parameter
+        # amount parameter
         self.app_config_params_range = 10
         self.app_errorfile = "error_statistik_webstream_hoerer.log"
         self.app_errorslist = []
         self.app_params_type_list = []
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # dev-mod
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # show messages on console
         self.app_debug_mod = "no"
         self.app_windows = "no"
         # errorlist
-        self.app_errorslist.append(u"000 Parameter-Typ oder "
-            "Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"001 Webseite Icecast-Streamstatus "
-            "kann nicht heruntergeladen werden")
-        self.app_errorslist.append(u"002 Stream moeglicherweise down - "
-            "(Statistik kann aus "
-            "Icecast-Status nicht extrahiert werden) ")
-        self.app_errorslist.append(u"003 Abschnitt Peaklisteners kann aus "
-            "Icecast-Status nicht extrahiert werden. "
-            "Schluesselwort(e) nicht gefunden:")
-        self.app_errorslist.append(u"004 Abschnitt Uptime kann aus "
-            "Icecast-Webseite nicht extrahiert werden. "
-            "Schluesselwort(e) nicht gefunden:")
-        self.app_errorslist.append(u"005 Zeitformatumwandlung "
-            "fuer Webstream-Statistik fehlgeschlagen")
-        self.app_errorslist.append(u"006 Fehler beim Registireren "
-            "der Webstream-Hoerer in der Datenbank")
+        self.app_errorslist.append(self.app_desc +
+            " Parameter-Typ oder Inhalt stimmt nicht ")
+        self.app_errorslist.append(self.app_desc +
+            " Icecast-Streamstatus kann nicht heruntergeladen werden")
+        self.app_errorslist.append(self.app_desc +
+            " Stream moeglicherweise down - Icecast-Status nicht verfuegbar)")
+        self.app_errorslist.append(self.app_desc +
+            " Peaklisteners kann aus Icecast-Status nicht extrahiert werden")
+        self.app_errorslist.append(self.app_desc +
+            " Abschnitt Uptime kann aus Icecast-Status nicht extrahiert werden")
+        self.app_errorslist.append(self.app_desc +
+            " Zeitformatumwandlung fehlgeschlagen")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Registireren der Webstream-Hoerer in der Datenbank")
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_url")
@@ -146,7 +143,7 @@ class app_config(object):
 
 
 def extract_cut_off(website, match_string_1, match_string_2):
-    """ Aus Website wichtigsten Abschnitt extrahieren """
+    """extract area from Website"""
     lib_cm.message_write_to_console(ac, match_string_1)
     index_begin = string.find(website, match_string_1)
     #xx = website.replace("ü", "ae")
@@ -172,7 +169,7 @@ def extract_cut_off(website, match_string_1, match_string_2):
 
 
 def extract_listeners(website, match_string, charackters_forwards):
-    """Aus Abschnitt der Website peaklisteners ermitteln """
+    """extract peaklisteners from area"""
     index_b_ident = string.find(website, match_string)
     if index_b_ident == -1:
         peaklisteners = None
@@ -197,7 +194,7 @@ def extract_listeners(website, match_string, charackters_forwards):
 
 
 def extract_time(website, match_string_2, charackters_forwards):
-    """ Aus Abschnitt der Website uptime ermitteln """
+    """extract uptime from area"""
 
     index_a_ident = string.find(website, match_string_2)
     if index_a_ident == -1:
@@ -215,7 +212,7 @@ def extract_time(website, match_string_2, charackters_forwards):
 
 
 def write_listeners_to_db(peaklisteners, sql_time):
-    """ Peaklisteners in db schreiben """
+    """Write Peaklisteners in db"""
     # ist schon ein ein satz zur uptime da?
     c_time = db.read_tbl_row_with_cond(
         ac, db, "ST_WEB_STREAM_LISTENERS", "ST_WEB_STREAM_LIS_DAY",
@@ -251,7 +248,7 @@ def write_listeners_to_db(peaklisteners, sql_time):
 
 
 def check_listeners(listeners_number, listeners_option, sql_time):
-    """ Peaklisteners mit letzter Registratur vergleichen """
+    """compare Peaklisteners with last Registration"""
     # anzahl der letzten registrierung
     reg_listeners = db.read_tbl_row_with_cond(
         ac, db, "ST_WEB_STREAM_LISTENERS",
@@ -271,8 +268,6 @@ def check_listeners(listeners_number, listeners_option, sql_time):
         write_listeners_to_db_1(sql_command, log_message)
         return
 
-    #print p_listeners[1]
-    #print peaklisteners
     if int(listeners_number) < int(reg_listeners[1]):
         #  neuen satz einfuegen
         sql_command = ("INSERT INTO ST_WEB_STREAM_LISTENERS"
@@ -309,7 +304,7 @@ def check_listeners(listeners_number, listeners_option, sql_time):
 
 
 def write_listeners_to_db_1(sql_command, log_message):
-    """ Listeners in db schreiben """
+    """write Listeners in db"""
     db_op_success = db.exec_sql(ac, db, sql_command)
     if db_op_success is None:
         # Error 005 Fehler beim Registireren
@@ -322,7 +317,7 @@ def write_listeners_to_db_1(sql_command, log_message):
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """Main funktion """
     print "lets_rock "
     # webseite holen
     lib_cm.message_write_to_console(ac, u"webseite holen:")
