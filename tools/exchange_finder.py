@@ -180,12 +180,13 @@ def write_filelist_to_db(files_online):
     db.write_exchange_log_to_db(ac, files_online, "write_also_to_console")
 
 
-def load_filelist_from_log(c_time_back):
+def load_filelist_from_log(c_time_back, c_time_now):
     """load filelist from Log"""
     db_tbl = "EXCHANGE_LOGS A "
     db_tbl_fields = ("A.EX_LOG_ID, A.EX_LOG_TIME, A.EX_LOG_FILE ")
     db_tbl_condition = ("SUBSTRING( A.EX_LOG_TIME FROM 1 FOR 19) >= '"
-        + c_time_back + "' ORDER BY A.EX_LOG_ID")
+        + c_time_back + "' AND SUBSTRING( A.EX_LOG_TIME FROM 1 FOR 19) < '"
+        + c_time_now + "' ORDER BY A.EX_LOG_ID")
 
     log_data = db.read_tbl_rows_with_cond_log(ac,
                 db, db_tbl, db_tbl_fields, db_tbl_condition)
@@ -197,8 +198,21 @@ def load_filelist_from_log(c_time_back):
 
 def check_filelist(filelist_db, files_online):
     """compare file lists"""
-    print len(filelist_db)
-    print len(files_online)
+    #print len(filelist_db)
+    #print len(files_online)
+    #new_files = (list(
+    #    set(filelist_db).difference(set(files_online))))
+    for item in files_online:
+        for item_db in filelist_db:
+            if item_db[2] == item:
+                print "always here"
+                print item
+                print item_db[2]
+                print item_db[0]
+            else:
+                print "new"
+                print item
+                print item_db[0]
 
 
 def lets_rock():
@@ -222,7 +236,8 @@ def lets_rock():
     time_back = (datetime.datetime.now()
                  + datetime.timedelta(seconds=- 3600))
     c_time_back = time_back.strftime("%Y-%m-%d %H:%M:%S")
-    filelist_db = load_filelist_from_log(c_time_back)
+    c_time_now = ac.time_target.strftime("%Y-%m-%d %H:%M:%S")
+    filelist_db = load_filelist_from_log(c_time_back, c_time_now)
     if filelist_db is None:
         return
     print filelist_db
