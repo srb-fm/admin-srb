@@ -16,6 +16,7 @@ Dieses Script dupliziert perjodische Erst-Sendungen
 (Buchungen in Sendabwicklung)
 die regelmaessig gesendet werden.
 
+This script is for dublikating registered shows.
 
 Dateiname Script: play_out_dublikator.py
 Schluesselwort fuer Einstellungen: PO_DB_Config
@@ -26,10 +27,10 @@ Parameterliste:
 Param 1: On/Off Switch
 
 Fehlerliste:
-Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 beim Generieren des Stichwortes
-Error 002 Duplizierte Sendung konnte nicht gebucht werden
-Error 003 beim Loeschen der duplizierten Sendung
+E 00 Parameter-Typ oder Inhalt stimmt nich
+E 01 beim Generieren des Stichwortes
+E 02 Duplizierte Sendung konnte nicht gebucht werden
+E 03 beim Loeschen der duplizierten Sendung
 
 Besonderheiten:
 Es werden nur Sendungen beruecksichtigt, die als automatisierte Sendungen
@@ -73,34 +74,34 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config"""
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "016"
         self.app_desc = u"play_out_dublikator"
-        # schluessel fuer config in db
+        # key for config in db
         self.app_config = u"PO_DB_Config"
         self.app_config_develop = u"PO_DB_Config"
-        # anzahl parameter
+        # amount parameters
         self.app_config_params_range = 1
         self.app_errorfile = "error_play_out_dublikator.log"
         # errorlist
         self.app_errorslist = []
-        self.app_errorslist.append(u"Error 000 "
-            "Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 001 "
-            "beim Generieren des Stichwortes: ")
-        self.app_errorslist.append(u"Error 002 "
-            "Duplizierte Sendung konnte nicht gebucht werden ")
-        self.app_errorslist.append(u"Error 003 "
-            "beim Loeschen der duplizierten Sendung "
+        self.app_errorslist.append(self.app_desc +
+            " Parameter-Typ oder Inhalt stimmt nicht ")
+        self.app_errorslist.append(self.app_desc +
+            "Fehler beim Generieren des Stichwortes: ")
+        self.app_errorslist.append(self.app_desc +
+            " Zu duplizierende Sendung konnte nicht gebucht werden ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Loeschen der duplizierten Sendung "
             "(Eintrag der Meta-Daten ist fehlgeschlagen) ")
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
 
-        # entwicklungsmodus, andere parameter, z.b. bei verzeichnissen
+        # dev-mod
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # show messages on console
         self.app_debug_mod = "no"
         # das script laeuft mitwochs 9:35 uhr, hier wochenzeitraum einstellen
         # montag 0 Uhr bis sonntag 24 Uhr
