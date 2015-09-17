@@ -198,21 +198,35 @@ def load_filelist_from_log(c_time_back, c_time_now):
 
 def check_filelist(filelist_db, files_online):
     """compare file lists"""
-    #print len(filelist_db)
-    #print len(files_online)
+    print len(filelist_db)
+    print len(files_online)
+    #print filelist_db
+    print "files-online"
+    print files_online
     #new_files = (list(
     #    set(filelist_db).difference(set(files_online))))
-    for item in files_online:
-        for item_db in filelist_db:
-            if item_db[2] == item:
-                print "always here"
-                print item
-                print item_db[2]
-                print item_db[0]
-            else:
-                print "new"
-                print item
-                print item_db[0]
+    new_files = []
+    files_from_db_list = []
+    for item in filelist_db:
+        files_from_db_list.append(item[2])
+    print "files-db"
+    print files_from_db_list
+    new_files = (list(
+        set(files_online).difference(set(files_from_db_list))))
+    #z = 0
+    #x = 0
+    #for item in files_online:
+        #z += 1
+        #for item_db in filelist_db:
+            #x += 1
+            #if item_db[2] == item:
+             #   print "always here"
+             #   print item
+             #   break
+            #else:
+             #   new_files.append(item)
+    print "new-files"
+    print new_files
 
 
 def lets_rock():
@@ -229,21 +243,23 @@ def lets_rock():
     if files_online is None:
         return
 
-    # write in db
-    write_filelist_to_db(files_online)
-
     # load old file list from db
     time_back = (datetime.datetime.now()
-                 + datetime.timedelta(seconds=- 3600))
+                 + datetime.timedelta(seconds=- 60))
     c_time_back = time_back.strftime("%Y-%m-%d %H:%M:%S")
     c_time_now = ac.time_target.strftime("%Y-%m-%d %H:%M:%S")
     filelist_db = load_filelist_from_log(c_time_back, c_time_now)
     if filelist_db is None:
+        # write current list in db
+        write_filelist_to_db(files_online)
         return
+    print "db-list-old"
     print filelist_db
 
     check_filelist(filelist_db, files_online)
 
+    # write current list in db
+    write_filelist_to_db(files_online)
 
 if __name__ == "__main__":
     db = lib_cm.dbase()
