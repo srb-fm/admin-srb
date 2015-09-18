@@ -45,15 +45,13 @@ server_settings
 server_settings_paths_a
 server_settings_paths_b
 
-Ausfuehrung: jede Stunde zur Minute 18
+Ausfuehrung: jede Stunde zur Minute 38
 
 
 """
 
 import sys
-import os
 import datetime
-import shutil
 import ftplib
 import socket
 import lib_common_1 as lib_cm
@@ -140,7 +138,8 @@ def load_files_ftp(path_ftp):
             db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
     ftp.quit()
-    lib_cm.message_write_to_console(ac, files_online)
+    #lib_cm.message_write_to_console(ac, files_online)
+    db.write_log_to_db(ac, ac.app_desc + " Filelist von ftp geladen", "t")
     return files_online
 
 
@@ -178,6 +177,7 @@ def ftp_connect_and_dir(path_ftp):
 def write_filelist_to_db(files_online):
     """write filelist to db"""
     db.write_exchange_log_to_db(ac, files_online, "write_also_to_console")
+    db.write_log_to_db(ac, ac.app_desc + " Filelist in db geschrieben", "t")
 
 
 def load_filelist_from_log(c_time_back, c_time_now):
@@ -198,35 +198,27 @@ def load_filelist_from_log(c_time_back, c_time_now):
 
 def check_filelist(filelist_db, files_online):
     """compare file lists"""
-    print len(filelist_db)
-    print len(files_online)
+    #print len(filelist_db)
+    #print len(files_online)
     #print filelist_db
-    print "files-online"
-    print files_online
-    #new_files = (list(
-    #    set(filelist_db).difference(set(files_online))))
+    #print "files-online"
+    #print files_online
+
     new_files = []
     files_from_db_list = []
     for item in filelist_db:
         files_from_db_list.append(item[2])
-    print "files-db"
-    print files_from_db_list
+    #print "files-db"
+    #print files_from_db_list
     new_files = (list(
         set(files_online).difference(set(files_from_db_list))))
-    #z = 0
-    #x = 0
-    #for item in files_online:
-        #z += 1
-        #for item_db in filelist_db:
-            #x += 1
-            #if item_db[2] == item:
-             #   print "always here"
-             #   print item
-             #   break
-            #else:
-             #   new_files.append(item)
-    print "new-files"
-    print new_files
+    if len(new_files) > 0:
+        for item_new_file in new_files:
+            log_message = ("Neue Uebernahme gefunden: " + item_new_file)
+            db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    else:
+        log_message = ("Keine neue Uebernahme gefunden")
+        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
 
 def lets_rock():
@@ -245,7 +237,7 @@ def lets_rock():
 
     # load old file list from db
     time_back = (datetime.datetime.now()
-                 + datetime.timedelta(seconds=- 60))
+                 + datetime.timedelta(seconds=- 3660))
     c_time_back = time_back.strftime("%Y-%m-%d %H:%M:%S")
     c_time_now = ac.time_target.strftime("%Y-%m-%d %H:%M:%S")
     filelist_db = load_filelist_from_log(c_time_back, c_time_now)
@@ -253,9 +245,11 @@ def lets_rock():
         # write current list in db
         write_filelist_to_db(files_online)
         return
-    print "db-list-old"
-    print filelist_db
+    #print "db-list-old"
+    #print filelist_db
 
+    db.write_log_to_db(ac, ac.app_desc
+                + " Vergleich mit db-list der verg. Stunde..", "t")
     check_filelist(filelist_db, files_online)
 
     # write current list in db
