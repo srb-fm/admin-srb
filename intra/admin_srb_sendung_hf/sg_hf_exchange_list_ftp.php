@@ -75,8 +75,8 @@ if ( $find_option_ok == true and $action_ok == true ) {
 }
 
 if ( $action_ok == true ) { 
-	//$db_result = db_query_sg_ad_list_items_1($c_query_condition);
 	$db_result = db_log_query_list_items_1("EX_LOG_ID, EX_LOG_TIME, EX_LOG_FILE ", "EXCHANGE_LOGS", $c_query_condition);
+	$db_result_Station = db_query_list_items_1("AD_NAME ", "AD_MAIN", "AD_STICHWORT='Station-ID' ORDER BY AD_NAME");
 }
 
 ?>
@@ -120,40 +120,31 @@ if ( $action_ok == false ) {
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
 if ( $user_rights == "yes" ) {
 
-//return;
 	$z = 0;
-	if ($db_result) {				
-		foreach ($db_result as $item) {
-			$z += 1;
-			    
-	  		echo "<div class='content_row_1'>SRB</div>";
-		  	//echo "<div class='content_row_1'>".$c_day_name.", ".$c_date_new."</div>";
-			    
-			// Listcolors
-			// attantion of duration
-				$div_class_a_1 = "<div class='content_row_a_4'>";
-				$div_class_a_2 = "<div class='content_row_a_7'>";
-				$div_class_b_1 = "<div class='content_row_b_4'>";
-				$div_class_b_2 = "<div class='content_row_b_7'>";
-										
-			if ( $z % 2 != 0 ) {
-				echo $div_class_a_1;
-			} else { 
-				echo $div_class_a_2;
-			}
-								
-			// item display				
-			#echo "<a href='sg_hf_detail.php?action=display&amp;sg_id=".$item['SG_HF_ID']."' class='c_box'>";
-			#echo html_sg_state_a(trim($item['SG_HF_FIRST_SG']), rtrim($item['SG_HF_ON_AIR']), rtrim($item['SG_HF_CONT_FILENAME']))."</a>";
-			echo " ".$item['EX_LOG_FILE'];
-			echo "</div>";
+	if ($db_result) {	
+		foreach ($db_result_Station as $item_station) {	
+			echo "<div class='content_row_1'>".$item_station["AD_NAME"]."</div>";	
+			foreach ($db_result as $item) {
 
-			echo "<div class='content_row_toggle_head_3'><img src='../parts/pict/form.gif' title='Erweiterte Informationen' alt='Zusaetze'></div>\n";
-			echo "<div class='content_row_toggle_body_3'>";
-			//if ( $item['SG_HF_CONT_UNTERTITEL'] != "" ) { 
-			//		echo substr($item['SG_HF_CONT_UNTERTITEL'], 0, 40)."<br>"; 
-			//}
-			echo "</div>\n";					
+				$z += 1;
+				// item display
+				if (substr($item['EX_LOG_FILE'], 11, 3) == $item_station["AD_NAME"] ) {
+				
+				if ( $z % 2 != 0 ) {
+					echo "<div class='content_row_a_4'>";
+				} else { 
+					echo "<div class='content_row_b_4'>";
+				}
+
+				echo $item['EX_LOG_FILE'];
+				echo "</div>";
+
+				echo "<div class='content_row_toggle_head_3'><img src='../parts/pict/form.gif' title='Erweiterte Informationen' alt='Zusaetze'></div>\n";
+				echo "<div class='content_row_toggle_body_3'>";
+				//		echo substr($item['SG_HF_CONT_UNTERTITEL'], 0, 40)."<br>"; 
+				echo "</div>\n";					
+				}
+			}
 		}
 	}
 	echo "<div class='content_footer'>";
