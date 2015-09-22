@@ -80,7 +80,7 @@ if ( $action_ok == true ) {
 
 		case "play":		
 			$message = "Übernahme Sendung: Abspielen! ";
-			
+			$remotefilename = "http://".$_SERVER['SERVER_NAME']."/admin_srb_export/".$id;
 			break;
 
 			//endswitch;
@@ -103,6 +103,7 @@ if ( $action_ok == true ) {
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 	<style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
+	<link href="../parts/jPlayer-2.9.2/dist/skin/blue.monday/css/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_ui_1_8_16/jquery-ui-1.8.16.custom.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_tools/jq_tools.js"></script>
@@ -136,17 +137,17 @@ if ( $user_rights == "yes" ) {
 		case "display":	
 		echo "<div class='content_column_1'>Meta</div>";
 		echo "<div > <textarea class='textarea_2' width='95%' name='meta'>".$ftxt."</textarea></div>";
-	
-		echo "</div>\n";	
+		echo "</div>\n";
+		break;
+		
 		case "play":		
-$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_7.$tbl_row_sg->SG_HF_CONT_FILENAME;
 		echo '<script type="text/javascript">';
 		//echo '//<![CDATA[';
 		echo '$(document).ready(function(){';
 		echo '	$("#jquery_jplayer_1").jPlayer({';
 		echo 'ready: function () {';
 		echo '			$(this).jPlayer("setMedia", {';
-		echo 'mp3: "'.$local_file.'"';
+		echo 'mp3: "'.$remotefilename.'"';
 		echo '		});';
 		echo '		},';
 		echo '		swfPath: "../../dist/jplayer",';
@@ -188,12 +189,7 @@ $remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_P
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';	
-//echo '<div id="jplayer_inspector"></div>';
-
-
-
-
-
+#echo '<div id="jplayer_inspector"></div>';
 
 			
 			break;
