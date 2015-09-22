@@ -39,31 +39,43 @@ if ( $action_ok == true ) {
 		
 	// switch action
 	if ( $id !="" ) {
+		
+	$tbl_row_ftp_set = db_query_display_item_1(
+						"USER_SPECIALS", "USER_SP_SPECIAL = 'Exchange_Finder'");
+	
+	switch ( $action ) {
+		case "display":		
+			$local_file = '../admin_srb_export/local.txt';
+			break;
+
+		case "play":
+			$local_file = '../admin_srb_export/'.$id;
+			break;
+			//endswitch;
+		}
+	
+	$server_file = trim($tbl_row_ftp_set->USER_SP_PARAM_5)."/".$id;
+	$ftp_server = trim($tbl_row_ftp_set->USER_SP_PARAM_6);
+	$ftp_user_name = trim($tbl_row_ftp_set->USER_SP_PARAM_7);
+	$ftp_user_pass = trim($tbl_row_ftp_set->USER_SP_PARAM_8);
+	// Verbindung aufbauen
+	$conn_id = ftp_connect($ftp_server);
+	// Login mit Benutzername und Passwort
+	$login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass);
+
+	// Versuche $server_file herunterzuladen und in $local_file zu speichern
+	if (ftp_get($conn_id, $local_file, $server_file, FTP_BINARY)) {
+		$message = "$local_file wurde erfolgreich geschrieben\n";
+	} else {
+		$message = "Ein Fehler ist aufgetreten\n";
+	}
+	// Verbindung schließen
+	ftp_close($conn_id);	
+	
 		switch ( $action ) {
 		case "display":		
 			$message = "Übernahme Sendung: Meta anzeigen. ";
-			$local_file = '../admin_srb_export/local.txt';
-			$server_file = '/Pool/Beitraege/'.$id;
-			$ftp_server = ;
-			$ftp_user_name = ;
-			$ftp_user_pass =;
-			// Verbindung aufbauen
-			$conn_id = ftp_connect($ftp_server);
-
-			// Login mit Benutzername und Passwort
-			$login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass);
-
-// Versuche $server_file herunterzuladen und in $local_file zu speichern
-if (ftp_get($conn_id, $local_file, $server_file, FTP_BINARY)) {
-    $message = "$local_file wurde erfolgreich geschrieben\n";
-    $ftxt = file_get_contents($local_file);
-    #$ftxt = fopen($local_file, "r");
-} else {
-    $message = "Ein Fehler ist aufgetreten\n";
-}
-
-// Verbindung schließen
-ftp_close($conn_id);
+			$ftxt = file_get_contents($local_file);
 			break;
 
 		case "play":		
@@ -81,7 +93,7 @@ ftp_close($conn_id);
 
 // ok, retrieve data
 if ( $action_ok == true ) {
-	#$tbl_row = db_query_display_item_1("SG_HF_ROBOT", $query_condition);
+	
 }
 ?>
 
@@ -94,6 +106,9 @@ if ( $action_ok == true ) {
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_ui_1_8_16/jquery-ui-1.8.16.custom.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_tools/jq_tools.js"></script>
+	
+	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/jplayer/jquery.jplayer.min.js"></script>
+	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/add-on/jquery.jplayer.inspector.min.js"></script> 
 
 </head>
 <body>
@@ -115,12 +130,80 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_1'>Dateiname</div>";
 	echo "<div class='content_column_2'>" .$id. "</div>";
 	echo "</div>\n";
-	echo "<div> <textarea class='textarea_1' name='meta' width=97% height=80px>" .$ftxt.  "</textarea></div>";	
+	echo "<div class='content_row_a_8'>";
+
+	switch ( $action ) {
+		case "display":	
+		echo "<div class='content_column_1'>Meta</div>";
+		echo "<div > <textarea class='textarea_2' width='95%' name='meta'>".$ftxt."</textarea></div>";
+	
+		echo "</div>\n";	
+		case "play":		
+$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_7.$tbl_row_sg->SG_HF_CONT_FILENAME;
+		echo '<script type="text/javascript">';
+		//echo '//<![CDATA[';
+		echo '$(document).ready(function(){';
+		echo '	$("#jquery_jplayer_1").jPlayer({';
+		echo 'ready: function () {';
+		echo '			$(this).jPlayer("setMedia", {';
+		echo 'mp3: "'.$local_file.'"';
+		echo '		});';
+		echo '		},';
+		echo '		swfPath: "../../dist/jplayer",';
+		echo '		supplied: "mp3",';
+		echo '		wmode: "window",';
+		echo '		useStateClassSkin: true,';
+		echo '		autoBlur: false,';
+		echo '		smoothPlayBar: true,';
+		echo '		keyEnabled: true,';
+		echo '		remainingDuration: true,';
+		echo '		toggleDuration: true';
+		echo '});';
+		echo '	$("#jplayer_inspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});';
+		echo '});	';
+
+		echo '</script>';
+
+		echo '<div id="jquery_jplayer_1" class="jp-jplayer"></div>';
+		echo '<div id="jp_container_1" class="jp-audio" role="application" aria-label="media player">';
+			echo '<div class="jp-type-single">';
+				echo '<div class="jp-gui jp-interface">';
+					echo '<div class="jp-controls">';
+						echo '<button class="jp-play" role="button" tabindex="0">play</button>';
+						echo '<button class="jp-stop" role="button" tabindex="0">stop</button>';
+					echo '</div>';
+					echo '<div class="jp-progress">';
+						echo '<div class="jp-seek-bar">';
+							echo '<div class="jp-play-bar"></div>';
+						echo '</div>';
+					echo '</div>';
+					echo '<div class="jp-time-holder">';
+						echo '<div class="jp-current-time" role="timer" aria-label="time">&nbsp;</div>';
+						echo '<div class="jp-duration" role="timer" aria-label="duration">&nbsp;</div>';
+					echo '</div>';
+				echo '</div>';
+				echo '<div class="jp-no-solution">';
+					echo '<span>Update Required</span>';
+					echo 'To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.';
+				echo '</div>';
+			echo '</div>';
+		echo '</div>';	
+//echo '<div id="jplayer_inspector"></div>';
+
+
+
+
+
+
+			
+			break;
+			//endswitch;
+		}	
 	echo "<div class='line_a'> </div>\n";
 		
 	echo "<div class='menu_bottom'>";
 	echo "<ul class='menu_bottom_list'>";		
-	echo "<li><a href='sg_hf_robot_edit.php?action=edit&amp;sg_robot_id="."'>xxxBearbeiten</a> ";
+	//echo "<li><a href='sg_hf_robot_edit.php?action=edit&amp;sg_robot_id="."'>xxxBearbeiten</a> ";
 	echo "</ul>\n</div><!--menu_bottom-->"; 
 } // user_rights	
 echo "</div>\n";
