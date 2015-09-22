@@ -144,7 +144,7 @@ if ( $user_rights == "yes" ) {
 					$filename = new SplFileInfo($item['EX_LOG_FILE']);
 					$fileext = $filename->getExtension();
 					if ($fileext == "mp3") {
-						echo "<a href='sg_hf_exchange_detail.php?action=play&amp;sg_file=".$item['EX_LOG_FILE']."' class='c_box'>Datei herunterladen</a> ";
+						echo "<a href='sg_hf_exchange_detail.php?action=play&amp;sg_file=".$item['EX_LOG_FILE']."' class='c_box'>Datei herunterladen und vorhören</a> ";
 					} else {
 						echo "<a href='sg_hf_exchange_detail.php?action=display&amp;sg_file=".$item['EX_LOG_FILE']."' class='c_box'>Metadaten anzeigen</a> ";
 					}
