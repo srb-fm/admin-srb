@@ -16,15 +16,14 @@ require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
-$displ_dateform = "no";
 
 // check action	
 $action_ok = false;
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
 	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];
 	$action_ok = true;
 }
@@ -42,29 +41,26 @@ if ( $action_ok == true ) {
 			
 // check condition	
 $find_option_ok = false;
-if ( isset( $_GET['find_option'] ) ) { 
+if ( isset($_GET['find_option']) ) { 
 	$find_option = $_GET['find_option']; 
 	$find_option_ok = true;
 }
-if ( isset( $_POST['find_option'] ) ) {
+if ( isset($_POST['find_option']) ) {
 	$find_option = $_POST['find_option']; 
 	$find_option_ok = true;
 }		
-	
+
 if ( $find_option_ok == true and $action_ok == true ) {
 	switch ( $action ) {	
 	case "list": 
 		switch ( $find_option ) {
 		case "all":
-			$time_back = time() - ( 3660 );
-			
+			$time_back = time() - (3660);
 			$s_date_back = date('Y-m-d H:i:s', $time_back);
 			$c_query_condition = "SUBSTRING( EX_LOG_TIME FROM 1 FOR 19) >= '".$s_date_back."' ORDER BY EX_LOG_TIME";
-			$message_find_string = "Alle Übernahmen aktuell";
-			//$message .= "Infotime-Beiträge der Woche vom ".get_date_format_deutsch($date_begin)." bis ".get_date_format_deutsch($date_end);
-			$message = $s_date_back;
+			$message = "Alle Übernahmen aktuell";
 			break;
-									
+
 			//endswitch;
 		}
 		break;
@@ -76,13 +72,13 @@ if ( $find_option_ok == true and $action_ok == true ) {
 
 if ( $action_ok == true ) { 
 	$db_result = db_log_query_list_items_1("EX_LOG_ID, EX_LOG_TIME, EX_LOG_FILE ", "EXCHANGE_LOGS", $c_query_condition);
-	$db_result_Station = db_query_list_items_1("AD_NAME ", "AD_MAIN", "AD_STICHWORT='Station-ID' ORDER BY AD_NAME");
+	$db_result_Station = db_query_list_items_1("AD_NAME, AD_FIRMA ", "AD_MAIN", "AD_STICHWORT='Station-ID' ORDER BY AD_NAME");
 }
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <head>
-	<title>Admin-SRB-Sendung</title>
+	<title>Admin-SRB-Sendung Übernahmen</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 	<style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
 	<style type="text/css">	@import url("../parts/style/style_srb_jq_2.css"); </style>
@@ -97,9 +93,8 @@ if ( $action_ok == true ) {
 
 </head>
 <body>
- 
 
-<?php 
+<?php
 echo "<div class='main'>";
 require "../parts/site_elements/header_srb_2.inc";
 require "../parts/menu/menu_srb_root_1_eb_1.inc";
@@ -123,9 +118,9 @@ if ( $user_rights == "yes" ) {
 	$z = 0;
 	if ($db_result) {	
 		foreach ($db_result_Station as $item_station) {	
-			echo "<div class='content_row_1'>".$item_station["AD_NAME"]."</div>";	
+			echo "<div class='content_row_1'>".$item_station["AD_FIRMA"]." (".$item_station["AD_NAME"].")</div>";	
+			
 			foreach ($db_result as $item) {
-
 				$z += 1;
 				// item display
 				if (substr($item['EX_LOG_FILE'], 11, 3) == $item_station["AD_NAME"] ) {
@@ -156,7 +151,7 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_footer'>";
 	if ( $z == 0 ) { 	
 		echo "Keine Übereinstimmung gefunden...";
-	} else {		
+	} else {	
 		echo "Gefunden: ".$z. " ::: "; 
 	}
 	echo "</div>";

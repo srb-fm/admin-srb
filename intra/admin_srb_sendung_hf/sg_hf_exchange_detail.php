@@ -39,67 +39,60 @@ if ( $action_ok == true ) {
 		
 	// switch action
 	if ( $id !="" ) {
-		
-	$tbl_row_ftp_set = db_query_display_item_1(
+
+		$tbl_row_ftp_set = db_query_display_item_1(
 						"USER_SPECIALS", "USER_SP_SPECIAL = 'Exchange_Finder'");
 	
-	switch ( $action ) {
-		case "display":		
+		switch ( $action ) {
+			case "display":		
 			$local_file = '../admin_srb_export/local.txt';
 			break;
 
-		case "play":
+			case "play":
 			$local_file = '../admin_srb_export/'.$id;
 			break;
 			//endswitch;
 		}
-	
-	$server_file = trim($tbl_row_ftp_set->USER_SP_PARAM_5)."/".$id;
-	$ftp_server = trim($tbl_row_ftp_set->USER_SP_PARAM_6);
-	$ftp_user_name = trim($tbl_row_ftp_set->USER_SP_PARAM_7);
-	$ftp_user_pass = trim($tbl_row_ftp_set->USER_SP_PARAM_8);
-	// Verbindung aufbauen
-	$conn_id = ftp_connect($ftp_server);
-	// Login mit Benutzername und Passwort
-	$login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass);
+		// ftp
+		$server_file = trim($tbl_row_ftp_set->USER_SP_PARAM_5)."/".$id;
+		$ftp_server = trim($tbl_row_ftp_set->USER_SP_PARAM_6);
+		$ftp_user_name = trim($tbl_row_ftp_set->USER_SP_PARAM_7);
+		$ftp_user_pass = trim($tbl_row_ftp_set->USER_SP_PARAM_8);
+		// connect
+		$conn_id = ftp_connect($ftp_server);
+		// Login
+		$login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass);
 
-	// Versuche $server_file herunterzuladen und in $local_file zu speichern
-	if (ftp_get($conn_id, $local_file, $server_file, FTP_BINARY)) {
-		$message = "$local_file wurde erfolgreich geschrieben\n";
-	} else {
-		$message = "Ein Fehler ist aufgetreten\n";
-	}
-	// Verbindung schließen
-	ftp_close($conn_id);	
+		// download
+		if (ftp_get($conn_id, $local_file, $server_file, FTP_BINARY)) {
+			$message = "$local_file wurde erfolgreich geschrieben\n";
+		} else {
+			$message = "Ein Fehler ist aufgetreten\n";
+		}
+		// close connect
+		ftp_close($conn_id);	
 	
 		switch ( $action ) {
-		case "display":		
+			case "display":		
 			$message = "Übernahme Sendung: Meta anzeigen. ";
 			$ftxt = file_get_contents($local_file);
 			break;
 
-		case "play":		
+			case "play":		
 			$message = "Übernahme Sendung: Abspielen! ";
 			$remotefilename = "http://".$_SERVER['SERVER_NAME']."/admin_srb_export/".$id;
 			break;
-
 			//endswitch;
 		}
 	}
-
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
-}
-
-// ok, retrieve data
-if ( $action_ok == true ) {
-	
 }
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <head>
-	<title>Admin-SRB-Sendung-Übernahme</title>
+	<title>Admin-SRB-Sendung Übernahme Detailansicht</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 	<style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
@@ -190,8 +183,7 @@ if ( $user_rights == "yes" ) {
 			echo '</div>';
 		echo '</div>';	
 #echo '<div id="jplayer_inspector"></div>';
-
-			
+	
 			break;
 			//endswitch;
 		}	
