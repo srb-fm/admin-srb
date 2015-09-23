@@ -36,15 +36,11 @@ Parameterliste:
 Param 01: On/Off Switch
 Param 02: temp-Ordner fuer Info-File
 Param 03: Eigenes Senderkuerzel fuer Dateiname
-Param 04: Unterpfad ftp
-Param 05: ftp-Domain
-Param 06: ftp-User
-Param 07: ftp-PW
-
-Extern Parameters:
-server_settings
-server_settings_paths_a
-server_settings_paths_b
+Param 04: none
+Param 05: Unterpfad ftp
+Param 06: ftp-Domain
+Param 07: ftp-User
+Param 08: ftp-PW
 
 Ausfuehrung: jede Stunde zur Minute 38
 
@@ -102,24 +98,7 @@ class app_config(object):
         # debug-mod
         self.app_debug_mod = "no"
         self.app_windows = "no"
-        self.app_encode_out_strings = "cp1252"
         self.time_target = datetime.datetime.now()
-
-
-def load_extended_params():
-    """load extended params"""
-    ext_params_ok = True
-    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
-    if ext_params_ok is None:
-        return None
-    lib_cm.set_server(ac, db)
-    ext_params_ok = lib_cm.params_provide_server_paths_a(ac, db,
-                                                        ac.server_active)
-    if ext_params_ok is None:
-        return None
-    ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
-                                                        ac.server_active)
-    return ext_params_ok
 
 
 def load_files_ftp(path_ftp):
@@ -201,18 +180,11 @@ def load_filelist_from_log(c_time_back, c_time_now):
 
 def check_filelist(filelist_db, files_online):
     """compare file lists"""
-    #print len(filelist_db)
-    #print len(files_online)
-    #print filelist_db
-    #print "files-online"
-    #print files_online
-
     new_files = []
     files_from_db_list = []
     for item in filelist_db:
         files_from_db_list.append(item[2])
-    #print "files-db"
-    #print files_from_db_list
+
     new_files = (list(
         set(files_online).difference(set(files_from_db_list))))
     if len(new_files) > 0:
@@ -229,7 +201,7 @@ def delete_exchange_log_in_db_log():
     log_message = (u"Loeschen der Exchangelogs von vorgestern")
     db.write_log_to_db(ac, log_message, "e")
     date_log_back = (datetime.datetime.now()
-                     + datetime.timedelta(days=- 3))
+                     + datetime.timedelta(days=- 2))
     c_date_log_back = date_log_back.strftime("%Y-%m-%d %H:%M")
 
     sql_command = ("DELETE FROM EXCHANGE_LOGS WHERE EX_LOG_TIME < '"
@@ -245,10 +217,6 @@ def delete_exchange_log_in_db_log():
 def lets_rock():
     """main funktion """
     print "lets_rock "
-    # extendet params
-    load_extended_params_ok = load_extended_params()
-    if load_extended_params_ok is None:
-        return
 
     # load file list from ftp
     path_ftp = lib_cm.check_slashes(ac, db.ac_config_1[5])
@@ -266,8 +234,6 @@ def lets_rock():
         # write current list in db
         write_filelist_to_db(files_online)
         return
-    #print "db-list-old"
-    #print filelist_db
 
     db.write_log_to_db(ac, ac.app_desc
                 + " Vergleich mit db-list der verg. Stunde..", "t")
@@ -277,8 +243,8 @@ def lets_rock():
     write_filelist_to_db(files_online)
 
     # delete old logs
-    #if datetime.datetime.now().hour == 0:
-    delete_exchange_log_in_db_log()
+    if datetime.datetime.now().hour == 0:
+        delete_exchange_log_in_db_log()
 
 
 if __name__ == "__main__":
