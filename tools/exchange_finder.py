@@ -24,11 +24,12 @@ Bezieht Daten aus und schreibt in: Firebird-Datenbank
 
 
 Fehlerliste:
-E 00 Parameter-Typ oder Inhalt stimmt nich
+E 00 Parameter-Typ oder Inhalt stimmt nicht
 E 01 Fehler beim Connect zu FTP-Server
 E 02 Fehler beim LogIn zu FTP-Server
 E 03 Fehler beim FTP-Ordnerwechsel
 E 04 Fehler beim Zugriff auf FTP-Ordner
+E 05 Fehler beim Loeschen alter Logs
 
 
 Parameterliste:
@@ -82,6 +83,8 @@ class app_config(object):
             " Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden")
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Zugriff auf FTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Loeschen alter Logs")
 
         # params-type-list
         self.app_params_type_list = []
@@ -223,37 +226,19 @@ def check_filelist(filelist_db, files_online):
 
 def delete_exchange_log_in_db_log():
     """delete old items in db"""
-    lib_cm.message_write_to_console(ac, "delete_exchange_log_in_db_log")
+    log_message = (u"Loeschen der Exchangelogs von vorgestern")
+    db.write_log_to_db(ac, log_message, "e")
     date_log_back = (datetime.datetime.now()
-                     + datetime.timedelta(days=- 2))
+                     + datetime.timedelta(days=- 3))
     c_date_log_back = date_log_back.strftime("%Y-%m-%d %H:%M")
 
-    ACTION = ("DELETE FROM EXCHANGE_LOGS WHERE EX_LOG_TIME < '"
+    sql_command = ("DELETE FROM EXCHANGE_LOGS WHERE EX_LOG_TIME < '"
               + c_date_log_back + "'")
 
-    db.dbase_log_connect(ac)
-    if db.db_log_con is None:
-        err_message = u"No connect to db for delete_exchange_log_in_db_log"
-        lib_cm.error_write_to_file(ac, err_message)
-        return None
-
-    try:
-        db_log_cur = db.db_log_con.cursor()
-        db_log_cur.execute(ACTION)
-        db.db_log_con.commit()
-        db.db_log_con.close()
-        log_message = (u"Loeschen der Exchangelogs von vorgestern")
-        db.write_log_to_db(ac, log_message, "e")
-    except Exception, e:
-        lib_cm.message_write_to_console(ac,
-            log_message
-            + u"Error 2 delete_exchange_log_in_db_log: %s</p>" % str(e))
-        err_message = (log_message
-                         + u"Error 2 delete_exchange_log_in_db_log: %s" % str(e))
-        lib_cm.error_write_to_file(ac, err_message)
-        db.db_log_con.rollback()
-        db.db_log_con.close()
-        return None
+    delete_ok = db.delete_logs_in_db_log(ac, sql_command, log_message)
+    if delete_ok is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[5],
+                                    "x", "write_also_to_console")
     return
 
 
@@ -292,8 +277,8 @@ def lets_rock():
     write_filelist_to_db(files_online)
 
     # delete old logs
-    if datetime.datetime.now().hour == 0:
-        delete_exchange_log_in_db_log()
+    #if datetime.datetime.now().hour == 0:
+    delete_exchange_log_in_db_log()
 
 
 if __name__ == "__main__":
