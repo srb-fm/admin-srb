@@ -215,10 +215,46 @@ def check_filelist(filelist_db, files_online):
     if len(new_files) > 0:
         for item_new_file in new_files:
             log_message = ("Neue Uebernahme gefunden: " + item_new_file)
-            db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+            db.write_log_to_db_a(ac, log_message, "n", "write_also_to_console")
     else:
         log_message = ("Keine neue Uebernahme gefunden")
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+
+
+def delete_exchange_log_in_db_log():
+    """delete old items in db"""
+    lib_cm.message_write_to_console(ac, "delete_exchange_log_in_db_log")
+    date_log_back = (datetime.datetime.now()
+                     + datetime.timedelta(days=- 2))
+    c_date_log_back = date_log_back.strftime("%Y-%m-%d %H:%M")
+
+    ACTION = ("DELETE FROM EXCHANGE_LOGS WHERE EX_LOG_TIME < '"
+              + c_date_log_back + "'")
+
+    db.dbase_log_connect(ac)
+    if db.db_log_con is None:
+        err_message = u"No connect to db for delete_exchange_log_in_db_log"
+        lib_cm.error_write_to_file(ac, err_message)
+        return None
+
+    try:
+        db_log_cur = db.db_log_con.cursor()
+        db_log_cur.execute(ACTION)
+        db.db_log_con.commit()
+        db.db_log_con.close()
+        log_message = (u"Loeschen der Exchangelogs von vorgestern")
+        db.write_log_to_db(ac, log_message, "e")
+    except Exception, e:
+        lib_cm.message_write_to_console(ac,
+            log_message
+            + u"Error 2 delete_exchange_log_in_db_log: %s</p>" % str(e))
+        err_message = (log_message
+                         + u"Error 2 delete_exchange_log_in_db_log: %s" % str(e))
+        lib_cm.error_write_to_file(ac, err_message)
+        db.db_log_con.rollback()
+        db.db_log_con.close()
+        return None
+    return
 
 
 def lets_rock():
@@ -254,6 +290,11 @@ def lets_rock():
 
     # write current list in db
     write_filelist_to_db(files_online)
+
+    # delete old logs
+    if datetime.datetime.now().hour == 0:
+        delete_exchange_log_in_db_log()
+
 
 if __name__ == "__main__":
     db = lib_cm.dbase()
