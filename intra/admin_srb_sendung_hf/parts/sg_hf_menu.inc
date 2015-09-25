@@ -113,6 +113,11 @@
 		<a href="../../admin_srb_sendung_hf/sg_hf_find_list.php?action=list&amp;find_option=broadcast_four_days">Sendung 4 Tage vor</a>
 	</div>
 	
+	<p class="menu_head">Übernahmen</p>
+	<div class="menu_body">
+		<a href="../../admin_srb_sendung_hf/sg_hf_exchange_list_ftp.php?action=list&amp;find_option=all">Übernahmen aktuell ftp gesamt</a>
+	</div>
+	
 	<p class="menu_head">Einstellungen</p>
 	<div class="menu_body">
 		<a href="../../admin_srb_user/user_special_detail.php?action=display&amp;special_id=1049941">Texte Sendeanmeldung</a>
