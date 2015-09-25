@@ -39,51 +39,42 @@ if ( $action_ok == true ) {
 		
 	// switch action
 	if ( $id !="" ) {
+		// are we on server-line A or B?
+		$tbl_row_config_serv = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");		
+		if ( $tbl_row_config_serv->USER_SP_PARAM_3 == $_SERVER['SERVER_NAME'] ) {
+			$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_A'");
+			$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_A'");
+		}
+		if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
+			$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_B'");
+			$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_B'");
+		}
+
 
 		$tbl_row_ftp_set = db_query_display_item_1(
 						"USER_SPECIALS", "USER_SP_SPECIAL = 'Exchange_Finder'");
-	
-		switch ( $action ) {
-			case "display":		
-			$local_file = '../admin_srb_export/local.txt';
-			break;
-
-			case "play":
-			$local_file = '../admin_srb_export/'.$id;
-			break;
-			//endswitch;
-		}
 		// ftp
 		$server_file = trim($tbl_row_ftp_set->USER_SP_PARAM_5)."/".$id;
 		$ftp_server = trim($tbl_row_ftp_set->USER_SP_PARAM_6);
 		$ftp_user_name = trim($tbl_row_ftp_set->USER_SP_PARAM_7);
-		$ftp_user_pass = trim($tbl_row_ftp_set->USER_SP_PARAM_8);
-		// connect
-		$conn_id = ftp_connect($ftp_server);
-		// Login
-		$login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass);
-
-		// download
-		if (ftp_get($conn_id, $local_file, $server_file, FTP_BINARY)) {
-			$message = "$local_file wurde erfolgreich geschrieben\n";
-		} else {
-			$message = "Ein Fehler ist aufgetreten\n";
-		}
-		// close connect
-		ftp_close($conn_id);	
+		$ftp_user_pass = trim($tbl_row_ftp_set->USER_SP_PARAM_8);					
 	
 		switch ( $action ) {
 			case "display":		
+			$local_file = '../admin_srb_export/local.txt';
 			$message = "Übernahme Sendung: Meta anzeigen. ";
+			ftp_download( $ftp_server, $ftp_user_name, $ftp_user_pass, $server_file, $local_file );
 			$ftxt = file_get_contents($local_file);
 			break;
 
-			case "play":		
-			$message = "Übernahme Sendung: Abspielen! ";
-			$remotefilename = "http://".$_SERVER['SERVER_NAME']."/admin_srb_export/".$id;
+			case "play":
+			$local_file = $tbl_row_config_B->USER_SP_PARAM_10."tmp.mp3";
+			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_11."tmp.mp3";
+			$play_out_filename = $tbl_row_config_B->USER_SP_PARAM_10.$id;
 			break;
-			//endswitch;
+		//endswitch;
 		}
+
 	}
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
@@ -104,6 +95,70 @@ if ( $action_ok == true ) {
 	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/jplayer/jquery.jplayer.min.js"></script>
 	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/add-on/jquery.jplayer.inspector.min.js"></script> 
 
+  <script>
+		$(document).ready(function() {
+			var action = "<?php echo $action ?>";
+			if (action = "play" ) {
+				$( "#opener" ).hide();
+				$( "#dialog" ).dialog({
+   			   autoOpen: true,
+      			show: {
+        				effect: "blind",
+        				duration: 800
+      			},
+      			hide: {
+        				effect: "explode",
+        				duration: 800
+      			}
+    			});
+			
+			var ftp_server = "<?php echo $ftp_server ?>";
+			var ftp_user_name = "<?php echo $ftp_user_name ?>";
+			var ftp_user_pass = "<?php echo $ftp_user_pass ?>";
+			var server_file = "<?php echo $server_file ?>";
+			var local_file = "<?php echo $local_file ?>";
+			var dataString = ('action=ftp' 
+							+ '&ftp_server=' + ftp_server
+							+ '&ftp_user_name=' + ftp_user_name
+							+ '&ftp_user_pass=' + ftp_user_pass
+							+ '&server_file=' + server_file
+							+ '&local_file=' + local_file
+				);
+			// ajax
+			$.ajax({
+  				type: "POST",
+  				url: "sg_hf_exchange_ajax.php",
+  				data: dataString,
+  				success: function(msg){
+    				//alert( "Data Saved: " + msg );
+ 					$( "#dialog" ).dialog( "close" );
+ 					$( "#opener" ).show();
+  				}
+			});
+ 
+    	$( "#opener" ).click(function() {
+    		
+    		$( "#dialog" ).html( "Speichern" );
+      	
+      	var dataString = ('action=rename' 
+							+ '&local_file=' + "<?php echo $local_file ?>"
+							+ '&ren_file=' + "<?php echo $play_out_filename ?>"
+				);
+     		// ajax
+			$.ajax({
+  				type: "POST",
+  				url: "sg_hf_exchange_ajax.php",
+  				data: dataString,
+  				success: function(msg){
+    				//alert( "Data Saved: " + msg );
+ 					$( "#dialog" ).dialog( "open" );
+  				}
+			});
+    	});
+	}	
+ });
+</script>
+  
 </head>
 <body>
  
@@ -182,20 +237,27 @@ if ( $user_rights == "yes" ) {
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';	
-#echo '<div id="jplayer_inspector"></div>';
+echo '<div id="jplayer_inspector"></div>';
 	
 			break;
 			//endswitch;
 		}	
 	echo "<div class='line_a'> </div>\n";
-		
-	echo "<div class='menu_bottom'>";
-	echo "<ul class='menu_bottom_list'>";		
-	//echo "<li><a href='sg_hf_robot_edit.php?action=edit&amp;sg_robot_id="."'>xxxBearbeiten</a> ";
-	echo "</ul>\n</div><!--menu_bottom-->"; 
+
+	$filename = new SplFileInfo($id);
+	$fileext = $filename->getExtension();
+	if ($fileext == "mp3") {
+		echo "<button id='opener'>Audio-Datei in Play_Out_Uebernahmen speichern</button>";
+				
+		echo "<div id='dialog' title='Download und Speichern'>";
+		echo "Datei wird heruntergeladen...";
+		echo "</div>";
+	}
+
 } // user_rights	
 echo "</div>\n";
 ?>
+
 </div>
 </div>
 </body>

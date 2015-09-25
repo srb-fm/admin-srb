@@ -204,7 +204,32 @@ function get_seconds_from_hms( $hms )
 	$s += $m_s ;
 	return $s;
 }
-         
+
+/**
+* ftp_download
+*
+* @params $ftp_server, $ftp_user_name, $ftp_user_pass, $server_file, $local_file 
+* 
+* @return message
+*
+*/
+function ftp_download( $ftp_server, $ftp_user_name, $ftp_user_pass, $server_file, $local_file )
+{
+	// connect
+	$conn_id = ftp_connect($ftp_server);
+	// Login
+	$login_result = ftp_login($conn_id, $ftp_user_name, $ftp_user_pass);
+	// download
+	if (ftp_get($conn_id, $local_file, $server_file, FTP_BINARY)) {
+		$message = "$local_file wurde erfolgreich geschrieben\n";
+	} else {
+		$message = "Ein Fehler ist beim Download aufgetreten\n";
+	}
+	// close connect
+	ftp_close($conn_id);
+	return $message;
+}
+
 /**
 * replace_umlaute_klein_gross
 *
