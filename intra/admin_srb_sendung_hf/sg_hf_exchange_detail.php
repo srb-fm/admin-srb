@@ -237,7 +237,7 @@ if ( $user_rights == "yes" ) {
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';	
-echo '<div id="jplayer_inspector"></div>';
+//echo '<div id="jplayer_inspector"></div>';
 	
 			break;
 			//endswitch;
@@ -250,6 +250,7 @@ echo '<div id="jplayer_inspector"></div>';
 		echo "<button id='opener'>Audio-Datei in Play_Out_Uebernahmen speichern</button>";
 				
 		echo "<div id='dialog' title='Download und Speichern'>";
+		echo "<img src='../parts/pict/wait30trans.gif' width='30' height='30' border='0' alt='gleich gehts weiter'> ";
 		echo "Datei wird heruntergeladen...";
 		echo "</div>";
 	}
