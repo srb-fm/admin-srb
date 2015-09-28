@@ -44,7 +44,6 @@ Param 08: ftp-PW
 
 Ausfuehrung: jede Stunde zur Minute 38
 
-
 """
 
 import sys
@@ -120,7 +119,6 @@ def load_files_ftp(path_ftp):
             db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
     ftp.quit()
-    #lib_cm.message_write_to_console(ac, files_online)
     db.write_log_to_db(ac, ac.app_desc + " Filelist von ftp geladen", "t")
     return files_online
 
