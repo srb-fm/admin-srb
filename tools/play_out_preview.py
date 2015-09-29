@@ -27,7 +27,8 @@ Error 000 Parameter-Typ oder Inhalt stimmt nich
 Error 001 Fehler beim Uebertragen zum Web-Server
 
 Parameterliste:
-Param 1: Anzahl Sendungen, die fuer Vorschau geladen werden
+Param 1: On/off Switch
+Param 2: Anzahl Sendungen, die fuer Vorschau geladen werden
 (nicht zu hoch einstellen!)
 Param 2: URL Web-Script
 Param 3: Benutzer
@@ -52,7 +53,7 @@ class app_config(object):
         # app_config
         self.app_id = "007"
         self.app_desc = u"Play_Out_Preview"
-        # schluessel fuer config in db
+        # key for config in db
         self.app_config = u"PO_Preview_Config"
         self.app_config_develop = u"PO_Preview_Config_3_e"
         self.app_errorfile = "error_play_out_preview.log"
@@ -64,9 +65,9 @@ class app_config(object):
             "Fehler beim Uebertragen zum Web-Server ")
         self.app_errorslist.append(u"Error 002 "
             "Web-Server fuer Vorschau nicht erreichbar")
-        # anzahl parameter
+        # amount parameters
         self.app_config_params_range = 5
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -79,15 +80,15 @@ class app_config(object):
         self.app_develop = "no"
         # debug-mod
         self.app_debug_mod = "no"
-        # zeit fuer sendungensuche: ab jetzt
+        # time for searching: from now
         #self.time_target = datetime.datetime.now() + datetime.timedelta()
         self.time_target = datetime.datetime.now()
 
 
 def load_prev_sendungen():
-    """In DB nachsehen, ob Sendungen ab kommender Stunde vorgesehen sind"""
+    """search for shows from upcomming hour"""
     lib_cm.message_write_to_console(ac, "load_prev_sendungen")
-    # zfill fuellt nullen auf bei einstelliger stundenzahl
+    # zfill for adding zeros by one digit
 
     c_date_time = (str(ac.time_target.date())
                     + " " + str(ac.time_target.hour).zfill(2))
@@ -102,16 +103,11 @@ def load_prev_sendungen():
         log_message = u"Keine Sendungen für: " + str(ac.time_target.date())
         db.write_log_to_db(ac, log_message, "t")
         return sendung_data
-
-    #log_message = (u"Vorschau-Sendungen vorhanden ab: "
-            #+ str(ac.time_target.date() ) + ", "
-            #+ str(ac.time_target.hour ).zfill(2) + " Uhr")
-    #db.write_log_to_db(ac, log_message, "t" )
     return sendung_data
 
 
 def beam_prev_sendungen(list_preview_sendungen):
-    """ Sendungen an php-Script auf Webserver uebergeben """
+    """transfer items to php script"""
     # urllib noetig
     # config
     anzahl_sendungen = int(db.ac_config_1[2])
