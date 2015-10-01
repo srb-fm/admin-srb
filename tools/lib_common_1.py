@@ -429,7 +429,7 @@ class dbase(object):
             self.db_log_con.close()
 
     def read_tbl_row_with_cond_log(self, ac, db, table, fields, condition):
-        # zeile aus db-log lesen
+        # read row from log
         row = None
         message_write_to_console(ac, "read_tbl_row_with_condition_log: ")
         sql_string = ("SELECT " + fields + " FROM " + table
@@ -445,17 +445,20 @@ class dbase(object):
             db_cur.execute(SELECT)
             result = db_cur.fetchone()
 
-            # wenn kein satz vorhanden
+            # if empty result
             if result is None:
                 row = None
-                log_message = ("read_tbl_row_with_cond: nichts gefunden..."
+                log_message = ("read_tbl_row_with_cond_log: nothing found..."
                                  + condition)
                 message_write_to_console(ac, log_message)
-                # logmeldung zu lang und zu häufig:
 
         except Exception, e:
-            self.db_log_con.close()
-            log_message = "read_tbl_row_with_cond_ad Error: %s" % str(e)
+            try:
+                self.db_log_con.close()
+            except Exception, e:
+                log_message = "read_tbl_row_with_cond_log Error: %s" % str(e)
+            else:
+                log_message = "read_tbl_row_with_cond_ad Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
         else:
