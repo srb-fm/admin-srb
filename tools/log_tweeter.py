@@ -66,28 +66,27 @@ import lib_common_1 as lib_cm
 class app_config(object):
     """Application-Config """
     def __init__(self):
-        """Einstellungen"""
+        """Settings"""
         # app_config
         self.app_id = "006"
         self.app_desc = u"Log-Tweeter"
-        # schluessel fuer config in db
+        # key for config in db
         self.app_config = u"Log_Tweeter_Config"
         self.app_config_develop = u"Log_Tweeter_Config_e"
-        # anzahl parameter
+        # amount parameters
         self.app_config_params_range = 7
         self.app_errorfile = "error_log_tweeter.log"
         self.app_errorslist = []
         self.app_params_type_list = []
-        # entwicklungsmodus (andere parameter, z.b. bei verzeichnissen)
+        # develop-mod
         self.app_develop = "no"
-        # meldungen auf konsole ausgeben
+        # debug-mod
         self.app_debug_mod = "no"
-        #self.app_windows = "no"
         # errorlist
         self.app_errorslist.append(u"Error 000 "
             "Parameter-Typ oder Inhalt stimmt nicht")
         self.app_errorslist.append(u"Error 001 Fehler beim Twittern ")
-        # params-type-list, typ entsprechend der params-liste in der config
+        # params-type-list
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -101,7 +100,7 @@ class app_config(object):
 
 
 def load_actions(c_time_back):
-    """ Actions aus Log holen """
+    """load actions from log"""
     db_tbl = "USER_LOGS A "
     db_tbl_fields = ("A.USER_LOG_ID, A.USER_LOG_TIME, A.USER_LOG_ACTION, "
         "A.USER_LOG_ICON, A.USER_LOG_MODUL_ID ")
@@ -116,7 +115,7 @@ def load_actions(c_time_back):
     if log_data is None:
         return
 
-    #  daten aus db durchgehen
+    #  loop through data
     item_log_last = ""
     for row in log_data:
         tweetet_log = load_tweet_logs(row[0])
@@ -127,7 +126,6 @@ def load_actions(c_time_back):
         if row[2] == "Log-Tweeter gestartet":
             continue
         if item_log_last == item_log_current:
-            #TODO: funktioniert das wirklich?
             db.write_log_to_db(ac,
                 ac.app_desc + " doppelte Meldung: " + item_log_last, "x")
             continue
@@ -137,7 +135,7 @@ def load_actions(c_time_back):
 
 
 def load_errors(c_time_back):
-    """ Errors aus Log holen """
+    """ load errors from Log """
     twitter_errors = None
     db_tbl = "USER_LOGS A "
     db_tbl_fields = ("A.USER_LOG_ID, A.USER_LOG_TIME, A.USER_LOG_ACTION, "
@@ -153,10 +151,9 @@ def load_errors(c_time_back):
     if log_data is None:
         return
 
-    #  daten aus db durchgehen
+    #  loop through data
     item_log_last = ""
     for row in log_data:
-        #lib_cm.message_write_to_console(ac, row[2][33:94])
         if (row[2][33:94] == "-message-: -Not authorized to use this endpoint."
             "-, -code-: 37"):
             # ignore
@@ -169,10 +166,10 @@ def load_errors(c_time_back):
             continue
 
         item_log_current = row[2] + " - " + row[1].strftime("%Y-%m-%d %H:%M:%S")
-        # twitter nicht bombardieren
+        # don't bomb twitter
         item_log_current_a = row[2]
         if item_log_last == item_log_current_a:
-            # doppelte Meldung
+            # duplicate
             continue
 
         if (row[2] == "001 Fehler beim Twittern "
@@ -195,7 +192,7 @@ def load_errors(c_time_back):
 
 
 def load_notis(c_time_back):
-    """ Notifications aus Log holen """
+    """ load Notifications from Log """
     db_tbl = "USER_LOGS A "
     db_tbl_fields = ("A.USER_LOG_ID, A.USER_LOG_TIME, A.USER_LOG_ACTION, "
         "A.USER_LOG_ICON, A.USER_LOG_MODUL_ID ")
@@ -210,7 +207,7 @@ def load_notis(c_time_back):
     if log_data is None:
         return
 
-    #  daten aus db durchgehen
+    #  loop through data
     for row in log_data:
         tweetet_log = load_tweet_logs(row[0])
         if tweetet_log is not None:
@@ -223,7 +220,7 @@ def load_notis(c_time_back):
 
 
 def load_tweet_logs(user_log_id):
-    """ Checken ob log bereits getweetet wurde """
+    """ check if log always been tweeted """
     db_tbl_condition = "TW_USER_LOG_ID = " + str(user_log_id)
     log_data = db.read_tbl_rows_with_cond_log(ac,
                 db, "TWITTER_LOGS", "TW_USER_LOG_ID", db_tbl_condition)
@@ -236,7 +233,7 @@ def load_tweet_logs(user_log_id):
 
 
 def tweet_log(log_message):
-    """ Log an Twitter uebertragen """
+    """ send tweet """
     #auth = tweepy.OAuthHandler(ac.consumer_key, ac.consumer_secret)
     auth = tweepy.OAuthHandler(db.ac_config_1[2], db.ac_config_1[3])
     #auth.set_access_token(ac.access_token, ac.access_token_secret)
@@ -251,7 +248,7 @@ def tweet_log(log_message):
 
 
 def tweet_message(log_message):
-    """ Log als Message an Twitter uebertragen """
+    """send message """
     tweet_error = None
     auth = tweepy.OAuthHandler(db.ac_config_1[2], db.ac_config_1[3])
     auth.set_access_token(db.ac_config_1[4], db.ac_config_1[5])
@@ -260,15 +257,14 @@ def tweet_message(log_message):
         #api.send_direct_message("Name", text=log_message[0:140])
         message_to = db.ac_config_1[7].split(",")
         for item in message_to:
-            # mit strip ev. leerzeichen
-            # vor und hinter dem empfaengernamen entfernen
+            # remove spaces with strip in twiiter names
             api.send_direct_message(item.strip(), text=log_message[0:140])
             db.write_log_to_db_a(ac, log_message[0:140], "p",
                 "write_also_to_console")
     except Exception, e:
         err_message = ac.app_errorslist[1] + str(e) + " " + log_message[0:90]
         if err_message[0:90] != log_message[0:90]:
-            # nur einmal registrieren
+            # only one registration
             db.write_log_to_db_a(ac, err_message, "x", "write_also_to_console")
         # damit die naechsten tweets nicht erst abgesendet werden,
         # wenn hier keine verbindung erfolgt
@@ -278,7 +274,7 @@ def tweet_message(log_message):
 
 
 def delete_tweet_log_in_db_log():
-    """Veraltete Log-Eintraege in DB-log loeschen"""
+    """delete old Logs in DB-log"""
     lib_cm.message_write_to_console(ac, u"delete_tweet_log_in_db_log")
     date_log_back = (datetime.datetime.now()
                      + datetime.timedelta(days=- 1))
@@ -286,8 +282,6 @@ def delete_tweet_log_in_db_log():
 
     ACTION = ("DELETE FROM TWITTER_LOGS WHERE TW_LOG_TIME < '"
               + c_date_log_back + "'")
-
-    #ACTION = "DELETE FROM TWITTER_LOGS"
 
     db.dbase_log_connect(ac)
     if db.db_log_con is None:
@@ -317,7 +311,7 @@ def delete_tweet_log_in_db_log():
 
 
 def lets_rock():
-    """Hauptfunktion """
+    """Main funktion """
     print "lets_rock "
 
     #time_back = datetime.datetime.now() + datetime.timedelta( seconds= - 120 )
@@ -325,19 +319,14 @@ def lets_rock():
                  + datetime.timedelta(seconds=- int(db.ac_config_1[6])))
 
     c_time_back = time_back.strftime("%Y-%m-%d %H:%M:%S")
-    # zuerst errors suchen
-    # wenn twitter errors dabei sind, nicht weiter machen
+    # 1. search logs for errors
+    # are they twitter errors dont't tweet it again
     twitter_errors = load_errors(c_time_back)
     if twitter_errors is None:
         load_actions(c_time_back)
         load_notis(c_time_back)
-    #else:
-        #log_message = ac.app_errorslist[1] + " Twittern ausgesetzt"
-        #db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        #log_message = "Vorhergehende Twitter-Fehler, versuche sie zu uebergehen"
-        #db.write_log_to_db_a(ac, log_message, "n", "write_also_to_console")
 
-    # alte logs des vortages loeschen
+    # delete logs from yesterday
     if datetime.datetime.now().hour == 0:
         delete_tweet_log_in_db_log()
 
