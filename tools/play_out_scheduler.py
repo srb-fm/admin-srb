@@ -373,6 +373,32 @@ def check_stream():
     return
 
 
+def set_stream(play_out_item):
+    """setting stream variable"""
+    if play_out_item == "None":
+        # no items for playing out found
+        if ac.play_out_stream is not None:
+            ac.play_out_stream = None
+            db.write_log_to_db_a(ac,
+                                    "End of Playing Out Stream", "t",
+                                             "write_also_to_console")
+        return
+
+    if play_out_item[21:25] == "http":
+        # reg stream-url for check
+        # check will fail, if stream is not the first item!
+        # but this is rarely the case
+        ac.play_out_stream = play_out_item[21:]
+        db.write_log_to_db_a(ac, "Playing Out Stream", "t",
+                                             "write_also_to_console")
+    else:
+        if ac.play_out_stream is not None:
+            ac.play_out_stream = None
+            db.write_log_to_db_a(ac,
+                                    "End of Playing Out Stream", "t",
+                                             "write_also_to_console")
+
+
 def check_mpd_song(option):
     """read song-status"""
     current_song = mpd.exec_command(db, ac, "song", None)
@@ -473,19 +499,8 @@ def prepare_mpd_0(time_now, minute_start):
                     mpd.exec_command(db, ac, "add", item[2][19:])
                 else:
                     msg_2 = msg_2 + item[2][21:] + "\n"
-                    if item[2][21:25] == "http":
-                        # reg stream-url for check
-                        # check will fail, if stream is not the first item!
-                        # but this is rarely the case
-                        ac.play_out_stream = item[2][21:]
-                        db.write_log_to_db_a(ac, "Playing Out Stream", "t",
-                                             "write_also_to_console")
-                    else:
-                        if ac.play_out_stream is not None:
-                            ac.play_out_stream = None
-                            db.write_log_to_db_a(ac,
-                                    "End of Playing Out Stream", "t",
-                                             "write_also_to_console")
+                    # reg stream-url for check
+                    set_stream(item[2])
 
                     # trying seamless play
                     if current_song_file.decode('utf_8') == item[2][21:]:
@@ -528,6 +543,8 @@ def prepare_mpd_0(time_now, minute_start):
                     mpd_fade_out()
         else:
             msg_1 = None
+            # reg stream-url for check
+            set_stream("None")
 
     # now play top of the hour
     if time_now.second == 59:
@@ -586,19 +603,8 @@ def prepare_mpd_5x(time_now, minute_start):
             # add items to playlist
             for item in ac.play_out_items:
                 msg_2 = msg_2 + item[2][21:] + "\n"
-                if item[2][21:25] == "http":
-                    # reg stream-url for check
-                    # check will fail, if stream is not the first item!
-                    # but this is rarely the case
-                    ac.play_out_stream = item[2][21:]
-                    db.write_log_to_db_a(ac, "Playing Out Stream", "t",
-                                             "write_also_to_console")
-                else:
-                    if ac.play_out_stream is not None:
-                        ac.play_out_stream = None
-                        db.write_log_to_db_a(ac,
-                                    "End of Playing Out Stream", "t",
-                                             "write_also_to_console")
+                # reg stream-url for check
+                set_stream(item[2])
 
                 if current_song_file.decode('utf_8') == item[2][21:]:
                     ac.play_out_current_continue = True
@@ -634,6 +640,8 @@ def prepare_mpd_5x(time_now, minute_start):
                     mpd_fade_out()
         else:
             msg_1 = None
+            # reg stream-url for check
+            set_stream("None")
 
     if time_now.second == 59:
         if ac.play_out_items is not None:
