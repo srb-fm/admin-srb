@@ -375,14 +375,6 @@ def check_stream():
 
 def set_stream(play_out_item):
     """setting stream variable"""
-    if play_out_item == "None":
-        # no items for playing out found
-        if ac.play_out_stream is not None:
-            ac.play_out_stream = None
-            db.write_log_to_db_a(ac,
-                                    "End of Playing Out Stream", "t",
-                                             "write_also_to_console")
-        return
 
     if play_out_item[21:25] == "http":
         # reg stream-url for check
