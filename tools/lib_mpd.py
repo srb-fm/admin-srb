@@ -12,7 +12,10 @@ import mpd_config
 def mpc_client(db, ac, command, value):
     """execute mpd-commands via mpc-client"""
     #mpd_server = mpd_config.mpd_pw + "@" + mpd_config.mpd_host
-    mpd_server = db.ac_config_1[3] + "@" + db.ac_config_1[1]
+    if db.ac_config_server_active[2] == "A":
+        mpd_server = db.ac_config_1[3] + "@" + db.ac_config_1[1]
+    if db.ac_config_server_active[2] == "B":
+        mpd_server = db.ac_config_1[4] + "@" + db.ac_config_1[1]
     mpd_port = db.ac_config_1[2]
     cmd_mpd_client = db.ac_config_etools[8].encode(ac.app_encode_out_strings)
     try:
@@ -145,6 +148,7 @@ class myMPD(object):
             self._client = MPDClient()
 
     def exec_command(self, db, ac, command, value):
+        """spread out exec commands"""
         result = None
         try:
             if command == "access":

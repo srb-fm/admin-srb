@@ -274,6 +274,11 @@ def load_extended_params():
 
     # extern tools
     ext_params_ok = lib_cm.params_provide_tools(ac, db)
+    if ext_params_ok is None:
+        return None
+    ext_params_ok = lib_cm.params_server_active(ac, db)
+    if ext_params_ok is None:
+        return None
     return ext_params_ok
 
 
