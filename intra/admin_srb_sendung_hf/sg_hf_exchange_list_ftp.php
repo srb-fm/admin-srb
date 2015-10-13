@@ -133,7 +133,7 @@ if ( $user_rights == "yes" ) {
 					echo "<div class='content_row_b_4'>";
 				}
 
-				if ($fileext == "mp3") {
+				if ($fileext == "mp3" or $fileext == "MP3") {
 					echo "<img src='../parts/pict/speaker.png' width='16px' height='16px' alt='Datei herunterladen und vorhören'> ";
 					echo "<a href='sg_hf_exchange_detail.php?action=play&amp;sg_file=".$item['EX_LOG_FILE']."' class='c_box' Title='Datei herunterladen und vorhören'>";				
 				}
@@ -143,7 +143,6 @@ if ( $user_rights == "yes" ) {
 				}
 				echo $item['EX_LOG_FILE']."</a>";
 				echo "</div>";
-					
 				}
 			}
 		}

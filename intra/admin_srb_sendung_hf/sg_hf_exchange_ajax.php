@@ -23,12 +23,24 @@ if ( isset($_POST['action']) ) {
 if ( $action_ok == true ) {
 	switch ( $action ) {
 		case "ftp":
-		echo ftp_download( $_POST['ftp_server'], $_POST['ftp_user_name'], $_POST['ftp_user_pass'], $_POST['server_file'], $_POST['local_file'] );
+			echo ftp_download( $_POST['ftp_server'], $_POST['ftp_user_name'], $_POST['ftp_user_pass'], $_POST['server_file'], $_POST['local_file'] );
 			//echo $_POST['ftp_server'].$_POST['ftp_user_name'].$_POST['ftp_user_pass'].$_POST['server_file'].$_POST['local_file'];
 		break;
+		
 		case "rename":
-		echo "rename".$_POST['ren_file'];
-		rename($_POST['local_file'], $_POST['ren_file']);
+			echo "rename".$_POST['ren_file'];
+			$file_name = new SplFileInfo($_POST['ren_file']);
+			$file_name_base = basename($file_name);
+			$file_ext = $file_name->getExtension();
+			if ($file_ext == "MP3") {
+				$file_name_base = basename($file_name, "MP3");
+				$file_path_parts = pathinfo($_POST['ren_file']);
+				$file_path_parts['dirname'];
+				$file_new_name = $file_path_parts['dirname']."/".$file_name_base."mp3";
+				rename($_POST['local_file'], $file_new_name);
+			} else{
+				rename($_POST['local_file'], $_POST['ren_file']);
+			}
 		break;		
 	//endswitch;
 	}
@@ -47,7 +59,7 @@ if ( $action_ok == true ) {
 function write_log_file( $wert ) 
 {
 	// logfile schreiben
-	$myFile = "../admin_srb_export/sg_mk.log";
+	$myFile = "../admin_srb_export/sg_exchange.log";
 	$fh = fopen($myFile, 'w') or die("can't open file");
 	$stringData = $wert."\n";
 	fwrite($fh, $stringData);

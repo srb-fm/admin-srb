@@ -138,7 +138,7 @@ if ( $action_ok == true ) {
  
     	$( "#opener" ).click(function() {
     		
-    		$( "#dialog" ).html( "Speichern" );
+    		$( "#dialog" ).html( "Gespeichert in<br>" + "<?php echo '...'.substr($tbl_row_config_B->USER_SP_PARAM_10, -30) ?>" );
       	
       	var dataString = ('action=rename' 
 							+ '&local_file=' + "<?php echo $local_file ?>"
@@ -246,7 +246,7 @@ if ( $user_rights == "yes" ) {
 
 	$filename = new SplFileInfo($id);
 	$fileext = $filename->getExtension();
-	if ($fileext == "mp3") {
+	if ($fileext == "mp3" or $fileext == "MP3") {
 		echo "<button id='opener'>Audio-Datei in Play_Out_Uebernahmen speichern</button>";
 				
 		echo "<div id='dialog' title='Download und Speichern'>";
