@@ -21,6 +21,9 @@ Schluesselwort fuer Einstellungen: PO_Loader
 Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
+Fuer Ausfuehrung via Intranet muessen die Ausfuehrungsrechte erweitert werden:
+chmod o+x srb-tools/play_out_loader.py
+
 Parameterliste:
 Von PO_Loader:
 P1 Zeitansage on/off
