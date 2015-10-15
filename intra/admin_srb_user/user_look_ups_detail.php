@@ -15,49 +15,49 @@
 require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
-	
+
 $message = "";
 $look_up_item = "no";
 $look_up_desc = "";
-if ( isset( $_GET['message'] ) ) { 
+if ( isset($_GET['message']) ) { 
 	$message .= $_GET['message'];
 }
-if ( isset( $_POST['message'] ) ) { 
+if ( isset($_POST['message']) ) { 
 	$message .= $_POST['message'];
 }
-if ( isset( $_GET['lu_item'] ) ) { 
+if ( isset($_GET['lu_item']) ) { 
 	$look_up_item = $_GET['lu_item'];
 }
-if ( isset( $_POST['lu_item'] ) ) { 
+if ( isset($_POST['lu_item']) ) { 
 	$look_up_item = $_POST['lu_item'];
 }
-if ( isset( $_GET['lu_desc'] ) ) { 
+if ( isset($_GET['lu_desc']) ) { 
 	$look_up_desc = $_GET['lu_desc'];
 }
-if ( isset( $_POST['lu_desc'] ) ) { 
+if ( isset($_POST['lu_desc']) ) { 
 	$look_up_desc = $_POST['lu_desc'];
 }
 
 $action_ok = "no";
-	
+
 // action pruefen	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
 	$action_ok = "yes";
 }
-if ( isset( $_POST['action'] ) ) {	
+if ( isset($_POST['action']) ) {	
 	$action = $_POST['action'];
 	$action_ok = "yes";
 }
-			
+
 if ( $action_ok == "yes" ) {	
-	if ( isset( $_GET['id'] ) ) { 
+	if ( isset($_GET['id']) ) { 
 		$id = $_GET['id'];
 	}
-	if ( isset( $_POST['id'] ) ) {
+	if ( isset($_POST['id']) ) {
 		$id = $_POST['id'];
 	}
-	
+
 	/**
 	* load_look_up
 	*
@@ -90,7 +90,7 @@ if ( $action_ok == "yes" ) {
 			$result_field_id = $tbl_row->IV_EIG_ID;	
 			$result_field_desc = $tbl_row->IV_EIG_DESC;
 			break;
-				
+
 		case "iv_kategorie":
 			$message = "Kategorie - Details anzeigen. ";
 			$look_up_desc = "Kategorie";
@@ -108,7 +108,7 @@ if ( $action_ok == "yes" ) {
 			$result_field_id = $tbl_row->SG_GENRE_ID;	
 			$result_field_desc = $tbl_row->SG_GENRE_DESC;
 			break;
-							
+
 		case "sg_sprache":
 			$message = "Sendung Sprache - Details anzeigen. ";
 			$look_up_desc = "Sprache";
@@ -121,7 +121,7 @@ if ( $action_ok == "yes" ) {
 		}
 		return array($tbl_row, $result_field_id, $result_field_desc, $look_up_desc, $message); 
 	}
-	
+
 	/**
 	* load_look_up_a
 	*
@@ -144,7 +144,7 @@ if ( $action_ok == "yes" ) {
 			$tbl = "IV_MAIN";
 			$field = "IV_EIGENTUEMER_ID";
 			break;
-				
+
 		case "iv_kategorie":
 			$tbl = "IV_MAIN";
 			$field = "IV_KATEGORIE_ID";
@@ -152,9 +152,9 @@ if ( $action_ok == "yes" ) {
 
 		case "sg_genre":
 			$tbl = "SG_HF_CONTENT";
-			$field = "SG_HF_CONT_SPEECH_ID";
+			$field = "SG_HF_CONT_GENRE_ID";
 			break;
-							
+
 		case "sg_sprache":
 			$tbl = "SG_HF_CONTENT";
 			$field = "SG_HF_CONT_SPEECH_ID";
@@ -163,7 +163,7 @@ if ( $action_ok == "yes" ) {
 		}	
 		return array($tbl, $field );
 	}
-				
+
 	/**
 	* load_look_up_b
 	*
@@ -186,7 +186,7 @@ if ( $action_ok == "yes" ) {
 			$tbl = "IV_EIGENTUEMER";
 			$field = "IV_EIG_ID";
 			break;
-				
+
 		case "iv_kategorie":
 			$tbl = "IV_KATEGORIE";
 			$field = "IV_KAT_ID";
@@ -196,7 +196,7 @@ if ( $action_ok == "yes" ) {
 			$tbl = "SG_GENRE";
 			$field = "SG_GENRE_ID";
 			break;
-							
+
 		case "sg_sprache":
 			$tbl = "SG_SPEECH";
 			$field = "SG_SPEECH_ID";
@@ -205,21 +205,21 @@ if ( $action_ok == "yes" ) {
 		}	
 		return array($tbl, $field);
 	}
-				
-				
+			
+			
 	// action switchen
 	if ( $id !="" ) { 	
 		switch ( $action ) {
 		case "display":	
 			list($tbl_row, $result_field_id, $result_field_desc, $look_up_desc, $message) = load_look_up($look_up_item, $message, $id);
 			break;
-			
+		
 		case "check_delete":		
 			// pruefen ob look_up in den haupttabellen verwendet, wird die id gefunden, dann loeschen nicht moeglich			
 			$message .= $look_up_desc." zum Löschen prüfen! ";
 			list($tbl, $field) = load_look_up_a($look_up_item);
 			$db_value = db_query_load_value_n_by_id($tbl, $field, $id, 4);
-			
+
 			if ( $db_value != $id ) {
 				// nicht gefunden, loeschen moeglich
 				header("Location: user_look_ups_detail.php?action=delete&id=".$id."&kill_possible=yes&lu_item=".$look_up_item);
@@ -244,7 +244,7 @@ if ( $action_ok == "yes" ) {
 			if ( $_POST['form_kill_code'] == trim($c_kill)) {
 				list($tbl, $field) = load_look_up_b($look_up_item);			
 				$_ok = db_query_delete_item($tbl, $field, $id);
-				
+
 				if ( $_ok == "true" ) {
 					$message = $look_up_desc." gelöscht!";
 					$action_ok = "no";	
@@ -255,7 +255,7 @@ if ( $action_ok == "yes" ) {
 				$message .= "Keine Löschberechtigung!";	
 			}	
 			break;
-												
+
 			//endswitch;
 		}
 	}
@@ -274,7 +274,7 @@ if ( $action_ok == "yes" ) {
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_ui_1_8_16/jquery-ui-1.8.16.custom.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_tools/jq_tools.js"></script>
-	
+
 </head>
 <body>
 <div class="column_large">
@@ -290,7 +290,7 @@ if ( !$tbl_row ) {
 	echo "Fehler bei Abfrage!"; 
 	return;
 }
-			
+
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
 if ( $user_rights == "yes" ) { 	
 	echo "<div class='content_row_a_1'>";
@@ -299,7 +299,7 @@ if ( $user_rights == "yes" ) {
 	echo "</div>\n";
 
 	echo "<div class='line'> </div>\n";
-			
+		
 	if ( $action == "delete" ) { 
 		// wird verwendet
 		if ( $kill_possible == "no" ) {
@@ -320,7 +320,7 @@ if ( $user_rights == "yes" ) {
 
 		}
 	}
-			
+
 	echo "<div class='menu_bottom'>";
 	echo "<ul class='menu_bottom_list'>";
 	if ( $_SESSION["log_rights"] == "A" ) {	
