@@ -323,7 +323,7 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_2'>" .$tbl_row_sg->SG_HF_CONT_UNTERTITEL. "</div>";
 	echo "</div>\n";
 	echo "<div class='content_row_b_1'>";
-	echo "<div class='content_column_1'>Sendeverantwortlich</div>";
+	echo "<div class='content_column_1'>Sendeverantw./ Redakteur</div>";
 	echo "<div class='content_column_2'>" .$tbl_row_ad->AD_VORNAME." " .$tbl_row_ad->AD_NAME.", ".$tbl_row_ad->AD_ORT. "</div>";
 	echo "</div>\n";
 	echo "<div class='space_line_1'> </div>";
@@ -591,7 +591,8 @@ if ( $user_rights == "yes" ) {
 		echo "<a href='sg_hf_edit.php?action=edit&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;file_exist=".$file_exist."'>Bearbeiten</a> ";
 		echo "<a href='sg_hf_edit.php?action=repeat_new&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."'>Wiederholen</a> ";			
 		echo "<a href='sg_hf_edit.php?action=dublikate_new&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."'>Duplizieren</a> ";	
-		echo "<a href='../admin_srb_adress/adress_find_extra.php?sg_id=".$tbl_row_sg->SG_HF_ID." ' title='Sendeverantwortlichen ändern'>Sendeverantwortlicher</a> ";
+		echo "<a href='../admin_srb_adress/adress_find_extra.php?sg_id=".$tbl_row_sg->SG_HF_ID." ' title='Sendeverantwortlichen ändern'>Sendev.</a> ";
+		echo "<a href='../admin_srb_adress/adress_find_extra.php?sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_editor=new ' title='Redakteur ändern'>Redakteur</a> ";
 					
 		if ( $action == "display" ) { 
 			if ( $tbl_row_sg->SG_HF_ID != "0" ) {
