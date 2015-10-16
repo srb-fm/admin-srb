@@ -293,6 +293,13 @@ if ( $action_ok == false ) {
 
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");			
 if ( $user_rights == "yes" ) {
+	// if link to editor
+	if ( $tbl_row_sg->SG_HF_CONT_EDITOR_AD_ID != "0") {	
+		$tbl_row_ad_editor = db_query_display_item_1("AD_MAIN", "AD_ID = " .$tbl_row_sg->SG_HF_CONT_EDITOR_AD_ID);
+		$editor_ad = "/ ".$tbl_row_ad_editor->AD_VORNAME." " .$tbl_row_ad_editor->AD_NAME.", ".$tbl_row_ad_editor->AD_ORT;
+	} else {
+		$editor_ad = "/ Kein Redakteur zugeordnet";	
+	}
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Datum/ Zeit/ Länge</div>";
 	echo "<div class='content_column_4'>" .get_date_format_deutsch(substr($tbl_row_sg->SG_HF_TIME, 0, 10))." (".get_german_day_name_a(substr($tbl_row_sg->SG_HF_TIME, 0, 10)).") </div>";
@@ -324,7 +331,7 @@ if ( $user_rights == "yes" ) {
 	echo "</div>\n";
 	echo "<div class='content_row_b_1'>";
 	echo "<div class='content_column_1'>Sendeverantw./ Redakteur</div>";
-	echo "<div class='content_column_2'>" .$tbl_row_ad->AD_VORNAME." " .$tbl_row_ad->AD_NAME.", ".$tbl_row_ad->AD_ORT. "</div>";
+	echo "<div class='content_column_2'>" .$tbl_row_ad->AD_VORNAME." " .$tbl_row_ad->AD_NAME.", ".$tbl_row_ad->AD_ORT.$editor_ad. "</div>";
 	echo "</div>\n";
 	echo "<div class='space_line_1'> </div>";
 	echo "<div class='content_row_a_1'>";
@@ -591,8 +598,8 @@ if ( $user_rights == "yes" ) {
 		echo "<a href='sg_hf_edit.php?action=edit&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;file_exist=".$file_exist."'>Bearbeiten</a> ";
 		echo "<a href='sg_hf_edit.php?action=repeat_new&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."'>Wiederholen</a> ";			
 		echo "<a href='sg_hf_edit.php?action=dublikate_new&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."'>Duplizieren</a> ";	
-		echo "<a href='../admin_srb_adress/adress_find_extra.php?sg_id=".$tbl_row_sg->SG_HF_ID." ' title='Sendeverantwortlichen ändern'>Sendev.</a> ";
-		echo "<a href='../admin_srb_adress/adress_find_extra.php?sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_editor=new ' title='Redakteur ändern'>Redakteur</a> ";
+		echo "<a href='../admin_srb_adress/adress_find_extra.php?sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_author=new ' title='Sendeverantwortlichen ändern'>Sendev.</a> ";
+		echo "<a href='../admin_srb_adress/adress_find_extra.php?sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_cont_id=".$tbl_row_sg->SG_HF_CONTENT_ID."&amp;sg_editor=new ' title='Redakteur ändern'>Redakteur</a> ";
 					
 		if ( $action == "display" ) { 
 			if ( $tbl_row_sg->SG_HF_ID != "0" ) {

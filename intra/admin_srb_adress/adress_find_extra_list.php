@@ -22,7 +22,8 @@ $display_option = "normal";
 $find_limit_skip = "no";
 $sg_id = "no";
 $only_user = false;
-$sg_editor = "no";	
+$sg_author = "";	
+$sg_editor = "";
 	
 // info ausgabebegrenzung auf 25 datensaetze:
 // der abfrage_condition wird das limit von 25 datensaetzen zugefuegt: ausgabebegrenzung 1
@@ -46,14 +47,23 @@ if ( isset($_GET['find_limit_skip'])) {
 	$find_limit_skip = $_GET['find_limit_skip'];
 }
 
-// change author
 if ( isset($_POST['sg_id']) ) {
 	$sg_id = $_POST['sg_id'];
+}
+
+if ( isset($_POST['sg_cont_id']) ) {
+		$sg_cont_id = $_POST['sg_cont_id'];
+}
+	
+// change author
+if ( isset($_POST['sg_author']) ) {
 	$only_user = true;
+	$sg_author = $_POST['sg_author'];
 }
 // change editor
 if ( isset($_POST['sg_editor']) ) {
 	$only_user = true;
+	$sg_editor = $_POST['sg_editor'];
 }
 
 // check id
@@ -213,12 +223,12 @@ if ( $user_rights == "yes" ) {
 					
 			// directlinks for shows	
 			// change author 
-			if ( $sg_id != "no" ) {
+			if ( $sg_author == "new" ) {
 				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=edit&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."' ><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Sendeverantwortlichen ändern' alt='Sendeverantwortlichen ändern'></a>";					
 			}
 			// change editor
-			if ( $sg_editor == "new" ) ) {
-				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=edit&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."&amp;sg_editor=new'><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Sendeverantwortlichen ändern' alt='Redakteur ändern'></a>";
+			if ( $sg_editor == "new" ) {
+				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=editor_new&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."&amp;sg_cont_id=".$sg_cont_id."&amp;sg_editor=new'><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Redaktuer ändern' alt='Redakteur ändern'></a>";
 			}
 				
 			echo "</div>\n</div>\n";
@@ -231,7 +241,13 @@ if ( $user_rights == "yes" ) {
     	$x = $z / 25;
 		echo "<div class='content_footer'>Gefunden: ".$z. " ::: "; 	
 		if ( $sg_id != "no" ) {
-			echo "Sendeverantwortlichen durch Klick auf Symbol ändern.";
+			if ( $sg_author == "new" ) {
+				echo "Sendeverantwortlichen durch Klick auf Symbol ändern.";
+			}
+			if ( $sg_editor == "new" ) {
+				echo "Redaktuer durch Klick auf Symbol ändern.";
+			}
+			
 		}
 		// ausgabebegrenzung 2				
 		if ( is_integer($x)) {

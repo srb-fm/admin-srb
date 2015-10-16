@@ -290,6 +290,13 @@ if ( $action_ok == true ) {
 			$tbl_row_ad = db_query_display_item_1("AD_MAIN", "AD_ID = " .$id_ad);
 			$tbl_row_sg = db_query_sg_display_item_1($_GET['sg_id']);
 			break;
+			
+		case "editor_new":
+			// reg editor-ad-id
+			$tbl_ad_fields_values = "SG_HF_CONT_EDITOR_AD_ID=".$_GET['ad_id'];
+			db_query_update_item_a("SG_HF_CONTENT", $tbl_ad_fields_values, "SG_HF_CONT_ID = ".$_GET['sg_cont_id']);
+			header("Location: sg_hf_detail.php?action=display&sg_id=".$_GET['sg_id']."&error_message=".$error_message);
+			break;
 
 		case "update":
 			// sg
