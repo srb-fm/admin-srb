@@ -21,7 +21,8 @@ $find_option_ok = false;
 $display_option = "normal";
 $find_limit_skip = "no";
 $sg_id = "no";
-	
+$only_user = false;
+$sg_editor = "no";	
 	
 // info ausgabebegrenzung auf 25 datensaetze:
 // der abfrage_condition wird das limit von 25 datensaetzen zugefuegt: ausgabebegrenzung 1
@@ -45,9 +46,14 @@ if ( isset($_GET['find_limit_skip'])) {
 	$find_limit_skip = $_GET['find_limit_skip'];
 }
 
-// change Sendeveranwortlicher
-if ( isset($_POST['sg_id']) ) {	
+// change author
+if ( isset($_POST['sg_id']) ) {
 	$sg_id = $_POST['sg_id'];
+	$only_user = true;
+}
+// change editor
+if ( isset($_POST['sg_editor']) ) {
+	$only_user = true;
 }
 
 // check id
@@ -123,17 +129,29 @@ if ( $find_option_ok == true ) {
 	switch ( $action ) {
 	case "find": 
 		if ( $find_option == "begin" ) {
-			//$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '".$c_field_value."%' collate de_de) ";
-			$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '".utf8_decode($c_field_value)."%' collate de_de) ORDER BY ".$c_field_desc;
-			$message_find_string = $c_field_message. " beginnt mit " .$c_field_value ;
+			if ( $only_user ) {
+				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '".utf8_decode($c_field_value)."%' collate de_de) AND AD_USER_OK_HF = 'T' ORDER BY ".$c_field_desc;
+				$message_find_string = $c_field_message. " beginnt mit " .$c_field_value. "/ Nur Macher";
+			} else {
+				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '".utf8_decode($c_field_value)."%' collate de_de) ORDER BY ".$c_field_desc;
+				$message_find_string = $c_field_message. " beginnt mit " .$c_field_value ;
+			}
 		} elseif ( $find_option == "in" ) {
-			//$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '%".$c_field_value."%' collate de_de) ";
-			$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '%".utf8_decode($c_field_value)."%' collate de_de) ORDER BY AD_NAME";
-			$message_find_string = $c_field_message. " enthält " .$c_field_value ;
+			if ( $only_user ) {
+				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '%".utf8_decode($c_field_value)."%' collate de_de) AND AD_USER_OK_HF = 'T' ORDER BY AD_NAME";
+				$message_find_string = $c_field_message. " enthält " .$c_field_value. "/ Nur Macher";
+			} else {
+				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '%".utf8_decode($c_field_value)."%' collate de_de) ORDER BY AD_NAME";
+				$message_find_string = $c_field_message. " enthält " .$c_field_value ;
+			}
 		} elseif ( $find_option == "exact" ) {
-			//$c_query_condition = "upper(".$c_field_desc.") = '".$c_field_value."' ";
-			$c_query_condition = $c_field_desc." = '".$c_field_value."' ";
-			$message_find_string = $c_field_message. " ist exakt " .$c_field_value ;
+			if ( $only_user ) {
+				$c_query_condition = $c_field_desc." = '".$c_field_value."' AND AD_USER_OK_HF = 'T'";
+				$message_find_string = $c_field_message. " ist exakt " .$c_field_value. "/ Nur Macher";
+			} else {
+				$c_query_condition = $c_field_desc." = '".$c_field_value."' ";
+				$message_find_string = $c_field_message. " ist exakt " .$c_field_value ;
+			}
 		}
 		break;
 		//endswitch;						
@@ -193,12 +211,14 @@ if ( $user_rights == "yes" ) {
 			echo "</div>";
 			echo "<div class='content_column_tool_img_1'>";
 					
-			// Sendung direktlinks	
-			if ( rtrim($item['AD_USER_OK_HF'] ) =="T" ) {
-				// change sendeverantwortlicher 
-				if ( $sg_id != "no" ) {
-					echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=edit&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."' ><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Sendeverantwortlichen HF ändern' alt='Sendeverantwortlichen HF ändern'></a>";					
-				}
+			// directlinks for shows	
+			// change author 
+			if ( $sg_id != "no" ) {
+				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=edit&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."' ><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Sendeverantwortlichen ändern' alt='Sendeverantwortlichen ändern'></a>";					
+			}
+			// change editor
+			if ( $sg_editor == "new" ) ) {
+				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=edit&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."&amp;sg_editor=new'><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Sendeverantwortlichen ändern' alt='Redakteur ändern'></a>";
 			}
 				
 			echo "</div>\n</div>\n";
