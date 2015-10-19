@@ -357,7 +357,7 @@ if ( $condition_delivery != "yes" ) {
 				break;
 																															
 			case"show_hour":
-				if ( isset( $_GET['sg_time'] )) {
+				if ( isset($_GET['sg_time'])) {
 					$c_query_condition = " SUBSTRING( A.SG_HF_TIME FROM 12 FOR 2 ) = '".substr($_GET['sg_time'], 11, 2)."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10 ) = '".substr($_GET['sg_time'], 0, 10)."' ORDER BY A.SG_HF_TIME";
 					$message_find_string = " vom ".get_date_format_deutsch(substr($_GET['sg_time'], 0, 10)). " in der ".substr($_GET['sg_time'], 11, 2).". Stunde";
 				}

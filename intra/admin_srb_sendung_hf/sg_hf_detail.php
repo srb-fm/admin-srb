@@ -615,7 +615,8 @@ if ( $user_rights == "yes" ) {
 		echo "<a title='Keine Berechtigung'>Bearbeiten</a> ";
 		echo "<a title='Keine Berechtigung'>Wiederholen</a> ";			
 		echo "<a title='Keine Berechtigung'>Duplizieren</a> ";	
-		echo "<a title='Keine Berechtigung'>Sendeverantwortlicher</a> ";
+		echo "<a title='Keine Berechtigung'>Sendev.</a> ";
+		echo "<a title='Keine Berechtigung'>Redakteur</a> ";
 		echo "<a title='Keine Berechtigung'>Löschen</a> ";
 	}			
 	echo "</ul>\n</div>\n<!--menu_bottom-->";  

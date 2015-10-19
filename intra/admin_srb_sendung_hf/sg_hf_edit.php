@@ -177,6 +177,7 @@ if ( $action_ok == true ) {
 			// hier ist nicht mit sonderzeichen zu rechnen, deshalb einfaches update	
 			db_query_update_item_a("SG_HF_CONTENT", $tbl_fields_values_sg_cont, "SG_HF_CONT_ID =".$_POST['sg_content_id']);
 			header("Location: sg_hf_detail.php?action=display&sg_id=".$main_id_sg);
+			exit;
 			break;
 
 		case "add":
@@ -282,6 +283,7 @@ if ( $action_ok == true ) {
 			db_query_update_item_a("AD_MAIN", $tbl_ad_fields_values, "AD_ID =".$_POST['ad_id']);
 			// Audiodatei nicht pruefen lassen in sg_hf_detail     
 			header("Location: sg_hf_detail.php?action=display&sg_id=".$main_id_sg."&check_file=no");
+			exit;
 			break;
 
 		case "edit":
@@ -296,6 +298,7 @@ if ( $action_ok == true ) {
 			$tbl_ad_fields_values = "SG_HF_CONT_EDITOR_AD_ID=".$_GET['ad_id'];
 			db_query_update_item_a("SG_HF_CONTENT", $tbl_ad_fields_values, "SG_HF_CONT_ID = ".$_GET['sg_cont_id']);
 			header("Location: sg_hf_detail.php?action=display&sg_id=".$_GET['sg_id']."&error_message=".$error_message);
+			exit;
 			break;
 
 		case "update":
@@ -458,6 +461,7 @@ if ( $action_ok == true ) {
 			$tbl_ad_fields_values = "AD_USER_OK_AKTIV='T'";
 			db_query_update_item_a("AD_MAIN", $tbl_ad_fields_values, "AD_ID =".$_POST['ad_id']);
 			header("Location: sg_hf_detail.php?action=display&sg_id=".$_POST['sg_id']."&error_message=".$error_message);
+			exit;
 			break;
 
 		} //endswitch
@@ -478,6 +482,7 @@ if ( $action_ok == true ) {
 	<meta http-equiv="expires" content="0">
 
 	<style type="text/css">@import url("../parts/style/style_srb_2.css");    </style>
+	<style type="text/css">@import url("../parts/style/style_srb_jq_2.css");  </style>
 	<style type="text/css">@import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<style type="text/css">@import url("../parts/jquery/jquery_form_validator/css/validationEngine.jquery.css");    </style>
 
@@ -540,7 +545,7 @@ if ( $action_ok == true ) {
 	<script type="text/javascript">
 	function delete_editor() {
 		document.form1.sg_editor_ad_id.value = 0;
-		document.getElementById("editor_name").innerHTML = "<div style='background-color:red;'>Redakteur wird gelöscht</div>";
+		document.getElementById("editor_name").innerHTML = "<div class='blink'> Redakteur wird gelöscht </div>";
 		//alert("Redakteur ");
 	}
 	</script>
@@ -559,11 +564,11 @@ if ( $action_ok == false ) {
 	return;
 }
 
-if ( ! isset( $tbl_row_ad->AD_ID )) { 
+if ( ! isset($tbl_row_ad->AD_ID)) { 
 	echo "Fehler bei Abfrage Adresse!"; 
 	return;
 }
-if ( ! isset($tbl_row_sg->SG_HF_ID )) { 
+if ( ! isset($tbl_row_sg->SG_HF_ID)) { 
 	echo "Fehler bei Abfrage Sendung!"; 
 	return;
 }
@@ -705,12 +710,12 @@ if ( $user_rights == "yes" ) {
 		if ( $file_exist == "yes" ) {
 			if ( substr($tbl_row_sg->SG_HF_CONT_FILENAME, 0, 7) != "http://" ) {
 				echo "<input type='checkbox' name='form_sg_read_audio_length' id='check_id3' value='T'> und Hoerdauer/ ID3-Tags abgleichen ";
-				echo "<input type='button' value='Sendezeit prüfen' onClick='check_free_time()' >";
+				echo "<input type='button' class='button_1' value='Sendezeit prüfen' onClick='check_free_time()' >";
 				echo "<div id='check_gain' style='display: none'><input type='checkbox' name='form_sg_mp3gain' value='T'> und mp3Gain abgleichen</div>";
 			}
 		}
 		if ( $editor_ad != "Kein Redakteur zugeordnet" ) {
-			echo "<input type='button' value='Redakteur löschen' onClick='delete_editor()' >";
+			echo "<input type='button' class='button_1' value='Redakteur löschen' onClick='delete_editor()' >";
 		}
 		echo "</div>";
 	}

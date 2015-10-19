@@ -497,6 +497,19 @@ input.text_dummy {
 	float: left;
 }
 
+input[type=button].button_1 {
+	color: White;
+	background-color: #63698D;
+	font-size: 12px;
+}
+
+input[type=button].button_1:hover{
+	color:Navy;
+	background-color: #FF9C00;
+	border: 1px solid #363E6F;
+	border-left: 4px solid #363E6F;
+}
+
 td.text_1{
 	width: 65px;
 	border-left: 1px solid Silver;
