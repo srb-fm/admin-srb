@@ -59,9 +59,22 @@ if ( $user_rights == "yes" ) {
 	echo "<div>";
 	echo "<input type='hidden' name='action' value='find'>";
 	echo "<input type='hidden' name='sg_id' value='".$_GET['sg_id']."'>";
-	echo "<input type='hidden' name='sg_author' value='".$_GET['sg_author']."'>";
-	echo "<input type='hidden' name='sg_editor' value='".$_GET['sg_editor']."'>";
-	echo "<input type='hidden' name='sg_cont_id' value='".$_GET['sg_cont_id']."'>";
+	if (isset($_GET['sg_author'])) {	
+		echo "<input type='hidden' name='sg_author' value='".$_GET['sg_author']."'>";
+	} else {
+		echo "<input type='hidden' name='sg_author' value=''>";
+	}
+	if (isset($_GET['sg_editor'])) {
+		echo "<input type='hidden' name='sg_editor' value='".$_GET['sg_editor']."'>";
+	} else {
+		echo "<input type='hidden' name='sg_editor' value=''>";
+	}
+	if (isset($_GET['sg_cont_id'])) {
+		echo "<input type='hidden' name='sg_cont_id' value='".$_GET['sg_cont_id']."'>";
+	} else {
+		echo "<input type='hidden' name='sg_cont_id' value=''>";
+	}	
+	
 	echo "</div>";
 	echo "<table>";	
 	echo "<tr><td>Name</td><td><input type='TEXT' name='ad_name' value='' size='60' maxlength='100'></td></tr>";
