@@ -18,7 +18,7 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 $message = "";
 $action_ok = false;
 $find_option_ok = false;
-$display_firma = "no";
+$display_firma = false;
 $display_option = "normal";
 $find_limit_skip = "first";
 
@@ -44,7 +44,7 @@ if ( $action_ok == false ) {
 
 // pruefen display, limit
 if ( isset($_POST['display_firma']) ) { 
-	$display_firma = "yes"; 
+	$display_firma = true; 
 }
 if ( isset($_GET['find_limit_skip']) ) {
 	$find_limit_skip = $_GET['find_limit_skip'];
@@ -73,7 +73,7 @@ if ( isset($_POST['ad_firma']) ) {
 	if ( $_POST['ad_firma'] !="") {
 		$c_field_message ="Firma";
 		$c_field_desc = "AD_FIRMA";
-		$display_firma = "yes";
+		$display_firma = true;
 		$c_field_value = $_POST['ad_firma'];
 	}
 }
@@ -279,7 +279,7 @@ if ( $user_rights == "yes" ) {
 				echo "<div class='content_row_b_1'>";
 			}
 			echo "<div class='content_column_6_a'>";
-			if ( $display_firma == "yes" ) {
+			if ( $display_firma == true ) {
 				echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box'>".$item['AD_FIRMA']. ", ". $item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_ORT']. "</a>";
 			} else {
 					
@@ -308,16 +308,17 @@ if ( $user_rights == "yes" ) {
 			// Module direktlinks	
 			if ( rtrim($item['AD_USER_OK_HF']) =="T" ) {		
 				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=new&amp;ad_id=".$item['AD_ID']."' class='c_box'><img src='../admin_srb_sendung_hf/parts/rectangle_green.png' width='16px' height='16px' title='Sendung HF anmelden' alt='Sendung HF anmelden'></a> ";
-				echo "<a href='../admin_srb_sendung_hf/sg_hf_find_list.php?action=list&amp;find_option=broadcaster&amp;broadcaster_id=".$item['AD_ID']."'><img src='../parts/pict/1279185345_folder_yellow_mydocuments.png' width='16px' height='16px' title='Sendung HF auflisten' alt='Sendungungen HF listen'></a> ";						
+				echo "<a href='../admin_srb_sendung_hf/sg_hf_find_list.php?action=list&amp;find_option=broadcaster&amp;broadcaster_id=".$item['AD_ID']."'><img src='../parts/pict/1279185345_folder_yellow_mydocuments.png' width='16px' height='16px' title='Sendung des Autors auflisten' alt='Sendungen des Autors listen'></a> ";
+				echo "<a href='../admin_srb_sendung_hf/sg_hf_find_list.php?action=list&amp;find_option=editor&amp;editor_id=".$item['AD_ID']."'><img src='../parts/pict/1279185345_folder_yellow_mydocuments.png' width='16px' height='16px' title='Sendungen redaktionell verantwortet auflisten' alt='Sendungen redaktionell verantwortet listen'></a> ";
 				echo "<a href='../admin_srb_sendung_tv/sg_tv_find_list.php?action=list&amp;find_option=broadcaster&amp;broadcaster_id=".$item['AD_NR']."'><img src='../parts/pict/1279185345_folder_yellow_mydocuments.png' width='16px' height='16px' title='Sendung TV auflisten' alt='Sendungungen TV listen'></a> ";
 				echo "<a href='../admin_srb_verleih/vl_edit.php?action=new&amp;ad_id=".$item['AD_ID']."&amp;vl_id=0' class='c_box'><img src='../parts/pict/1281368175_limited-edition.png' width='16px' height='15px' title='Geräte ausleihen' alt='Geräte ausleihen'></a> ";
 				echo "<a href='../admin_srb_verleih/vl_find_list.php?action=list&amp;find_option=vl_adress&amp;vl_ad_id=".$item['AD_ID']."'><img src='../parts/pict/1279185345_folder_yellow_mydocuments.png' width='16px' height='16px' title='Ausleihen auflisten' alt='Verleih listen'></a> ";			
 			}
-				
+
 			echo "</div>\n</div>\n";
 		}//foreach
 	}
-			
+
 	if ( $z == 0 ) { 
 		echo "Keine Übereinstimmung gefunden...";
 	} else {

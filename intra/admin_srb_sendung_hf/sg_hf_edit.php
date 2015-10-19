@@ -109,17 +109,17 @@ if ( $action_ok == true ) {
 			$tbl_values_sg .= "'".db_query_load_id_by_value("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", rtrim($_POST['form_sg_source']))."', ";
 			// checkboxen
 			// SG_HV_Live wird in db-trigger false gesetzt
-			if ( isset( $_POST['form_sg_infotime'] ) ) { 
+			if ( isset($_POST['form_sg_infotime']) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_infotime']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-			if ( isset( $_POST['form_sg_magazine'] ) ) { 
+			if ( isset($_POST['form_sg_magazine']) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_magazine']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-			if ( isset( $_POST['form_sg_podcast'] ) ) { 
+			if ( isset($_POST['form_sg_podcast']) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_podcast']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
@@ -129,14 +129,14 @@ if ( $action_ok == true ) {
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-			if ( isset( $_POST['form_sg_repeat_proto'] ) )	{ 
+			if ( isset($_POST['form_sg_repeat_proto']) )	{ 
 				$tbl_values_sg .= "'".$_POST['form_sg_repeat_proto']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
 
 			$tbl_values_sg .= "'F', "; // FIRST_SG kann hier nur false sein;
-			if ( isset( $_POST['form_sg_on_air'] ) ) { 
+			if ( isset($_POST['form_sg_on_air']) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_on_air']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
@@ -195,39 +195,39 @@ if ( $action_ok == true ) {
 			$source_id = db_query_load_id_by_value("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", $_POST['form_sg_source']);
 			$tbl_values_sg.= "'".$source_id."', ";	
 			// checkboxen
-			if ( isset( $_POST['form_sg_infotime'] ) ) { 
+			if ( isset($_POST['form_sg_infotime']) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_infotime']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-			if ( isset( $_POST['form_sg_magazine'] ) ) { 
+			if ( isset($_POST['form_sg_magazine']) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_magazine']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-			if ( isset( $_POST['form_sg_podcast'] ) ) { 
+			if ( isset($_POST['form_sg_podcast']) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_podcast']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-			if ( isset( $_POST['form_sg_vp_out'] ) ) { 
+			if ( isset($_POST['form_sg_vp_out']) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_vp_out']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-			if ( isset( $_POST['form_sg_repeat_proto'] ) )	{ 
+			if ( isset($_POST['form_sg_repeat_proto']) )	{ 
 				$tbl_values_sg .= "'".$_POST['form_sg_repeat_proto']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
-			if ( isset( $_POST['form_sg_live'] ) )	{ 
+			if ( isset($_POST['form_sg_live']) )	{ 
 				$tbl_values_sg .= "'".$_POST['form_sg_live']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
 			}
 
 			$tbl_values_sg .= "'T', "; // FIRST_SG kann nur true sein;
-			if ( isset( $_POST['form_sg_on_air'] ) ) { 
+			if ( isset($_POST['form_sg_on_air']) ) { 
 				$tbl_values_sg .= "'".$_POST['form_sg_on_air']."', "; 
 			} else { 
 				$tbl_values_sg .= "'F', " ;
@@ -247,7 +247,7 @@ if ( $action_ok == true ) {
 			$value_speech = db_query_load_id_by_value("SG_SPEECH", "SG_SPEECH_DESC", $_POST['form_sg_speech']);
 
 			// checkboxen	
-			if ( isset( $_POST['form_sg_teamprod'] ) ) { 
+			if ( isset($_POST['form_sg_teamprod']) ) { 
 				$value_teamprod= $_POST['form_sg_teamprod']; 
 			} else { 
 				$value_teamprod = "F" ;
@@ -303,7 +303,7 @@ if ( $action_ok == true ) {
 			$c_audio_length = $_POST['form_sg_duration'];
 			//$c_audio_length_s = get_seconds_from_hms ( $c_audio_length );
 			// check length if 
-			if ( isset( $_POST['form_sg_read_audio_length'] )) {
+			if ( isset($_POST['form_sg_read_audio_length'])) {
 				// Pfade fuer audios aus einstellungen
 				//$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF_1'");
 				$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF'");
@@ -319,7 +319,7 @@ if ( $action_ok == true ) {
 				}
 
 				// Pfad und Dateiname 
-				if ( isset( $_POST['form_sg_infotime'] ) or isset( $_POST['form_sg_magazine'] ) ) {
+				if ( isset($_POST['form_sg_infotime']) or isset($_POST['form_sg_magazine']) ) {
 					//$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_1.$_POST['form_sg_filename'];
 					//$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config->USER_SP_PARAM_2.$_POST['form_sg_filename'];	
 					//$patfilename = $tbl_row_config->USER_SP_PARAM_5.$_POST['form_sg_filename'];
@@ -344,7 +344,7 @@ if ( $action_ok == true ) {
 				//$c_audio_length = read_length_write_tag ( $remotefilename, $_POST['form_sg_filename'], "\\\\Sende-server-hf\\media_hf_play_out\\HF_Play_Out_Infotime" );
 
 				// mp3Gain pruefen wenn gewuenscht
-				if ( isset( $_POST['form_sg_mp3gain'] )) {
+				if ( isset($_POST['form_sg_mp3gain'])) {
 					$set_mp3gain = "yes"; 
 				} else {	
 					$set_mp3gain = "no";	
@@ -358,7 +358,7 @@ if ( $action_ok == true ) {
 			} // Ende Laenge pruefen wenn gewuenscht
 
 			// mp3Gain pruefen wenn gewuenscht
-			if ( isset( $_POST['form_sg_mp3gain'] )) {
+			if ( isset($_POST['form_sg_mp3gain'])) {
 				$set_mp3gain = "yes"; 
 			} else {	 
 				$set_mp3gain = "no";	
@@ -371,12 +371,12 @@ if ( $action_ok == true ) {
 			$source_id = db_query_load_id_by_value("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", $_POST['form_sg_source']);
 			$tbl_fields_values_sg .= "SG_HF_SOURCE_ID='".$source_id."', ";
 			// checkboxen
-			if ( isset( $_POST['form_sg_infotime'] )) { 
+			if ( isset($_POST['form_sg_infotime'])) { 
 				$tbl_fields_values_sg .= "SG_HF_INFOTIME='".$_POST['form_sg_infotime']."', "; 
 			} else { 
 				$tbl_fields_values_sg .= "SG_HF_INFOTIME='F', " ;
 			}
-			if ( isset( $_POST['form_sg_magazine'] )) { 
+			if ( isset($_POST['form_sg_magazine'])) { 
 				$tbl_fields_values_sg .= "SG_HF_MAGAZINE='".$_POST['form_sg_magazine']."', "; 
 			} else { 
 				$tbl_fields_values_sg .= "SG_HF_MAGAZINE='F', " ;
@@ -391,17 +391,17 @@ if ( $action_ok == true ) {
 			} else { 
 				$tbl_fields_values_sg .= "SG_HF_VP_OUT='F', " ;
 			}
-			if ( isset( $_POST['form_sg_on_air'] )) { 
+			if ( isset($_POST['form_sg_on_air'])) { 
 				$tbl_fields_values_sg .= "SG_HF_ON_AIR='".$_POST['form_sg_on_air']."', "; 
 			} else { 
 				$tbl_fields_values_sg .= "SG_HF_ON_AIR='F', " ;
 			}
-			if ( isset( $_POST['form_sg_live'] )) { 
+			if ( isset($_POST['form_sg_live'])) { 
 				$tbl_fields_values_sg .= "SG_HF_LIVE='".$_POST['form_sg_live']."', "; 
 			} else { 
 				$tbl_fields_values_sg .= "SG_HF_LIVE='F', " ;
 			}
-			if ( isset( $_POST['form_sg_repeat_proto'] )) { 
+			if ( isset($_POST['form_sg_repeat_proto'])) { 
 				$tbl_fields_values_sg .= "SG_HF_REPEAT_PROTO='".$_POST['form_sg_repeat_proto']."', "; 
 			} else { 
 				$tbl_fields_values_sg .= "SG_HF_REPEAT_PROTO='F', " ;
@@ -411,8 +411,13 @@ if ( $action_ok == true ) {
 			db_query_update_item_a("SG_HF_MAIN", $tbl_fields_values_sg, "SG_HF_ID =".$_POST['sg_id']);
 
 			// sg_cont
-			// fields				
-			$tbl_fields_sg_cont = "SG_HF_CONT_AD_ID=?, SG_HF_CONT_GENRE_ID=?, SG_HF_CONT_SPEECH_ID=?, SG_HF_CONT_TEAMPRODUCTION=?, SG_HF_CONT_TITEL=?, SG_HF_CONT_UNTERTITEL=?, SG_HF_CONT_STICHWORTE=?, SG_HF_CONT_REGIEANWEISUNG=?, SG_HF_CONT_FILENAME=?, SG_HF_CONT_WEB=? ";
+			// fields
+			$tbl_fields_sg_cont = "SG_HF_CONT_AD_ID=?, SG_HF_CONT_GENRE_ID=?, "
+								."SG_HF_CONT_SPEECH_ID=?, SG_HF_CONT_TEAMPRODUCTION=?, "
+								."SG_HF_CONT_TITEL=?, SG_HF_CONT_UNTERTITEL=?, "
+								."SG_HF_CONT_STICHWORTE=?, SG_HF_CONT_REGIEANWEISUNG=?, "
+								."SG_HF_CONT_FILENAME=?, SG_HF_CONT_WEB=? ,"
+								."SG_HF_CONT_EDITOR_AD_ID=?";
 			// load values
 			// lookups				
 			$value_genre = db_query_load_id_by_value("SG_GENRE", "SG_GENRE_DESC", $_POST['form_sg_genre']);
@@ -435,15 +440,17 @@ if ( $action_ok == true ) {
 			}
 
 			// checkboxen
-			if ( isset( $_POST['form_sg_teamprod'] ) ) { 
+			if ( isset($_POST['form_sg_teamprod']) ) { 
 				$value_teamprod= $_POST['form_sg_teamprod']; 
 			} else { 
 				$value_teamprod = "F" ;
 			}
 
-			$a_values = array($_POST['ad_id'], $value_genre, $value_speech, $value_teamprod,
-    				$_POST['form_sg_titel'], $_POST['form_sg_untertitel'], $_POST['form_sg_stichworte'], $_POST['form_sg_regie'], 
-    				$value_filename,	$_POST['form_sg_web']);
+			$a_values = array($_POST['ad_id'], $value_genre, $value_speech, 
+					$value_teamprod, $_POST['form_sg_titel'], 
+					$_POST['form_sg_untertitel'], $_POST['form_sg_stichworte'], 
+					$_POST['form_sg_regie'], $value_filename,	$_POST['form_sg_web'],
+					$_POST['sg_editor_ad_id']);
 
     		db_query_update_item_b("SG_HF_CONTENT", $tbl_fields_sg_cont, "SG_HF_CONT_ID =".$_POST['sg_content_id'], $a_values);
 	
@@ -529,7 +536,13 @@ if ( $action_ok == true ) {
 		//alert(mag);
 		$.validationEngine.loadValidation('#sg_timestamp');
 	}
-
+	</script>
+	<script type="text/javascript">
+	function delete_editor() {
+		document.form1.sg_editor_ad_id.value = 0;
+		document.getElementById("editor_name").innerHTML = "<div style='background-color:red;'>Redakteur wird gelöscht</div>";
+		//alert("Redakteur ");
+	}
 	</script>
 </head>
 <body>
@@ -555,13 +568,21 @@ if ( ! isset($tbl_row_sg->SG_HF_ID )) {
 	return;
 }
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
-if ( $user_rights == "yes" ) { 	
+if ( $user_rights == "yes" ) {
+	// if link to editor
+	if ( $tbl_row_sg->SG_HF_CONT_EDITOR_AD_ID != "0") {	
+		$tbl_row_ad_editor = db_query_display_item_1("AD_MAIN", "AD_ID = " .$tbl_row_sg->SG_HF_CONT_EDITOR_AD_ID);
+		$editor_ad = $tbl_row_ad_editor->AD_VORNAME." " .$tbl_row_ad_editor->AD_NAME.", ".$tbl_row_ad_editor->AD_ORT;
+	} else {
+		$editor_ad = "Kein Redakteur zugeordnet";	
+	}
 	echo "<form name='form1' id='sg_edit_form' action='sg_hf_edit.php' method='POST' onsubmit='return chk_formular()' enctype='application/x-www-form-urlencoded'>";
 	echo "<input type='hidden' name='action' value='".$form_input_type."'>";
 	echo "<input type='hidden' name='sg_id' value='".$tbl_row_sg->SG_HF_ID."'>";	
 	echo "<input type='hidden' name='sg_content_id' value='".$tbl_row_sg->SG_HF_CONTENT_ID."'>";	
 	echo "<input type='hidden' name='ad_id' value='".$tbl_row_ad->AD_ID."'>";
 	echo "<input type='hidden' name='ad_name' value='".trim($tbl_row_ad->AD_NAME)."'>";
+	echo "<input type='hidden' name='sg_editor_ad_id' value='".$tbl_row_sg->SG_HF_CONT_EDITOR_AD_ID."'>";
 
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Datum/ Zeit/ Länge</div>";
@@ -578,9 +599,12 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_1'>Untertitel</div>";
 	echo "<input type='text' class='text_1' name='form_sg_untertitel' maxlength='100' value='".$tbl_row_sg->SG_HF_CONT_UNTERTITEL."' >";
 	echo "</div>";
+	echo "<div class='space_line'> </div>";
 	echo "<div class='content_row_b_1'>";
-	echo "<div class='content_column_1'>Sendeverantwortlich</div>";
-	echo "<input type='text' name='form_ad_name' class='text_1' value='".$tbl_row_ad->AD_VORNAME." " .$tbl_row_ad->AD_NAME.", ".$tbl_row_ad->AD_ORT."' >";
+	echo "<div class='content_column_1'>Sendev./ Redakteur</div>";
+	echo "<div class='content_column_3'>".$tbl_row_ad->AD_VORNAME." " .$tbl_row_ad->AD_NAME.", ".$tbl_row_ad->AD_ORT."</div>";
+	echo "<div class='content_column_3' id=editor_name>".$editor_ad ."</div>";
+	//echo "<input type='text' name='form_ad_name' class='text_1' value='".$tbl_row_ad->AD_VORNAME." " .$tbl_row_ad->AD_NAME.", ".$tbl_row_ad->AD_ORT."' >";
 	echo "</div>";
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Stichworte</div>";
@@ -676,13 +700,19 @@ if ( $user_rights == "yes" ) {
 
 	echo "<div id='save_button'>";
 	echo "<div style='float: left'><input type='submit' value='Speichern' ></div>"; 
-	if ( $action == "edit" ) { 
+	if ( $action == "edit" ) {
+		echo "<div style='float: left'>";
 		if ( $file_exist == "yes" ) {
 			if ( substr($tbl_row_sg->SG_HF_CONT_FILENAME, 0, 7) != "http://" ) {
-				echo "<div style='float: left'><input type='checkbox' name='form_sg_read_audio_length' id='check_id3' value='T'> und Hoerdauer/ ID3-Tags abgleichen <input type='button' value='Sendezeit prüfen' onClick='check_free_time()' ></div>";
+				echo "<input type='checkbox' name='form_sg_read_audio_length' id='check_id3' value='T'> und Hoerdauer/ ID3-Tags abgleichen ";
+				echo "<input type='button' value='Sendezeit prüfen' onClick='check_free_time()' >";
 				echo "<div id='check_gain' style='display: none'><input type='checkbox' name='form_sg_mp3gain' value='T'> und mp3Gain abgleichen</div>";
 			}
 		}
+		if ( $editor_ad != "Kein Redakteur zugeordnet" ) {
+			echo "<input type='button' value='Redakteur löschen' onClick='delete_editor()' >";
+		}
+		echo "</div>";
 	}
 	echo "</div>";
 	echo "</div>";

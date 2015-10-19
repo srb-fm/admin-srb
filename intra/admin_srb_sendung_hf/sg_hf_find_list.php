@@ -183,9 +183,14 @@ if ( $condition_delivery != "yes" ) {
 			switch ( $find_option ) {
 			case "broadcaster":
 				$c_query_condition = "SG_HF_CONT_AD_ID = '".$_GET['broadcaster_id']."' AND SG_HF_FIRST_SG = 'T' ORDER BY SG_HF_CONT_ID DESC";
-				$message_find_string = "Sendungen zur Adresse";
+				$message_find_string = "Sendungen zur Adresse - Autor der Sendung";
 				break;
-			
+
+			case "editor":
+				$c_query_condition = "SG_HF_CONT_EDITOR_AD_ID = '".$_GET['editor_id']."' AND SG_HF_FIRST_SG = 'T' ORDER BY SG_HF_CONT_ID DESC";
+				$message_find_string = "Sendungen zur Adresse - Redaktionell verantwortet";
+				break;
+				
 			case "prepared_all":
 				$c_query_condition = "A.SG_HF_ON_AIR = 'F' ORDER BY A.SG_HF_TIME";
 				$message_find_string = "Vorbereitete Sendungen";
