@@ -498,6 +498,7 @@ input.text_dummy {
 }
 
 input[type=button].button_1 {
+	margin-left: 5px;
 	color: White;
 	background-color: #63698D;
 	font-size: 12px;
