@@ -685,7 +685,7 @@ function html_dropdown_from_table_1_a( $c_table_lookup, $c_lookup_field_desc, $c
 function html_header_srb_print_a( $c_head_text ) 
 {
 	echo "<div class='head_item_a_1'>";
-	echo "<img src='../../parts/pict/Logo_SRB_101_klein.jpg' width='150' height='60' alt='Logo'></div>";
+	echo "<img src='../../parts/pict/logo_user.jpg' width='150' height='60' alt='Logo'></div>";
 
 	$db_query 	= "SELECT * FROM USER_DATA ";
 	$db_connect = db_connect();

@@ -145,7 +145,7 @@ if ( $find_option_ok == true and $action_ok == true ) {
 <body onload="javascript:window.print(); return true;">
 <?php
 echo "<div class='head_line'>\n";
-echo "<div class='logo'><img src='../../parts/pict/Logo_SRB_101_klein.jpg' width='145' heigth='40'></div>";
+echo "<div class='logo'><img src='../../parts/pict/logo_user.jpg' width='145' heigth='40'></div>";
 echo "<div class='head_box'>". $message ."</div>\n";		
 echo "<div class='us_box'>".date("d.m.Y")."</div>\n";		
 echo html_header_srb_print_b();
