@@ -40,14 +40,19 @@ if ( $action_ok == true ) {
 	// switch action
 	if ( $id !="" ) {
 		// are we on server-line A or B?
-		$tbl_row_config_serv = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");		
+		$tbl_row_config_serv = db_query_display_item_1(
+				"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");		
 		if ( $tbl_row_config_serv->USER_SP_PARAM_3 == $_SERVER['SERVER_NAME'] ) {
-			$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_A'");
-			$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_A'");
+			$tbl_row_config_A = db_query_display_item_1(
+				"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_A'");
+			$tbl_row_config_B = db_query_display_item_1(
+				"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_A'");
 		}
 		if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
-			$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_B'");
-			$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_B'");
+			$tbl_row_config_A = db_query_display_item_1(
+				"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_B'");
+			$tbl_row_config_B = db_query_display_item_1(
+				"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_B'");
 		}
 
 
@@ -63,7 +68,7 @@ if ( $action_ok == true ) {
 			case "display":		
 			$local_file = '../admin_srb_export/local.txt';
 			$message = "Übernahme Sendung: Meta anzeigen. ";
-			ftp_download( $ftp_server, $ftp_user_name, $ftp_user_pass, $server_file, $local_file );
+			ftp_download($ftp_server, $ftp_user_name, $ftp_user_pass, $server_file, $local_file);
 			$ftxt = file_get_contents($local_file);
 			break;
 
@@ -242,7 +247,7 @@ if ( $user_rights == "yes" ) {
 			break;
 			//endswitch;
 		}	
-	echo "<div class='line_a'> </div>\n";
+	echo "<div class='space_line'> </div>\n";
 
 	$filename = new SplFileInfo($id);
 	$fileext = $filename->getExtension();
