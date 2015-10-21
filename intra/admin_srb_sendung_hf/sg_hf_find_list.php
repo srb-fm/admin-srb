@@ -25,11 +25,11 @@ $condition_delivery = "no";
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 
 // check action
-if ( isset($_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
 	$action_ok = true;
 }
-if ( isset($_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action']; 
 	$action_ok = true;
 }
@@ -39,7 +39,7 @@ if ( $action_ok == false ) {
 }
 
 // check condition_delivery (outputlimit)
-if ( isset($_GET['condition'] ) ) {
+if ( isset($_GET['condition']) ) {
 	$c_query_condition = rawurldecode($_GET['condition']);
 	$condition_delivery = "yes";
 }	
@@ -47,7 +47,7 @@ if ( isset($_GET['condition'] ) ) {
 // ausgabebegrenzung			
 // limit  via limitweiterschaltung
 
-if ( isset($_GET['find_limit_skip'] ) ) { 
+if ( isset($_GET['find_limit_skip']) ) { 
 	$find_limit_skip = $_GET['find_limit_skip'];
 }
 
@@ -56,42 +56,42 @@ if ( $condition_delivery != "yes" ) {
 	// Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 	// also hier nur pruefen in welchem feld was ist
 
-	if ( isset($_POST['sg_titel'] ) ) {
+	if ( isset($_POST['sg_titel']) ) {
 		if ( $_POST['sg_titel'] !="" ) { 
 			$c_field_desc = "SG_HF_CONT_TITEL";
 			$c_field_value = $_POST['sg_titel']; 
 		}
 	}
 
-	if ( isset($_POST['sg_untertitel'] ) ) {
+	if ( isset($_POST['sg_untertitel']) ) {
 		if ( $_POST['sg_untertitel'] !="") { 
 			$c_field_desc = "SG_HF_CONT_UNTERTITEL";
 			$c_field_value = $_POST['sg_untertitel']; 
 		}
 	}
 
-	if ( isset($_POST['sg_stichwort'] ) ) {
+	if ( isset($_POST['sg_stichwort']) ) {
 		if ( $_POST['sg_stichwort'] !="") { 
 			$c_field_desc = "SG_HF_CONT_STICHWORTE";
 			$c_field_value = $_POST['sg_stichwort']; 
 		}
 	}
 
-	if ( isset($_POST['sg_regieanweisung'] ) ) {
+	if ( isset($_POST['sg_regieanweisung']) ) {
 		if ( $_POST['sg_regieanweisung'] !="") { 
 			$c_field_desc = "SG_HF_CONT_REGIEANWEISUNG";
 			$c_field_value = $_POST['sg_regieanweisung']; 
 		}
 	}
 
-	if ( isset($_POST['sg_dateiname'] ) ) {
+	if ( isset($_POST['sg_dateiname']) ) {
 		if ( $_POST['sg_dateiname'] !="") { 
 			$c_field_desc = "SG_HF_CONT_FILENAME";
 			$c_field_value = $_POST['sg_dateiname']; 
 		}
 	}
 
-	if ( isset($_POST['sg_genre'] ) ) {
+	if ( isset($_POST['sg_genre'])) {
 		if ( $_POST['sg_genre'] !="") { 
 			$c_field_desc = "SG_HF_CONT_GENRE_ID";
 			$c_field_value = db_query_load_id_by_value("SG_GENRE", "SG_GENRE_DESC", $_POST['sg_genre']);
@@ -103,7 +103,7 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 
-	if ( isset($_POST['sg_quelle'] ) ) {
+	if ( isset($_POST['sg_quelle'])) {
 		if ( $_POST['sg_quelle'] !="") { 
 			$c_field_desc = "A.SG_HF_SOURCE_ID";
 			$c_field_value = db_query_load_id_by_value("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", $_POST['sg_quelle']);
@@ -115,14 +115,14 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 
-	if ( isset($_POST['sg_datum'] ) ) {
+	if ( isset($_POST['sg_datum'])) {
 		if ( $_POST['sg_datum'] !="" ) { 
 			$c_field_desc = "A.SG_HF_TIME";
 			$c_field_value = get_date_format_sql($_POST['sg_datum']); 
 		}
 	}
 
-	if ( isset($_POST['sg_magazin'] ) ) {
+	if ( isset($_POST['sg_magazin']) ) {
 		if ( $_POST['sg_magazin'] !="" ) { 
 			$find_option = "exact";
 			$c_field_desc = "A.SG_HF_MAGAZINE";
@@ -130,7 +130,7 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 
-	if ( isset($_POST['sg_live'] ) ) {
+	if ( isset($_POST['sg_live']) ) {
 		if ( $_POST['sg_live'] !="" ) { 
 			$find_option = "exact";
 			$c_field_desc = "A.SG_HF_LIVE";
@@ -138,7 +138,7 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 
-	if ( isset($_POST['sg_cont_id'] ) ) {
+	if ( isset($_POST['sg_cont_id']) ) {
 		if ( $_POST['sg_cont_id'] !="" ) { 
 			$c_field_desc = "A.SG_HF_CONTENT_ID";
 			$c_field_value = $_POST['sg_cont_id']; 
@@ -147,11 +147,11 @@ if ( $condition_delivery != "yes" ) {
 
 	// check condition
 	$find_option_ok = false;
-	if ( isset($_GET['find_option'] ) ) {	
+	if ( isset($_GET['find_option']) ) {	
 		$find_option = $_GET['find_option'];
 		$find_option_ok = true;
 	}
-	if ( isset($_POST['find_option'] ) ) { 
+	if ( isset($_POST['find_option']) ) { 
 		$find_option = $_POST['find_option']; 	
 		$find_option_ok = true;
 	}		
@@ -392,10 +392,10 @@ if ( 	$find_limit_skip == "no" ) {
 	<title>Admin-SRB-Sendung</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 	<meta http-equiv="expires" content="0">
-	<style type="text/css"> @import url("../parts/style/style_srb_2.css");    </style>
-	<style type="text/css"> @import url("../parts/style/style_srb_jq_2.css");  </style>
-	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
-	<style type="text/css"> @import url("../parts/colorbox/colorbox.css");  </style>
+	<style type="text/css">@import url("../parts/style/style_srb_2.css");</style>
+	<style type="text/css">@import url("../parts/style/style_srb_jq_2.css");</style>
+	<style type="text/css">@import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");</style>
+	<style type="text/css">@import url("../parts/colorbox/colorbox.css");</style>
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_ui_1_8_16/jquery-ui-1.8.16.custom.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_tools/jq_tools.js"></script>
@@ -410,7 +410,7 @@ if ( 	$find_limit_skip == "no" ) {
 require "../parts/site_elements/header_srb_2.inc";
 require "../parts/menu/menu_srb_root_1_eb_1.inc";
 echo "<div class='column_left'>";
-require "parts/sg_hf_menu.inc";	
+require "parts/sg_hf_menu.inc";
 user_display();
 echo "</div> <!--class=column_left-->";
 echo "<div class='column_right'>";
@@ -427,7 +427,7 @@ if ( $action_ok == false ) {
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
 if ( $user_rights == "yes" ) { 		
 	if ( 	$db_result	) {	
-		foreach ($db_result as $item ) {
+		foreach ($db_result as $item) {
 			$z +=1;
 			// Listcolors
 			// Auf Sende-Dauer aufmerksam machen
@@ -485,7 +485,10 @@ if ( $user_rights == "yes" ) {
 				echo "<br>".$item['SG_HF_CONT_REGIEANWEISUNG'];
 			}
 			echo "<br> Länge: ".$item['SG_HF_DURATION'];
-			echo "<br>  <a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$item['SG_HF_ID']."&amp;ad_id=".$item['SG_HF_CONT_AD_ID']."' target='_blank'>Sendeanmeldung drucken</a> ";
+			echo "<br>  Sendeanmeldung ";
+			echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$item['SG_HF_ID']."&amp;ad_id=".$item['SG_HF_CONT_AD_ID']."' target='_blank'>drucken</a> ";
+			echo " - ";
+			echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$item['SG_HF_ID']."&amp;sg_file=".$item['SG_HF_CONT_FILENAME']."' target='_blank'>PDF</a> ";
 			echo "</div>\n";					
 		}
 	}

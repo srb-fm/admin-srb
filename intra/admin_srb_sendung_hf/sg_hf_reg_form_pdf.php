@@ -26,35 +26,71 @@ $message = "";
 $action_ok = false;
 	
 // action pruefen	
-if ( isset( $_GET['action'] ) ) {	
-	$action = $_GET['action'];	$action_ok = true;
+if ( isset($_GET['action']) ) {	
+	$action = $_GET['action'];	
+	$action_ok = true;
 }	
-if ( isset( $_POST['action'] ) ) { 
-	$action = $_POST['action']; $action_ok = true;
-}
+//if ( isset( $_POST['action'] ) ) { 
+//	$action = $_POST['action']; $action_ok = true;
+//}
 if ( $action != "pdf" ) { 
 	$action_ok = false;
 }
-if ( $action_ok != "yes" ) {
+if ( $action_ok == false ) {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
 		
 if ( $action_ok == true ) {
 	if ( isset($_GET['sg_id']) ) {	
 		$id = $_GET['sg_id'];
+	} else {
+		$action_ok = false;
 	}
-	if ( isset($_POST['sg_id']) ) {	
-		$id = $_POST['sg_id'];
+	if ( isset($_GET['sg_file']) ) {	
+		$sg_filename = $_GET['sg_file'];
+	} else {
+		$action_ok = false;
 	}
 
 	// check id
 	if ( ! filter_var($id, FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
 		$id = "";
 		$action_ok = false;
+		$message ="sdfds";
+	}
+	if ( ! filter_var(substr($sg_filename,0, 7), FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
+		$sg_filename = "";
+		$action_ok = false;
 	}
 }
 
 if ( $action_ok == true ) {
+	// Paths player-audios from Settings
+	$tbl_row_config = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'INTRA_Sendung_HF'");
+	$tbl_row_config_serv = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
+	// are we on server-line A or B?
+	if ( $tbl_row_config_serv->USER_SP_PARAM_3 == $_SERVER['SERVER_NAME'] ) {
+		$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_A'");
+		$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_A'");
+	}
+	if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
+		$tbl_row_config_A = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_a_B'");
+		$tbl_row_config_B = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_b_B'");
+	}
+	
+	$file_name = new SplFileInfo($sg_filename);
+	$file_name_base = basename($file_name, "mp3");
+	//$php_filename = $tbl_row_config_B->USER_SP_PARAM_12.$file_name_base."pdf";
+	$php_filename = "/mnt/Data_Server_03/Play_Out_Server/Sendeanmeldungen/".$file_name_base."pdf";
+	$sg_filename = $file_name_base."pdf";
+	if ( file_exists($php_filename) ) {
+		header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_12.$file_name_base."pdf");
+		//header('Content-type: application/pdf');
+		//header('Content-Disposition: inline;"'.$sg_filename.'"');
+		//readfile($php_filename);
+		exit;
+	}
+
 	$tbl_row_sg = db_query_sg_display_item_1($_GET['sg_id']);
 	if ( !$tbl_row_sg ) { 
 		$message .= "Fehler bei Abfrage Sendung!"; 
@@ -109,7 +145,7 @@ class PDF extends FPDF
   		//Line break
   		$this->Ln(20);
 		// Spalten   
-  		$this->Cell(18, 5, 'Nummer', 1 , 0);
+  		$this->Cell(18, 5, "", 1 , 0);
 		$this->Cell(100, 5, 'Objekt, Typ, Hersteller, Ser.-Nr.', 1, 0);	
 		$this->Cell(25, 5, 'Sponsor', 1, 0);
 		$this->Cell(22, 5, 'Anschaffung', 1, 0);
@@ -135,7 +171,7 @@ class PDF extends FPDF
 
 //Instanciation of inherited class
 $pdf=new PDF();
-$pdf->my_page_title = "Sendeanmeldung";
+$pdf->my_page_title = "Sendeanmeldung".$php_filename;
 $pdf->my_page_adress = utf8_decode($tbl_row_1->USER_AD_NAME)."\n".utf8_decode($tbl_row_1->USER_AD_STR)."\n".$tbl_row_1->USER_AD_PLZ." ".utf8_decode($tbl_row_1->USER_AD_ORT);
 $pdf->AliasNbPages();
 $pdf->AddPage();
@@ -184,12 +220,13 @@ $pdf->Cell(160, 5, "Unterschrift Studioleitung, ".date("d.m.Y"), 0, 0);
 
 //$pdf->Output();
 $pdf->Output("../admin_srb_export/xy.pdf");
+//$pdf->Output($php_filename);
 //header("Location: ../admin_srb_export/xy.pdf");
 header('Content-type: application/pdf');
 //header('Content-Disposition: attachment; filename="July Report.pdf"');
-header('Content-Disposition: inline; filename="July Report.pdf"');
+header('Content-Disposition: inline; filename="'.$sg_filename.'"');
 readfile('../admin_srb_export/xy.pdf');
-
+//readfile($php_filename);
 exit;
 
 ?>
