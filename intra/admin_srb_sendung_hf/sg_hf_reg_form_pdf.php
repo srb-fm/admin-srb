@@ -15,7 +15,7 @@
 require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
-	
+
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
 if ( $user_rights != "yes" ) {
 	return;	
@@ -39,7 +39,7 @@ if ( $action != "pdf" ) {
 if ( $action_ok == false ) {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-		
+	
 if ( $action_ok == true ) {
 	if ( isset($_GET['sg_id']) ) {	
 		$id = $_GET['sg_id'];
@@ -74,7 +74,7 @@ if ( $action_ok == true ) {
 	if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
 		$tbl_row_config_C = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_B'");
 	}
-	
+
 	$file_name = new SplFileInfo($sg_filename);
 	$file_name_base = basename($file_name, "mp3");
 	$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
@@ -82,9 +82,6 @@ if ( $action_ok == true ) {
 	$sg_filename = $file_name_base."pdf";
 	if ( file_exists($php_filename) ) {
 		header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$file_name_base."pdf");
-		//header('Content-type: application/pdf');
-		//header('Content-Disposition: inline;"'.$sg_filename.'"');
-		//readfile($php_filename);
 		exit;
 	}
 
@@ -116,8 +113,6 @@ if ( $action_ok == true ) {
 
 class PDF extends FPDF
 {
-
-
 	public $my_page_title;
 	public $my_page_adress;
 
@@ -214,7 +209,7 @@ if ( rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
 }
 if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" ) {
 	$pdf->Cell(0, 5,"Magazin - Sendung/ ".db_query_load_value_by_id("SG_HF_SOURCE", "SG_HF_SOURCE_ID", rtrim($tbl_row_sg->SG_HF_SOURCE_ID)), 0, 0);
-}	
+}
 if ( rtrim($tbl_row_sg->SG_HF_INFOTIME) != "T" and rtrim($tbl_row_sg->SG_HF_MAGAZINE) != "T" ) {
 	$pdf->Cell(0, 5,"Normal - Sendung/ ".db_query_load_value_by_id("SG_HF_SOURCE", "SG_HF_SOURCE_ID", rtrim($tbl_row_sg->SG_HF_SOURCE_ID)), 0, 0);
 }
@@ -237,7 +232,7 @@ $n_cell_heigth = 5;
 if ( strlen(utf8_decode($tbl_row_a->USER_SP_TEXT)) > 50 ) { 
 	$n_cell_heigth = strlen(utf8_decode($tbl_row_a->USER_SP_TEXT)) / 10; 
 }
-// doppelte Zeilenumbruche entfernen
+// doppelte Zeilenumbrueche entfernen
 $new_string = str_replace("\n", "", utf8_decode($tbl_row_a->USER_SP_TEXT));
 //cr durch zeilenumbruch ersetzen
 $new_string = str_replace("\r", "\n", $new_string);
