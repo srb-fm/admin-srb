@@ -80,12 +80,15 @@ def get_status(param):
                          bytesize=8,
                          parity='N',
                          stopbits=1,
-                         timeout=None)
+                         timeout=1)
         if (port.isOpen() is False):
             port.open()
             print ("Serial port ist offen_002")
     except Exception as e:
         print ("Fehler beim oeffnen..: " + str(e))
+    else:
+        print "No port tr"
+
     try:
         sksist = port.read(10)
     except Exception as e:
