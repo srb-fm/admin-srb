@@ -36,6 +36,7 @@ Dieses Script wird durch das Intra-Web-Frontend aufgerufen
 
 import sys
 import getopt
+import serial
 #import lib_common_1 as lib_cm
 
 
@@ -73,6 +74,24 @@ def usage_help():
 def get_status(param):
     """get status"""
     print "status " + param
+    try:
+        port = serial.Serial(port=0,
+                         baudrate=9600,
+                         bytesize=8,
+                         parity='N',
+                         stopbits=1,
+                         timeout=None)
+        if (port.isOpen() is False):
+            port.open()
+            print ("Serial port ist offen_002")
+    except Exception as e:
+        print ("Fehler beim oeffnen..: " + str(e))
+    try:
+        sksist = port.read(10)
+    except Exception as e:
+        print ("Fehler beim lesen..: " + str(e))
+        exit()
+    print sksist
 
 
 def push_switch_(param):
