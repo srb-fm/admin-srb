@@ -100,7 +100,7 @@ def set_port():
 def get_status(param):
     """get status"""
     print "status " + param
-    switch_status_audio = None
+    switch_status = None
     port = set_port()
     if not port:
         return
@@ -185,28 +185,41 @@ def fade_switch_(param):
     print switch_imput
     switch_fade_out = switch_imput + "-G"
     switch_fade_in = param + "+G"
+    switch_to_input = param + "!"
     port = set_port()
     if not port:
         return
     try:
-        #print "write"
+        # fade old input out
         x = 1
         for x in range(18):
             port.write(switch_fade_out)
-        time.sleep(0.5)
+        time.sleep(0.1)
+        # set attent. from old input to 18
+        port.write(switch_imput + "*18g")
+        time.sleep(0.1)
+        # set gain for new input to -18 dB
+        port.write(param + "*-18G")
+        time.sleep(0.1)
+        # switch to new input
+        port.write(switch_to_input)
+        time.sleep(0.1)
+        # fade new input in
         x = 1
         for x in range(18):
             port.write(switch_fade_in)
-        time.sleep(0.5)
+        time.sleep(0.1)
+        # set all inputs to 0dB
+        gainreset = str(27) + 'ZA'
+        port.write(gainreset)
+        time.sleep(0.1)
         switch_status = get_status("-s")
         if switch_status is None:
-            print "Fehler bei Statusabfrage fuer fade"
-        return
+            return
         print switch_status
         port.close
     except Exception as e:
-        print "xy1"
-        print ("Fehler beim lesen..: " + str(e))
+        print ("Fehler beim fadeing..: " + str(e))
         port.close
 
 
