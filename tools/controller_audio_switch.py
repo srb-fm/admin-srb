@@ -37,6 +37,7 @@ Dieses Script wird durch das Intra-Web-Frontend aufgerufen
 import sys
 import getopt
 import serial
+import time
 #import lib_common_1 as lib_cm
 
 
@@ -57,6 +58,13 @@ class app_config(object):
         # display debugmessages on console yes or no: "no"
         # for normal usage set to no!!!!!!
         self.app_debug_mod = "no"
+        # settings serial port
+        self.app_ser_port = 0
+        self.app_ser_baudrate = 9600
+        self.app_ser_bytesize = 8
+        self.app_ser_parity = 'N'
+        self.app_ser_stopbits = 1
+        self.app_ser_timeout = 1
 
 
 def usage_help():
@@ -71,40 +79,135 @@ def usage_help():
     print "-f n --fade n"
 
 
+def set_port():
+    """setting port"""
+    try:
+        ser_port = serial.Serial(port=ac.app_ser_port,
+                         baudrate=ac.app_ser_baudrate,
+                         bytesize=ac.app_ser_bytesize,
+                         parity=ac.app_ser_parity,
+                         stopbits=ac.app_ser_stopbits,
+                         timeout=ac.app_ser_timeout)
+        if not ser_port.isOpen():
+            ser_port.open()
+            print "opening port"
+    except Exception as e:
+        print ("Fehler beim Port-Setting..: " + str(e))
+        ser_port = False
+    return ser_port
+
+
 def get_status(param):
     """get status"""
     print "status " + param
-    try:
-        port = serial.Serial(port=0,
-                         baudrate=9600,
-                         bytesize=8,
-                         parity='N',
-                         stopbits=1,
-                         timeout=1)
-        if (port.isOpen() is False):
-            port.open()
-            print ("Serial port ist offen_002")
-    except Exception as e:
-        print ("Fehler beim oeffnen..: " + str(e))
-    else:
-        print "No port tr"
+    switch_status_audio = None
+    port = set_port()
+    if not port:
+        return
 
     try:
-        sksist = port.read(10)
+        #print "write"
+        port.write('I')
+        time.sleep(0.5)
+        switch_respond = port.read(10)
+        time.sleep(0.5)
+        port.close
+        switch_status = switch_respond.split()
+        print switch_status
+        #switch_status_audio = switch_status[1]
+        #print switch_status[1]
     except Exception as e:
-        print ("Fehler beim lesen..: " + str(e))
-        exit()
-    print sksist
+        print ("Fehler beim lesen des ser. status..: " + str(e))
+        port.close
+    return switch_status
+
+
+def read_switch_respond(switch_status):
+    """read active input"""
+    print "read resp"
+    print switch_status[0]
+    switch_respond = None
+    if switch_status[0][:2] == "In":
+        switch_respond = switch_status[0][2:4]
+    if switch_status[0] == "Vx":
+        switch_respond = switch_status[1][2:3]
+    if switch_status[0] == "Amt1":
+        switch_respond = "muted"
+    if switch_status[0] == "Amt0":
+        switch_respond = "unmuted"
+    if switch_status[0] == "Exe1":
+        switch_respond = "locked"
+    if switch_status[0] == "Exe0":
+        switch_respond = "unlocked"
+    if switch_status[0] == "F1":
+        switch_respond = "normal"
+    if switch_status[0] == "F2":
+        switch_respond = "auto"
+    if switch_status[0] == "Zpa":
+        switch_respond = "reset audio"
+    if switch_status[0] == "Zpx":
+        switch_respond = "reset system"
+    print switch_respond
+    return switch_respond
 
 
 def push_switch_(param):
     """push switch"""
     print "push " + param
+    port = set_port()
+    if not port:
+        return
+    switch_cmd = param + "!"
+    try:
+        #print "write"
+        port.write(switch_cmd)
+        time.sleep(0.5)
+        switch_status = get_status("-s")
+        if switch_status is None:
+            print "Fehler bei Statusabfrage bei push"
+        return
+        #print switch_status
+        port.close
+    except Exception as e:
+        print ("Fehler beim push..: " + str(e))
+        port.close
 
 
 def fade_switch_(param):
     """fade_switch"""
     print "fade " + param
+    switch_status = get_status("-s")
+    if switch_status is None:
+        print "Fehler bei Statusabfrage fuer fade"
+        return
+    switch_imput = read_switch_respond(switch_status)
+    print "input"
+    print switch_imput
+    switch_fade_out = switch_imput + "-G"
+    switch_fade_in = param + "+G"
+    port = set_port()
+    if not port:
+        return
+    try:
+        #print "write"
+        x = 1
+        for x in range(18):
+            port.write(switch_fade_out)
+        time.sleep(0.5)
+        x = 1
+        for x in range(18):
+            port.write(switch_fade_in)
+        time.sleep(0.5)
+        switch_status = get_status("-s")
+        if switch_status is None:
+            print "Fehler bei Statusabfrage fuer fade"
+        return
+        print switch_status
+        port.close
+    except Exception as e:
+        print "xy1"
+        print ("Fehler beim lesen..: " + str(e))
+        port.close
 
 
 def lets_rock(argv):
