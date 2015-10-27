@@ -36,9 +36,10 @@ Dieses Script wird durch das Intra-Web-Frontend aufgerufen
 
 import sys
 import getopt
-import serial
+#import serial
 import time
-#import lib_common_1 as lib_cm
+import lib_common_1 as lib_cm
+import lib_serial as lib_ser
 
 
 class app_config(object):
@@ -59,12 +60,6 @@ class app_config(object):
         # for normal usage set to no!!!!!!
         self.app_debug_mod = "no"
         # settings serial port
-        self.app_ser_port = 0
-        self.app_ser_baudrate = 9600
-        self.app_ser_bytesize = 8
-        self.app_ser_parity = 'N'
-        self.app_ser_stopbits = 1
-        self.app_ser_timeout = 1
 
 
 def usage_help():
@@ -79,90 +74,18 @@ def usage_help():
     print "-f n --fade n"
 
 
-def set_port():
-    """setting port"""
-    try:
-        ser_port = serial.Serial(port=ac.app_ser_port,
-                         baudrate=ac.app_ser_baudrate,
-                         bytesize=ac.app_ser_bytesize,
-                         parity=ac.app_ser_parity,
-                         stopbits=ac.app_ser_stopbits,
-                         timeout=ac.app_ser_timeout)
-        if not ser_port.isOpen():
-            ser_port.open()
-            print "opening port"
-    except Exception as e:
-        print ("Fehler beim Port-Setting..: " + str(e))
-        ser_port = False
-    return ser_port
-
-
-def get_status(param):
-    """get status"""
-    print "status " + param
-    switch_status = None
-    port = set_port()
-    if not port:
-        return
-
-    try:
-        #print "write"
-        port.write('I')
-        time.sleep(0.5)
-        switch_respond = port.read(10)
-        time.sleep(0.5)
-        port.close
-        switch_status = switch_respond.split()
-        print switch_status
-        #switch_status_audio = switch_status[1]
-        #print switch_status[1]
-    except Exception as e:
-        print ("Fehler beim lesen des ser. status..: " + str(e))
-        port.close
-    return switch_status
-
-
-def read_switch_respond(switch_status):
-    """read active input"""
-    print "read resp"
-    print switch_status[0]
-    switch_respond = None
-    if switch_status[0][:2] == "In":
-        switch_respond = switch_status[0][2:4]
-    if switch_status[0] == "Vx":
-        switch_respond = switch_status[1][2:3]
-    if switch_status[0] == "Amt1":
-        switch_respond = "muted"
-    if switch_status[0] == "Amt0":
-        switch_respond = "unmuted"
-    if switch_status[0] == "Exe1":
-        switch_respond = "locked"
-    if switch_status[0] == "Exe0":
-        switch_respond = "unlocked"
-    if switch_status[0] == "F1":
-        switch_respond = "normal"
-    if switch_status[0] == "F2":
-        switch_respond = "auto"
-    if switch_status[0] == "Zpa":
-        switch_respond = "reset audio"
-    if switch_status[0] == "Zpx":
-        switch_respond = "reset system"
-    print switch_respond
-    return switch_respond
-
-
-def push_switch_(param):
+def push_switch(param):
     """push switch"""
     print "push " + param
-    port = set_port()
+    port = ser.set_port(ac, db)
     if not port:
         return
     switch_cmd = param + "!"
     try:
         #print "write"
         port.write(switch_cmd)
-        time.sleep(0.5)
-        switch_status = get_status("-s")
+        time.sleep(0.1)
+        switch_status = ser.get_status(ac, db, "-s", "I")
         if switch_status is None:
             print "Fehler bei Statusabfrage bei push"
         return
@@ -173,20 +96,21 @@ def push_switch_(param):
         port.close
 
 
-def fade_switch_(param):
+def fade_switch(param):
     """fade_switch"""
     print "fade " + param
-    switch_status = get_status("-s")
+    switch_status = ser.get_status(ac, db, "-s", "I")
     if switch_status is None:
         print "Fehler bei Statusabfrage fuer fade"
         return
-    switch_imput = read_switch_respond(switch_status)
+    switch_imput_old = ser.read_switch_respond(ac, db, switch_status)
+    switch_imput_new = param
     print "input"
-    print switch_imput
-    switch_fade_out = switch_imput + "-G"
-    switch_fade_in = param + "+G"
-    switch_to_input = param + "!"
-    port = set_port()
+    print switch_imput_old
+    switch_fade_out = switch_imput_old + "-G"
+    switch_fade_in = switch_imput_new + "+G"
+    switch_to_input = switch_imput_new + "!"
+    port = ser.set_port(ac, db)
     if not port:
         return
     try:
@@ -194,13 +118,15 @@ def fade_switch_(param):
         x = 1
         for x in range(18):
             port.write(switch_fade_out)
+            time.sleep(0.1)
+        print "gain switch_imput_old"
+        ser.get_status(ac, db, switch_imput_old, "V" + switch_imput_old + "G")
         time.sleep(0.1)
-        # set attent. from old input to 18
-        port.write(switch_imput + "*18g")
+        # reduce gain for new input
+        port.write(switch_imput_new + "*-18g")
         time.sleep(0.1)
-        # set gain for new input to -18 dB
-        port.write(param + "*-18G")
-        time.sleep(0.1)
+        print "gain switch_imput_new"
+        ser.get_status(ac, db, switch_imput_new, "V" + switch_imput_new + "G")
         # switch to new input
         port.write(switch_to_input)
         time.sleep(0.1)
@@ -208,12 +134,10 @@ def fade_switch_(param):
         x = 1
         for x in range(18):
             port.write(switch_fade_in)
-        time.sleep(0.1)
-        # set all inputs to 0dB
-        gainreset = str(27) + 'ZA'
-        port.write(gainreset)
-        time.sleep(0.1)
-        switch_status = get_status("-s")
+            time.sleep(0.1)
+        # reset old input to 0dB
+        ser.reset_gain(ac, db, switch_imput_old)
+        switch_status = ser.get_status(ac, db, "-s", "I")
         if switch_status is None:
             return
         print switch_status
@@ -230,8 +154,8 @@ def lets_rock(argv):
 
     try:
         opts, args = getopt.getopt(argv,
-                            "hsp:f:",
-                            ["help", "status", "push=", "fade="])
+                    "hsl:p:f:g:",
+                    ["help", "status", "level=", "push=", "fade=", "gain="])
     except getopt.GetoptError:
         usage_help()
         sys.exit(2)
@@ -240,30 +164,44 @@ def lets_rock(argv):
             valid_param = True
             usage_help()
             sys.exit()
+
         elif opt in ("-s", "--status"):
             valid_param = True
-            get_status(arg)
+            ser.get_status(ac, db, arg, "I")
             print arg
+
+        elif opt in ("-l", "--level="):
+            if arg != "":
+                print arg
+                valid_param = True
+                ser.get_status(ac, db, arg, "V" + arg + "G")
+
         elif opt in ("-p", "--push"):
             if arg != "":
                 print arg
                 valid_param = True
-                push_switch_(arg)
+                push_switch(arg)
 
         elif opt in ("-f", "--fade="):
             if arg != "":
                 print arg
                 valid_param = True
-                fade_switch_(arg)
+                fade_switch(arg)
 
+        elif opt in ("-g", "--gain="):
+            if arg != "":
+                print arg
+                valid_param = True
+                ser.reset_gain(ac, db, arg)
     # it seems, that no valid arg is given
     if valid_param is None:
         usage_help()
 
 
 if __name__ == "__main__":
-    #db = lib_cm.dbase()
+    db = lib_cm.dbase()
     ac = app_config()
+    ser = lib_ser.mySERIAL()
     print  "lets_work: " + ac.app_desc
     # losgehts
     #db.write_log_to_db(ac, ac.app_desc + " gestartet", "r")
