@@ -27,15 +27,16 @@ class mySERIAL(object):
                          timeout=self.app_ser_timeout)
             if not ser_port.isOpen():
                 ser_port.open()
-                print "opening port"
+                #print "opening port"
         except Exception as e:
-            print ("Fehler beim Port-Setting..: " + str(e))
+            db.write_log_to_db_a(ac,
+                    ac.app_desc + " Fehler beim Port-Setting: %s" % str(e), "x",
+                                             "write_also_to_console")
             ser_port = False
         return ser_port
 
     def get_status(self, ac, db, param, option):
         """get status"""
-        print "status " + param
         switch_status = None
         port = self.set_port(ac, db)
         if not port:
@@ -48,36 +49,44 @@ class mySERIAL(object):
             time.sleep(0.1)
             port.close
             switch_status = switch_respond.split()
-            print switch_status
+            #log_message = "Status: " + ', '.join(switch_status)
+            #db.write_log_to_db_a(ac, log_message, "p",
+            #                                 "write_also_to_console")
+            #print log_message
         except Exception as e:
-            print ("Fehler beim lesen des ser. status..: " + str(e))
+            db.write_log_to_db_a(ac,
+                ac.app_desc + " Fehler beim Lesen des Status: " + str(e), "x",
+                                             "write_also_to_console")
             port.close
         return switch_status
 
     def reset_gain(self, ac, db, param):
         """setting gain"""
+        switch_status = None
         port = self.set_port(ac, db)
         if not port:
             return
         switch_cmd = param + "*0G"
         try:
-            #print "write"
+            db.write_log_to_db_a(ac, "Reset Gain for " + param, "e",
+                                                "write_also_to_console")
             port.write(switch_cmd)
             time.sleep(0.1)
             switch_status = self.get_status(ac, db, "-s", "V" + param + "G")
             if switch_status is None:
-                print "Fehler bei Statusabfrage bei push"
-            return
-            #print switch_status
+                return
             port.close
         except Exception as e:
-            print ("Fehler beim push..: " + str(e))
+            db.write_log_to_db_a(ac,
+                    ac.app_desc + " Fehler beim Gain-Reset: " + str(e), "x",
+                                             "write_also_to_console")
             port.close
+        return switch_status
 
     def read_switch_respond(self, ac, db, switch_status):
         """read active input"""
-        print "read resp"
-        print switch_status[0]
+        #print "read resp"
+        #print switch_status[0]
         switch_respond = None
         if switch_status[0][:2] == "In":
             switch_respond = switch_status[0][2:4]
@@ -99,5 +108,5 @@ class mySERIAL(object):
             switch_respond = "reset audio"
         if switch_status[0] == "Zpx":
             switch_respond = "reset system"
-        print switch_respond
+        #print switch_respond
         return switch_respond
