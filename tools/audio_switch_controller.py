@@ -146,12 +146,14 @@ def fade_switch(param):
         for x in range(18):
             port.write(switch_fade_in)
             time.sleep(0.1)
+        time.sleep(0.1)
         # reset old input to 0dB
         ser.reset_gain(ac, db, switch_imput_old)
-        switch_status = ser.get_status(ac, db, "-s", "I")
-        if switch_status is None:
-            return
+        #switch_status = ser.get_status(ac, db, "-s", "I")
+        #if switch_status is None:
+        #    return
         #print switch_status
+        time.sleep(0.2)
         read_audio_input()
         port.close
     except Exception as e:
