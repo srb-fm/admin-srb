@@ -36,7 +36,6 @@ Dieses Script wird durch das Intra-Web-Frontend aufgerufen
 
 import sys
 import getopt
-#import serial
 import time
 import lib_common_1 as lib_cm
 import lib_serial as lib_ser
@@ -58,7 +57,7 @@ class app_config(object):
         self.app_develop = "no"
         # display debugmessages on console yes or no: "no"
         # for normal usage set to no!!!!!!
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # settings serial port
 
 
@@ -69,9 +68,18 @@ def usage_help():
     print "controller_audio_switch.py -option value"
     print "valid options are:"
     print "-h --help"
-    print "-s --status"
-    print "-p n --push n"
-    print "-f n --fade n"
+    print "-s --status to display status"
+    print "-l n --level n to display level for input n"
+    print "-p n --push n to switch to input n"
+    print "-f n --fade n to fade to input n"
+    print "-g n --gain n to set gain to 0dB for input n"
+
+
+def read_audio_input():
+    """read audio input"""
+    switch_status = ser.get_status(ac, db, "I", "I")
+    status_audio = ser.read_switch_respond(ac, db, switch_status)
+    print status_audio
 
 
 def push_switch(param):
@@ -149,13 +157,12 @@ def fade_switch(param):
 
 def lets_rock(argv):
     """Hauptfunktion """
-    print "lets_rock "
+    db.write_log_to_db_a(ac, "lets_rock ", "t", "write_also_to_console")
     valid_param = None
 
     try:
-        opts, args = getopt.getopt(argv,
-                    "hsl:p:f:g:",
-                    ["help", "status", "level=", "push=", "fade=", "gain="])
+        opts, args = getopt.getopt(argv, "hsal:p:f:g:",
+            ["help", "status", "audio", "level=", "push=", "fade=", "gain="])
     except getopt.GetoptError:
         usage_help()
         sys.exit(2)
@@ -168,6 +175,11 @@ def lets_rock(argv):
         elif opt in ("-s", "--status"):
             valid_param = True
             ser.get_status(ac, db, arg, "I")
+            print arg
+
+        elif opt in ("-a", "--audio"):
+            valid_param = True
+            read_audio_input()
             print arg
 
         elif opt in ("-l", "--level="):
@@ -202,9 +214,10 @@ if __name__ == "__main__":
     db = lib_cm.dbase()
     ac = app_config()
     ser = lib_ser.mySERIAL()
-    print  "lets_work: " + ac.app_desc
+    db.write_log_to_db(ac, ac.app_desc + u" gestartet", "r")
+    log_message = "lets_work: " + ac.app_desc
+    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
     # losgehts
-    #db.write_log_to_db(ac, ac.app_desc + " gestartet", "r")
     lets_rock(sys.argv[1:])
 
     # fertsch
