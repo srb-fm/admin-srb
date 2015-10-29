@@ -76,11 +76,16 @@ def usage_help():
     print "-g n --gain n to set gain to 0dB for input n"
 
 
-def read_audio_input():
+def read_audio_input(check_resp_pattern):
     """read audio input"""
     switch_status = ser.get_status(ac, db, "I", "I")
-    status_audio = ser.read_switch_respond(ac, db, switch_status)
-    log_message = "Audio Input active: " + status_audio
+    # pattern value of audio input respond depends on previous cmd
+    # so switch here
+    if check_resp_pattern:
+        status_audio = ser.read_switch_respond(ac, db, switch_status)
+        log_message = "Audio Input active: " + status_audio
+    else:
+        log_message = "Audio Input active: " + switch_status[0]
     print log_message
     db.write_log_to_db_a(ac, log_message, "p",
                                                 "write_also_to_console")
@@ -97,7 +102,7 @@ def push_switch(param):
                                                 "write_also_to_console")
         port.write(switch_cmd)
         time.sleep(0.1)
-        read_audio_input()
+        read_audio_input(True)
         port.close
     except Exception as e:
         db.write_log_to_db_a(ac, ac.app_errorslist[1] + str(e), "x",
@@ -146,16 +151,11 @@ def fade_switch(param):
         for x in range(18):
             port.write(switch_fade_in)
             time.sleep(0.1)
-        time.sleep(0.1)
         # reset old input to 0dB
         ser.reset_gain(ac, db, switch_imput_old)
-        #switch_status = ser.get_status(ac, db, "-s", "I")
-        #if switch_status is None:
-        #    return
-        #print switch_status
         time.sleep(0.2)
-        read_audio_input()
         port.close
+        print "Faded to Input " + switch_to_input
     except Exception as e:
         db.write_log_to_db_a(ac, ac.app_errorslist[2] + str(e), "x",
             "write_also_to_console")
@@ -189,7 +189,7 @@ def lets_rock(argv):
 
         elif opt in ("-a", "--audio"):
             valid_param = True
-            read_audio_input()
+            read_audio_input(True)
 
         elif opt in ("-l", "--level="):
             if arg != "":
