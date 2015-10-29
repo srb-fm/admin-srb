@@ -88,25 +88,29 @@ class mySERIAL(object):
         #print "read resp"
         #print switch_status[0]
         switch_respond = None
-        if switch_status[0][:2] == "In":
-            switch_respond = switch_status[0][2:4]
-        if switch_status[0] == "Vx":
-            switch_respond = switch_status[1][2:3]
-        if switch_status[0] == "Amt1":
-            switch_respond = "muted"
-        if switch_status[0] == "Amt0":
-            switch_respond = "unmuted"
-        if switch_status[0] == "Exe1":
-            switch_respond = "locked"
-        if switch_status[0] == "Exe0":
-            switch_respond = "unlocked"
-        if switch_status[0] == "F1":
-            switch_respond = "normal"
-        if switch_status[0] == "F2":
-            switch_respond = "auto"
-        if switch_status[0] == "Zpa":
-            switch_respond = "reset audio"
-        if switch_status[0] == "Zpx":
-            switch_respond = "reset system"
-        #print switch_respond
+        try:
+            if switch_status[0][:2] == "In":
+                switch_respond = switch_status[0][2:4]
+            if switch_status[0] == "Vx":
+                switch_respond = switch_status[1][2:3]
+            if switch_status[0] == "Amt1":
+                switch_respond = "muted"
+            if switch_status[0] == "Amt0":
+                switch_respond = "unmuted"
+            if switch_status[0] == "Exe1":
+                switch_respond = "locked"
+            if switch_status[0] == "Exe0":
+                switch_respond = "unlocked"
+            if switch_status[0] == "F1":
+                switch_respond = "normal"
+            if switch_status[0] == "F2":
+                switch_respond = "auto"
+            if switch_status[0] == "Zpa":
+                switch_respond = "reset audio"
+            if switch_status[0] == "Zpx":
+                switch_respond = "reset system"
+        except Exception as e:
+            db.write_log_to_db_a(ac,
+            ac.app_desc + " Fehler bei read_switch_respond: " + str(e), "x",
+            "write_also_to_console")
         return switch_respond
