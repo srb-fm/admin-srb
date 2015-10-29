@@ -149,28 +149,40 @@ def lets_rock():
     """Hauptfunktion """
     #db.write_log_to_db_a(ac, "lets_rock ", "t", "write_also_to_console")
 
-    print ac.switch_inputs[2][14:]
+    #print ac.switch_inputs[2][14:]
     #return
     ac.timer = threading.Timer(1, lets_rock)
     ac.timer.start()
     time_now = datetime.datetime.now()
-    print datetime.datetime.now()
-    #if time_now.minute == 59:
-    switch_input_new = ac.switch_inputs[2][15:16]
-    #if time_now.minute == 04:
-    #    ac.switch_input = switch_inputs[2][17:18]
-    #if time_now.minute == 29:
-    #    ac.switch_input = switch_inputs[2][19:20]
 
-    if time_now.second == 30:
-        log_message = "Fade zu Input " + switch_input_new + " vorgesehen"
+    #print datetime.datetime.now()
+    if time_now.minute == 19:
+        print "m1"
+        if time_now.second == 10:
+            print "s10"
+            ac.switch_input_new = ac.switch_inputs[2][15:16]
+            log_message = "Load Input for top of the hour"
+            db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    if time_now.minute == 04:
+        if time_now.second == 10:
+            ac.switch_input_new = ac.switch_inputs[2][17:18]
+            log_message = "Load Input for Switchtime 2"
+            db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    if time_now.minute == 29:
+        if time_now.second == 10:
+            ac.switch_input_new = ac.switch_inputs[2][19:20]
+            log_message = "Load Input for Switchtime 3"
+            db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+
+    if time_now.second == 35:
+        log_message = "Fade zu Input " + ac.switch_input_new + " vorgesehen"
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
     if time_now.second == 59:
-        fade_switch(switch_input_new)
+        fade_switch(ac.switch_input_new)
 
     if datetime.datetime.now() >= ac.time_forward:
-        print "finito"
+        #print "finito"
         ac.timer.cancel()
         log_message = ac.app_desc + " gestoppt"
         db.write_log_to_db_a(ac, log_message, "s", "write_also_to_console")
@@ -184,7 +196,21 @@ if __name__ == "__main__":
     log_message = ac.app_desc + " gestartet"
     db.write_log_to_db_a(ac, log_message, "r", "write_also_to_console")
     # losgehts
-    ac.time_forward = datetime.datetime.now() + datetime.timedelta(seconds=+ 80)
+    switch_status = ser.get_status(ac, db, "-s", "I")
+    print switch_status
+    if not switch_status:
+        log_message = ac.app_desc + " Keine Verbindung zu Audio-Switch?"
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        log_message = ac.app_desc + " gestoppt"
+        db.write_log_to_db_a(ac, log_message, "s", "write_also_to_console")
+        sys.exit()
+    if switch_status is None:
+        log_message = ac.app_desc + " Keine Verbindung zu Audio-Switch?"
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        log_message = ac.app_desc + " gestoppt"
+        db.write_log_to_db_a(ac, log_message, "s", "write_also_to_console")
+        sys.exit()
+    ac.time_forward = datetime.datetime.now() + datetime.timedelta(seconds=+ 65)
     ac.switch_inputs = load_switch_inputs()
     lets_rock()
     sys.exit()
