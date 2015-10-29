@@ -59,7 +59,7 @@ class app_config(object):
         self.app_develop = "no"
         # display debugmessages on console yes or no: "no"
         # for normal usage set to no!!!!!!
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # settings serial port
 
 
@@ -86,16 +86,6 @@ def load_switch_inputs():
     return log_data
 
 
-def read_audio_input():
-    """read audio input"""
-    switch_status = ser.get_status(ac, db, "I", "I")
-    status_audio = ser.read_switch_respond(ac, db, switch_status)
-    log_message = "Audio Input active: " + status_audio
-    print log_message
-    db.write_log_to_db_a(ac, log_message, "p",
-                                                "write_also_to_console")
-
-
 def fade_switch(param):
     """fade_switch"""
     #print "fade " + param
@@ -109,6 +99,11 @@ def fade_switch(param):
     switch_fade_out = switch_imput_old + "-G"
     switch_fade_in = switch_imput_new + "+G"
     switch_to_input = switch_imput_new + "!"
+    if switch_imput_old == switch_imput_new:
+        log_message = ("Kein fade noetig, Input "
+                                + switch_imput_new + " bereits aktiv")
+        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+        return
     port = ser.set_port(ac, db)
     if not port:
         return
@@ -140,13 +135,10 @@ def fade_switch(param):
         time.sleep(0.1)
         # reset old input to 0dB
         ser.reset_gain(ac, db, switch_imput_old)
-        #switch_status = ser.get_status(ac, db, "-s", "I")
-        #if switch_status is None:
-        #    return
-        #print switch_status
         time.sleep(0.2)
-        read_audio_input()
         port.close
+        log_message = "Faded to Input " + switch_imput_new
+        db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
     except Exception as e:
         db.write_log_to_db_a(ac, ac.app_errorslist[2] + str(e), "x",
             "write_also_to_console")
@@ -156,27 +148,33 @@ def fade_switch(param):
 def lets_rock():
     """Hauptfunktion """
     #db.write_log_to_db_a(ac, "lets_rock ", "t", "write_also_to_console")
-    switch_inputs = load_switch_inputs()
-    print switch_inputs[2][14:]
-    return
+
+    print ac.switch_inputs[2][14:]
+    #return
     ac.timer = threading.Timer(1, lets_rock)
     ac.timer.start()
     time_now = datetime.datetime.now()
     print datetime.datetime.now()
     #if time_now.minute == 59:
-    if time_now.second == 5:
-        ac.switch_input = switch_inputs[2][14:16]
+    switch_input_new = ac.switch_inputs[2][15:16]
     #if time_now.minute == 04:
-    if time_now.second == 5:
-        ac.switch_input = switch_inputs[2][16:18]
+    #    ac.switch_input = switch_inputs[2][17:18]
     #if time_now.minute == 29:
-    if time_now.second == 5:
-        ac.switch_input = switch_inputs[2][18:20]
+    #    ac.switch_input = switch_inputs[2][19:20]
 
+    if time_now.second == 30:
+        log_message = "Fade zu Input " + switch_input_new + " vorgesehen"
+        db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
+    if time_now.second == 59:
+        fade_switch(switch_input_new)
+
+    if datetime.datetime.now() >= ac.time_forward:
         print "finito"
         ac.timer.cancel()
-        sys.exit()
+        log_message = ac.app_desc + " gestoppt"
+        db.write_log_to_db_a(ac, log_message, "s", "write_also_to_console")
+        return
 
 
 if __name__ == "__main__":
@@ -184,11 +182,9 @@ if __name__ == "__main__":
     ac = app_config()
     ser = lib_ser.mySERIAL()
     log_message = ac.app_desc + " gestartet"
-    #db.write_log_to_db_a(ac, log_message, "r", "write_also_to_console")
+    db.write_log_to_db_a(ac, log_message, "r", "write_also_to_console")
     # losgehts
+    ac.time_forward = datetime.datetime.now() + datetime.timedelta(seconds=+ 80)
+    ac.switch_inputs = load_switch_inputs()
     lets_rock()
-
-    # fertsch
-    #log_message = ac.app_desc + " gestoppt"
-    #db.write_log_to_db_a(ac, log_message, "s", "write_also_to_console")
     sys.exit()
