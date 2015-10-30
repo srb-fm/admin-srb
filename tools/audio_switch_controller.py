@@ -49,6 +49,20 @@ class app_config(object):
         self.app_id = "023"
         self.app_desc = "Audio_Switch_Controller"
         self.app_errorfile = "error_audio_switch_controller.log"
+        # key for config in db
+        self.app_config = "audio_switch"
+        # amount parameter
+        self.app_config_params_range = 7
+        # params-type-list
+        self.app_params_type_list = []
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_int")
+        self.app_params_type_list.append("p_int")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_int")
+        self.app_params_type_list.append("p_int")
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append("Parameter-Typ oder Inhalt stimmt nicht ")
@@ -76,9 +90,22 @@ def usage_help():
     print "-g n --gain n to set gain to 0dB for input n"
 
 
+def load_extended_params():
+    """load extended params"""
+    ext_params_ok = True
+    # extern tools
+    ext_params_ok = lib_cm.params_provide_server_settings(ac, db)
+    if ext_params_ok is None:
+        return None
+    lib_cm.set_server(ac, db)
+    return ext_params_ok
+
+
 def read_audio_input(check_resp_pattern):
     """read audio input"""
     switch_status = ser.get_status(ac, db, "I", "I")
+    if not switch_status:
+        return
     # pattern value of audio input respond depends on previous cmd
     # so switch here
     if check_resp_pattern:
@@ -96,13 +123,17 @@ def push_switch(param):
     port = ser.set_port(ac, db)
     if not port:
         return
+    switch_status = ser.get_status(ac, db, "I", "I")
+    if not switch_status:
+        return
     switch_cmd = param + "!"
     try:
-        db.write_log_to_db_a(ac, "Switch to Input " + param, "e",
-                                                "write_also_to_console")
         port.write(switch_cmd)
         time.sleep(0.1)
-        read_audio_input(True)
+        #read_audio_input(True)
+        db.write_log_to_db_a(ac, "Switch to Input " + param, "e",
+                                                "write_also_to_console")
+        print "Switch to Input " + param
         port.close
     except Exception as e:
         db.write_log_to_db_a(ac, ac.app_errorslist[1] + str(e), "x",
@@ -165,6 +196,22 @@ def fade_switch(param):
 def lets_rock(argv):
     """Hauptfunktion """
     #db.write_log_to_db_a(ac, "lets_rock ", "t", "write_also_to_console")
+    # extendet params
+    load_extended_params_ok = load_extended_params()
+    if load_extended_params_ok is None:
+        return
+    # check if serial port is a port number or an string
+    if ac.server_active == "A":
+        if db.ac_config_1[1].isdigit():
+            ac.ser_port = int(db.ac_config_1[1])
+        else:
+            ac.ser_port = db.ac_config_1[1]
+    if ac.server_active == "B":
+        if db.ac_config_1[2].isdigit():
+            ac.ser_port = int(db.ac_config_1[2])
+        else:
+            ac.ser_port = db.ac_config_1[2]
+
     valid_param = None
 
     try:
@@ -182,9 +229,10 @@ def lets_rock(argv):
         elif opt in ("-s", "--status"):
             valid_param = True
             switch_status = ser.get_status(ac, db, arg, "I")
-            log_message = "Status: " + ', '.join(switch_status)
-            print log_message
-            db.write_log_to_db_a(ac, log_message, "p",
+            if switch_status:
+                log_message = "Status: " + ', '.join(switch_status)
+                print log_message
+                db.write_log_to_db_a(ac, log_message, "p",
                                              "write_also_to_console")
 
         elif opt in ("-a", "--audio"):
@@ -193,12 +241,13 @@ def lets_rock(argv):
 
         elif opt in ("-l", "--level="):
             if arg != "":
-                log_message = "Level for Input: " + arg
-                db.write_log_to_db_a(ac, log_message, "t",
-                                                "write_also_to_console")
-                print log_message
                 valid_param = True
-                ser.get_status(ac, db, arg, "V" + arg + "G")
+                switch_status = ser.get_status(ac, db, arg, "V" + arg + "G")
+                if switch_status:
+                    log_message = "Level for Input: " + arg
+                    db.write_log_to_db_a(ac, log_message, "t",
+                                                "write_also_to_console")
+                    print log_message
 
         elif opt in ("-p", "--push"):
             if arg != "":
@@ -214,9 +263,10 @@ def lets_rock(argv):
             if arg != "":
                 valid_param = True
                 switch_status = ser.reset_gain(ac, db, arg)
-                log_message = "Gain for Input: " + ', '.join(switch_status)
-                print log_message
-                db.write_log_to_db_a(ac, log_message, "p",
+                if switch_status:
+                    log_message = "Gain for Input: " + ', '.join(switch_status)
+                    print log_message
+                    db.write_log_to_db_a(ac, log_message, "p",
                                                 "write_also_to_console")
     # it seems, that no valid arg is given
     if valid_param is None:
@@ -229,8 +279,14 @@ if __name__ == "__main__":
     ser = lib_ser.mySERIAL()
     log_message = ac.app_desc + " gestartet"
     db.write_log_to_db_a(ac, log_message, "r", "write_also_to_console")
-    # losgehts
-    lets_rock(sys.argv[1:])
+    # Config_Params 1
+    db.ac_config_1 = db.params_load_1(ac, db)
+    if db.ac_config_1 is not None:
+        param_check = lib_cm.params_check_1(ac, db)
+         # alles ok: weiter
+        if param_check is not None:
+            # losgehts
+            lets_rock(sys.argv[1:])
 
     # fertsch
     log_message = ac.app_desc + " gestoppt"

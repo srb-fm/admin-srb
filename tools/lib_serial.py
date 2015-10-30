@@ -19,12 +19,12 @@ class mySERIAL(object):
     def set_port(self, ac, db):
         """setting port"""
         try:
-            ser_port = serial.Serial(port=self.app_ser_port,
-                         baudrate=self.app_ser_baudrate,
-                         bytesize=self.app_ser_bytesize,
-                         parity=self.app_ser_parity,
-                         stopbits=self.app_ser_stopbits,
-                         timeout=self.app_ser_timeout)
+            ser_port = serial.Serial(port=ac.ser_port,
+                         baudrate=int(db.ac_config_1[3]),
+                         bytesize=int(db.ac_config_1[4]),
+                         parity=db.ac_config_1[5],
+                         stopbits=int(db.ac_config_1[6]),
+                         timeout=int(db.ac_config_1[7]))
             if not ser_port.isOpen():
                 ser_port.open()
                 #print "opening port"
@@ -48,7 +48,8 @@ class mySERIAL(object):
             switch_respond = port.read(10)
             time.sleep(0.1)
             port.close
-            switch_status = switch_respond.split()
+            if switch_respond:
+                switch_status = switch_respond.split()
             #log_message = "Status: " + ', '.join(switch_status)
             #db.write_log_to_db_a(ac, log_message, "p",
             #                                 "write_also_to_console")
@@ -58,6 +59,10 @@ class mySERIAL(object):
                 ac.app_desc + " Fehler beim Lesen des Status: " + str(e), "x",
                                              "write_also_to_console")
             port.close
+        if not switch_status:
+            log_message = ac.app_desc + " Keine Verbindung zu Audio-Switch?"
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+            print "Keine Verbindung zu Audio-Switch?"
         return switch_status
 
     def reset_gain(self, ac, db, param):
@@ -86,7 +91,7 @@ class mySERIAL(object):
     def read_switch_respond(self, ac, db, switch_status):
         """read active input"""
         #print "read resp"
-        #print switch_status[0]
+        #print switch_status
         switch_respond = None
         try:
             if switch_status[0][:2] == "In":
@@ -94,9 +99,13 @@ class mySERIAL(object):
             if switch_status[0] == "Vx":
                 switch_respond = switch_status[1][2:3]
             if switch_status[0] == "Amt1":
-                switch_respond = "muted"
+                switch_respond = "muted Audio"
+            if switch_status[0] == "Vmt1":
+                switch_respond = "muted Video"
             if switch_status[0] == "Amt0":
-                switch_respond = "unmuted"
+                switch_respond = "unmuted Audio"
+            if switch_status[0] == "Vmt0":
+                switch_respond = "unmuted Video"
             if switch_status[0] == "Exe1":
                 switch_respond = "locked"
             if switch_status[0] == "Exe0":
