@@ -156,7 +156,7 @@ def lets_rock():
     time_now = datetime.datetime.now()
 
     #print datetime.datetime.now()
-    if time_now.minute == 19:
+    if time_now.minute == 59:
         print "m1"
         if time_now.second == 10:
             print "s10"
@@ -197,16 +197,7 @@ if __name__ == "__main__":
     db.write_log_to_db_a(ac, log_message, "r", "write_also_to_console")
     # losgehts
     switch_status = ser.get_status(ac, db, "-s", "I")
-    print switch_status
     if not switch_status:
-        log_message = ac.app_desc + " Keine Verbindung zu Audio-Switch?"
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        log_message = ac.app_desc + " gestoppt"
-        db.write_log_to_db_a(ac, log_message, "s", "write_also_to_console")
-        sys.exit()
-    if switch_status is None:
-        log_message = ac.app_desc + " Keine Verbindung zu Audio-Switch?"
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         log_message = ac.app_desc + " gestoppt"
         db.write_log_to_db_a(ac, log_message, "s", "write_also_to_console")
         sys.exit()
