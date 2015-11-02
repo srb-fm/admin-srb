@@ -2,6 +2,7 @@
 	<p class="menu_head"><a href="index.php">Admin-Home</a>	</p>
 	<p class="menu_head">Play-Out - Actions</p>
 	<div class="menu_body">
+		<a href="../../admin_srb_play_out/audio_switch_controller.php">Audio-Switch Sendesignal</a>
 		<a href="../../admin_srb_play_out/play_out_actions.php">Play-Out Actions durchführen</a>
 	</div>		
 
