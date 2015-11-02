@@ -2,19 +2,19 @@
 # -*- coding: utf-8 -*-
 # lib for serial controller of audio switch
 
-import config_serial
+#import config_serial
 import serial
 import time
 
 
 class mySERIAL(object):
     def __init__(self):
-        self.app_ser_port = config_serial.ser_port
-        self.app_ser_baudrate = config_serial.ser_baudrate
-        self.app_ser_bytesize = config_serial.ser_bytesize
-        self.app_ser_parity = config_serial.ser_parity
-        self.app_ser_stopbits = config_serial.ser_stopbits
-        self.app_ser_timeout = config_serial.ser_timeout
+        #self.app_ser_port = config_serial.ser_port
+        #self.app_ser_baudrate = config_serial.ser_baudrate
+        #self.app_ser_bytesize = config_serial.ser_bytesize
+        #self.app_ser_parity = config_serial.ser_parity
+        #self.app_ser_stopbits = config_serial.ser_stopbits
+        #self.app_ser_timeout = config_serial.ser_timeout
 
     def set_port(self, ac, db):
         """setting port"""
