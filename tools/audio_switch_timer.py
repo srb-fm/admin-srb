@@ -189,7 +189,7 @@ def fade_switch(param):
         time.sleep(0.2)
         port.close
         log_message = ac.app_desc + " Faded to Input " + switch_imput_new
-        db.write_log_to_db_a(ac, log_message, "i", "write_also_to_console")
+        db.write_log_to_db_a(ac, log_message, "n", "write_also_to_console")
     except Exception as e:
         db.write_log_to_db_a(ac, ac.app_errorslist[3] + str(e), "x",
             "write_also_to_console")
@@ -231,7 +231,7 @@ def lets_rock():
         log_message = "Input " + ac.switch_input_new + " vorgesehen"
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
-    if time_now.second == 59:
+    if time_now.second == 58:
         fade_switch(ac.switch_input_new)
 
     if datetime.datetime.now() >= ac.time_forward:
