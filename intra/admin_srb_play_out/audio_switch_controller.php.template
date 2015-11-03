@@ -1,0 +1,195 @@
+<?php
+
+/** 
+* play out actions durchfuehren 
+*
+* PHP version 5
+*
+* @category Intranetsite
+* @package  Admin-SRB
+* @author   Joerg Sorge <joergsorge@googel.com>
+* @license  http://www.gnu.org/copyleft/gpl.html GNU General Public License
+* @link     http://srb.fm
+*/
+
+require "../../cgi-bin/admin_srb_libs/lib_db.php";
+require "../../cgi-bin/admin_srb_libs/lib.php";
+require "../../cgi-bin/admin_srb_libs/lib_sess.php";
+$message = "";
+$action_ok = false;
+$script_messages = "";
+
+// action pruefen	
+if ( isset($_GET['action']) ) {	
+	$action = $_GET['action'];	
+	$action_ok = true;
+}
+if ( isset($_POST['action']) ) { 
+	$action = $_POST['action'];
+	$action_ok = true;
+}
+
+	
+if ( $action_ok == true ) {
+	$tbl_row_server_active = db_query_display_item_1(
+						"USER_SPECIALS", "USER_SP_SPECIAL = 'server_active'");
+	$tbl_row_server_setting = db_query_display_item_1(
+						"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
+	if ( $tbl_row_server_active->USER_SP_PARAM_1 == "A" ) {
+		$server_user = trim($tbl_row_server_setting->USER_SP_PARAM_1);
+	}
+	if ( $tbl_row_server_active->USER_SP_PARAM_1 == "B" ) {
+		$server_user = trim($tbl_row_server_setting->USER_SP_PARAM_2);
+	}				
+	switch ( $action ) {
+	case "Status":
+		$cmd = "audio_switch_controller.py -s";
+		$script_messages = shell_exec($cmd);
+		break;
+
+	case "AudioIn":
+		$cmd = "audio_switch_controller.py -a";
+		$script_messages = shell_exec($cmd);
+		break;
+	
+	case "Level 1":
+		$cmd = "audio_switch_controller.py -l 1";
+		$script_messages = shell_exec($cmd);
+		break;
+	
+	case "Level 2":
+		$cmd = "audio_switch_controller.py -l 2";
+		$script_messages = shell_exec($cmd);
+		break;
+		
+	case "Level 3":
+		$cmd = "audio_switch_controller.py -l 3";
+		$script_messages = shell_exec($cmd);
+		break;
+	case "Level 4":
+		$cmd = "audio_switch_controller.py -l 4";
+		$script_messages = shell_exec($cmd);
+		break;
+	
+	case "Push 1":
+		$cmd = "audio_switch_controller.py -p 1";
+		$script_messages = shell_exec($cmd);
+		break;
+	
+	case "Push 2":
+		$cmd = "audio_switch_controller.py -p 2";
+		$script_messages = shell_exec($cmd);
+		break;
+		
+	case "Push 3":
+		$cmd = "audio_switch_controller.py -p 3";
+		$script_messages = shell_exec($cmd);
+		break;
+		
+	case "Push 4":
+		$cmd = "audio_switch_controller.py -p 4";
+		$script_messages = shell_exec($cmd);
+		break;
+		
+	case "Fade 1":
+		$cmd = "audio_switch_controller.py -f 1";
+		$script_messages = shell_exec($cmd);
+		break;
+	
+	case "Fade 2":
+		$cmd = "audio_switch_controller.py -f 2";
+		$script_messages = shell_exec($cmd);
+		break;
+		
+	case "Fade 3":
+		$cmd = "audio_switch_controller.py -f 3";
+		$script_messages = shell_exec($cmd);
+		break;
+		
+	case "Fade 4":
+		$cmd = "audio_switch_controller.py -f 4";
+		$script_messages = shell_exec($cmd);
+		break;
+	//endswitch;
+	}
+}
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+	<title>Admin-SRB-Controller_Audio-Switch</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
+	<style type="text/css">@import url("../parts/style/style_srb_2.css"); </style>
+	<style type="text/css">@import url("../parts/style/style_srb_jq_2.css");</style>
+	<style type="text/css">@import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
+	
+	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
+	<script type="text/javascript" src="../parts/jquery/jquery_ui_1_8_16/jquery-ui-1.8.16.custom.min.js"></script>
+	<script type="text/javascript" src="../parts/jquery/jquery_tools/jq_tools.js"></script>
+	<!--muss zum schluss, sonst geht slidemenu nicht-->
+	<script type="text/javascript" src="../parts/jquery/jquery_my_tools/jq_my_tools_2.js"></script>
+	
+</head>
+<body>
+
+<?php 
+echo "<div class='main'>";
+include "../parts/site_elements/header_srb_2.inc";
+include "../parts/menu/menu_srb_root_1_eb_1.inc";
+echo "<div class='column_left'>";
+echo "<div class='head_item_left'>Administration</div>";
+if ( isset($_GET['call_from_sendung']) ) {
+	if ( $_GET['call_from_sendung'] == "yes" ) {
+		include ( "../admin_srb_sendung_hf/parts/sg_hf_menu.inc" );
+	}
+} else {
+	include "../admin_srb_user/parts/admin_menu.inc";
+}	
+user_display();
+echo "</div> <!--class=column_left-->";	
+echo "<div class='column_right'>";
+echo "<div class='head_item_right'>";
+echo $message;
+echo "</div>";
+if ( isset($_GET['call_from_sendung']) ) {
+	if ( $_GET['call_from_sendung'] == "yes" ) {
+		include ( "parts/sg_hf_toolbar.inc" );
+	}
+} else {
+	include ( "parts/po_toolbar.inc" );
+}		
+echo "<div class='content'>";	
+$user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "A");
+		
+if ( $user_rights == "yes" ) {
+	 
+	echo "<form name='form1' action='audio_switch_controller.php' method='POST' enctype='application/x-www-form-urlencoded'>\n";
+	echo "<input type='submit' name='action' value='Status' title='Status abfragen'> <input type='submit' name='action' value='AudioIn' title='Aktiven Input abfragen'><br>";							
+	echo "<br><input type='submit' name='action' value='Level 1' title='Pegel Input 1 auf 0 dB setzen'> 
+		<input type='submit' name='action' value='Level 2' title='Pegel Input 2 auf 0 dB setzen'> 
+		<input type='submit' name='action' value='Level 3' title='Pegel Input 3 auf 0 dB setzen'> 
+		<input type='submit' name='action' value='Level 4' title='Pegel Input 4 auf 0 dB setzen'><br>";
+	echo "<br><input type='submit' name='action' value='Push 1' title='Auf Input 1 schalten'> 
+		<input type='submit' name='action' value='Push 2' title='Auf Input 2 schalten'> 
+		<input type='submit' name='action' value='Push 3' title='Auf Input 3 schalten'> 
+		<input type='submit' name='action' value='Push 4' title='Auf Input 4 schalten'><br>";
+	echo "<br><input type='submit' name='action' value='Fade 1' title='Auf Input 1 blenden'> 
+		<input type='submit' name='action' value='Fade 2' title='Auf Input 2 blenden'> 
+		<input type='submit' name='action' value='Fade 3' title='Auf Input 3 blenden'> 
+		<input type='submit' name='action' value='Fade 4' title='Auf Input 4 blenden'><br>";
+	echo "</form>";		
+	echo "<div class='line_a'> </div>\n";
+
+	if ( $action_ok == true ) {
+		echo "<div class='content_footer'>"; 
+		echo "<p>Ergebnis der Aktion:</p> <div id='line'> </div>\n";
+		echo $script_messages;
+		echo "</div>"; 
+		//echo $cmd;
+	}
+} //user_rights 	 
+echo "</div>";
+?>
+</body>
+</html>

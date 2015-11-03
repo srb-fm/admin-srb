@@ -23,6 +23,7 @@ mpd_config.py
 # with paths or special conigs
 play_out_actions.php
 play_out_loader_akt_stunde.py
+audio_switch_controller.php
 
 # infos
 wichtig
