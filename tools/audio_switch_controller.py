@@ -84,6 +84,7 @@ def usage_help():
     print "valid options are:"
     print "-h --help"
     print "-s --status to display status"
+    print "-a --read active audio input"
     print "-l n --level n to display level for input n"
     print "-p n --push n to switch to input n"
     print "-f n --fade n to fade to input n"
