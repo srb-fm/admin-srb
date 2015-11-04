@@ -188,7 +188,7 @@ def fade_switch(param):
         ser.reset_gain(ac, db, switch_imput_old)
         time.sleep(0.2)
         port.close
-        log_message = ac.app_desc + " Faded to Input " + switch_imput_new
+        log_message = "Sendequelle " + switch_imput_new + " eingeblendet"
         db.write_log_to_db_a(ac, log_message, "n", "write_also_to_console")
     except Exception as e:
         db.write_log_to_db_a(ac, ac.app_errorslist[3] + str(e), "x",
