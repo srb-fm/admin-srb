@@ -10,26 +10,34 @@ www.srb.fm
 
 Distributed under the terms of GNU GPL version 2 or later
 Copyright (C) Joerg Sorge
-2015-03-31
+2015-10-26
 
-Dieses Script ermittelt den Status des Audio-Switches
-und uebertraegt sie in die Web-Datenbank.
-Dort werden diese Datensaetze zur Programmvorschau angezeigt
+Dieses Script ermittelt den Status und schaltet den Audio-Switche
 
-Dateiname Script: play_out_preview.py
-Schluesselwort fuer Einstellungen: PO_Preview_Config_1
-Benoetigt: ib_common.py im gleichen Verzeichnis
+
+Dateiname Script: audio_switch_controlle.py
+Schluesselwort fuer Einstellungen: audio_switch
+Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
-Arbeitet zusammen mit: srb_tools_load_preview.php auf dem Webserver
+Arbeitet zusammen mit: audio_switch_controller.php auf dem Webserver
 
 Fehlerliste:
 E 0 Parameter-Typ oder Inhalt stimmt nicht
-E 01 Fehler bei Parameteruebergabe an Script
+E 1 Fehler bei Parameteruebergabe an Script
+E 2 Fehler beim Push
+E 3 Fehler beim Fade
 
 Parameterliste:
-Param 1:
+Param 1: Serial Port Server A
+Param 2: Serial Port Server B
+Param 3: Serial baudrate
+Param 4: Serial bytesize
+Param 5: Serial parity
+Param 6: Serial stopbits
+Param 7: Serial timeout
 
 Dieses Script wird durch das Intra-Web-Frontend aufgerufen
+oder auf der Kommandozeile bediehnt
 
 
 """
@@ -66,6 +74,7 @@ class app_config(object):
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append("Parameter-Typ oder Inhalt stimmt nicht ")
+        self.app_errorslist.append("Fehler bei Parameteruebergabe an Script ")
         self.app_errorslist.append("Fehler beim Push ")
         self.app_errorslist.append("Fehler beim Fade ")
         # using develop-params
@@ -137,21 +146,18 @@ def push_switch(param):
         print "Switch to Input " + param
         port.close
     except Exception as e:
-        db.write_log_to_db_a(ac, ac.app_errorslist[1] + str(e), "x",
+        db.write_log_to_db_a(ac, ac.app_errorslist[2] + str(e), "x",
             "write_also_to_console")
         port.close
 
 
 def fade_switch(param):
     """fade_switch"""
-    #print "fade " + param
     switch_status = ser.get_status(ac, db, "-s", "I")
     if switch_status is None:
         return
     switch_imput_old = ser.read_switch_respond(ac, db, switch_status)
     switch_imput_new = param
-    #print "input"
-    #print switch_imput_old
     switch_fade_out = switch_imput_old + "-G"
     switch_fade_in = switch_imput_new + "+G"
     switch_to_input = switch_imput_new + "!"
@@ -189,15 +195,13 @@ def fade_switch(param):
         port.close
         print "Faded to Input " + switch_to_input
     except Exception as e:
-        db.write_log_to_db_a(ac, ac.app_errorslist[2] + str(e), "x",
+        db.write_log_to_db_a(ac, ac.app_errorslist[3] + str(e), "x",
             "write_also_to_console")
         port.close
 
 
 def lets_rock(argv):
-    """Hauptfunktion """
-    #db.write_log_to_db_a(ac, "lets_rock ", "t", "write_also_to_console")
-    # extendet params
+    """main function """
     load_extended_params_ok = load_extended_params()
     if load_extended_params_ok is None:
         return
@@ -271,6 +275,8 @@ def lets_rock(argv):
                                                 "write_also_to_console")
     # it seems, that no valid arg is given
     if valid_param is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+            "write_also_to_console")
         usage_help()
 
 
