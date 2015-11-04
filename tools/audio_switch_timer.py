@@ -10,32 +10,36 @@ www.srb.fm
 
 Distributed under the terms of GNU GPL version 2 or later
 Copyright (C) Joerg Sorge
-2015-03-31
+2015-11-26
 
-Dieses Script ermittelt den Status des Audio-Switches
-und uebertraegt sie in die Web-Datenbank.
-Dort werden diese Datensaetze zur Programmvorschau angezeigt
+Dieses Script schaltet den Audio-Switch per ser. Schnittstelle.
+This script is for switching an audio switch via rs 232.
 
-Dateiname Script: play_out_preview.py
-Schluesselwort fuer Einstellungen: PO_Preview_Config_1
-Benoetigt: ib_common.py im gleichen Verzeichnis
+Dateiname Script: audio_switch_timer.py
+Schluesselwort fuer Einstellungen: audio_switch
+Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
-Arbeitet zusammen mit: srb_tools_load_preview.php auf dem Webserver
+
 
 Fehlerliste:
 E 0 Parameter-Typ oder Inhalt stimmt nicht
-E 01 Fehler bei Parameteruebergabe an Script
+E 01 Fehler beim Lesen Parameter Times
+E 03 Fehler beim Fade
 
 Parameterliste:
-Param 1:
+Param 1: Serial Port Server A
+Param 2: Serial Port Server B
+Param 3: Serial baudrate
+Param 4: Serial bytesize
+Param 5: Serial parity
+Param 6: Serial stopbits
+Param 7: Serial timeout
 
-Dieses Script wird durch das Intra-Web-Frontend aufgerufen
-
+Dieses Script wird per crontab ein Minute vor den Schaltzeiten aufgerufen
 
 """
 
 import sys
-#import getopt
 import time
 import datetime
 import threading
@@ -102,7 +106,7 @@ def load_extended_params():
         app_params_type_list_times.append("p_string")
         app_params_type_list_times.append("p_string")
         app_params_type_list_times.append("p_string")
-        # Erweiterte Params pruefen
+        # check extend. params
         param_check_times = lib_cm.params_check_a(
                         ac, db, 8,
                         app_params_type_list_times,
@@ -133,20 +137,16 @@ def load_switch_inputs():
     log_data = db.read_tbl_row_with_cond_log(ac,
                 db, db_tbl, db_tbl_fields, db_tbl_condition)
 
-    #lib_cm.message_write_to_console(ac, log_data)
     return log_data
 
 
 def fade_switch(param):
     """fade_switch"""
-    #print "fade " + param
     switch_status = ser.get_status(ac, db, "-s", "I")
     if switch_status is None:
         return
     switch_imput_old = ser.read_switch_respond(ac, db, switch_status)
     switch_imput_new = param
-    #print "input"
-    #print switch_imput_old
     switch_fade_out = switch_imput_old + "-G"
     switch_fade_in = switch_imput_new + "+G"
     switch_to_input = switch_imput_new + "!"
@@ -197,20 +197,14 @@ def fade_switch(param):
 
 
 def lets_rock():
-    """Hauptfunktion """
-    #db.write_log_to_db_a(ac, "lets_rock ", "t", "write_also_to_console")
+    """main function """
 
-    #print ac.switch_inputs[2][14:]
-    #return
     ac.timer = threading.Timer(1, lets_rock)
     ac.timer.start()
     time_now = datetime.datetime.now()
 
-    #print datetime.datetime.now()
     if time_now.minute == 59:
-        #print "m1"
         if time_now.second == 15:
-            #print "s10"
             ac.switch_input_new = ac.switch_inputs[2][15:16]
             log_message = "Load Input for top of the hour"
             db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
@@ -231,7 +225,7 @@ def lets_rock():
         log_message = "Input " + ac.switch_input_new + " vorgesehen"
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
-    if time_now.second == 58:
+    if time_now.second == 57:
         fade_switch(ac.switch_input_new)
 
     if datetime.datetime.now() >= ac.time_forward:
