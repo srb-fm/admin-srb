@@ -24,6 +24,7 @@ if ( $user_rights != "yes" ) {
 require '../parts/fpdf/fpdf.php';
 $message = "";
 $action_ok = false;
+$filename_ok = false;
 	
 // action pruefen	
 if ( isset($_GET['action']) ) {	
@@ -60,7 +61,7 @@ if ( $action_ok == true ) {
 	}
 	if ( ! filter_var(substr($sg_filename,0, 7), FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
 		$sg_filename = "";
-		$action_ok = false;
+		$filename_ok = true;
 	}
 }
 
@@ -74,17 +75,18 @@ if ( $action_ok == true ) {
 	if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
 		$tbl_row_config_C = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_B'");
 	}
-
-	$file_name = new SplFileInfo($sg_filename);
-	$file_name_base = basename($file_name, "mp3");
-	$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
-	//$php_filename = "/mnt/Data_Server_03/Play_Out_Server/Sendeanmeldungen/".$file_name_base."pdf";
-	$sg_filename = $file_name_base."pdf";
-	if ( file_exists($php_filename) ) {
-		header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$file_name_base."pdf");
-		exit;
+	
+	if ( $filename_ok ) {
+		$file_name = new SplFileInfo($sg_filename);
+		$file_name_base = basename($file_name, "mp3");
+		$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
+		//$php_filename = "/mnt/Data_Server_03/Play_Out_Server/Sendeanmeldungen/".$file_name_base."pdf";
+		$sg_filename = $file_name_base."pdf";
+		if ( file_exists($php_filename) ) {
+			header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$file_name_base."pdf");
+			exit;
+		}
 	}
-
 	$tbl_row_sg = db_query_sg_display_item_1($_GET['sg_id']);
 	if ( !$tbl_row_sg ) { 
 		$message .= "Fehler bei Abfrage Sendung!"; 
@@ -95,6 +97,21 @@ if ( $action_ok == true ) {
 			$message .= "Fehler bei Abfrage Adresse!"; 
 			$action_ok = false;
 		}
+		
+		if ( !$filename_ok ) {
+			// filename couldt be a url, then we must buildt it
+			$sg_filename = $tbl_row_sg->SG_HF_CONT_ID."_"
+						.replace_umlaute_sonderzeichen($tbl_row_1->USER_AD_NAME)
+						."_"
+						.replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE)
+						.".mp3";
+			$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$sg_filename."pdf";
+			if ( file_exists($php_filename) ) {
+				header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$file_name_base."pdf");
+				exit;
+			}
+		}
+		
 	// Userdata
 	$tbl_row_1 = db_query_display_item_1("USER_DATA", "none");
 	$tbl_row_a = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'Sendung_Anmeldung'");	
