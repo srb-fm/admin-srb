@@ -277,6 +277,6 @@ if __name__ == "__main__":
                 sys.exit()
     ac.time_forward = datetime.datetime.now() + datetime.timedelta(seconds=+ 70)
     ac.switch_inputs = load_switch_inputs()
-    db.write_log_to_db_a(ac, "Starting timer", "t", "write_also_to_console")
+    #db.write_log_to_db_a(ac, "Starting timer", "t", "write_also_to_console")
     lets_rock()
     sys.exit()
