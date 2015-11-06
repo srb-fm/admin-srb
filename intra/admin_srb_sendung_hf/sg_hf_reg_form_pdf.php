@@ -25,8 +25,8 @@ require '../parts/fpdf/fpdf.php';
 $message = "";
 $action_ok = false;
 $filename_ok = false;
-	
-// action pruefen	
+
+// check action	
 if ( isset($_GET['action']) ) {	
 	$action = $_GET['action'];	
 	$action_ok = true;
@@ -61,6 +61,7 @@ if ( $action_ok == true ) {
 	}
 	if ( ! filter_var(substr($sg_filename,0, 7), FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
 		$sg_filename = "";
+	} else {
 		$filename_ok = true;
 	}
 }
@@ -80,7 +81,6 @@ if ( $action_ok == true ) {
 		$file_name = new SplFileInfo($sg_filename);
 		$file_name_base = basename($file_name, "mp3");
 		$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
-		//$php_filename = "/mnt/Data_Server_03/Play_Out_Server/Sendeanmeldungen/".$file_name_base."pdf";
 		$sg_filename = $file_name_base."pdf";
 		if ( file_exists($php_filename) ) {
 			header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$file_name_base."pdf");
@@ -101,10 +101,10 @@ if ( $action_ok == true ) {
 		if ( !$filename_ok ) {
 			// filename couldt be a url, then we must buildt it
 			$sg_filename = $tbl_row_sg->SG_HF_CONT_ID."_"
-						.replace_umlaute_sonderzeichen($tbl_row_1->USER_AD_NAME)
+						.replace_umlaute_sonderzeichen($tbl_row_ad->AD_NAME)
 						."_"
 						.replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE)
-						.".mp3";
+						.".pdf";
 			$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$sg_filename."pdf";
 			if ( file_exists($php_filename) ) {
 				header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$file_name_base."pdf");
