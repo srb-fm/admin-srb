@@ -100,10 +100,18 @@ if ( $action_ok == true ) {
 		
 		if ( !$filename_ok ) {
 			// filename couldt be a url, then we must buildt it
+			// it's possible that keyword has additional keywords after an whitspace
+			// so cut it 
+			$pos = strpos($tbl_row_sg->SG_HF_CONT_STICHWORTE, " ");
+			if ( ! $pos ) {
+				$keyword = replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE);
+			} else {
+				$keyword = substr(replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE),0, $pos);	
+			}
 			$sg_filename = $tbl_row_sg->SG_HF_CONT_ID."_"
 						.replace_umlaute_sonderzeichen($tbl_row_ad->AD_NAME)
 						."_"
-						.replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE)
+						.$keyword
 						.".pdf";
 			$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$sg_filename."pdf";
 			if ( file_exists($php_filename) ) {
