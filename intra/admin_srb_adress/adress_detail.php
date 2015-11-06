@@ -270,6 +270,11 @@ if ( $user_rights == "yes" ) {
 	} else { 
 		echo "&nbsp;&nbsp;<input type='checkbox' name='ad_praktikant' value='false'> Praktikant";
 	}
+	if ( rtrim($tbl_row->AD_AUTOR) == "T" ) {
+		echo "&nbsp;&nbsp;<input type='checkbox' name='ad_autor' value='true' checked='checked'> Autor";
+	} else { 
+		echo "&nbsp;&nbsp;<input type='checkbox' name='ad_autor' value='false'> Autor";
+	}
 	echo "</div>";
 	echo "</div>\n";
 			
