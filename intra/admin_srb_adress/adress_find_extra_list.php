@@ -140,24 +140,25 @@ if ( $find_option_ok == true ) {
 	case "find": 
 		if ( $find_option == "begin" ) {
 			if ( $only_user ) {
-				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '".utf8_decode($c_field_value)."%' collate de_de) AND AD_USER_OK_HF = 'T' ORDER BY ".$c_field_desc;
-				$message_find_string = $c_field_message. " beginnt mit " .$c_field_value. "/ Nur Macher";
+				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '".utf8_decode($c_field_value)."%' collate de_de) AND (AD_USER_OK_HF = 'T' OR AD_AUTOR = 'T') ORDER BY ".$c_field_desc;
+				$message_find_string = $c_field_message. " beginnt mit " .$c_field_value. "/ Nur Macher oder Autor";
 			} else {
 				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '".utf8_decode($c_field_value)."%' collate de_de) ORDER BY ".$c_field_desc;
 				$message_find_string = $c_field_message. " beginnt mit " .$c_field_value ;
 			}
 		} elseif ( $find_option == "in" ) {
 			if ( $only_user ) {
-				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '%".utf8_decode($c_field_value)."%' collate de_de) AND AD_USER_OK_HF = 'T' ORDER BY AD_NAME";
-				$message_find_string = $c_field_message. " enthält " .$c_field_value. "/ Nur Macher";
+				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '%".utf8_decode($c_field_value)."%' collate de_de) AND (AD_USER_OK_HF = 'T' OR AD_AUTOR = 'T') ORDER BY AD_NAME";
+				$message_find_string = $c_field_message. " enthält " .$c_field_value. "/ Nur Macher oder Autor";
 			} else {
 				$c_query_condition = "upper(".$c_field_desc.") LIKE UPPER(_iso8859_1 '%".utf8_decode($c_field_value)."%' collate de_de) ORDER BY AD_NAME";
 				$message_find_string = $c_field_message. " enthält " .$c_field_value ;
 			}
 		} elseif ( $find_option == "exact" ) {
 			if ( $only_user ) {
-				$c_query_condition = $c_field_desc." = '".$c_field_value."' AND AD_USER_OK_HF = 'T'";
-				$message_find_string = $c_field_message. " ist exakt " .$c_field_value. "/ Nur Macher";
+				//$c_query_condition = $c_field_desc." = '".$c_field_value."' AND AD_USER_OK_HF = 'T'";
+				$c_query_condition = $c_field_desc." = '".$c_field_value."' AND (AD_USER_OK_HF = 'T' OR AD_AUTOR = 'T')";
+				$message_find_string = $c_field_message. " ist exakt " .$c_field_value. "/ Nur Macher oder Autor";
 			} else {
 				$c_query_condition = $c_field_desc." = '".$c_field_value."' ";
 				$message_find_string = $c_field_message. " ist exakt " .$c_field_value ;

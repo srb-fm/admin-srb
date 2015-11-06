@@ -20,11 +20,11 @@ $displ_dateform = "no";
 
 // check action	
 $action_ok = false;
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
 	$action_ok = true;
 }
-if ( isset( $_POST['action'] ) ) { 
+if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];
 	$action_ok = true;
 }
@@ -42,11 +42,11 @@ if ( $action_ok == true ) {
 			
 // check condition	
 $find_option_ok = false;
-if ( isset( $_GET['find_option'] ) ) { 
+if ( isset($_GET['find_option']) ) { 
 	$find_option = $_GET['find_option']; 
 	$find_option_ok = true;
 }
-if ( isset( $_POST['find_option'] ) ) {
+if ( isset($_POST['find_option']) ) {
 	$find_option = $_POST['find_option']; 
 	$find_option_ok = true;
 }		
@@ -142,7 +142,7 @@ if ( $find_option_ok == true and $action_ok == true ) {
 			$d_date_dest = date('Y-m-d');
 			$displ_dateform = "yes";
 								
-			if ( isset( $_POST['form_k_datum'] ) ) {
+			if ( isset($_POST['form_k_datum']) ) {
 				if ( $_POST['form_k_datum'] != "" ) { 
 					$d_date_dest = get_date_format_sql($_POST['form_k_datum']);
 				}
@@ -335,7 +335,10 @@ if ( $user_rights == "yes" ) {
 				echo $item['AD_VORNAME']." ".$item['AD_NAME']."<br>";				
 				echo $item['SG_HF_CONT_FILENAME']."<br>";
 				echo "Länge: ".$item['SG_HF_DURATION'];
-				echo "<br>  <a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$item['SG_HF_ID']."&amp;ad_id=".$item['SG_HF_CONT_AD_ID']."' target='_blank'>Sendeanmeldung drucken</a> ";
+				echo "<br>  Sendeanmeldung ";
+				echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$item['SG_HF_ID']."&amp;ad_id=".$item['SG_HF_CONT_AD_ID']."' target='_blank'>drucken</a> ";
+				echo " - ";
+				echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$item['SG_HF_ID']."&amp;sg_file=".$item[SG_HF_CONT_FILENAME]."' target='_blank'>PDF</a> ";
 				echo "</div>\n";					
 		}
 	}

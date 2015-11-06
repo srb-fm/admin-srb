@@ -59,12 +59,15 @@ if ( $action_ok == true ) {
 
 		case "add":
 			// fields
-			$tbl_fields = "AD_ID, ";
-			$tbl_fields .= "AD_ANREDE_ID, AD_TITEL_ID, AD_LAND_ID, AD_DATUM_GEBURT, AD_NR_PA, AD_NR_PASS, ";
-			$tbl_fields .= "AD_VORNAME, AD_NAME, AD_FIRMA,  AD_STRASSE, AD_PF, AD_PLZ, AD_ORT, ";
-			$tbl_fields .= "AD_TEL_1, AD_TEL_2, AD_FAX, AD_EMAIL, AD_WEB, ";
-			$tbl_fields .= "AD_STICHWORT, AD_BILDUNG, AD_BERUF, AD_TEXT, ";
-			$tbl_fields .= "AD_USER_OK_HF, AD_USER_OK_TV, AD_USER_OK_PRIVAT, AD_USER_OK_ORG, AD_VEREIN, AD_VEREINSNAH, AD_ACTIVE, AD_USER_OK_AKTIV, AD_USER_OK_PRAKTIKANT ";
+			$tbl_fields = "AD_ID, "
+					."AD_ANREDE_ID, AD_TITEL_ID, AD_LAND_ID, AD_DATUM_GEBURT, "
+					."AD_NR_PA, AD_NR_PASS, "
+					."AD_VORNAME, AD_NAME, AD_FIRMA,  AD_STRASSE, AD_PF, AD_PLZ, AD_ORT, "
+					."AD_TEL_1, AD_TEL_2, AD_FAX, AD_EMAIL, AD_WEB, "
+					."AD_STICHWORT, AD_BILDUNG, AD_BERUF, AD_TEXT, "
+					."AD_USER_OK_HF, AD_USER_OK_TV, AD_USER_OK_PRIVAT, AD_USER_OK_ORG, "
+					."AD_VEREIN, AD_VEREINSNAH, AD_ACTIVE, AD_USER_OK_AKTIV, "
+					."AD_USER_OK_PRAKTIKANT, AD_AUTOR ";
 
 			// check or load values, lookups
 			$main_id = db_generator_main_id_load_value();
@@ -73,7 +76,7 @@ if ( $action_ok == true ) {
 			$value_land = db_query_load_id_by_value("AD_COUNTRY", "AD_COUNTRY_DESC", $_POST['form_ad_land']);
 			$value_geb_dat = get_date_format_sql($_POST['form_ad_datum_geburt']);
 			
-			// checkboxen
+			// checkboxes
 			if ( isset($_POST['form_ad_user_ok_hf'])) { 
 				$value_user_ok_hf = $_POST['form_ad_user_ok_hf']; 
 			} else { 
@@ -119,7 +122,11 @@ if ( $action_ok == true ) {
 			} else {
 				$value_praktikant = "F" ;
 			}
-
+			if ( isset($_POST['form_ad_autor']) ) { 
+				$value_autor = $_POST['form_ad_autor']; 
+			} else {
+				$value_autor = "F" ;
+			}
 			$a_values = array( $main_id,
   				$value_anrede, $value_titel, $value_land, $value_geb_dat,
   				$_POST['form_ad_nr_pa'],
@@ -131,11 +138,17 @@ if ( $action_ok == true ) {
   				$_POST['form_ad_fax'], $_POST['form_ad_email'], $_POST['form_ad_web'],
   				$_POST['form_ad_stichwort'], $_POST['form_ad_bildung'], $_POST['form_ad_beruf'],
   				$_POST['form_ad_text'],
-  				$value_user_ok_hf,  $value_user_ok_tv, $value_privat, $value_org, $value_verein, $value_ver_nah, $value_active, $value_active_user,  $value_praktikant ); 
+  				$value_user_ok_hf,  $value_user_ok_tv, $value_privat, $value_org, 
+  				$value_verein, $value_ver_nah, $value_active, $value_active_user, 
+  				$value_praktikant, $value_autor ); 
 			
-			$insert_ok = db_query_add_item_b("AD_MAIN", $tbl_fields, "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", $a_values);
+			$insert_ok = db_query_add_item_b("AD_MAIN", 
+				$tbl_fields, 
+				"?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", 
+				$a_values);
 	    		 
 			header("Location: adress_detail.php?action=display&ad_id=".$main_id);
+			exit;
 			break;
 			
 		case "edit":
@@ -145,11 +158,15 @@ if ( $action_ok == true ) {
 			break;
 			
 		case "update":
-			$fields_params = "AD_ANREDE_ID=?, AD_TITEL_ID=?, AD_LAND_ID=?, AD_DATUM_GEBURT=?, ";
-			$fields_params .= "AD_VORNAME=?, AD_NAME=?, AD_FIRMA=?, AD_STRASSE=?,  AD_PF=?, AD_PLZ=?, AD_ORT=?, ";
-			$fields_params .= "AD_TEL_1=?, AD_TEL_2=?, AD_FAX=?, AD_EMAIL=?, AD_WEB=?, AD_STICHWORT=?, AD_BILDUNG=?, AD_BERUF=?, "; 
-			$fields_params .= "AD_NR_PA=?, AD_NR_PASS=?, AD_TEXT=?, ";
-			$fields_params .= "AD_USER_OK_HF=?, AD_USER_OK_TV=?, AD_USER_OK_PRIVAT=?, AD_USER_OK_ORG=?, AD_VEREIN=?, AD_VEREINSNAH=?, AD_ACTIVE=?, AD_USER_OK_AKTIV=?, AD_USER_OK_PRAKTIKANT=?";  
+			$fields_params = "AD_ANREDE_ID=?, AD_TITEL_ID=?, AD_LAND_ID=?, "
+				."AD_DATUM_GEBURT=?, AD_VORNAME=?, AD_NAME=?, AD_FIRMA=?, "
+				."AD_STRASSE=?,  AD_PF=?, AD_PLZ=?, AD_ORT=?, "
+				."AD_TEL_1=?, AD_TEL_2=?, AD_FAX=?, AD_EMAIL=?, AD_WEB=?, "
+				."AD_STICHWORT=?, AD_BILDUNG=?, AD_BERUF=?, " 
+				."AD_NR_PA=?, AD_NR_PASS=?, AD_TEXT=?, "
+				."AD_USER_OK_HF=?, AD_USER_OK_TV=?, AD_USER_OK_PRIVAT=?, "
+				."AD_USER_OK_ORG=?, AD_VEREIN=?, AD_VEREINSNAH=?, AD_ACTIVE=?, "
+				."AD_USER_OK_AKTIV=?, AD_USER_OK_PRAKTIKANT=?, AD_AUTOR=?";  
 
 			$value_anrede = db_query_load_id_by_value("AD_ANREDE", "AD_ANREDE_DESC", $_POST['form_ad_anrede']);				
 			$value_titel = db_query_load_id_by_value("AD_TITEL", "AD_TITEL_DESC", $_POST['form_ad_titel']);
@@ -200,7 +217,11 @@ if ( $action_ok == true ) {
 			} else {
 				$value_praktikant = "F" ;
 			}
-
+			if ( isset($_POST['form_ad_autor']) ) { 
+				$value_autor = $_POST['form_ad_autor']; 
+			} else {
+				$value_autor = "F" ;
+			}
 			$a_values = array($value_anrede, $value_titel,	$value_land, $value_geb_dat,
     			$_POST['form_ad_vorname'], $_POST['form_ad_name'],
     			$_POST['form_ad_firma'], $_POST['form_ad_strasse'],
@@ -209,10 +230,13 @@ if ( $action_ok == true ) {
     			$_POST['form_ad_fax'], $_POST['form_ad_email'], $_POST['form_ad_web'],
     			$_POST['form_ad_stichwort'], $_POST['form_ad_bildung'], $_POST['form_ad_beruf'],
     			$_POST['form_ad_nr_pa'], $_POST['form_ad_nr_pass'], $_POST['form_ad_text'],
-    			$value_user_ok_hf,  $value_user_ok_tv, $value_privat, $value_org, $value_verein, $value_ver_nah, $value_active, $value_active_user,  $value_praktikant );
+    			$value_user_ok_hf,  $value_user_ok_tv, $value_privat, $value_org, 
+    			$value_verein, $value_ver_nah, $value_active, $value_active_user, 
+    			$value_praktikant, $value_autor );
 
 			$update_ok = db_query_update_item_b("AD_MAIN", $fields_params, "AD_ID =".$id, $a_values);											
 			header("Location: adress_detail.php?action=display&ad_id=".$id);
+			exit;
 			break;
 			//endswitch;
 		}
@@ -390,6 +414,11 @@ if ( $user_rights == "yes" ) {
 		echo "&nbsp;&nbsp;<input type='checkbox' name='form_ad_praktikant' value='T' checked='checked'> Praktikant";
 	} else { 
 		echo "&nbsp;&nbsp;<input type='checkbox' name='form_ad_praktikant' value='T'> Praktikant";
+	}
+	if ( rtrim($tbl_row->AD_AUTOR) == "T") {
+		echo "&nbsp;&nbsp;<input type='checkbox' name='form_ad_autor' value='T' checked='checked'> Autor";
+	} else { 
+		echo "&nbsp;&nbsp;<input type='checkbox' name='form_ad_autor' value='T'> Autor";
 	}
 	echo "</div>";
 	echo "</div>\n";
