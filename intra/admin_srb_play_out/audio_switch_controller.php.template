@@ -19,7 +19,7 @@ $message = "";
 $action_ok = false;
 $script_messages = "";
 
-// action pruefen	
+// check action	
 if ( isset($_GET['action']) ) {	
 	$action = $_GET['action'];	
 	$action_ok = true;
@@ -188,6 +188,15 @@ if ( $user_rights == "yes" ) {
 		echo "</div>"; 
 		//echo $cmd;
 	}
+	echo "<div class='content_footer'>";
+	echo "<b>Belegung der Inputs:</b><br>";
+	$db_result = db_query_list_items_1(
+						"SG_HF_SOURCE_ID, SG_HF_SOURCE_DESC", 
+						"SG_HF_SOURCE", "SG_HF_SOURCE_ID > '0'");
+	foreach ($db_result as $item) {
+		echo $item['SG_HF_SOURCE_ID'].": ".$item['SG_HF_SOURCE_DESC']."<br> ";
+	}
+	echo "</div>";
 } //user_rights 	 
 echo "</div>";
 ?>
