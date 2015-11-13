@@ -113,9 +113,9 @@ if ( $action_ok == true ) {
 						."_"
 						.$keyword
 						.".pdf";
-			$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$sg_filename."pdf";
+			$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$sg_filename;
 			if ( file_exists($php_filename) ) {
-				header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$file_name_base."pdf");
+				header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$sg_filename);
 				exit;
 			}
 		}
