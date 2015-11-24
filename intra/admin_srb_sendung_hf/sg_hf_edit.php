@@ -500,26 +500,29 @@ if ( $action_ok == true ) {
 	</script>
 	
 	<script type="text/javascript">
-	function chk_formular() {		
-		if ( document.form1.form_sg_read_audio_length.checked == true ) {		  
-	    	<!--Laengenabgleich dauert-->
-			document.getElementById('wait').style.display = 'block';
-			document.getElementById('save_button').style.display = 'none';
-			return true;		
-		} else {
-			switch( document.form1.form_sg_duration.value )	{
+	function chk_formular() {	
+		if (document.getElementById("check_id3") ) {
+			if ( document.getElementById("check_id3").checked == true ) {
+	    		<!--check length take time-->
+				document.getElementById('wait').style.display = 'block';
+				document.getElementById('save_button').style.display = 'none';
+				return true;
+			}		
+		} else { 
+			switch( document.getElementById("sg_duration").value ) {
 				case "00:01:00":		  
-		    	<!--vordefinierte Laenge wurde eventuell nicht gaendert-->
+		    	<!--predefined length not changed-->
 				alert("Länge der Sendung beträgt 00:01:00 (hh:mm:ss)! \nIst das korrekt?");
 				return true;
 				break;
 				
 				case "00:00:00":		  
-		    	<!--eventuell falsch eingetragen-->
+		    	<!--maybe incorrect-->
 				alert("Länge der Sendung beträgt 00:00:00 (hh:mm:ss)! \nIst das korrekt?");
 				return true;
 				break;
 			}
+		}
 	}
 	</script>
 	<script type="text/javascript">
@@ -534,6 +537,7 @@ if ( $action_ok == true ) {
 		 		
 		if (document.getElementById("chk_infotime").checked == true) {it="T";} else {it="F";}
 		if (document.getElementById("chk_magazine").checked == true) {mag="T";} else {mag="F";}
+		
 		c_timestamp = document.form1.form_sg_date.value + " " + document.form1.form_sg_time.value;
 		//document.form1.sg_timestamp.value = c_timestamp + " " + document.form1.sg_id.value;
 		document.form1.sg_timestamp.value = c_timestamp + " " + document.form1.sg_id.value + " " + document.form1.sg_duration.value + " " + it + " " + mag;
