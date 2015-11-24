@@ -172,12 +172,12 @@ if ( $action_ok == true ) {
 			$value_titel = db_query_load_id_by_value("AD_TITEL", "AD_TITEL_DESC", $_POST['form_ad_titel']);
 			$value_land = db_query_load_id_by_value("AD_COUNTRY", "AD_COUNTRY_DESC", $_POST['form_ad_land']);
 			$value_geb_dat = get_date_format_sql($_POST['form_ad_datum_geburt']);
-			if ( isset( $_POST['form_ad_user_ok_hf'] ) ) { 
+			if ( isset($_POST['form_ad_user_ok_hf']) ) { 
 				$value_user_ok_hf = $_POST['form_ad_user_ok_hf']; 
 			} else { 
 				$value_user_ok_hf = "F" ;
 			}				
-			if ( isset($_POST['form_ad_user_ok_tv']) ) { 
+			if ( isset($_POST['form_ad_user_ok_tv'])) { 
 				$value_user_ok_tv = $_POST['form_ad_user_ok_tv']; 
 			} else {
 				$value_user_ok_tv = "F" ;
@@ -269,6 +269,14 @@ if ( $action_ok == true ) {
 		})
 		
 	</script>
+	<script type="text/javascript">
+	function chk_form() {	
+		if ( document.getElementById("chk_user").checked == true && document.getElementById("chk_autor").checked == true ) {
+	    	alert("Bitte entweder Nutzer oder Autor einstellen!")
+			return false;
+		}
+	}
+	</script>
 </head>
 <body>
  
@@ -289,7 +297,7 @@ if ( ! isset($tbl_row->AD_ID )) {
 }
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
 if ( $user_rights == "yes" ) { 	
-	echo "<form name='form1' id='ad_edit_form' action='adress_edit.php' method='POST' enctype='application/x-www-form-urlencoded'>";
+	echo "<form name='form1' id='ad_edit_form' action='adress_edit.php' method='POST' onsubmit='return chk_form()' enctype='application/x-www-form-urlencoded'>";
 	echo "<input type='hidden' name='action' value='".$form_input_type."'>";
 	echo "<input type='hidden' name='ad_id' value='".$tbl_row->AD_ID."'>";
 	echo "<div class='content_row_a_1'>";
@@ -359,9 +367,9 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_1'>Nutzer/ Privat</div>";
 	echo "<div class='content_column_5'>";
 	if ( rtrim($tbl_row->AD_USER_OK_HF) == "T" ) {
-		echo "<input type='checkbox' name='form_ad_user_ok_hf' value='T' checked='checked'> Nutzer-HF";
+		echo "<input id='chk_user' type='checkbox' name='form_ad_user_ok_hf' value='T' checked='checked'> Nutzer-HF";
 	} else { 
-		echo "<input type='checkbox' name='form_ad_user_ok_hf' value='T'> Nutzer-HF";
+		echo "<input id='chk_user' type='checkbox' name='form_ad_user_ok_hf' value='T'> Nutzer-HF";
 	}
 	if ( rtrim($tbl_row->AD_USER_OK_TV) == "T" ) {
 		echo "&nbsp;&nbsp;<input type='checkbox' name='form_ad_user_ok_tv' value='T' checked='checked'> Nutzer-TV";
@@ -416,9 +424,9 @@ if ( $user_rights == "yes" ) {
 		echo "&nbsp;&nbsp;<input type='checkbox' name='form_ad_praktikant' value='T'> Praktikant";
 	}
 	if ( rtrim($tbl_row->AD_AUTOR) == "T") {
-		echo "&nbsp;&nbsp;<input type='checkbox' name='form_ad_autor' value='T' checked='checked'> Autor";
+		echo "&nbsp;&nbsp;<input id='chk_autor' type='checkbox' name='form_ad_autor' value='T' checked='checked'> Autor";
 	} else { 
-		echo "&nbsp;&nbsp;<input type='checkbox' name='form_ad_autor' value='T'> Autor";
+		echo "&nbsp;&nbsp;<input id='chk_autor' type='checkbox' name='form_ad_autor' value='T'> Autor";
 	}
 	echo "</div>";
 	echo "</div>\n";
