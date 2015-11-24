@@ -217,16 +217,25 @@ if ( $find_option_ok == true and $action_ok == true ) {
 // ausgabebegrenzung 1
 if ( 	$find_limit_skip == "first" ) {
 	// in der regel der erste durchlauf		
-	$db_result = db_query_list_items_limit_1("AD_ID, AD_NR, AD_NAME, AD_VORNAME, AD_FIRMA, AD_STRASSE, AD_PLZ, AD_ORT, AD_EMAIL, AD_TEL_1, AD_TEL_2, AD_DATUM_GEBURT, AD_USER_OK_HF ", "AD_MAIN", $c_query_condition, "FIRST 25");
+	$db_result = db_query_list_items_limit_1(
+		"AD_ID, AD_NR, AD_NAME, AD_VORNAME, AD_FIRMA, AD_STRASSE, AD_PLZ, AD_ORT, 
+		AD_EMAIL, AD_TEL_1, AD_TEL_2, AD_DATUM_GEBURT, AD_USER_OK_HF, AD_AUTOR ", 
+		"AD_MAIN", $c_query_condition, "FIRST 25");
 	$z = 0;
 } elseif ( 	$find_limit_skip == "no" ) {
 	// fuer spezielle listen und export 			
-	$db_result = db_query_list_items_1("AD_ID, AD_NR, AD_NAME, AD_VORNAME, AD_FIRMA, AD_STRASSE, AD_PLZ, AD_ORT, AD_EMAIL, AD_TEL_1, AD_TEL_2, AD_DATUM_GEBURT, AD_USER_OK_HF ", "AD_MAIN", $c_query_condition);
+	$db_result = db_query_list_items_1(
+		"AD_ID, AD_NR, AD_NAME, AD_VORNAME, AD_FIRMA, AD_STRASSE, AD_PLZ, AD_ORT, 
+		AD_EMAIL, AD_TEL_1, AD_TEL_2, AD_DATUM_GEBURT, AD_USER_OK_HF, AD_AUTOR ", 
+		"AD_MAIN", $c_query_condition);
 	$z = 0;			
 } else {
 	// normales skip der vorhrigen ergebnisse
 	$c_limit = "FIRST 25 SKIP ".$find_limit_skip;		
-	$db_result = db_query_list_items_limit_1("AD_ID, AD_NR, AD_NAME, AD_VORNAME, AD_FIRMA, AD_ORT, AD_EMAIL, AD_TEL_1, AD_TEL_2, AD_DATUM_GEBURT, AD_USER_OK_HF ", "AD_MAIN", $c_query_condition, $c_limit);
+	$db_result = db_query_list_items_limit_1(
+		"AD_ID, AD_NR, AD_NAME, AD_VORNAME, AD_FIRMA, AD_ORT, AD_EMAIL, AD_TEL_1, 
+		AD_TEL_2, AD_DATUM_GEBURT, AD_USER_OK_HF, AD_AUTOR ", 
+		"AD_MAIN", $c_query_condition, $c_limit);
 	$z = $find_limit_skip;
 }
 
@@ -306,7 +315,10 @@ if ( $user_rights == "yes" ) {
 			echo "<div class='content_column_tool_img_2'>";
 					
 			// Module direktlinks	
-			if ( rtrim($item['AD_USER_OK_HF']) =="T" ) {		
+			if ( rtrim($item['AD_AUTOR']) == "T" ) {		
+				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=new&amp;ad_id=".$item['AD_ID']."' class='c_box'><img src='../admin_srb_sendung_hf/parts/rectangle_green.png' width='16px' height='16px' title='Sendung HF anmelden' alt='Sendung HF anmelden'></a> ";
+				echo "<a href='../admin_srb_sendung_hf/sg_hf_find_list.php?action=list&amp;find_option=broadcaster&amp;broadcaster_id=".$item['AD_ID']."'><img src='../parts/pict/folder_green_mydocuments.png' width='16px' height='16px' title='Sendungen dieses Autoren auflisten' alt='Sendungen dieses Autoren listen'></a> ";
+			} elseif ( rtrim($item['AD_USER_OK_HF']) == "T" ) {		
 				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=new&amp;ad_id=".$item['AD_ID']."' class='c_box'><img src='../admin_srb_sendung_hf/parts/rectangle_green.png' width='16px' height='16px' title='Sendung HF anmelden' alt='Sendung HF anmelden'></a> ";
 				echo "<a href='../admin_srb_sendung_hf/sg_hf_find_list.php?action=list&amp;find_option=broadcaster&amp;broadcaster_id=".$item['AD_ID']."'><img src='../parts/pict/folder_green_mydocuments.png' width='16px' height='16px' title='Sendungen dieses Autoren auflisten' alt='Sendungen dieses Autoren listen'></a> ";
 				echo "<a href='../admin_srb_sendung_hf/sg_hf_find_list.php?action=list&amp;find_option=editor&amp;editor_id=".$item['AD_ID']."'><img src='../parts/pict/folder_beige_mydocuments.png' width='16px' height='16px' title='Sendungen redaktionell verantwortet auflisten' alt='Sendungen redaktionell verantwortet listen'></a> ";
