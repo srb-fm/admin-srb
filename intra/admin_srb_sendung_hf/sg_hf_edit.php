@@ -500,7 +500,11 @@ if ( $action_ok == true ) {
 	</script>
 	
 	<script type="text/javascript">
-	function chk_formular() {	
+	function chk_formular() {
+		if (document.getElementById("chk_infotime").checked == true && document.getElementById("chk_magazine").checked == true ) {
+			alert("Bitte entweder Infotime oder Magazin einstellen!")
+			return false;
+		}
 		if (document.getElementById("check_id3") ) {
 			if ( document.getElementById("check_id3").checked == true ) {
 	    		<!--check length take time-->
@@ -537,11 +541,8 @@ if ( $action_ok == true ) {
 		 		
 		if (document.getElementById("chk_infotime").checked == true) {it="T";} else {it="F";}
 		if (document.getElementById("chk_magazine").checked == true) {mag="T";} else {mag="F";}
-		
 		c_timestamp = document.form1.form_sg_date.value + " " + document.form1.form_sg_time.value;
-		//document.form1.sg_timestamp.value = c_timestamp + " " + document.form1.sg_id.value;
 		document.form1.sg_timestamp.value = c_timestamp + " " + document.form1.sg_id.value + " " + document.form1.sg_duration.value + " " + it + " " + mag;
-		//document.form1.sg_timestamp.value = c_timestamp + " " + document.form1.sg_id.value + " 12";
 		//alert(mag);
 		$.validationEngine.loadValidation('#sg_timestamp');
 	}
