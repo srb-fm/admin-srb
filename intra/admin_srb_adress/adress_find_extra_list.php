@@ -27,7 +27,8 @@ $sg_editor = "";
 	
 // info ausgabebegrenzung auf 25 datensaetze:
 // der abfrage_condition wird das limit von 25 datensaetzen zugefuegt: ausgabebegrenzung 1
-// fuer den link zu den nächsten satzen wird die skip-anzahl in der url zugrechnet: (ausgabebegrenzung 2) und dann in die abfrage uebernommen (// ausgabebegrenzung 1)
+// fuer den link zu den naechsten saetzen wird die skip-anzahl in der url zugrechnet: 
+// (ausgabebegrenzung 2) und dann in die abfrage uebernommen (// ausgabebegrenzung 1)
 // fuer die option find muss dazu feld und inhalt neu uebergeben werden ( ausgabebegrenzung 3)
 	
 // check action	
@@ -174,11 +175,16 @@ if ( $find_option_ok == true ) {
 
 // ausgabebegrenzung 1
 if ( 	$find_limit_skip == "no" ) {		
-	$db_result = db_query_list_items_limit_1("AD_ID, AD_NAME, AD_VORNAME, AD_FIRMA, AD_ORT, AD_EMAIL, AD_TEL_1, AD_TEL_2, AD_DATUM_GEBURT, AD_USER_OK_HF ", "AD_MAIN", $c_query_condition, "FIRST 25");
+	$db_result = db_query_list_items_limit_1(
+		"AD_ID, AD_NAME, AD_VORNAME, AD_FIRMA, AD_ORT, AD_EMAIL, AD_TEL_1, AD_TEL_2, 
+		AD_DATUM_GEBURT, AD_USER_OK_HF ", "AD_MAIN", 
+		$c_query_condition, "FIRST 25");
 	$z = 0;
 } else {
 	$c_limit = "FIRST 25 SKIP ".$find_limit_skip;			
-	$db_result = db_query_list_items_limit_1("AD_ID, AD_NAME, AD_VORNAME, AD_FIRMA, AD_ORT, AD_EMAIL, AD_TEL_1, AD_TEL_2, AD_DATUM_GEBURT, AD_USER_OK_HF ", "AD_MAIN", $c_query_condition, $c_limit);
+	$db_result = db_query_list_items_limit_1("AD_ID, AD_NAME, AD_VORNAME, 
+		AD_FIRMA, AD_ORT, AD_EMAIL, AD_TEL_1, AD_TEL_2, AD_DATUM_GEBURT, 
+		AD_USER_OK_HF ", "AD_MAIN", $c_query_condition, $c_limit);
 	$z = $find_limit_skip;
 }
 ?>
@@ -209,9 +215,8 @@ if ( $action_ok == false ) {
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "B");
 if ( $user_rights == "yes" ) { 	 
 	if ( $db_result ) {
-		$z +=1;
 		foreach ( $db_result as $item ) {	
-
+			$z +=1;
 			if ( $z % 2 != 0 ) { 
 				echo "<div class='content_row_a_1'>";	
 			} else { 
@@ -222,16 +227,26 @@ if ( $user_rights == "yes" ) {
 			echo "</div>";
 			echo "<div class='content_column_tool_img_1'>";
 					
-			// directlinks for shows	
-			// change author 
-			if ( $sg_author == "new" ) {
-				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=edit&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."' ><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Sendeverantwortlichen ändern' alt='Sendeverantwortlichen ändern'></a>";					
+			// directlinks for shows
+			// set focus on toolbar-pict of first item
+			if ( $z == 1 ) {				// change author 
+				if ( $sg_author == "new" ) {
+					echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=edit&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."' ><img id='first_element_of_toolbar' src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Sendeverantwortlichen ändern' alt='Sendeverantwortlichen ändern'></a>";					
+				}
+				// change editor
+				if ( $sg_editor == "new" ) {
+					echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=editor_new&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."&amp;sg_cont_id=".$sg_cont_id."&amp;sg_editor=new'><img id='first_element_of_toolbar' src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Redaktuer ändern' alt='Redakteur ändern'></a>";
+				}
+			} else {
+				// change author 
+				if ( $sg_author == "new" ) {
+					echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=edit&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."' ><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Sendeverantwortlichen ändern' alt='Sendeverantwortlichen ändern'></a>";					
+				}
+				// change editor
+				if ( $sg_editor == "new" ) {
+					echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=editor_new&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."&amp;sg_cont_id=".$sg_cont_id."&amp;sg_editor=new'><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Redaktuer ändern' alt='Redakteur ändern'></a>";
+				}
 			}
-			// change editor
-			if ( $sg_editor == "new" ) {
-				echo "<a href='../admin_srb_sendung_hf/sg_hf_edit.php?action=editor_new&amp;sg_id=".$sg_id."&amp;ad_id=".$item['AD_ID']."&amp;sg_cont_id=".$sg_cont_id."&amp;sg_editor=new'><img src='../parts/pict/1279544355_user-red.png' width='16px' height='16px' title='Redaktuer ändern' alt='Redakteur ändern'></a>";
-			}
-				
 			echo "</div>\n</div>\n";
 		} //for
 	}		
@@ -252,7 +267,8 @@ if ( $user_rights == "yes" ) {
 		}
 		// ausgabebegrenzung 2				
 		if ( is_integer($x)) {
-			// weiter-link nur anzeigen wenn noch weitere datensaetze da sind, bei ganze zahl ja, bei kommazahl wird nur der rest angezeigt	also nein
+			// weiter-link nur anzeigen wenn noch weitere datensaetze da sind, 
+			// bei ganze zahl ja, bei kommazahl wird nur der rest angezeigt	also nein
 			switch ( $action ) {
 			case "find": 				
 				echo " >> <a href='adress_find_extra_list.php?action=".$action."&amp;find_option=".$find_option."&amp;field_desc=".$c_field_desc."&amp;field_value=".$c_field_value."&amp;find_limit_skip=".$z."'>Weitere Anzeige ab Datensatz ".$zz."</a>";
@@ -270,5 +286,6 @@ echo "</div>";
 echo "</div>";
 ?>
 </div>
+<script type="text/JavaScript" src="../parts/js/js_my_tools/js_my_toolbar_focus.js"></script>
 </body>
 </html>
