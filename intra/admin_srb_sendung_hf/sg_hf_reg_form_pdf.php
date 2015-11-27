@@ -81,7 +81,7 @@ if ( $action_ok == true ) {
 		$file_name = new SplFileInfo($sg_filename);
 		$file_name_base = basename($file_name, "mp3");
 		$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
-		$sg_filename = $file_name_base."pdf";
+		//$sg_filename = $file_name_base."pdf";
 		if ( file_exists($php_filename) ) {
 			header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$file_name_base."pdf");
 			exit;

@@ -590,27 +590,63 @@ if ( $user_rights == "yes" ) {
 		}
 	}
 
-	echo "<br>\n<span> </span>"; // dummy damit warning_div nicht ueberlappt 
-				
+	echo "<br>\n<span> </span>"; // dummy damit warning_div nicht ueberlappt
+	// check sendeanmeldung
+	// Paths from Settings
+	$tbl_row_config_serv = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
+	// are we on server-line A or B?
+	if ( $tbl_row_config_serv->USER_SP_PARAM_3 == $_SERVER['SERVER_NAME'] ) {
+		$tbl_row_config_C = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_A'");
+	}
+	if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
+		$tbl_row_config_C = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_B'");
+	}
+	
+	if ( substr($tbl_row_sg->SG_HF_CONT_FILENAME, 0, 5) == "http:" ) {
+		// filename couldt be a url, then we must buildt it
+		// it's possible that keyword has additional keywords after an whitspace
+		// so cut it 
+		$pos = strpos($tbl_row_sg->SG_HF_CONT_STICHWORTE, " ");
+		if ( ! $pos ) {
+			$keyword = replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE);
+		} else {
+			$keyword = substr(replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE),0, $pos);	
+		}
+		$sg_filename = $tbl_row_sg->SG_HF_CONT_ID."_"
+						.replace_umlaute_sonderzeichen($tbl_row_ad->AD_NAME)
+						."_"
+						.$keyword
+						.".pdf";
+		$php_filename_sg = $tbl_row_config_C->USER_SP_PARAM_2.$sg_filename;		
+	} else {		
+		$file_name = new SplFileInfo($tbl_row_sg->SG_HF_CONT_FILENAME);
+		$file_name_base = basename($file_name, "mp3");
+		$php_filename_sg = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
+	}
+			
 	echo "<div class='menu_bottom'>";
 	echo "<ul class='menu_bottom_list'><li>";
 	if ( rtrim($_SESSION["log_rights"]) <= "B" ) {
-		echo "<a href='sg_hf_edit.php?action=edit&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;file_exist=".$file_exist."'>Bearbeiten</a> ";
-		echo "<a href='sg_hf_edit.php?action=repeat_new&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."'>Wiederholen</a> ";			
-		echo "<a href='sg_hf_edit.php?action=dublikate_new&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."'>Duplizieren</a> ";	
+		echo "<a href='sg_hf_edit.php?action=edit&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;file_exist=".$file_exist."' title='Daten bearbeiten'>Bearbeiten</a> ";
+		echo "<a href='sg_hf_edit.php?action=repeat_new&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."' title='Sendung wiederholen'>Wiederholen</a> ";			
+		echo "<a href='sg_hf_edit.php?action=dublikate_new&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."' title='Sendung als Vorlage für neue Sendung benutzen'>Duplizieren</a> ";	
 		echo "<a href='../admin_srb_adress/adress_find_extra.php?sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_author=new ' title='Sendeverantwortlichen ändern'>Sendev.</a> ";
 		echo "<a href='../admin_srb_adress/adress_find_extra.php?sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_cont_id=".$tbl_row_sg->SG_HF_CONTENT_ID."&amp;sg_editor=new ' title='Redakteur ändern'>Redakteur</a> ";
 					
 		if ( $action == "display" ) { 
 			if ( $tbl_row_sg->SG_HF_ID != "0" ) {
 				// sendung mit nr 0 darf nicht geloescht werden, ist vorlage fuer neue sendungen
-				echo "<a href='sg_hf_detail.php?action=check_delete&amp;sg_id=".$tbl_row_sg->SG_HF_ID."'>Löschen</a> ";
+				echo "<a href='sg_hf_detail.php?action=check_delete&amp;sg_id=".$tbl_row_sg->SG_HF_ID."' title='Sendung löschen'>Löschen</a> ";
 			}
 		}
-		echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."' target='_blank'>Drucken</a> ";
-		echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_file=".$tbl_row_sg->SG_HF_CONT_FILENAME."' target='_blank'>PDF</a> ";
+		echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."' target='_blank' title='Sendeanmeldung drucken'>Drucken</a> ";
+		if ( file_exists($php_filename_sg) ) {		
+			echo "<a style='background-color: #6666FF;' href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_file=".$tbl_row_sg->SG_HF_CONT_FILENAME."' target='_blank' title='Sendeanmeldung als PDF vorhanden'>PDF</a> ";
+		} else {
+			echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_file=".$tbl_row_sg->SG_HF_CONT_FILENAME."' target='_blank' title='Sendeanmeldung als PDF erzeugen'>PDF</a> ";
+		}
 		if ( $file_exist == "yes" ) { 
-			echo "<a href='sg_hf_detail.php?action=play_out&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;po_it=".rtrim($tbl_row_sg->SG_HF_INFOTIME)."&amp;po_mg=".rtrim($tbl_row_sg->SG_HF_MAGAZINE)."&amp;po_filename=".rtrim($tbl_row_sg->SG_HF_CONT_FILENAME)."' >Play-Out</a> ";
+			echo "<a href='sg_hf_detail.php?action=play_out&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;po_it=".rtrim($tbl_row_sg->SG_HF_INFOTIME)."&amp;po_mg=".rtrim($tbl_row_sg->SG_HF_MAGAZINE)."&amp;po_filename=".rtrim($tbl_row_sg->SG_HF_CONT_FILENAME)."'  title='Sendung in MPD-Warteschlange anfügen'>Play-Out</a> ";
 		}
 	} else {
 		echo "<a title='Keine Berechtigung'>Bearbeiten</a> ";
