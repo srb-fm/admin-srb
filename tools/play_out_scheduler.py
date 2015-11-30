@@ -399,6 +399,30 @@ def set_stream(play_out_item, minute_start):
                                              "write_also_to_console")
 
 
+def set_stream_length():
+    """setting stream-length variable"""
+    if ac.play_out_stream is not None:
+        time_target = datetime.datetime.now()
+        db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND "
+            "SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) = '"
+            + str(time_target.date()) + "' "
+            "AND SUBSTRING(A.SG_HF_TIME FROM 12 FOR 2) = '"
+            + str(time_target.hour).zfill(2) + "' "
+            "AND SUBSTRING(A.SG_HF_TIME FROM 15 FOR 2) >= '"
+            + ac.play_out_stream_start + "' "
+            "AND SUBSTRING(A.SG_HF_TIME FROM 15 FOR 2) <= '"
+            + ac.play_out_stream_start + "' "
+            "AND B.SG_HF_CONT_FILENAME = '" + ac.play_out_stream + "'")
+        sendung_data = db.read_tbl_rows_sg_cont_ad_with_cond(ac,
+                                            db, db_tbl_condition)
+        if sendung_data is not None:
+            for item in sendung_data:
+                db.write_log_to_db_a(ac,
+                                    "Stream found " + item[3], "t",
+                                             "write_also_to_console")
+                ac.play_out_stream_length = item[3]
+
+
 def check_mpd_song(option):
     """read song-status"""
     current_song = mpd.exec_command(db, ac, "song", None)
@@ -1142,10 +1166,12 @@ class my_form(Frame):
             prepare_mpd_0(time_now, minute_start)
 
         # cleaning up top of the hour
-        if time_now.minute == 1:
-            if time_now.second == 2:
+        if time_now.minute == 0:
+            if time_now.second == 15:
                 # free for next run
                 ac.play_out_items = None
+                # for checking if stream running
+                set_stream_length()
 
         # prepare play_out 5x
         #if time_now.minute == 4:
@@ -1160,6 +1186,8 @@ class my_form(Frame):
                 if ac.play_out_items is not None:
                     # free for next run
                     ac.play_out_items = None
+                    # for checking if stream running
+                    set_stream_length()
 
         # prepare play_out 5x 2.
         # if time_now.minute == 28:
