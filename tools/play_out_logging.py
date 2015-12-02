@@ -111,12 +111,13 @@ class app_config(object):
         self.app_id = "003"
         self.app_desc = u"Play Out Logging"
         self.app_config = u"PO_Logging_Config"
-        self.app_config_develop = u"PO_Logging_Config_1_e"
-        self.app_develop = "no"
-        self.app_windows = "no"
         # display debugmessages on console or no: "no"
         # for normal usage set to no!!!!!!
         self.app_debug_mod = "no"
+        self.app_config_develop = u"PO_Logging_Config_1_e"
+        self.app_develop = "no"
+        self.app_windows = "no"
+
         self.app_errorfile = "error_play_out_logging.log"
         # errorlist
         self.app_errorslist = []
@@ -195,10 +196,16 @@ def load_extended_params():
 def check_source(self, c_time, time_now):
     """detect sources and assign transmittimes """
     # source-switch-from user_logs
+    #source_log = db.read_tbl_row_with_cond_log(ac, db,
+    #        "USER_LOGS", "USER_LOG_ACTION, USER_LOG_TIME",
+    #        u"USER_LOG_ACTION LIKE "
+    #        u"'Datei für Sendequellenumschalter geschrieben:%' "
+    #        + u"AND SUBSTRING( USER_LOG_TIME FROM 1 FOR 13) ='"
+    #        + c_time + "' ORDER BY USER_LOG_TIME DESC")
     source_log = db.read_tbl_row_with_cond_log(ac, db,
             "USER_LOGS", "USER_LOG_ACTION, USER_LOG_TIME",
             u"USER_LOG_ACTION LIKE "
-            u"'Datei für Sendequellenumschalter geschrieben:%' "
+            u"'Sendequellen: %' "
             + u"AND SUBSTRING( USER_LOG_TIME FROM 1 FOR 13) ='"
             + c_time + "' ORDER BY USER_LOG_TIME DESC")
     # ATT: log_text, that we here search for is written by play_out_load
@@ -212,7 +219,8 @@ def check_source(self, c_time, time_now):
         return None
     else:
         lib_cm.message_write_to_console(ac, source_log)
-        source_params = source_log[0][46:52]
+        #source_params = source_log[0][46:52]
+        source_params = source_log[0][14:20]
 
     lib_cm.message_write_to_console(ac, source_params)
 
@@ -764,6 +772,13 @@ class my_form(Frame):
         log_source_desc = db.read_tbl_row_with_cond(ac,
                 db, "SG_HF_SOURCE", "SG_HF_SOURCE_ID, SG_HF_SOURCE_DESC",
                 "SG_HF_SOURCE_ID ='" + source_id + "'")
+        if log_source_desc is None:
+            log_meldung_1 = ("Keine Bezeichnung Sendequelle gefunden,"
+                                " nichts uebertragen..")
+            db.write_log_to_db_a(ac, log_meldung_1,
+                                                "p", "write_also_to_console")
+            self.display_logging(log_meldung_1, "")
+            return
         # 5. Logging in db
         db.write_log_to_db(ac,
             log_source_desc[1].strip() + ": " + ac.log_author + " - "
