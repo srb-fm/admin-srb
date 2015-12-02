@@ -128,7 +128,7 @@ class app_config(object):
         self.app_develop = "no"
         # debug-mod
         # must set to "no" if running per chronjob!
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # Laeuft unter Windows
         self.app_windows = "no"
         # key of config in db
@@ -705,17 +705,22 @@ def write_playlist_mg(path_file_pl, file_mg, mg_number):
 
 def write_to_file_switch_params():
     """Switch Steuerdatei schreiben"""
-    log_message = ("Switch 1-3: " + ac.po_switch[0]
-                         + ac.po_switch[1] + ac.po_switch[2])
-    db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
+    # WICHTIG: der log_text wird von play_out_logging gesucht
+    # um die audio_switch_prameter zu finden
+    ac.action_summary = (u"Sendequellen: "
+                 + ac.po_switch[0] + ac.po_switch[1] + ac.po_switch[2])
+    db.write_log_to_db(ac, ac.action_summary, "i")
+    #log_message = ("Switch 1-3: " + ac.po_switch[0]
+    #                     + ac.po_switch[1] + ac.po_switch[2])
+    #db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
     if ac.server_active == "A":
         file_audio_switch = db.ac_config_audioswitch[1]
     if ac.server_active == "B":
         file_audio_switch = db.ac_config_audioswitch[2]
-    print "ausioswitch" + file_audio_switch
+    #print "ausioswitch" + file_audio_switch
     data_audio_switch = read_from_file_lines_in_list(file_audio_switch)
-    print data_audio_switch
+    #print data_audio_switch
     if data_audio_switch is None:
         log_message = (u"Datei für Sendequellenumschalter "
                     "kann nicht gelesen werden: " + file_audio_switch)
@@ -744,14 +749,10 @@ def write_to_file_switch_params():
         f_switch.write("Parameter fuer Sendequellenumschalter:"
                                         " hh:mm #Quell-Nr. am Switch\r\n")
         f_switch.close
-        # WICHTIG: der log_text wird von play_out_logging gesucht
-        # um die audio_switch_prameter zu finden
+
         log_message = (u"Datei für Sendequellenumschalter geschrieben: "
                  + ac.po_switch[0] + ac.po_switch[1] + ac.po_switch[2])
         db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
-        ac.action_summary = (u"Sendequellen: "
-                 + ac.po_switch[0] + ac.po_switch[1] + ac.po_switch[2])
-        db.write_log_to_db(ac, ac.action_summary, "i")
 
 
 def read_zeitansage():
