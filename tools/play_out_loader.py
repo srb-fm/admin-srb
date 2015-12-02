@@ -66,7 +66,9 @@ Param 2: Pfad von mpd zu Zeitansagen-Audios
 Param 3: Pfad - Files - Zeitansagen von mAirList zu Audios
 
 PO_Switch_Broadcast_Config:
-Param 1: Pfad\Dateiname Sendeumschalterdatei
+Param 1: ON/Off-Switch
+Param 2: Pfad\Dateiname Sendeumschalterdatei Server A
+Param 3: Pfad\Dateiname Sendeumschalterdatei Server B
 
 server_settings
 server_settings_paths_a
@@ -126,7 +128,7 @@ class app_config(object):
         self.app_develop = "no"
         # debug-mod
         # must set to "no" if running per chronjob!
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # Laeuft unter Windows
         self.app_windows = "no"
         # key of config in db
@@ -288,15 +290,15 @@ def load_extended_params():
     db.ac_config_audioswitch = db.params_load_1a(
                             ac, db, "PO_Switch_Broadcast_Config")
     if db.ac_config_audioswitch is not None:
-        # Erweiterte Paramsliste anlegen
+        # Set additionaly Params
         app_params_type_list_audioswitch = []
-        # Erweiterte Params-Type-List,
-        # Typ entsprechend der Params-Liste in der Config
+        # Types of Params
         app_params_type_list_audioswitch.append("p_string")
         app_params_type_list_audioswitch.append("p_string")
-        # Erweiterte Params pruefen
+        app_params_type_list_audioswitch.append("p_string")
+        # Check types
         param_check_audioswitch = lib_cm.params_check_a(
-                        ac, db, 2,
+                        ac, db, 3,
                         app_params_type_list_audioswitch,
                         db.ac_config_audioswitch)
         if param_check_audioswitch is None:
@@ -711,11 +713,14 @@ def write_to_file_switch_params():
         file_audio_switch = db.ac_config_audioswitch[1]
     if ac.server_active == "B":
         file_audio_switch = db.ac_config_audioswitch[2]
+    print "ausioswitch" + file_audio_switch
     data_audio_switch = read_from_file_lines_in_list(file_audio_switch)
+    print data_audio_switch
     if data_audio_switch is None:
         log_message = (u"Datei für Sendequellenumschalter "
                     "kann nicht gelesen werden: " + file_audio_switch)
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return
 
     try:
         f_switch = open(file_audio_switch, 'w')
