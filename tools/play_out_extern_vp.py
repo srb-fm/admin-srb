@@ -74,6 +74,8 @@ class app_config(object):
         # app_config
         self.app_id = "005"
         self.app_desc = u"play_out_load_vp_extern"
+        # debug-mod
+        self.app_debug_mod = "no"
         # key of config in db
         self.app_config = u"PO_VP_extern_Config"
         self.app_config_develop = u"PO_VP_extern_Config_3_e"
@@ -113,8 +115,6 @@ class app_config(object):
 
         # develop-mod
         self.app_develop = "no"
-        # debug-mod
-        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
@@ -465,11 +465,16 @@ def fetch_media_ftp(dest_file, url_source_file):
     #cmd = "wget"
     #url_base = db.ac_config_1[3].encode(ac.app_encode_out_strings)
     #url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
-    url_user = "--user=" + db.ac_config_1[5].encode(ac.app_encode_out_strings)
-    url_pw = "--password=" + db.ac_config_1[6].encode(ac.app_encode_out_strings)
+    #url_user = "--user=" + db.ac_config_1[5].encode(ac.app_encode_out_strings)
+    #url_pw = "--password=" + db.ac_config_1[6].encode(ac.app_encode_out_strings)
+    ftp_url_source_file = (db.ac_config_1[4].encode(ac.app_encode_out_strings)
+                        + url_source_file)
+    print ftp_url_source_file
     # starting subprozess
     try:
-        p = subprocess.Popen([cmd, url_user, url_pw, url_source_file],
+        #p = subprocess.Popen([cmd, url_user, url_pw, url_source_file],
+            #stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        p = subprocess.Popen([cmd, ftp_url_source_file],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
         log_message = ac.app_errorslist[1] + u": %s" % str(e)
