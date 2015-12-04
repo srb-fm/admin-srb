@@ -265,7 +265,7 @@ def audio_mp3gain(path_file_dest):
     lib_cm.message_write_to_console(ac, u"returncode 1")
     lib_cm.message_write_to_console(ac, p[1])
 
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
+    # search for suchess msg, if not found: -1
     mp3gain_output = string.find(p[1], "99%")
     mp3gain_output_1 = string.find(p[1], "written")
     lib_cm.message_write_to_console(ac, mp3gain_output)
@@ -408,7 +408,7 @@ def filepaths(d_pattern, l_path_title, item, sendung):
         else:
             path_dest = lib_cm.check_slashes(ac, db.ac_config_servpath_a[2])
 
-        # replace sonderzeichen
+        # replace special char
         # replace_uchar_sonderzeichen_with_latein
         path_file_dest = (path_dest + str(sendung[8]) + "_"
             + lib_cm.replace_sonderzeichen_with_latein(sendung[16]) + "_"
@@ -464,22 +464,34 @@ def fetch_media_ftp(dest_file, url_source_file):
     cmd = db.ac_config_etools[1].encode(ac.app_encode_out_strings)
     #cmd = "wget"
     #url_base = db.ac_config_1[3].encode(ac.app_encode_out_strings)
-    #url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
-    #url_user = "--user=" + db.ac_config_1[5].encode(ac.app_encode_out_strings)
-    #url_pw = "--password=" + db.ac_config_1[6].encode(ac.app_encode_out_strings)
+
     ftp_url_source_file = (db.ac_config_1[4].encode(ac.app_encode_out_strings)
                         + url_source_file)
-    print ftp_url_source_file
-    # starting subprozess
-    try:
-        #p = subprocess.Popen([cmd, url_user, url_pw, url_source_file],
-            #stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-        p = subprocess.Popen([cmd, ftp_url_source_file],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    except Exception, e:
-        log_message = ac.app_errorslist[1] + u": %s" % str(e)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return
+    if url_source_file[0:7] == "http://":
+        # downlaod via ftp must become another wget-syntax
+        url_user = ("--user="
+                        + db.ac_config_1[5].encode(ac.app_encode_out_strings))
+        url_pw = ("--password="
+                        + db.ac_config_1[6].encode(ac.app_encode_out_strings))
+        # starting subprozess
+        try:
+            p = subprocess.Popen([cmd, url_user, url_pw, url_source_file],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        except Exception, e:
+            log_message = ac.app_errorslist[1] + u": %s" % str(e)
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+            return
+    else:
+        # download via ftp
+        url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
+        # starting subprozess
+        try:
+            p = subprocess.Popen([cmd, ftp_url_source_file],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        except Exception, e:
+            log_message = ac.app_errorslist[1] + u": %s" % str(e)
+            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+            return
 
     lib_cm.message_write_to_console(ac, u"returncode 0")
     lib_cm.message_write_to_console(ac, p[0])
@@ -499,7 +511,13 @@ def fetch_media_ftp(dest_file, url_source_file):
         #os.rename(file_orig, dest_file)
         return True
     else:
-        db.write_log_to_db_a(ac, ac.app_errorslist[1]
+        # no 100% message, trying to find another error, here in german!
+        cmd_output_1 = string.find(p[1], "gibt es nicht")
+        if cmd_output_1 != -1:
+            db.write_log_to_db_a(ac, "Datei auf ftp-Server nicht vorhanden..",
+            "t", "write_also_to_console")
+        else:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1]
             + u"100% beim Download nicht erreicht...",
             "x", "write_also_to_console")
         return None
