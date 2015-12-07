@@ -129,7 +129,7 @@ class app_config(object):
         # debug-mod
         # must set to "no" if running per chronjob!
         self.app_debug_mod = "no"
-        # Laeuft unter Windows
+        # this sript is running under Windows
         self.app_windows = "no"
         # key of config in db
         self.app_config = "PO_Loader"
@@ -179,9 +179,9 @@ class app_config(object):
         self.app_errorslist.append(self.app_desc +
             " Fehler bei Instrumental-Playlist-Erstellung")
         self.random_file_error = 0
-        # mAirlist-Playlist running under Windows
+        # mAirlist-Playlist is running under Windows
         self.pl_win_mairlist = "yes"
-        # mpd-Playlist running under Windows
+        # mpd-Playlist is running under Windows
         self.pl_win_mpd = "no"
         # transmitt IT
         self.po_it = None
@@ -267,16 +267,15 @@ def load_extended_params():
     db.ac_config_zeitansage = db.params_load_1a(
                             ac, db, "PO_Zeitansage_Config")
     if db.ac_config_zeitansage is not None:
-        # Erweiterte Paramsliste anlegen
+        # Set additionaly Params
         app_params_type_list_zeitansage = []
-        # Erweiterte Params-Type-List,
-        # Typ entsprechend der Params-Liste in der Config
+        # Types of Params
         app_params_type_list_zeitansage.append("p_string")
         app_params_type_list_zeitansage.append("p_string")
         app_params_type_list_zeitansage.append("p_string")
         app_params_type_list_zeitansage.append("p_string")
 
-        # Erweiterte Params pruefen
+        # Check types
         param_check_zeitansage = lib_cm.params_check_a(
                         ac, db, 4,
                         app_params_type_list_zeitansage,
@@ -714,10 +713,17 @@ def write_to_file_switch_params():
     #                     + ac.po_switch[1] + ac.po_switch[2])
     #db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
+    # on/off switch from params for writing file
+    if db.ac_config_audioswitch[1].strip() == "off":
+        db.write_log_to_db_a(ac,
+                    "Schreiben der Datei fuer Sendeschalter ist deaktiviert",
+                                     "e", "write_also_to_console")
+        return
+
     if ac.server_active == "A":
-        file_audio_switch = db.ac_config_audioswitch[1]
-    if ac.server_active == "B":
         file_audio_switch = db.ac_config_audioswitch[2]
+    if ac.server_active == "B":
+        file_audio_switch = db.ac_config_audioswitch[3]
     #print "ausioswitch" + file_audio_switch
     data_audio_switch = read_from_file_lines_in_list(file_audio_switch)
     #print data_audio_switch
