@@ -205,6 +205,7 @@ class app_config(object):
         self.play_out_infotime = False
         self.play_out_stream = None
         self.play_out_stream_start = None
+        self.play_out_stream_length = None
         self.play_out_current_continue = False
         self.song_time_elapsed = None
         self.app_msg_1 = None
@@ -368,6 +369,7 @@ def check_stream():
     current_song = check_mpd_song("file")
     mpd.disconnect()
 
+    time_target = datetime.datetime.now()
     if current_song != ac.play_out_stream:
         db.write_log_to_db_a(ac, "Is the stream interrupted: "
                 + current_song, "x", "write_also_to_console")
@@ -381,6 +383,7 @@ def check_stream():
 
 def set_stream(play_out_item, minute_start):
     """setting stream variable"""
+    reset_stream_var = None
 
     if play_out_item[21:25] == "http":
         # reg stream-url for check
@@ -390,17 +393,91 @@ def set_stream(play_out_item, minute_start):
         ac.play_out_stream_start = minute_start
         db.write_log_to_db_a(ac, "Playing Out Stream", "t",
                                              "write_also_to_console")
+        return
     else:
-        if ac.play_out_stream is not None:
-            ac.play_out_stream = None
-            ac.play_out_stream_start = None
+        # no stream in this turn,
+        # nothing to do if also no stream in prev turn
+        if ac.play_out_stream is None:
+            return
+        # top of the hour is always special
+        # so reset stream-vari every top of the hour
+        if minute_start == "00":
+            reset_stream_var = True
+        # if new play_out_item, reset stream-vari
+        if play_out_item != "None":
+            reset_stream_var = True
+        else:
+            # now we have no stream in this turn,
+            # but we must check if a stream is running by prev turn
+            # it could be startet on two times,
+            # for calc the elapsed streamtime we must consider th starttime
+            # check elapsed seconds
+            # here we are 4 seonds before switch time, so adding 4 sec
+            time_start = datetime.datetime.now() + datetime.timedelta(seconds=4)
+            td_sec_now = (datetime.datetime.strptime(
+                            str(time_start.time())[3:8], '%M:%S')
+                            - datetime.datetime(1900, 1, 1))
+            #td_sec_minute_start = datetime.strptime(
+            #        minute_start, '%M') - datetime(1900, 1, 1)
             db.write_log_to_db_a(ac,
-                                    "End of Playing Out Stream", "t",
+                            "Stream len " + ac.play_out_stream_length, "t",
+                                             "write_also_to_console")
+            td_sec_length_stream = (datetime.datetime.strptime(
+                                ac.play_out_stream_length, '%H:%M:%S')
+                                - datetime.datetime(1900, 1, 1))
+
+            # compare stream length in sec with curr second
+            if ac.play_out_stream_start == "00":
+#TODO: msg wieder raus
+                #db.write_log_to_db_a(ac,
+                #            "Stream start toh ", "t",
+                #                             "write_also_to_console")
+                msg = ("Stream lengt gesamt "
+                    + str(td_sec_length_stream.total_seconds()))
+                #db.write_log_to_db_a(ac, msg, "t", "write_also_to_console")
+                msg = ("Time seconds now "
+                    + str(td_sec_now.total_seconds()))
+                #db.write_log_to_db_a(ac, msg, "t", "write_also_to_console")
+                # stream was starting top of the hour
+                if (td_sec_length_stream.total_seconds() <=
+                                            td_sec_now.total_seconds()):
+                    # stream has stopped
+                    reset_stream_var = True
+            else:
+#TODO: msg wieder raus
+                #db.write_log_to_db_a(ac,
+                #            "Stream start NOT toh ", "t",
+                #                             "write_also_to_console")
+
+                # stream start on second or third time
+                td_sec_stream_start = (datetime.datetime.strptime(
+                                    ac.play_out_stream_start, '%M')
+                                    - datetime.datetime(1900, 1, 1))
+                n_sec_stream_current = (td_sec_now.total_seconds()
+                                        - td_sec_stream_start.total_seconds())
+                msg = ("total seconds "
+                    + str(td_sec_length_stream.total_seconds())
+                    + " current second "
+                    + str(td_sec_now.total_seconds())
+                    + " x curent play x "
+                    + str(n_sec_stream_current))
+                db.write_log_to_db_a(ac, msg, "t", "write_also_to_console")
+                if (td_sec_length_stream.total_seconds()
+                                            <= n_sec_stream_current):
+                    # stream length has reached
+                    reset_stream_var = True
+
+    if reset_stream_var is True:
+        ac.play_out_stream = None
+        ac.play_out_stream_start = None
+        ac.play_out_stream_length = None
+        db.write_log_to_db_a(ac, "Reset Play Out Stream Vari", "t",
                                              "write_also_to_console")
 
 
 def set_stream_length():
     """setting stream-length variable"""
+    #it must be separated, because its not in the logs from po_loader
     if ac.play_out_stream is not None:
         time_target = datetime.datetime.now()
         db_tbl_condition = ("A.SG_HF_ON_AIR = 'T' AND "
@@ -418,9 +495,9 @@ def set_stream_length():
         if sendung_data is not None:
             for item in sendung_data:
                 db.write_log_to_db_a(ac,
-                                    "Stream found " + item[3], "t",
+                                    "Stream Laufzeit: " + item[3], "t",
                                              "write_also_to_console")
-                ac.play_out_stream_length = item[3]
+                ac.play_out_stream_length = item[3].strip()
 
 
 def check_mpd_song(option):
@@ -518,14 +595,14 @@ def prepare_mpd_0(time_now, minute_start):
             mpd.exec_command(db, ac, "crop", None)
             # add items to playlist
             for item in ac.play_out_items:
+                # reg stream-url for check
+                set_stream(item[2], minute_start)
+
                 if ac.play_out_infotime is True:
                     msg_2 = msg_2 + item[2][19:] + "\n"
                     mpd.exec_command(db, ac, "add", item[2][19:])
                 else:
                     msg_2 = msg_2 + item[2][21:] + "\n"
-                    # reg stream-url for check
-                    set_stream(item[2], minute_start)
-
                     # trying seamless play
                     if current_song_file.decode('utf_8') == item[2][21:]:
                         # if streaming over one hour,
