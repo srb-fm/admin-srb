@@ -106,7 +106,7 @@ class app_config(object):
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Loeschen der Temp-Datei")
         self.app_errorslist.append(self.app_desc +
-             "mp3-Datei in Play-Out nicht gefunden:")
+             " mp3-Datei in Play-Out nicht gefunden:")
         self.app_errorslist.append(self.app_desc +
             " Fehler beim LogIn zu FTP-Server")
         self.app_errorslist.append(self.app_desc +
@@ -475,7 +475,7 @@ def ftp_connect_and_dir():
         ftp.cwd(db.ac_config_1[6])
     except ftplib.error_perm, resp:
         lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
-                                        + db.ac_config_1[3])
+                                        + db.ac_config_1[3] + str(resp))
         log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[6])
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
