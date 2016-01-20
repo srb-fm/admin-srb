@@ -631,11 +631,13 @@ if ( $user_rights == "yes" ) {
 				echo "<a href='sg_hf_detail.php?action=check_delete&amp;sg_id=".$tbl_row_sg->SG_HF_ID."' title='Sendung löschen'>Löschen</a> ";
 			}
 		}
-		echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."' target='_blank' title='Sendeanmeldung drucken'>Drucken</a> ";
-		if ( file_exists($php_filename_sg) ) {		
-			echo "<a style='background-color: #6666FF;' href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_file=".$tbl_row_sg->SG_HF_CONT_FILENAME."' target='_blank' title='Sendeanmeldung als PDF vorhanden'>PDF</a> ";
-		} else {
-			echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_file=".$tbl_row_sg->SG_HF_CONT_FILENAME."' target='_blank' title='Sendeanmeldung als PDF erzeugen'>PDF</a> ";
+		if ( rtrim($tbl_row_sg->SG_HF_FIRST_SG) == "T" ) { 
+			echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."' target='_blank' title='Sendeanmeldung drucken'>Drucken</a> ";
+			if ( file_exists($php_filename_sg) ) {		
+				echo "<a style='background-color: #6666FF;' href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_file=".$tbl_row_sg->SG_HF_CONT_FILENAME."' target='_blank' title='Sendeanmeldung als PDF vorhanden'>PDF</a> ";
+			} else {
+				echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_file=".$tbl_row_sg->SG_HF_CONT_FILENAME."' target='_blank' title='Sendeanmeldung als PDF erzeugen'>PDF</a> ";
+			}
 		}
 		if ( $file_exist == "yes" ) { 
 			echo "<a href='sg_hf_detail.php?action=play_out&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."&amp;po_it=".rtrim($tbl_row_sg->SG_HF_INFOTIME)."&amp;po_mg=".rtrim($tbl_row_sg->SG_HF_MAGAZINE)."&amp;po_filename=".rtrim($tbl_row_sg->SG_HF_CONT_FILENAME)."'  title='Sendung in MPD-Warteschlange anfügen'>Play-Out</a> ";

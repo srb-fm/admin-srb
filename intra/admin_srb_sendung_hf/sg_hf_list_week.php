@@ -335,11 +335,13 @@ if ( $user_rights == "yes" ) {
 				echo $item['AD_VORNAME']." ".$item['AD_NAME']."<br>";				
 				echo $item['SG_HF_CONT_FILENAME']."<br>";
 				echo "Länge: ".$item['SG_HF_DURATION'];
-				echo "<br>  Sendeanmeldung ";
-				echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$item['SG_HF_ID']."&amp;ad_id=".$item['SG_HF_CONT_AD_ID']."' target='_blank'>drucken</a> ";
-				echo " - ";
-				echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$item['SG_HF_ID']."&amp;sg_file=".$item[SG_HF_CONT_FILENAME]."' target='_blank'>PDF</a> ";
-				echo "</div>\n";					
+				if ( trim($item['SG_HF_FIRST_SG']) == "T" ) { 
+					echo "<br>  Sendeanmeldung ";
+					echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$item['SG_HF_ID']."&amp;ad_id=".$item['SG_HF_CONT_AD_ID']."' target='_blank'>drucken</a> ";
+					echo " - ";
+					echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$item['SG_HF_ID']."&amp;sg_file=".$item[SG_HF_CONT_FILENAME]."' target='_blank'>PDF</a> ";
+				}
+				echo "</div>\n";
 		}
 	}
 	echo "<div class='content_footer'>";
