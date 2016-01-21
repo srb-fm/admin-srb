@@ -595,15 +595,8 @@ if ( $user_rights == "yes" ) {
 	}
 	
 	if ( substr($tbl_row_sg->SG_HF_CONT_FILENAME, 0, 5) == "http:" ) {
-		// filename couldt be a url, then we must buildt it
-		// it's possible that keyword has additional keywords after an whitspace
-		// so cut it 
-		$pos = strpos($tbl_row_sg->SG_HF_CONT_STICHWORTE, " ");
-		if ( ! $pos ) {
-			$keyword = replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE);
-		} else {
-			$keyword = substr(replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE),0, $pos);	
-		}
+		$keyword = replace_umlaute_sonderzeichen(
+			sg_extract_stichwort_for_filename($tbl_row_sg->SG_HF_CONT_STICHWORTE));
 		$sg_filename = $tbl_row_sg->SG_HF_CONT_ID."_"
 						.replace_umlaute_sonderzeichen($tbl_row_ad->AD_NAME)
 						."_"
