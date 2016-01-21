@@ -15,6 +15,59 @@
 require "../../cgi-bin/admin_srb_libs/lib_db.php";
 require "../../cgi-bin/admin_srb_libs/lib.php";
 require "../../cgi-bin/admin_srb_libs/lib_sess.php";
+
+function check_date()
+{
+	$d_date_dest = date('Y-m-d');
+	$displ_dateform = "yes";
+			
+	// check if date transfered, otherwise current	
+	if ( isset($_POST['form_k_datum']) ) {
+		if ( $_POST['form_k_datum'] != "" ) { 
+			$d_date_dest = get_date_format_sql($_POST['form_k_datum']);	
+		}
+	}
+
+	$j = substr($d_date_dest, 0, 4);
+	$m = substr($d_date_dest, 5, 2);
+	$d = substr($d_date_dest, 8, 2);
+
+	$timestamp_dest = mktime(0, 0, 0, $m, $d, $j);
+	return array($displ_dateform, $timestamp_dest);
+}
+
+function calc_week($timestamp_dest)
+{
+	// calc monday and sunday of week with current weekday
+	$date_begin = date('Y-m-d', 
+						mktime(0, 0, 0, date("m", $timestamp_dest), 
+						(date("d", $timestamp_dest) 
+						- date('w', $timestamp_dest)) +1, 
+						date("Y", $timestamp_dest)));
+	$date_end = date('Y-m-d', 
+					mktime(0, 0, 0, date("m", $timestamp_dest), 
+					(date("d", $timestamp_dest) 
+					+ (7 -  date('w', $timestamp_dest))), 
+					date("Y", $timestamp_dest)));
+	return array($date_begin, $date_end);
+}
+
+function calc_week_prev_next($timestamp_dest)
+{
+// for prev and next buttons					
+	// calc with monday day from prev week:
+	$date_week_prev = get_date_format_deutsch(date('Y-m-d', 
+			mktime(0, 0, 0, date("m", $timestamp_dest), 
+			(date("d", $timestamp_dest) - date('w', $timestamp_dest)) -1, 
+			date("Y", $timestamp_dest))));
+	// calc with sunday in upcoming week:				
+	$date_week_next = get_date_format_deutsch(date('Y-m-d', 
+			mktime(0, 0, 0, date("m", $timestamp_dest), 
+			(date("d", $timestamp_dest) + (8 -  date('w', $timestamp_dest))), 
+			date("Y", $timestamp_dest))));
+	return array($date_week_prev, $date_week_next);
+}
+
 $message = "";
 $displ_dateform = "no";
 
@@ -56,139 +109,97 @@ if ( $find_option_ok == true and $action_ok == true ) {
 	case "list": 
 		switch ( $find_option ) {
 		case "infotime_week_date_all":
-			$d_date_dest = date('Y-m-d');
-			$displ_dateform = "yes";
-					
-			// Pruefen ob Datum uebergeben, sonst aktuelles nehmen					
-			if ( isset($_POST['form_k_datum']) ) {
-				if ( $_POST['form_k_datum'] != "" ) { 
-					$d_date_dest = get_date_format_sql($_POST['form_k_datum']);	
-				}
-			}
-
-			$j = substr($d_date_dest, 0, 4);
-			$m = substr($d_date_dest, 5, 2);
-			$d = substr($d_date_dest, 8, 2);
-		
-			$timestamp_dest = mktime(0, 0, 0, $m, $d, $j);
-			//mit dem aktuellen Wochentag Montag und Sonntag errechnen:
-			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) - date('w', $timestamp_dest)) +1, date("Y", $timestamp_dest)));
-			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) + (7 -  date('w', $timestamp_dest))), date("Y", $timestamp_dest)));
-			$c_query_condition = "A.SG_HF_INFOTIME = 'T' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."' ORDER BY A.SG_HF_TIME";
+			list($displ_dateform, $timestamp_dest) = check_date();
+			list($date_begin, $date_end) = calc_week($timestamp_dest);
+			$c_query_condition = "A.SG_HF_INFOTIME = 'T' 
+					AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' 
+					AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."' 
+					ORDER BY A.SG_HF_TIME";
 			$message_find_string = "Magazin-Sendungen der Woche";
-			$message .= "Infotime-Beiträge der Woche vom ".get_date_format_deutsch($date_begin)." bis ".get_date_format_deutsch($date_end);
-			// for prev and next buttons					
-			// calc with monday day from prev week:
-			$date_week_prev = get_date_format_deutsch(date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) - date('w', $timestamp_dest)) -1, date("Y", $timestamp_dest))));
-			// calc with sunday in upcoming week:				
-			$date_week_next = get_date_format_deutsch(date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) + (8 -  date('w', $timestamp_dest))), date("Y", $timestamp_dest))));
+			$message .= "Infotime-Beiträge der Woche vom "
+					.get_date_format_deutsch($date_begin)." bis "
+					.get_date_format_deutsch($date_end);
+			list($date_week_prev, $date_week_next) = calc_week_prev_next($timestamp_dest);
 			break;
-									
+
 		case "magazine_week_date_all":
-			$d_date_dest = date('Y-m-d');
-			$displ_dateform = "yes";
-				
-			// check if date transfered, otherwise current					
-			if ( isset( $_POST['form_k_datum'] ) ) {
-				if ( $_POST['form_k_datum'] != "" ) { 
-					$d_date_dest = get_date_format_sql($_POST['form_k_datum']);
-				}
-			}
-			$j = substr($d_date_dest, 0, 4);
-			$m = substr($d_date_dest, 5, 2);
-			$d = substr($d_date_dest, 8, 2);
-		
-			$timestamp_dest = mktime(0, 0, 0, $m, $d, $j);
-			// calc with current weekday monday and sunday
-			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) - date('w', $timestamp_dest)) +1, date("Y", $timestamp_dest)));
-			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) + (7 - date('w', $timestamp_dest))), date("Y", $timestamp_dest)));
-			$c_query_condition = "A.SG_HF_MAGAZINE = 'T' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."' ORDER BY A.SG_HF_TIME";
+			list($displ_dateform, $timestamp_dest) = check_date();
+			list($date_begin, $date_end) = calc_week($timestamp_dest);
+			$c_query_condition = "A.SG_HF_MAGAZINE = 'T' 
+					AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' 
+					AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."' 
+					ORDER BY A.SG_HF_TIME";
 			$message_find_string = "Magazin-Sendungen der Woche";
-			$message .= "Magazin-Beiträge der Woche vom ".get_date_format_deutsch($date_begin)." bis ".get_date_format_deutsch($date_end);				
-			// for prev and next buttons					
-			// mit Montag Tag in der vergangenen Woche berechnen:
-			$date_week_prev = get_date_format_deutsch(date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) - date('w', $timestamp_dest)) -1, date("Y", $timestamp_dest))));
-			// mit Sonntag Tag in der kommenden Woche berechnen:				
-			$date_week_next = get_date_format_deutsch(date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) + (8 - date('w', $timestamp_dest))), date("Y", $timestamp_dest))));					
+			$message .= "Magazin-Beiträge der Woche vom "
+					.get_date_format_deutsch($date_begin)." bis "
+					.get_date_format_deutsch($date_end);				
+			list($date_week_prev, $date_week_next) = calc_week_prev_next($timestamp_dest);					
 			break;
 
 		case "broadcast_normal_week_date_all":
-			$d_date_dest = date('Y-m-d');
-			$displ_dateform = "yes";
-								
-			if ( isset( $_POST['form_k_datum'] ) ) {
-				if ( $_POST['form_k_datum'] != "" ) { 
-					$d_date_dest = get_date_format_sql($_POST['form_k_datum']);	
-				}
-			}
-
-			$j = substr($d_date_dest, 0, 4);
-			$m = substr($d_date_dest, 5, 2);
-			$d = substr($d_date_dest, 8, 2);
-		
-			$timestamp_dest = mktime(0, 0, 0, $m, $d, $j);		
-			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) - date('w', $timestamp_dest)) +1, date("Y", $timestamp_dest)));
-			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) + (7 -  date('w', $timestamp_dest))), date("Y", $timestamp_dest)));
-			$c_query_condition = "A.SG_HF_INFOTIME = 'F' AND A.SG_HF_MAGAZINE = 'F' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."' ORDER BY A.SG_HF_TIME";
+			list ($displ_dateform, $timestamp_dest) = check_date();
+			list($date_begin, $date_end) = calc_week($timestamp_dest);
+			$c_query_condition = "A.SG_HF_INFOTIME = 'F' 
+					AND A.SG_HF_MAGAZINE = 'F' 
+					AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' 
+					AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."' 
+					ORDER BY A.SG_HF_TIME";
 			$message_find_string = "Normale Sendungen der Woche";
-			$message .= "ohne Infotime und Magazin der Woche vom ".get_date_format_deutsch($date_begin)." bis ".get_date_format_deutsch($date_end);				
-
-			$date_week_prev = get_date_format_deutsch(date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) - date('w', $timestamp_dest)) -1, date("Y", $timestamp_dest))));
-				
-			$date_week_next = get_date_format_deutsch(date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) + (8 - date('w', $timestamp_dest))), date("Y", $timestamp_dest))));
+			$message .= "ohne Infotime und Magazin der Woche vom "
+					.get_date_format_deutsch($date_begin)." bis "
+					.get_date_format_deutsch($date_end);				
+			list($date_week_prev, $date_week_next) = calc_week_prev_next($timestamp_dest);
 			break;
-					
+
 		case "broadcast_week_date_all":
-			$d_date_dest = date('Y-m-d');
-			$displ_dateform = "yes";
-								
-			if ( isset($_POST['form_k_datum']) ) {
-				if ( $_POST['form_k_datum'] != "" ) { 
-					$d_date_dest = get_date_format_sql($_POST['form_k_datum']);
-				}
-			}
-
-			$j = substr($d_date_dest, 0, 4);
-			$m = substr($d_date_dest, 5, 2);
-			$d = substr($d_date_dest, 8, 2);
-		
-			$timestamp_dest = mktime(0, 0, 0, $m, $d, $j);
-			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) - date('w', $timestamp_dest)) +1, date("Y", $timestamp_dest)));
-			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) + (7 - date('w', $timestamp_dest))), date("Y", $timestamp_dest)));
-			$c_query_condition = "SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."' ORDER BY A.SG_HF_TIME";
+			list($displ_dateform, $timestamp_dest) = check_date();
+			list($date_begin, $date_end) = calc_week($timestamp_dest);
+			$c_query_condition = "SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '"
+					.$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '"
+					.$date_end."' ORDER BY A.SG_HF_TIME";
 			$message_find_string = "ES und WH der Woche";
-			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)." bis ".get_date_format_deutsch($date_end);
-
-			$date_week_prev = get_date_format_deutsch(date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) - date('w', $timestamp_dest)) -1, date("Y", $timestamp_dest))));
-				
-			$date_week_next = get_date_format_deutsch(date('Y-m-d', mktime(0, 0, 0, date("m", $timestamp_dest), (date("d", $timestamp_dest) + (8 - date('w', $timestamp_dest))), date("Y", $timestamp_dest))));				
+			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)
+						." bis ".get_date_format_deutsch($date_end);
+			list($date_week_prev, $date_week_next) = calc_week_prev_next($timestamp_dest);				
 			break;
-								
+		
 		case "broadcast_week_all":
-
-			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m"), (date("d") - date('w')) +1, date("Y")));
-			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m"), (date("d") + (7 - date('w'))), date("Y")));
-			$c_query_condition = "SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."'ORDER BY A.SG_HF_TIME";
+			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m"), 
+								(date("d") - date('w')) +1, date("Y")));
+			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m"), 
+								(date("d") + (7 - date('w'))), date("Y")));
+			$c_query_condition = "SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '"
+					.$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '"
+					.$date_end."'ORDER BY A.SG_HF_TIME";
 			$message_find_string = "ES und WH diese Woche";
-			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)." bis ".get_date_format_deutsch($date_end);
+			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)
+						." bis ".get_date_format_deutsch($date_end);
 			break;
 				
 		case "broadcast_week_next_all":
-
-			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m"), (date("d") - date('w')) +8, date("Y")));
-			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m"), ( date("d") + (14 - date('w'))), date("Y")));
-			$c_query_condition = "SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."'ORDER BY A.SG_HF_TIME";
+			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m"), 
+								(date("d") - date('w')) +8, date("Y")));
+			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m"), 
+								(date("d") + (14 - date('w'))), date("Y")));
+			$c_query_condition = "SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '"
+					.$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '"
+					.$date_end."'ORDER BY A.SG_HF_TIME";
 			$message_find_string = "ES und WH diese Woche";
-			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)." bis ".get_date_format_deutsch($date_end);
+			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)
+						." bis ".get_date_format_deutsch($date_end);
 			break;
 					
 		case "broadcast_week_previous_all":
-
-			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m"), ((date("d") - date('w')) +1)-7, date("Y")));
-			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m"), ((date("d") + (7 - date('w')))-7), date("Y")));
-			$c_query_condition = "SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '".$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '".$date_end."'ORDER BY A.SG_HF_TIME";
+			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m"), 
+							((date("d") - date('w')) +1)-7, date("Y")));
+			$date_end = date('Y-m-d', mktime(0, 0, 0, date("m"), 
+							((date("d") + (7 - date('w')))-7), date("Y")));
+			$c_query_condition = "SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) >= '"
+					.$date_begin."' AND SUBSTRING( A.SG_HF_TIME FROM 1 FOR 10) <= '"
+					.$date_end."'ORDER BY A.SG_HF_TIME";
 			$message_find_string = "ES und WH diese Woche";
-			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)." bis ".get_date_format_deutsch($date_end);
+			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)
+						." bis ".get_date_format_deutsch($date_end);
 			break;
 
 			//endswitch;
@@ -209,9 +220,9 @@ if ( $action_ok == true ) {
 <head>
 	<title>Admin-SRB-Sendung</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
-	<style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
-	<style type="text/css">	@import url("../parts/style/style_srb_jq_2.css"); </style>
-	<style type="text/css"> @import url("../parts/colorbox/colorbox.css");  </style>
+	<style type="text/css">	@import url("../parts/style/style_srb_2.css");</style>
+	<style type="text/css">	@import url("../parts/style/style_srb_jq_2.css");</style>
+	<style type="text/css"> @import url("../parts/colorbox/colorbox.css");</style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");</style>
 
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
