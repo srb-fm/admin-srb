@@ -48,7 +48,7 @@ if ( $action_ok == true ) {
 		$action_ok = false;
 	}
 	if ( isset($_GET['sg_file']) ) {	
-		$sg_filename = $_GET['sg_file'];
+		$filename_reg_form = $_GET['sg_file'];
 	} else {
 		$action_ok = false;
 	}
@@ -59,8 +59,9 @@ if ( $action_ok == true ) {
 		$action_ok = false;
 		$message ="sdfds";
 	}
-	if ( ! filter_var(substr($sg_filename,0, 7), FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
-		$sg_filename = "";
+	// check if filename starts with id
+	if ( ! filter_var(substr($filename_reg_form,0, 7), FILTER_VALIDATE_INT, array("options"=>array("min_range"=>1000000))) ) {
+		$filename_reg_form = "";
 	} else {
 		$filename_ok = true;
 	}
@@ -77,16 +78,21 @@ if ( $action_ok == true ) {
 		$tbl_row_config_C = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_B'");
 	}
 	
+	// it seems like a valid filename, display reg-form if exists
+	// this is only for non http in filename
 	if ( $filename_ok ) {
-		$file_name = new SplFileInfo($sg_filename);
+		$file_name = new SplFileInfo($filename_reg_form);
 		$file_name_base = basename($file_name, "mp3");
 		$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
-		$sg_filename = $file_name_base."pdf";
+		$filename_reg_form = $file_name_base."pdf";
 		if ( file_exists($php_filename) ) {
 			header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$file_name_base."pdf");
 			exit;
 		}
 	}
+	
+	// no reg-form found, 
+	// build filename also for http-streams and search again
 	$tbl_row_sg = db_query_sg_display_item_1($_GET['sg_id']);
 	if ( !$tbl_row_sg ) { 
 		$message .= "Fehler bei Abfrage Sendung!"; 
@@ -102,24 +108,32 @@ if ( $action_ok == true ) {
 			// filename couldt be a url, then we must buildt it
 			// it's possible that keyword has additional keywords after an whitspace
 			// so cut it 
-			$pos = strpos($tbl_row_sg->SG_HF_CONT_STICHWORTE, " ");
-			if ( ! $pos ) {
-				$keyword = replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE);
-			} else {
-				$keyword = substr(replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE),0, $pos);	
-			}
-			$sg_filename = $tbl_row_sg->SG_HF_CONT_ID."_"
-						.replace_umlaute_sonderzeichen($tbl_row_ad->AD_NAME)
-						."_"
-						.$keyword
-						.".pdf";
-			$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$sg_filename;
-			if ( file_exists($php_filename) ) {
-				header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$sg_filename);
+			//$pos = strpos($tbl_row_sg->SG_HF_CONT_STICHWORTE, " ");
+			//if ( ! $pos ) {
+			//	$keyword = replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE);
+			//} else {
+			//	$keyword = substr(replace_umlaute_sonderzeichen($tbl_row_sg->SG_HF_CONT_STICHWORTE),0, $pos);	
+			//}
+			//$filename_reg_form = $tbl_row_sg->SG_HF_CONT_ID."_"
+			//			.replace_umlaute_sonderzeichen($tbl_row_ad->AD_NAME)
+			//			."_"
+			//			.$keyword
+			//			.".pdf";
+			//$php_filename = $tbl_row_config_C->USER_SP_PARAM_2.$filename_reg_form;
+			
+			list($filename_reg_form, $filename_reg_form_php) = sg_build_filename_for_reg_form( 
+				$tbl_row_sg->SG_HF_CONT_FILENAME, $tbl_row_sg->SG_HF_CONT_STICHWORTE, 
+				$tbl_row_sg->SG_HF_CONT_ID, $tbl_row_ad->AD_NAME );
+		
+			// now we have an valid filename also for http-streams
+			// we will try to find a existing reg-form for this 
+			if ( file_exists($filename_reg_form_php) ) {
+				header("Location: http://".$_SERVER['SERVER_NAME'].$tbl_row_config_C->USER_SP_PARAM_1.$filename_reg_form);
 				exit;
 			}
 		}
-		
+	
+	// no reg-fom found, build it
 	// Userdata
 	$tbl_row_1 = db_query_display_item_1("USER_DATA", "none");
 	$tbl_row_a = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'Sendung_Anmeldung'");	
@@ -271,7 +285,7 @@ $pdf->Cell(0, 5, "Unterschrift Nutzer/ SRB, ".date("d.m.Y"), 0, 0);
 
 $pdf->Output("../admin_srb_export/xy.pdf");
 header('Content-type: application/pdf');
-header('Content-Disposition: inline; filename="'.$sg_filename.'"');
+header('Content-Disposition: inline; filename="'.$filename_reg_form.'"');
 readfile('../admin_srb_export/xy.pdf');
 exit;
 

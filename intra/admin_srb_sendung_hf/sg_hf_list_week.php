@@ -70,6 +70,7 @@ function calc_week_prev_next($timestamp_dest)
 
 $message = "";
 $displ_dateform = "no";
+$check_registration_form = false;
 
 // check action	
 $action_ok = false;
@@ -317,7 +318,10 @@ if ( $user_rights == "yes" ) {
 				$div_class_b_1 = "<div class='content_row_b_4'>";
 				$div_class_b_2 = "<div class='content_row_b_7'>";
 			}
-										
+
+			if ( $check_registration_form ) {
+			
+			}
 			if ( $z % 2 != 0 ) {
 				if ( rtrim($item['SG_HF_ON_AIR']) == "T" ) { 
 					echo $div_class_a_1;

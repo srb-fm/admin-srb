@@ -585,30 +585,34 @@ if ( $user_rights == "yes" ) {
 	echo "<br>\n<span> </span>"; // dummy damit warning_div nicht ueberlappt
 	// check sendeanmeldung
 	// Paths from Settings
-	$tbl_row_config_serv = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
+//	$tbl_row_config_serv = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
 	// are we on server-line A or B?
-	if ( $tbl_row_config_serv->USER_SP_PARAM_3 == $_SERVER['SERVER_NAME'] ) {
-		$tbl_row_config_C = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_A'");
-	}
-	if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
-		$tbl_row_config_C = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_B'");
-	}
+//	if ( $tbl_row_config_serv->USER_SP_PARAM_3 == $_SERVER['SERVER_NAME'] ) {
+//		$tbl_row_config_C = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_A'");
+//	}
+//	if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
+//		$tbl_row_config_C = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_B'");
+//	}
 	
-	if ( substr($tbl_row_sg->SG_HF_CONT_FILENAME, 0, 5) == "http:" ) {
-		$keyword = replace_umlaute_sonderzeichen(
-			sg_extract_stichwort_for_filename($tbl_row_sg->SG_HF_CONT_STICHWORTE));
-		$sg_filename = $tbl_row_sg->SG_HF_CONT_ID."_"
-						.replace_umlaute_sonderzeichen($tbl_row_ad->AD_NAME)
-						."_"
-						.$keyword
-						.".pdf";
-		$php_filename_sg = $tbl_row_config_C->USER_SP_PARAM_2.$sg_filename;		
-	} else {		
-		$file_name = new SplFileInfo($tbl_row_sg->SG_HF_CONT_FILENAME);
-		$file_name_base = basename($file_name, "mp3");
-		$php_filename_sg = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
-	}
-			
+//	if ( substr($tbl_row_sg->SG_HF_CONT_FILENAME, 0, 5) == "http:" ) {
+//		$keyword = replace_umlaute_sonderzeichen(
+//			sg_extract_stichwort_for_filename($tbl_row_sg->SG_HF_CONT_STICHWORTE));
+//		$sg_filename = $tbl_row_sg->SG_HF_CONT_ID."_"
+//						.replace_umlaute_sonderzeichen($tbl_row_ad->AD_NAME)
+//						."_"
+//						.$keyword
+//						.".pdf";
+//		$php_filename_sg = $tbl_row_config_C->USER_SP_PARAM_2.$sg_filename;		
+//	} else {		
+//		$file_name = new SplFileInfo($tbl_row_sg->SG_HF_CONT_FILENAME);
+//		$file_name_base = basename($file_name, "mp3");
+//		$php_filename_sg = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
+//	}
+	
+	list($filename_reg_form, $filename_reg_form_php) = sg_build_filename_for_reg_form( 
+		$tbl_row_sg->SG_HF_CONT_FILENAME, $tbl_row_sg->SG_HF_CONT_STICHWORTE, 
+		$tbl_row_sg->SG_HF_CONT_ID, $tbl_row_ad->AD_NAME );
+	
 	echo "<div class='menu_bottom'>";
 	echo "<ul class='menu_bottom_list'><li>";
 	if ( rtrim($_SESSION["log_rights"]) <= "B" ) {
@@ -626,7 +630,7 @@ if ( $user_rights == "yes" ) {
 		}
 		if ( rtrim($tbl_row_sg->SG_HF_FIRST_SG) == "T" ) { 
 			echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;ad_id=".$tbl_row_sg->SG_HF_CONT_AD_ID."' target='_blank' title='Sendeanmeldung drucken'>Drucken</a> ";
-			if ( file_exists($php_filename_sg) ) {		
+			if ( file_exists($filename_reg_form_php) ) {		
 				echo "<a style='background-color: #6666FF;' href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_file=".$tbl_row_sg->SG_HF_CONT_FILENAME."' target='_blank' title='Sendeanmeldung als PDF vorhanden'>PDF</a> ";
 			} else {
 				echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$tbl_row_sg->SG_HF_ID."&amp;sg_file=".$tbl_row_sg->SG_HF_CONT_FILENAME."' target='_blank' title='Sendeanmeldung als PDF erzeugen'>PDF</a> ";
