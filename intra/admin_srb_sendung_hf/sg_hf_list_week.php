@@ -19,7 +19,7 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 function check_date()
 {
 	$d_date_dest = date('Y-m-d');
-	$displ_dateform = "yes";
+	$displ_dateform = true;
 			
 	// check if date transfered, otherwise current	
 	if ( isset($_POST['form_k_datum']) ) {
@@ -54,7 +54,7 @@ function calc_week($timestamp_dest)
 
 function calc_week_prev_next($timestamp_dest)
 {
-// for prev and next buttons					
+	// for prev and next buttons					
 	// calc with monday day from prev week:
 	$date_week_prev = get_date_format_deutsch(date('Y-m-d', 
 			mktime(0, 0, 0, date("m", $timestamp_dest), 
@@ -69,20 +69,31 @@ function calc_week_prev_next($timestamp_dest)
 }
 
 $message = "";
-$displ_dateform = "no";
+$displ_dateform = false;
 $check_registration_form = false;
+$found_registration_form = false;
+$check_editor = false;
 
-// check action	
+// check action etc.
 $action_ok = false;
 if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
 	$action_ok = true;
 }
+
 if ( isset($_POST['action']) ) { 
 	$action = $_POST['action'];
 	$action_ok = true;
 }
-		
+
+if ( isset($_POST['check_registration_form']) ) { 
+	$check_registration_form = true;
+}
+
+if ( isset($_POST['check_editor']) ) { 
+	$check_editor = true;
+}
+
 if ( $action_ok == true ) {	
 	switch ( $action ) {
 	case "list": 
@@ -93,18 +104,19 @@ if ( $action_ok == true ) {
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
 }
-			
+
 // check condition	
 $find_option_ok = false;
 if ( isset($_GET['find_option']) ) { 
 	$find_option = $_GET['find_option']; 
 	$find_option_ok = true;
 }
+
 if ( isset($_POST['find_option']) ) {
 	$find_option = $_POST['find_option']; 
 	$find_option_ok = true;
 }		
-	
+
 if ( $find_option_ok == true and $action_ok == true ) {
 	switch ( $action ) {	
 	case "list": 
@@ -163,7 +175,7 @@ if ( $find_option_ok == true and $action_ok == true ) {
 						." bis ".get_date_format_deutsch($date_end);
 			list($date_week_prev, $date_week_next) = calc_week_prev_next($timestamp_dest);				
 			break;
-		
+
 		case "broadcast_week_all":
 			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m"), 
 								(date("d") - date('w')) +1, date("Y")));
@@ -176,7 +188,7 @@ if ( $find_option_ok == true and $action_ok == true ) {
 			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)
 						." bis ".get_date_format_deutsch($date_end);
 			break;
-				
+
 		case "broadcast_week_next_all":
 			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m"), 
 								(date("d") - date('w')) +8, date("Y")));
@@ -189,7 +201,7 @@ if ( $find_option_ok == true and $action_ok == true ) {
 			$message .= "der Woche vom ".get_date_format_deutsch($date_begin)
 						." bis ".get_date_format_deutsch($date_end);
 			break;
-					
+
 		case "broadcast_week_previous_all":
 			$date_begin = date('Y-m-d', mktime(0, 0, 0, date("m"), 
 							((date("d") - date('w')) +1)-7, date("Y")));
@@ -267,11 +279,16 @@ if ( $action_ok == false ) {
 $user_rights = user_rights_1($_SERVER['PHP_SELF'], rawurlencode($_SERVER['QUERY_STRING']), "C");
 if ( $user_rights == "yes" ) {
 	// display dateform
-	if ( $displ_dateform == "yes" ) {
+	if ( $displ_dateform ) {
 		echo "<form id='form1' name='form1' action='sg_hf_list_week.php' method='POST' enctype='application/x-www-form-urlencoded'>\n";
 		echo "<input type='hidden' name='action' value='".$action."'>\n";				
 		echo "<input type='hidden' name='find_option' value='".$find_option."'>\n";	
 		echo "Datum: <input type='TEXT' id='datepicker' name='form_k_datum' value='' size='10' maxlength='10'>\n";
+		if ( substr($find_option, 0, 5) == "broad" ) {
+			echo "<input type='checkbox' name='check_registration_form' value='T' title='Sendeanmeldungen auf Vorhandensein prüfen'>Check Sendeanm. ";
+		} else {
+			echo "<input type='checkbox' name='check_editor' value='T' title='Zuordnung der Redakteure prüfen'>Check Redakteur ";
+		}
 		echo "<input type='submit' name='form_fire' value='Anzeigen'> <input type='button' name='next' value='<< Woche' onClick='week_date_prev(\"".$date_week_prev."\")'> <input type='button' name='next' value='Woche >>' onClick='week_date_next(\"".$date_week_next."\")'></form>\n";
 		echo "<div class='line_a'> </div>\n";
 	}
@@ -281,7 +298,7 @@ if ( $user_rights == "yes" ) {
 	if ($db_result) {				
 		foreach ($db_result as $item) {
 			$z += 1;
-			// ueberschrift mit wochentag
+			// headline weekday
 			$c_date = substr($item['SG_HF_TIME'], 0, 10);
 			$timestamp = mktime(0, 0, 0, substr($c_date, 5, 2), substr($c_date, 8, 2), substr($c_date, 0, 4));
 			$c_date_new = date("d.n.Y", $timestamp);
@@ -319,9 +336,40 @@ if ( $user_rights == "yes" ) {
 				$div_class_b_2 = "<div class='content_row_b_7'>";
 			}
 
-			if ( $check_registration_form ) {
-			
+			if ( rtrim($item['SG_HF_FIRST_SG']) == "T" ) {
+				if ( $check_registration_form ) {
+					list($filename_reg_form, $filename_reg_form_php) = 
+						sg_build_filename_for_reg_form( 
+						rtrim($item['SG_HF_CONT_FILENAME']), 
+						rtrim($item['SG_HF_CONT_STICHWORTE']), 
+						$item['SG_HF_CONT_ID'], trim($item['AD_NAME']) );
+					//echo "a";
+					if ( file_exists($filename_reg_form_php) ) {
+						$found_registration_form = true;
+					} else {
+						$found_registration_form = false;
+					}
+				}
 			}
+
+			if ( $found_registration_form ) {
+				$div_class_a_1 = "<div class='content_row_c_4' title='Sendeanmeldung vorhanden'>";
+				$div_class_b_1 = "<div class='content_row_c_4' title='Sendeanmeldung vorhanden'>";
+				$div_class_a_2 = "<div class='content_row_c_4' title='Sendeanmeldung vorhanden'>";
+				$div_class_b_2 = "<div class='content_row_c_4' title='Sendeanmeldung vorhanden'>";
+				// reset vari for next loop
+				$found_registration_form = false;
+			}
+
+			if ( $check_editor ) {
+				if ( $item['SG_HF_CONT_EDITOR_AD_ID'] != "0" ) {
+					$div_class_a_1 = "<div class='content_row_d_4'>";
+					$div_class_b_1 = "<div class='content_row_d_4'>";
+					$div_class_a_2 = "<div class='content_row_d_4'>";
+					$div_class_b_2 = "<div class='content_row_d_4'>";	
+				}
+			}
+
 			if ( $z % 2 != 0 ) {
 				if ( rtrim($item['SG_HF_ON_AIR']) == "T" ) { 
 					echo $div_class_a_1;
@@ -335,7 +383,7 @@ if ( $user_rights == "yes" ) {
 					echo $div_class_b_2;
 				}
 			}
-								
+
 			// item display				
 			echo "<a href='sg_hf_detail.php?action=display&amp;sg_id=".$item['SG_HF_ID']."' class='c_box'>";
 			echo html_sg_state_a(trim($item['SG_HF_FIRST_SG']), rtrim($item['SG_HF_ON_AIR']), rtrim($item['SG_HF_CONT_FILENAME']))."</a>";

@@ -288,7 +288,7 @@ strong{
 	background: inherit;
 	}	
 	
-.content_row_a_4, .content_row_b_4, .content_row_a_6, .content_row_b_6 {
+.content_row_a_4, .content_row_b_4, .content_row_a_6, .content_row_b_6, .content_row_c_4, .content_row_d_4 {
 	background: White;
 	color: Navy;
 	padding-top: 2px;
@@ -301,10 +301,18 @@ strong{
 	float: left;
 	}
 
+.content_row_c_4 {
+	background: #6666FF;
+	}
+
+.content_row_d_4 {
+	background: #5eb15e;
+	}
+
 .content_row_b_4, .content_row_b_6 {
 	background: inherit;
 	}
-
+	
 .content_row_a_6, .content_row_b_6 {
 	width: 75%;
 	}

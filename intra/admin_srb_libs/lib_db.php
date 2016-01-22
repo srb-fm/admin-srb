@@ -920,7 +920,7 @@ function db_query_sg_tv_display_item_b( $condition )
 /**
 * db_query_sg_ad_list_items_1
 *
-* Sendung Liste mit Adressdaten  
+* Sendung List with data aof adresses  
 *
 * @param c_condition $c_condition sql-query-condition 
 *
@@ -930,8 +930,14 @@ function db_query_sg_tv_display_item_b( $condition )
 function db_query_sg_ad_list_items_1( $c_condition ) 
 {
 	$db_connect = db_connect();
-	$db_query = "SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_SOURCE_ID, A.SG_HF_FIRST_SG, A.SG_HF_ON_AIR, "
-    	."B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, B.SG_HF_CONT_GENRE_ID, B.SG_HF_CONT_SPEECH_ID, B.SG_HF_CONT_TITEL, B.SG_HF_CONT_UNTERTITEL, B.SG_HF_CONT_STICHWORTE, B.SG_HF_CONT_REGIEANWEISUNG, B.SG_HF_CONT_FILENAME, B.SG_HF_CONT_TEAMPRODUCTION, B.SG_HF_CONT_WEB, "
+	$db_query = "SELECT A.SG_HF_ID, A.SG_HF_CONTENT_ID, A.SG_HF_TIME, 
+		A.SG_HF_DURATION, A.SG_HF_INFOTIME, A.SG_HF_MAGAZINE, A.SG_HF_SOURCE_ID, 
+		A.SG_HF_FIRST_SG, A.SG_HF_ON_AIR, "
+    	."B.SG_HF_CONT_ID, B.SG_HF_CONT_SG_ID, B.SG_HF_CONT_AD_ID, 
+    	B.SG_HF_CONT_GENRE_ID, B.SG_HF_CONT_SPEECH_ID, B.SG_HF_CONT_TITEL, 
+    	B.SG_HF_CONT_UNTERTITEL, B.SG_HF_CONT_STICHWORTE, 
+    	B.SG_HF_CONT_REGIEANWEISUNG, B.SG_HF_CONT_FILENAME, 
+    	B.SG_HF_CONT_TEAMPRODUCTION, B.SG_HF_CONT_WEB, B.SG_HF_CONT_EDITOR_AD_ID, "
 		."C.AD_ID, C.AD_VORNAME, C.AD_NAME "
     	."FROM SG_HF_MAIN A LEFT JOIN SG_HF_CONTENT B "
 		."ON A.SG_HF_CONTENT_ID = B.SG_HF_CONT_ID "

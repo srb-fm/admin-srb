@@ -337,6 +337,51 @@ function sg_extract_stichwort_for_filename( $c_stichworte )
 }
 
 /**
+* sg_build_filename_for_reg_form
+* generate filename from field filename or from keywords
+*
+* @param c_audio_filename $c_audio_filename String
+* @param c_keywords $c_keywords String
+* @param c_cont_id $c_cont_id String
+* @param c_ad_name $c_ad_name String
+*
+* @return array with two items
+* 1. only filename
+* 2. filename with php-path
+*/
+function sg_build_filename_for_reg_form( $c_audio_filename, $c_keywords, $c_cont_id, $c_ad_name )
+{
+	// Paths from Settings
+	$tbl_row_config_serv = db_query_display_item_1(
+						"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
+	// are we on server-line A or B?
+	if ( $tbl_row_config_serv->USER_SP_PARAM_3 == $_SERVER['SERVER_NAME'] ) {
+		$tbl_row_config_C = db_query_display_item_1(
+			"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_A'");
+	}
+	if ( $tbl_row_config_serv->USER_SP_PARAM_4 == $_SERVER['SERVER_NAME'] ) {
+		$tbl_row_config_C = db_query_display_item_1(
+				"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_B'");
+	}
+	// if we have an stream-url, then we must build it based on keywords
+	if ( substr($c_audio_filename, 0, 5) == "http:" ) {
+		$keyword = replace_umlaute_sonderzeichen(
+			sg_extract_stichwort_for_filename($c_keywords));
+		$filename_reg_form = $c_cont_id."_"
+						.replace_umlaute_sonderzeichen($c_ad_name)
+						."_"
+						.$keyword
+						.".pdf";
+		$filename_reg_form_php = $tbl_row_config_C->USER_SP_PARAM_2.$filename_reg_form;
+	} else {
+		$file_name = new SplFileInfo($c_audio_filename);
+		$file_name_base = basename($file_name, "mp3");
+		$filename_reg_form_php = $tbl_row_config_C->USER_SP_PARAM_2.$file_name_base."pdf";
+	}
+	return array($filename_reg_form, $filename_reg_form_php);
+}
+
+/**
 * user_login_form
 * Form anzeigen
 *
