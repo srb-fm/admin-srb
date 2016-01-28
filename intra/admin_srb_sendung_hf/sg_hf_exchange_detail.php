@@ -66,20 +66,22 @@ if ( $action_ok == true ) {
 	
 		switch ( $action ) {
 			case "display":		
-			$local_file = '../admin_srb_export/local.txt';
-			$message = "Übernahme Sendung: Meta anzeigen. ";
-			ftp_download($ftp_server, $ftp_user_name, $ftp_user_pass, $server_file, $local_file);
-			$ftxt = file_get_contents($local_file);
+				$local_file = '../admin_srb_export/local.txt';
+				$message = "Übernahme Sendung: Meta anzeigen. ";
+				ftp_download($ftp_server, $ftp_user_name, $ftp_user_pass, $server_file, $local_file);
+				$ftxt = file_get_contents($local_file);
 			break;
 
 			case "play":
-			$local_file = $tbl_row_config_B->USER_SP_PARAM_10."tmp.mp3";
-			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_11."tmp.mp3";
-			$play_out_filename = $tbl_row_config_B->USER_SP_PARAM_10.$id;
+				//$local_file = $tbl_row_config_B->USER_SP_PARAM_10."tmp.mp3";
+				$tmp_file = uniqid();
+				$local_dir = $tbl_row_config_B->USER_SP_PARAM_10;
+				$local_file = $tbl_row_config_B->USER_SP_PARAM_10.$tmp_file.".mp3";
+				$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_11.$tmp_file.".mp3";
+				$play_out_filename = $tbl_row_config_B->USER_SP_PARAM_10.$id;
 			break;
 		//endswitch;
 		}
-
 	}
 } else {
 	$message = "Keine Anweisung. Nichts zu tun..... "; 
@@ -89,9 +91,10 @@ if ( $action_ok == true ) {
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <head>
 	<title>Admin-SRB-Sendung Übernahme Detailansicht</title>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
-	<style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
-	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta http-equiv="expires" content="0">
+	<style type="text/css">	@import url("../parts/style/style_srb_2.css");</style>
+	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");</style>
 	<link href="../parts/jPlayer-2.9.2/dist/skin/blue.monday/css/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_ui_1_8_16/jquery-ui-1.8.16.custom.min.js"></script>
@@ -122,12 +125,14 @@ if ( $action_ok == true ) {
 			var ftp_user_pass = "<?php echo $ftp_user_pass ?>";
 			var server_file = "<?php echo $server_file ?>";
 			var local_file = "<?php echo $local_file ?>";
+			var local_dir = "<?php echo $local_dir ?>";
 			var dataString = ('action=ftp' 
 							+ '&ftp_server=' + ftp_server
 							+ '&ftp_user_name=' + ftp_user_name
 							+ '&ftp_user_pass=' + ftp_user_pass
 							+ '&server_file=' + server_file
 							+ '&local_file=' + local_file
+							+ '&local_dir=' + local_dir
 				);
 			// ajax
 			$.ajax({
@@ -142,8 +147,10 @@ if ( $action_ok == true ) {
 			});
  
     	$( "#opener" ).click(function() {
-    		
-    		$( "#dialog" ).html( "Gespeichert in<br>" + "<?php echo '...'.substr($tbl_row_config_B->USER_SP_PARAM_10, -30) ?>" );
+    		$("#dialog").dialog('option', 'title', 'Gespeichert in:');
+    		$( "#dialog" ).html(  
+    				"<?php echo '...'.substr($tbl_row_config_B->USER_SP_PARAM_10, -30) ?><br> <br>"
+    				+ "Vor dem nächsten Download bitte sichern!" );
       	
       	var dataString = ('action=rename' 
 							+ '&local_file=' + "<?php echo $local_file ?>"
@@ -238,7 +245,10 @@ if ( $user_rights == "yes" ) {
 				echo '</div>';
 				echo '<div class="jp-no-solution">';
 					echo '<span>Update Required</span>';
-					echo 'To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.';
+					echo 'To play the media you will need to either update your 
+						browser to a recent version or update your 
+						<a href="http://get.adobe.com/flashplayer/" target="_blank">
+						Flash plugin</a>.';
 				echo '</div>';
 			echo '</div>';
 		echo '</div>';	
@@ -254,7 +264,7 @@ if ( $user_rights == "yes" ) {
 	if ($fileext == "mp3" or $fileext == "MP3") {
 		echo "<button id='opener'>Audio-Datei in Play_Out_Uebernahmen speichern</button>";
 				
-		echo "<div id='dialog' title='Download und Speichern'>";
+		echo "<div id='dialog' title='Download'>";
 		echo "<img src='../parts/pict/wait30trans.gif' width='30' height='30' border='0' alt='gleich gehts weiter'> ";
 		echo "Datei wird heruntergeladen...";
 		echo "</div>";
