@@ -246,8 +246,7 @@ def audio_validate(file_dest):
 def audio_mp3gain(path_file_dest):
     """mp3-Gain"""
     lib_cm.message_write_to_console(ac, u"mp3-File Gainanpassung")
-    # damit die uebergabe der befehle richtig klappt
-    # muessen alle cmds im richtigen zeichensatz encoded sein
+    # use the right char-encoding for supprocesses
     c_mp3gain = db.ac_config_etools[5].encode(ac.app_encode_out_strings)
     c_source_file = path_file_dest.encode(ac.app_encode_out_strings)
     lib_cm.message_write_to_console(ac, c_source_file)
@@ -468,7 +467,7 @@ def fetch_media_ftp(dest_file, url_source_file):
     ftp_url_source_file = (db.ac_config_1[4].encode(ac.app_encode_out_strings)
                         + url_source_file)
     if url_source_file[0:7] == "http://":
-        # downlaod via ftp must become another wget-syntax
+        # downlaod via http must become another wget-syntax
         url_user = ("--user="
                         + db.ac_config_1[5].encode(ac.app_encode_out_strings))
         url_pw = ("--password="
@@ -483,7 +482,7 @@ def fetch_media_ftp(dest_file, url_source_file):
             return
     else:
         # download via ftp
-        url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
+        #url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
         # starting subprozess
         try:
             p = subprocess.Popen([cmd, ftp_url_source_file],
@@ -514,8 +513,8 @@ def fetch_media_ftp(dest_file, url_source_file):
         # no 100% message, trying to find another error, here in german!
         cmd_output_1 = string.find(p[1], "gibt es nicht")
         if cmd_output_1 != -1:
-            db.write_log_to_db_a(ac, "Datei auf ftp-Server nicht vorhanden..",
-            "t", "write_also_to_console")
+            db.write_log_to_db_a(ac, "Datei auf ftp-Server nicht vorhanden: "
+                + url_source_file, "t", "write_also_to_console")
         else:
             db.write_log_to_db_a(ac, ac.app_errorslist[1]
             + u"100% beim Download nicht erreicht...",
