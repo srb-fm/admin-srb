@@ -31,9 +31,7 @@ if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];	
 	$action_ok = true;
 }	
-//if ( isset( $_POST['action'] ) ) { 
-//	$action = $_POST['action']; $action_ok = true;
-//}
+
 if ( $action != "pdf" ) { 
 	$action_ok = false;
 }
@@ -203,8 +201,10 @@ $pdf->AddPage();
 $pdf->SetFont('Arial', '', 8);
 $pdf->Cell(30, 5, utf8_decode("Datum/ Zeit/ Länge"), 0, 0);
 $pdf->SetFont('Arial', 'B', 8);
-$pdf->Cell(30, 5, get_german_day_name_a(substr($tbl_row_sg->SG_HF_TIME, 0, 10)).", ".get_date_format_deutsch(substr($tbl_row_sg->SG_HF_TIME, 0, 10)), 0, 0);
-$pdf->Cell(30, 5, substr($tbl_row_sg->SG_HF_TIME, 11, 8)."/ ".$tbl_row_sg->SG_HF_DURATION, 0, 0);
+$pdf->Cell(30, 5, get_german_day_name_a(substr($tbl_row_sg->SG_HF_TIME, 0, 10))
+	.", ".get_date_format_deutsch(substr($tbl_row_sg->SG_HF_TIME, 0, 10))
+	."/ ".substr($tbl_row_sg->SG_HF_TIME, 11, 8)."/ ".$tbl_row_sg->SG_HF_DURATION , 0, 0);
+//$pdf->Cell(30, 5, substr($tbl_row_sg->SG_HF_TIME, 11, 8)."/ ".$tbl_row_sg->SG_HF_DURATION, 0, 0);
 $pdf->Ln(5);
 $pdf->SetFont('Arial', '', 8);
 $pdf->Cell(30, 5, utf8_decode("Titel"), 0, 0);
