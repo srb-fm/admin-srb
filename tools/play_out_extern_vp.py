@@ -464,8 +464,6 @@ def fetch_media_ftp(dest_file, url_source_file):
     #cmd = "wget"
     #url_base = db.ac_config_1[3].encode(ac.app_encode_out_strings)
 
-    ftp_url_source_file = (db.ac_config_1[4].encode(ac.app_encode_out_strings)
-                        + url_source_file)
     if url_source_file[0:7] == "http://":
         # downlaod via http must become another wget-syntax
         url_user = ("--user="
@@ -482,7 +480,9 @@ def fetch_media_ftp(dest_file, url_source_file):
             return
     else:
         # download via ftp
-        #url_source_file = db.ac_config_1[7].encode(ac.app_encode_out_strings)
+        ftp_url_source_file = (
+                        db.ac_config_1[4].encode(ac.app_encode_out_strings)
+                        + url_source_file)
         # starting subprozess
         try:
             p = subprocess.Popen([cmd, ftp_url_source_file],
