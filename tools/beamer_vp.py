@@ -134,11 +134,11 @@ class app_config(object):
         self.app_windows = "no"
         self.app_encode_out_strings = "cp1252"
         #self.app_encode_out_strings = "utf-8"
-        #self.time_target = (datetime.datetime.now()
-                             #+ datetime.timedelta( days=-1 ))
+        self.time_target = (datetime.datetime.now()
+                             + datetime.timedelta( days=-7 ))
         #self.time_target = (datetime.datetime.now()
                              #+ datetime.timedelta(days=+1 ))
-        self.time_target = datetime.datetime.now()
+        #self.time_target = datetime.datetime.now()
 
 
 def load_extended_params():
@@ -174,7 +174,7 @@ def load_manuskript(sendung):
 
 
 def load_sg(sg_option):
-    """serch show"""
+    """search shows"""
 
     if sg_option == "IT":
         db_tbl_condition = ("SUBSTRING(A.SG_HF_TIME FROM 1 FOR 10) >= '"
