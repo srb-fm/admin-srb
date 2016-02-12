@@ -519,6 +519,10 @@ def fetch_media_ftp(dest_file, url_source_file):
             db.write_log_to_db_a(ac, ac.app_errorslist[1]
             + u"100% beim Download nicht erreicht...",
             "x", "write_also_to_console")
+            filename_ftp_temp = lib_cm.extract_filename(ac,
+                                                        url_source_file)
+            lib_cm.erase_file_a(ac, db, filename_ftp_temp,
+                                    "temp-Datei geloescht ")
         return None
 
 
@@ -601,8 +605,6 @@ def check_and_work_on_files(roboting_sgs):
                 file_from_ftp = (fetch_media_ftp(
                                     path_file_dest, path_file_source))
                 if file_from_ftp is None:
-                    lib_cm.erase_file_a(ac, db, filename_ftp_temp,
-                                    "temp-Datei geloescht ")
                     continue
 
                 copy_success = copy_media_to_play_out(
