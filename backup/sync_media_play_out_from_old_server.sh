@@ -12,16 +12,19 @@ path_file_log_sg="/home/my-user/srb-backup/log/sync_media_play_out_sg.log"
 path_file_log_it="/home/my-user/srb-backup/log/sync_media_play_out_it.log"
 path_file_log_layout="/home/my-user/srb-backup/log/sync_media_play_out_layout.log"
 path_file_log_rotation="/home/my-user/srb-backup/log/sync_media_play_out_rotation.log"
+path_file_log_reg_form="/home/my-user/srb-backup/log/sync_media_reg_form.log"
 
 media_old_sendung="source/play_out_server_old/Play_Out_Sendung/"
 media_old_infotime="source/play_out_server_old/Play_Out_Infotime/"
 media_old_layout="source/play_out_server_old/Play_Out_Layout/"
 media_old_rotation="source/play_out_server_old/Play_Out_Rotation/"
+doc_old_reg_form="source/play_out_server_old/Sendeanmeldungen/"
 
 media_new_sendung="dest/play_out_server/Play_Out_Sendung"
 media_new_infotime="dest/play_out_server/Play_Out_Infotime"
 media_new_layout="dest/play_out_server/Play_Out_Layout"
 media_new_rotation="dest/play_out_server/Play_Out_Rotation"
+doc_new_reg_form="dest/play_out_server/Sendeanmeldungen"
 
 # mountz
 # check if mount is mounted (Y or N)
@@ -83,9 +86,13 @@ if [ $mount_available == "Y" ]; then
 	echo "Sync from old to new: Play_Out_Rotation"
 	rsync -r -t -v -s --delete --log-file=$path_file_log_rotation $media_old_rotation $media_new_rotation
 
+	echo "Now running sync Reg-Form..." >> $path_file_log_rotation
+	echo "Sync from old to new: Reg-Form"
+	rsync -r -t -v -s --delete --log-file=$path_file_log_reg_form $doc_old_reg_form $doc_new_reg_form
+
 	echo "finish sync_media_play_out_from_old_server..."
-	echo "finish sync_media_play_out_from_old_server..." >> $path_file_log_rotation
-else	
+	echo "finish sync_media_play_out_from_old_server..." >> $path_file_log_reg_form
+else
 	echo "No sync possible" >> $path_file_log_sg
 fi
 
