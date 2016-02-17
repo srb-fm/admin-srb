@@ -13,19 +13,19 @@ path_file_log_sg="destpath/mirror_media_play_out_sg.log"
 path_file_log_it="destpath/mirror_media_play_out_it.log"
 path_file_log_layout="destpath/mirror_media_play_out_layout.log"
 path_file_log_rotation="destpath/mirror_media_play_out_rotation.log"
-path_file_log_reg_form="destpath/mirror_media_reg_form.log"
+path_file_log_reg_form="destpath/mirror_doc_reg_form.log"
 
 media_play_out_sendung="sourcepath/Sendung"
 media_play_out_infotime="sourcepath/Infotime"
 media_play_out_layout="sourcepath/Layout"
 media_play_out_rotation="sourcepath/Rotation"
-media_reg_form="sourcepath/Sendeanmeldungen"
+doc_reg_form="sourcepath/Sendeanmeldungen"
 
 media_mirror_sendung="mirrorpath/Sendung"
 media_mirror_infotime="mirrorpath/Infotime"
 media_mirror_layout="mirrorpath/Layout"
 media_mirror_rotation="mirrorpath/Rotation"
-media_mirror_reg_form="mirrorpath/Sendeanmeldungen"
+doc_mirror_reg_form="mirrorpath/Sendeanmeldungen"
 
 # mountz
 # check if mount is mounted (Y or N)
@@ -91,7 +91,7 @@ if [ $mount_available == "Y" ]; then
 
 	echo "Now running Mirror-Backup Reg-Form..." >> $path_file_log_rotation
 	echo "Mirror aus play_out Reg-Form"
-	rsync -r -t -v -s --delete --log-file=$path_file_log_reg_form $media_reg_form $media_mirror_reg_form
+	rsync -r -t -v -s --delete --log-file=$path_file_log_reg_form $doc_reg_form $doc_mirror_reg_form
 
 	echo "finish mirror_media_play_out.sh..."
 	echo "finish mirror_media_play_out.sh..." >> $path_file_log_reg_form

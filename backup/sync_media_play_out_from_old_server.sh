@@ -12,7 +12,7 @@ path_file_log_sg="/home/my-user/srb-backup/log/sync_media_play_out_sg.log"
 path_file_log_it="/home/my-user/srb-backup/log/sync_media_play_out_it.log"
 path_file_log_layout="/home/my-user/srb-backup/log/sync_media_play_out_layout.log"
 path_file_log_rotation="/home/my-user/srb-backup/log/sync_media_play_out_rotation.log"
-path_file_log_reg_form="/home/my-user/srb-backup/log/sync_media_reg_form.log"
+path_file_log_reg_form="/home/my-user/srb-backup/log/sync_doc_reg_form.log"
 
 media_old_sendung="source/play_out_server_old/Play_Out_Sendung/"
 media_old_infotime="source/play_out_server_old/Play_Out_Infotime/"
