@@ -1339,8 +1339,8 @@ def upload_data(ac, db, url, data_upload):
 
 
 def download_website(ac, db, url):
-    # webseite holen
-    import urllib2
+    # download website
+    #import urllib2
     from urllib2 import Request, urlopen, URLError, HTTPError
     website = None
     req = Request(url)
@@ -1348,18 +1348,17 @@ def download_website(ac, db, url):
     try:
         response = urlopen(req)
     except HTTPError:
-        log_message = ("connect_url_1 "
+        log_message = ("download connect_url_1 "
                         "The server couldnot fulfill the request..." + url)
         message_write_to_console(ac, log_message)
         db.write_log_to_db(ac, log_message, "x")
     except URLError:
-        log_message = "connect_url_2 We failed to reach a server.."
+        log_message = "download connect_url_2 We failed to reach a server.."
         db.write_log_to_db(ac, log_message, "x")
     else:
         # everything is fine
         website = response.read()
         response.close()
-
     return website
 
 

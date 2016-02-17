@@ -319,25 +319,23 @@ def write_listeners_to_db_1(sql_command, log_message):
 def lets_rock():
     """Main funktion """
     print "lets_rock "
-    # webseite holen
+    # fetch websit
     lib_cm.message_write_to_console(ac, u"webseite holen:")
     lib_cm.message_write_to_console(ac, db.ac_config_1[1])
-    #website = lib_cm.download_website(ac, db, db.ac_config_1[1]).replace(
-    #                                        "ü", "ue")
-    # trotz utf-8 deklaration, streamen manche Western-ANSI Meta
-    website = lib_cm.download_website(ac, db, db.ac_config_1[1]).decode(
-                    "iso-8859-1")
+    website = lib_cm.download_website(ac, db, db.ac_config_1[1])
+
     if website is None:
         # Error 001 fehler beim download der seite
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
             "write_also_to_console")
         return
-    #print website
-    #print website[:2721]
-    #return
+
+    # trotz utf-8 deklaration, streamen manche Western-ANSI Meta
+    website_data = website.decode("iso-8859-1")
 
     # abschnitt aus webseite extrahieren
-    cut_off = extract_cut_off(website, db.ac_config_1[2], db.ac_config_1[3])
+    cut_off = extract_cut_off(website_data,
+                db.ac_config_1[2], db.ac_config_1[3])
     if cut_off is None:
         # Error 002 fehler beim extrahieren des hauptabschnitts
         # aus webseite (schluesselwoerter nicht vorhanden)
