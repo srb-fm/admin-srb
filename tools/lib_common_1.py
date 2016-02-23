@@ -42,6 +42,17 @@ class dbase(object):
             message_write_to_console(ac, err_message)
         return
 
+    def dbase_close(self, ac):
+        """db close"""
+        message_write_to_console(ac, "dbase_close")
+        try:
+            self.db_con.close()
+        except Exception, e:
+            err_message = "db_close Error: %s" % str(e)
+            error_write_to_file(ac, err_message)
+            message_write_to_console(ac, err_message)
+        return
+
     def dbase_log_connect(self, ac):
         """db-log connect"""
         message_write_to_console(ac, "dbase_log_connect")
@@ -51,6 +62,17 @@ class dbase(object):
                 password=self.db_log_pw, charset='UTF8')
         except Exception, e:
             err_message = "db_log_connect Error: %s" % str(e)
+            error_write_to_file(ac, err_message)
+            message_write_to_console(ac, err_message)
+        return
+
+    def dbase_log_close(self, ac):
+        """db-log close"""
+        message_write_to_console(ac, "dbase_log_close")
+        try:
+            self.db_log_con.close()
+        except Exception, e:
+            err_message = "db_log_close Error: %s" % str(e)
             error_write_to_file(ac, err_message)
             message_write_to_console(ac, err_message)
         return
@@ -282,7 +304,7 @@ class dbase(object):
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
             err_message = (log_message
-                             + "No connect to db for write_log_to_db_log")
+                             + " No connect to db for write_log_to_db_log")
             error_write_to_file(ac, err_message)
             return
 
@@ -293,7 +315,7 @@ class dbase(object):
             self.db_log_con.close()
         except Exception, e:
             message_write_to_console(
-                ac, log_message + "write_log_to_db Error: %s</p>" % str(e))
+                ac, log_message + " write_log_to_db Error: %s</p>" % str(e))
             err_message = log_message + "Error 2 write_log_to_db: %s" % str(e)
             error_write_to_file(ac, err_message)
 
@@ -314,7 +336,7 @@ class dbase(object):
 
         self.dbase_log_connect(ac)
         if self.db_log_con is None:
-            err_message = log_message + "No connect to db for write_log_to_db:"
+            err_message = log_message + " No connect to db for write_log_to_db:"
             error_write_to_file(ac, err_message)
             return
 
@@ -325,9 +347,9 @@ class dbase(object):
             self.db_log_con.close()
         except Exception, e:
             message_write_to_console(
-                ac, log_message + "write_log_to_db_log Error: %s</p>" % str(e))
+                ac, log_message + " write_log_to_db_log Error: %s</p>" % str(e))
             err_message = (log_message
-                         + "Error 2 write_log_to_db_log: %s" % str(e))
+                         + " Error 2 write_log_to_db_log: %s" % str(e))
             error_write_to_file(ac, err_message)
 
     def write_twitter_log_to_db_1(self, ac, log_id, log_console):
@@ -415,11 +437,12 @@ class dbase(object):
                 log_message = (u"read_tbl_rows_with_cond_log: "
                                 "nichts gefunden..." + condition)
                 message_write_to_console(ac, log_message)
-                # logmeldung zu lang und zu häufig:
+                # log msg too long and too often
                 #db.write_log_to_db( ac, log_message, "x", "003" )
 
         except Exception, e:
-            self.db_log_con.close()
+            self.dbase_log_close(ac)
+            #self.db_log_con.close()
             log_message = u"read_tbl_rows_with_cond_log Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
@@ -490,7 +513,7 @@ class dbase(object):
                 log_message = ("read_tbl_row_with_cond: nichts gefunden..."
                                  + condition)
                 message_write_to_console(ac, log_message)
-                # logmeldung zu lang und zu häufig:
+                # log msg too long and too often
 
         except Exception, e:
             self.db_con.close()
@@ -532,18 +555,20 @@ class dbase(object):
                 log_message = (u"read_tbl_rows_with_cond: nichts gefunden..."
                              + condition)
                 message_write_to_console(ac, log_message)
-                # logmeldung zu lang und zu häufig:
+                # log msg too long and too often
                 #db.write_log_to_db( ac, log_message, "x", "003" )
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = u"read_tbl_rows_with_cond Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
         else:
-            message_write_to_console(ac, rows)
+            self.dbase_close(ac)
+            #message_write_to_console(ac, rows)
             return rows
-            self.db_con.close()
+            #self.db_con.close()
 
     def read_tbl_row_sg_cont_ad_with_cond(self, ac, db, condition):
         """ Zeile aus Tabelle Sendung entspr. der Bedingung lesen """
@@ -633,7 +658,7 @@ class dbase(object):
             if z == 0:
                 log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
                                 " nichts gefunden..." + condition)
-                # logmeldung zu lang und zu häufig:
+                # log msg too long and too often
                 #message_write_to_console(ac, log_message)
                 self.db_con.close()
                 return None
@@ -865,7 +890,7 @@ class dbase(object):
                 log_message = ("read_tbl_rows_sg_cont_ad: nichts gefunden..."
                                  + condition)
                 message_write_to_console(ac, log_message)
-                # logmeldung zu lang und zu häufig:
+                # log msg too long and too often:
                 #db.write_log_to_db( ac, log_message, "x" )
 
         except Exception, e:
@@ -921,7 +946,7 @@ class dbase(object):
                 log_message = ("read_tbl_rows_sg_cont_ad: nichts gefunden..."
                                  + condition)
                 message_write_to_console(ac, log_message)
-                # logmeldung zu lang und zu häufig:
+                # log msg too long and too often:
                 #db.write_log_to_db( ac, log_message, "x" )
                 return None
 
