@@ -70,7 +70,7 @@ class dbase(object):
         """db-log close"""
         message_write_to_console(ac, "dbase_log_close")
         try:
-            self.db_log_con.close()
+            self.dbase_log_close(ac)
         except Exception, e:
             err_message = "db_log_close Error: %s" % str(e)
             error_write_to_file(ac, err_message)
@@ -161,7 +161,7 @@ class dbase(object):
             db_cur = self.db_log_con.cursor()
             db_cur.execute(sql_command)
             self.db_log_con.commit()
-            self.db_log_con.close()
+            self.dbase_log_close(ac)
         except Exception, e:
             message_write_to_console(
                 ac, log_message + "Err 2 delete logs: %s</p>" % str(e))
@@ -169,7 +169,7 @@ class dbase(object):
                          + "Err 3 delete logs: %s" % str(e))
             error_write_to_file(ac, err_message)
             self.db_log_con.rollback()
-            self.db_log_con.close()
+            self.dbase_log_close(ac)
             return None
         return True
 
@@ -312,7 +312,7 @@ class dbase(object):
             db_cur = self.db_log_con.cursor()
             db_cur.execute(ACTION)
             self.db_log_con.commit()
-            self.db_log_con.close()
+            self.dbase_log_close(ac)
         except Exception, e:
             message_write_to_console(
                 ac, log_message + " write_log_to_db Error: %s</p>" % str(e))
@@ -344,7 +344,7 @@ class dbase(object):
             db_cur = self.db_log_con.cursor()
             db_cur.execute(ACTION)
             self.db_log_con.commit()
-            self.db_log_con.close()
+            self.dbase_log_close(ac)
         except Exception, e:
             message_write_to_console(
                 ac, log_message + " write_log_to_db_log Error: %s</p>" % str(e))
@@ -372,7 +372,7 @@ class dbase(object):
             db_cur = self.db_log_con.cursor()
             db_cur.execute(ACTION)
             self.db_log_con.commit()
-            self.db_log_con.close()
+            self.dbase_log_close(ac)
         except Exception, e:
             message_write_to_console(ac,
                  "write_twitter_log_to_db_log Error: %s</p>" % str(e))
@@ -406,7 +406,7 @@ class dbase(object):
                      "write_exchange_log_to_db Error: %s</p>" % str(e))
                 err_message = "Error 2 write_exchange_log_to_db: %s" % str(e)
                 error_write_to_file(ac, err_message)
-        self.db_log_con.close()
+        self.dbase_log_close(ac)
 
     def read_tbl_rows_with_cond_log(self, ac, db, table, fields, condition):
         """ read rows like condition from db-log """
@@ -478,7 +478,7 @@ class dbase(object):
 
         except Exception, e:
             try:
-                self.db_log_con.close()
+                self.dbase_log_close(ac)
             except Exception, e:
                 log_message = "read_tbl_row_with_cond_log Error: %s" % str(e)
             else:
@@ -488,7 +488,7 @@ class dbase(object):
         else:
             row = result
             message_write_to_console(ac, row)
-            self.db_log_con.close()
+            self.dbase_log_close(ac)
             return row
 
     def read_tbl_row_with_cond(self, ac, db, table, fields, condition):
