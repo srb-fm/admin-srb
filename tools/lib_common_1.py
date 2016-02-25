@@ -199,8 +199,8 @@ class dbase(object):
         return "ok"
 
     def params_load_1(self, ac, db):
-        """Config-Parameter aus Voreinstellungen holen und in Liste schreiben"""
-        # Pramssuche abhaenging davon ob entwickler oder normal-version
+        """ load params and write in list"""
+        # depending on develop-mode or not
         if ac.app_develop == "yes":
             ac.app_config_params_desc = ac.app_config_develop
         else:
@@ -226,7 +226,7 @@ class dbase(object):
             db_cur.execute(SELECT)
             params_list = db_cur.fetchone()
 
-            # wenn kein satz vorhanden
+            # no item found
             if params_list is None:
                 log_message = ("Parameter nicht in config gefunden: "
                                  + ac.app_config_params_desc)
@@ -234,15 +234,17 @@ class dbase(object):
                 message_write_to_console(ac, log_message)
 
         except Exception, e:
+            #self.db_con.close()
             self.db_con.close()
             log_message = "read_params_from_config: Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
 
         else:
+            self.db_con.close()
             message_write_to_console(ac, params_list)
             return params_list
-            self.db_con.close()
+            #self.db_con.close()
 
     def params_load_1a(self, ac, db, config_params_desc):
         """Zusaetzliche Config-Parameter aus Voreinstellungen holen
@@ -528,7 +530,7 @@ class dbase(object):
             return row
 
     def read_tbl_rows_with_cond(self, ac, db, table, fields, condition):
-        """ Zeilen nach uebergebener Bedingung aus Tabelle lesen """
+        """ read table rows with condition """
         message_write_to_console(ac, u"read_tbl_rows_with_condition: ")
         sql_string = ("SELECT " + fields + " FROM " + table
                          + " WHERE " + condition)
@@ -550,7 +552,7 @@ class dbase(object):
                 rows.append(row)
                 z += 1
 
-            # wenn kein satz vorhanden
+            # no item found
             if z == 0:
                 rows = None
                 log_message = (u"read_tbl_rows_with_cond: nichts gefunden..."
@@ -572,7 +574,7 @@ class dbase(object):
             #self.db_con.close()
 
     def read_tbl_row_sg_cont_ad_with_cond(self, ac, db, condition):
-        """ Zeile aus Tabelle Sendung entspr. der Bedingung lesen """
+        """ read table row with joint sg-content and adress"""
         message_write_to_console(ac, "read_tbl_row_sg_cont_ad_condition: ")
 
         sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONT_ID,"
@@ -600,12 +602,13 @@ class dbase(object):
             db_cur.execute(SELECT)
             row = db_cur.fetchone()
 
-            # wenn kein satz vorhanden
+            # no item found
             if row is None:
                 log_message = ("read_tbl_row_sg_cont_ad: nichts gefunden..."
                                  + condition)
                 message_write_to_console(ac, log_message)
-                self.db_con.close()
+                #self.db_con.close()
+                self.dbase_close(ac)
                 return None
 
         except Exception, e:
@@ -617,11 +620,12 @@ class dbase(object):
             return None
         else:
             message_write_to_console(ac, row)
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             return row
 
     def read_tbl_rows_sg_cont_ad_with_cond(self, ac, db, condition):
-        """ Zeilen aus Tabelle Sendung entspr. der Bedingung lesen """
+        """ read table rows with joint sg-content and adress """
         message_write_to_console(ac, "read_tbl_rows_sg_cont_ad_condition")
         sql_string = ("SELECT A.SG_HF_ID, A.SG_HF_CONT_ID,"
             " A.SG_HF_TIME, A.SG_HF_DURATION,"
@@ -655,17 +659,19 @@ class dbase(object):
                 rows.append(row)
                 z += 1
 
-            # wenn kein satz vorhanden
+            # no item found
             if z == 0:
                 log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
                                 " nichts gefunden..." + condition)
                 # log msg too long and too often
                 #message_write_to_console(ac, log_message)
-                self.db_con.close()
+                #self.db_con.close()
+                self.dbase_close(ac)
                 return None
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1 "
                             "Error: %s" % str(e))
             message_write_to_console(ac, log_message)
@@ -673,7 +679,8 @@ class dbase(object):
             return None
         else:
             message_write_to_console(ac, rows)
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             return rows
 
     def read_tbl_rows_sg_cont_ad_with_cond_a(self, ac, db, condition):
