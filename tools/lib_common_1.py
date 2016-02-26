@@ -235,21 +235,20 @@ class dbase(object):
 
         except Exception, e:
             #self.db_con.close()
-            self.db_con.close()
+            self.dbase_close(ac)
             log_message = "read_params_from_config: Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
 
         else:
-            self.db_con.close()
+            self.dbase_close(ac)
             message_write_to_console(ac, params_list)
             return params_list
             #self.db_con.close()
 
     def params_load_1a(self, ac, db, config_params_desc):
-        """Zusaetzliche Config-Parameter aus Voreinstellungen holen
-        und in Liste schreiben"""
-        # Pramssuche abhaenging davon ob entwickler oder normal-version
+        """load additional params and write in list"""
+        # depending on develop-mode or not
         if ac.app_develop == "yes":
             ac.app_config_params_desc = ac.app_config_develop
         else:
@@ -274,7 +273,7 @@ class dbase(object):
             db_cur.execute(SELECT)
             params_list = db_cur.fetchone()
 
-            # wenn kein satz vorhanden
+            # no item found
             if params_list is None:
                 log_message = ("Parameter nicht in config gefunden: "
                                 + config_params_desc)
@@ -282,15 +281,17 @@ class dbase(object):
                 message_write_to_console(ac, log_message)
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = "read_params_from_config: Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
 
         else:
             message_write_to_console(ac, params_list)
+            self.dbase_close(ac)
             return params_list
-            self.db_con.close()
+            #self.db_con.close()
 
     def write_log_to_db(self, ac, log_message, log_icon):
         """Logmeldungen in DB-log schreiben"""
