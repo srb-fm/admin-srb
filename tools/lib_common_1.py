@@ -725,7 +725,8 @@ class dbase(object):
                 log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
                                 " nichts gefunden..." + condition)
                 message_write_to_console(ac, log_message)
-                self.db_con.close()
+                #self.db_con.close()
+                self.dbase_close(ac)
                 return None
 
         except Exception, e:
@@ -737,7 +738,8 @@ class dbase(object):
             return None
         else:
             message_write_to_console(ac, rows)
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             return rows
 
     def read_tbl_rows_sg_cont_ad_with_cond_b(self, ac, db, condition):
@@ -784,7 +786,8 @@ class dbase(object):
                                 " nichts gefunden..."
                                 + condition.encode('ascii', 'ignore'))
                 message_write_to_console(ac, log_message)
-                self.db_con.close()
+                #self.db_con.close()
+                self.dbase_close(ac)
                 return None
 
         except Exception, e:
@@ -796,7 +799,8 @@ class dbase(object):
             return None
         else:
             message_write_to_console(ac, rows)
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             return rows
 
     def read_tbl_rows_sg_cont_ad_with_cond_c(self, ac, db, condition):
