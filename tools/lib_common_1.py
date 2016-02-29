@@ -102,14 +102,16 @@ class dbase(object):
                 return None
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = "load_generator_id Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
             return None
         else:
             message_write_to_console(ac, str(gen_id))
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             return gen_id[0]
 
     def count_rows(self, ac, db, table, condition):
@@ -137,14 +139,16 @@ class dbase(object):
                 return None
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = "count_rows Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x", ac.app_id)
             return None
         else:
             message_write_to_console(ac, str(row_counter))
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             return row_counter[0]
 
     def delete_logs_in_db_log(self, ac, sql_command, log_message):
@@ -188,7 +192,8 @@ class dbase(object):
             db_cur = self.db_con.cursor()
             db_cur.execute(sql_command)
             self.db_con.commit()
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
         except Exception, e:
             log_message = "exec_sql Error: %s" % str(e)
             message_write_to_console(ac, log_message)
@@ -520,14 +525,16 @@ class dbase(object):
                 # log msg too long and too often
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = "read_tbl_row_with_cond Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
         else:
             row = result
             message_write_to_console(ac, row)
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             return row
 
     def read_tbl_rows_with_cond(self, ac, db, table, fields, condition):
@@ -613,7 +620,8 @@ class dbase(object):
                 return None
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = ("read_tbl_row_sg_cont_ad_with_cond_1 "
                             "Error: %s" % str(e))
             message_write_to_console(ac, log_message)
@@ -730,7 +738,8 @@ class dbase(object):
                 return None
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1 "
                             "Error: %s" % str(e))
             message_write_to_console(ac, log_message)
@@ -791,7 +800,8 @@ class dbase(object):
                 return None
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = ("read_tbl_rows_sg_cont_ad_with_cond_2 "
                             "Error x: %s" % str(e))
             message_write_to_console(ac, log_message)
@@ -848,11 +858,13 @@ class dbase(object):
                 log_message = ("read_tbl_rows_sg_cont_ad_with_cond_1:"
                                 " nichts gefunden..." + condition)
                 message_write_to_console(ac, log_message)
-                self.db_con.close()
+                #self.db_con.close()
+                self.dbase_close(ac)
                 return None
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = ("read_tbl_rows_sg_cont_ad_with_cond_2 "
                             "Error: %s" % str(e))
             message_write_to_console(ac, log_message)
@@ -860,7 +872,8 @@ class dbase(object):
             return None
         else:
             message_write_to_console(ac, rows)
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             return rows
 
     def read_tbl_rows_sg_cont_ad_with_cond_and_order(
@@ -907,14 +920,16 @@ class dbase(object):
                 #db.write_log_to_db( ac, log_message, "x" )
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = "read_tbl_rows_sg_cont_ad Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
         else:
             message_write_to_console(ac, rows)
+            self.dbase_close(ac)
             return rows
-            self.db_con.close()
+            #self.db_con.close()
 
     def read_tbl_rows_sg_cont_ad_with_limit_cond_and_order(
                                 self, ac, db, limit, condition, order):
@@ -964,13 +979,15 @@ class dbase(object):
                 return None
 
         except Exception, e:
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             log_message = "read_tbl_rows_sg_cont_ad Error: %s" % str(e)
             message_write_to_console(ac, log_message)
             db.write_log_to_db(ac, log_message, "x")
         else:
             message_write_to_console(ac, rows)
-            self.db_con.close()
+            #self.db_con.close()
+            self.dbase_close(ac)
             return rows
 
 
