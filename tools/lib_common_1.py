@@ -70,7 +70,8 @@ class dbase(object):
         """db-log close"""
         message_write_to_console(ac, "dbase_log_close")
         try:
-            self.dbase_log_close(ac)
+            #self.dbase_log_close(ac)
+            self.db_log_con.close()
         except Exception, e:
             err_message = "db_log_close Error: %s" % str(e)
             error_write_to_file(ac, err_message)
@@ -328,7 +329,7 @@ class dbase(object):
             error_write_to_file(ac, err_message)
 
     def write_log_to_db_a(self, ac, log_message, log_icon, log_console):
-        """Logmeldungen in DB-log schreiben"""
+        """ write log into DB-log """
         message_write_to_console(ac, "write_log_to_db_log")
         # gleiche log_message in console schreiben
         if log_console is not None:
@@ -361,7 +362,7 @@ class dbase(object):
             error_write_to_file(ac, err_message)
 
     def write_twitter_log_to_db_1(self, ac, log_id, log_console):
-        """Write twitter log-IDs to DB-log"""
+        """Write twitter log-IDs into DB-log"""
         message_write_to_console(ac, "write_twitter_log_to_db_log")
         # gleiche log_message in console schreiben
         if log_console is not None:
@@ -461,7 +462,7 @@ class dbase(object):
             #self.db_log_con.close()
 
     def read_tbl_row_with_cond_log(self, ac, db, table, fields, condition):
-        # read row from log
+        """ read row from log witch contition"""
         row = None
         message_write_to_console(ac, "read_tbl_row_with_condition_log: ")
         sql_string = ("SELECT " + fields + " FROM " + table
@@ -500,7 +501,7 @@ class dbase(object):
             return row
 
     def read_tbl_row_with_cond(self, ac, db, table, fields, condition):
-        # zeile aus tabelle sendung lesen
+        """ read table row with condition"""
         row = None
         message_write_to_console(ac, "read_tbl_row_with_condition: ")
         sql_string = ("SELECT " + fields + " FROM " + table
@@ -516,7 +517,7 @@ class dbase(object):
             db_cur.execute(SELECT)
             result = db_cur.fetchone()
 
-            # wenn kein satz vorhanden
+            # no item found
             if result is None:
                 row = None
                 log_message = ("read_tbl_row_with_cond: nichts gefunden..."
