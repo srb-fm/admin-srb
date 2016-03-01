@@ -1364,12 +1364,12 @@ def read_random_file_from_dir(ac, db, path):
 
 
 def upload_data(ac, db, url, data_upload):
-    """Webseite holen, bzw. Daten uebertragen """
+    """transmit data to webserver, return result website """
     website = None
 
     import urllib2
-    from urllib2 import Request, urlopen, URLError, HTTPError
-
+    #from urllib2 import Request, urlopen, URLError, HTTPError
+    from urllib2 import URLError, HTTPError
     req = urllib2.Request(url, data_upload)
 
     try:
