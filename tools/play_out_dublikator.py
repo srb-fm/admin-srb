@@ -279,21 +279,21 @@ def create_keyword(sendung, roboting_sg, dt_sg_new_date):
             lib_cm.replace_uchar_sonderzeichen_with_latein(sendung[16]))
         lib_cm.message_write_to_console(ac,
             lib_cm.replace_uchar_sonderzeichen_with_latein(roboting_sg[1]))
-        # counter suchen und erhoehen
+        # search counter, if found increase value
         counter_pos = roboting_sg[1].find("nnn")
         if counter_pos != -1:
             counter_old = sendung[16][counter_pos:counter_pos + 3]
-            lib_cm.message_write_to_console(ac, counter_old)
+            lib_cm.message_write_to_console(ac, "counter old: " + counter_old)
             # bei zweistelligem ergebnis null auffuellen
             counter_new = str(int(counter_old) + 1).zfill(3)
-            lib_cm.message_write_to_console(ac, counter_new)
+            lib_cm.message_write_to_console(ac, "counter new: " + counter_new)
             # Stichwort bis Counter
             # stichwort_anfang = sendung[16][0:counter_pos]
 
-        # datum in stichwort suchen
+        # search date in keyword
         date_pos = roboting_sg[1].find("yyyy_mm_dd")
 
-        # counter und date vorhanden
+        # counter and date present
         if counter_pos != -1 and date_pos != -1:
             # durch sendung[16][date_pos+10:] wird alles
             # was in stichwort sonst noch eingetragen
@@ -301,19 +301,19 @@ def create_keyword(sendung, roboting_sg, dt_sg_new_date):
             sg_stichwort = (roboting_sg[1][0:counter_pos] + counter_new
                                 + "_" + dt_sg_new_date.strftime("%Y_%m_%d")
                                 + sendung[16][date_pos + 10:])
-        # counter aber kein date vorhanden
+        # counter but no date present
         if counter_pos != -1 and date_pos == -1:
             # durch sendung[16][counter_pos + 3:] wird alles
             # was in stichwort sonst noch eingetragen
             # hinten wieder dran gesetzt
             sg_stichwort = (roboting_sg[1][0:counter_pos] + counter_new
                                 + sendung[16][counter_pos + 3:])
-        # counter nicht, aber date vorhanden
+        # counter not, but date present
         if counter_pos == -1 and date_pos != -1:
             sg_stichwort = (roboting_sg[1][0:date_pos]
                                 + dt_sg_new_date.strftime("%Y_%m_%d")
                                 + sendung[16][date_pos + 10:])
-        # weder counter noch date in stichwort vorhanden
+        # neither counter nor date in keyword present
         if counter_pos == -1 and date_pos == -1:
             sg_stichwort = sendung[16]
 
@@ -382,8 +382,8 @@ def calk_date_month(option):
 
 
 def lets_rock():
-    """Main funktion"""
-    print "lets_rock "
+    """Main function"""
+    #print "lets_rock "
     lib_cm.message_write_to_console(ac, u"lets_rock")
 
     # weekly
@@ -468,6 +468,7 @@ def dublikate(roboting_sgs, n_days_add):
             sg_stichwort = create_keyword(sendung, roboting_sg, dt_sg_new_date)
             if sg_stichwort is None:
                 continue
+            #lib_cm.message_write_to_console(ac, "Stichwort:" + sg_stichwort)
 
             # filename zusammenbauen
             sg_filename = create_filename(sendung,
