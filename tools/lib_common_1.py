@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # bibo fuer srb-tools
 
-#import sys
 import kinterbasdb
 import datetime
 import string
@@ -1230,7 +1229,7 @@ def params_check_a(ac, db, params_range, params_type_list, params_list):
 
 
 def params_check_type(ac, db, param_typ, param_value):
-    """ Pruefen ob in Param-Feldern entsprechender Typ eingetragen"""
+    """ check type of parameter value"""
     message_write_to_console(ac, "check_params_type ")
 
     if param_typ == "p_string":
@@ -1244,12 +1243,11 @@ def params_check_type(ac, db, param_typ, param_value):
             pm = None
     elif param_typ == "p_url":
         pm = re.match(r"http://", param_value)
-
     return pm
 
 
 def error_write_to_file(ac, err_message):
-    # fehler in datei schreiben, wenn nicht in db möglich
+    """ write error in file if db not available"""
     message_write_to_console(ac, "error_write_to_file")
     message = (str(datetime.datetime.now()) + " - "
                             + err_message.encode('ascii', 'ignore') + "\n")
@@ -1274,7 +1272,7 @@ def message_write_to_console(ac, debug_message):
 
 
 def replace_uchar_with_html(unistr):
-    """unicode-Zeichen durch html-Entities ersetzen"""
+    """ replace unicode-chars with html-entities"""
     # noetig: import htmlentitydefs
     #return "&%s;" % htmlentitydefs.codepoint2name[ord(character)]
     escaped = ""
@@ -1289,7 +1287,7 @@ def replace_uchar_with_html(unistr):
 
 
 def replace_sonderzeichen_with_latein(my_string):
-    """Sonderzeichen (Umlaute) ersetzen"""
+    """replace german umlauts and special chars with latin"""
     #print "replace_sonderzeichen"
     x = my_string.replace(u"ä", "ae")
     x = x.replace(u"Ä", "Ae")
@@ -1304,7 +1302,7 @@ def replace_sonderzeichen_with_latein(my_string):
 
 
 def replace_uchar_sonderzeichen_with_latein(my_string):
-    """Sonderzeichen (Umlaute) ersetzen"""
+    """ replace german umlauts and special chars"""
     #print "replace_sonderzeichen"
     x = my_string.replace(u"\xe4", "ae")
     x = x.replace(u"\xc4", "Ae")
@@ -1328,7 +1326,7 @@ def simple_cleanup_html(html_string):
 
 
 def read_file_first_line(ac, db, filename):
-    """Erste Zeile einer Datei lesen"""
+    """ read first row from file"""
     message_write_to_console(ac, u"read_file_first_line " + filename)
     try:
         # mit "with" wird file autom geschlossen
@@ -1343,7 +1341,7 @@ def read_file_first_line(ac, db, filename):
 
 
 def read_random_file_from_dir(ac, db, path):
-    """Datei per Zufall aus Verzeichnis ermitteln"""
+    """ read random file from folder"""
     try:
         dirList = os.listdir(path)
         random_file = random.choice(dirList)
@@ -1390,13 +1388,11 @@ def upload_data(ac, db, url, data_upload):
         website = response.read()
         response.close()
         ##print website
-
     return website
 
 
 def download_website(ac, db, url):
-    # download website
-    #import urllib2
+    """ download website"""
     from urllib2 import Request, urlopen, URLError, HTTPError
     website = None
     req = Request(url)
@@ -1419,6 +1415,7 @@ def download_website(ac, db, url):
 
 
 def erase_file(ac, db, path_filename):
+    """ erase file"""
     message_write_to_console(ac, "erase_file: " + path_filename)
 
     try:
@@ -1433,12 +1430,11 @@ def erase_file(ac, db, path_filename):
             ac, "erase_file: " + "%r: %s" % (msg, path_filename))
         log_message = "erase_file: " + "%r: %s" % (msg, path_filename)
         db.write_log_to_db(ac, log_message, "x")
-
     return
 
 
 def erase_file_a(ac, db, path_filename, msg_done):
-    """Datei loeschen"""
+    """ erase file"""
     message_write_to_console(ac, "erase_file: " + path_filename)
 
     try:
@@ -1454,38 +1450,33 @@ def erase_file_a(ac, db, path_filename, msg_done):
         log_message = "erase_file: " + "%r: %s" % (msg, path_filename)
         db.write_log_to_db(ac, log_message, "x")
         return None
-
     return path_filename
 
 
 def check_slashes(ac, path_to_check):
-    """Back oder Slashes bei Pfad hintendran machen"""
+    """ add slash or back slash depending on os"""
     if ac.app_windows == "yes":
-        # pfad anpassen, win-backslash hinten dran:
         if path_to_check[-1] != "\\":
             path_to_check += "\\"
     else:
         if path_to_check[-1] != "/":
             path_to_check += "/"
-
     return path_to_check
 
 
 def check_slashes_a(ac, path_to_check, win):
-    """Back oder Slashes bei Pfad hintendran machen"""
+    """ add slash or back slash depending on os"""
     if win == "yes":
-        # pfad anpassen, win-backslash hinten dran:
         if path_to_check[-1] != "\\":
             path_to_check += "\\"
     else:
         if path_to_check[-1] != "/":
             path_to_check += "/"
-
     return path_to_check
 
 
 def extract_filename(ac, path_filename):
-    """filename rechts von slash extrahieren"""
+    """ extract filename right from slash"""
     if ac.app_windows == "no":
         filename = path_filename[string.rfind(path_filename, "/") + 1:]
     else:
@@ -1494,6 +1485,6 @@ def extract_filename(ac, path_filename):
 
 
 def get_seconds_from_tstr(s):
-    """sekunden aus hh:mm:ss ermitteln"""
+    """ determine seconds from hh:mm:ss """
     l = s.split(':')
     return int(l[0]) * 3600 + int(l[1]) * 60 + int(l[2])
