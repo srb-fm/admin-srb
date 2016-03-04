@@ -95,7 +95,8 @@ class app_config(object):
         # develop-mod
         self.app_develop = "no"
         # debug-mod
-        self.app_debug_mod = "yes"
+        # for normal usage set to no to prevent string encode errors
+        self.app_debug_mod = "no"
         self.app_windows = "no"
         self.time_target = datetime.datetime.now()
 
