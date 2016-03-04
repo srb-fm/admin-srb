@@ -95,7 +95,7 @@ class app_config(object):
         # develop-mod
         self.app_develop = "no"
         # debug-mod
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         self.app_windows = "no"
         self.time_target = datetime.datetime.now()
 
@@ -136,7 +136,7 @@ def ftp_connect_and_dir(path_ftp):
 
     try:
         ftp.login(db.ac_config_1[7], db.ac_config_1[8])
-    except ftplib.error_perm, resp:
+    except ftplib.error_perm:
         lib_cm.message_write_to_console(ac, "ftp: no login to: "
                                         + db.ac_config_1[7])
         log_message = (ac.app_errorslist[2] + " - " + db.ac_config_1[7])
@@ -145,7 +145,7 @@ def ftp_connect_and_dir(path_ftp):
 
     try:
         ftp.cwd(path_ftp)
-    except ftplib.error_perm, resp:
+    except ftplib.error_perm:
         lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
                                         + db.ac_config_1[5])
         log_message = (ac.app_errorslist[3] + " - " + path_ftp)
@@ -164,8 +164,8 @@ def load_filelist_from_log(c_time_back, c_time_now):
     """load filelist from Log"""
     db_tbl = "EXCHANGE_LOGS A "
     db_tbl_fields = ("A.EX_LOG_ID, A.EX_LOG_TIME, A.EX_LOG_FILE ")
-    db_tbl_condition = ("SUBSTRING( A.EX_LOG_TIME FROM 1 FOR 19) >= '"
-        + c_time_back + "' AND SUBSTRING( A.EX_LOG_TIME FROM 1 FOR 19) < '"
+    db_tbl_condition = ("SUBSTRING(A.EX_LOG_TIME FROM 1 FOR 19) >= '"
+        + c_time_back + "' AND SUBSTRING(A.EX_LOG_TIME FROM 1 FOR 19) < '"
         + c_time_now + "' ORDER BY A.EX_LOG_ID")
 
     log_data = db.read_tbl_rows_with_cond_log(ac,
@@ -181,10 +181,19 @@ def check_filelist(filelist_db, files_online):
     new_files = []
     files_from_db_list = []
     for item in filelist_db:
-        files_from_db_list.append(item[2])
+        # files_from_db_list.append(item[2])
+        # if filenames containig german umlauds, we have to encode to utf8
+        files_from_db_list.append(item[2].encode('utf8'))
+
+    #lib_cm.message_write_to_console(ac, "files from db list")
+    #lib_cm.message_write_to_console(ac, files_from_db_list)
+    #lib_cm.message_write_to_console(ac, "files online list")
+    #lib_cm.message_write_to_console(ac, files_online)
 
     new_files = (list(
         set(files_online).difference(set(files_from_db_list))))
+    #lib_cm.message_write_to_console(ac, "new files list")
+    #lib_cm.message_write_to_console(ac, new_files)
     if len(new_files) > 0:
         for item_new_file in new_files:
             log_message = ("Neue Uebernahme gefunden: " + item_new_file)
@@ -225,6 +234,7 @@ def lets_rock():
     # load old file list from db
     time_back = (datetime.datetime.now()
                  + datetime.timedelta(seconds=- 3660))
+                 #+ datetime.timedelta(seconds=- 600))
     c_time_back = time_back.strftime("%Y-%m-%d %H:%M:%S")
     c_time_now = ac.time_target.strftime("%Y-%m-%d %H:%M:%S")
     filelist_db = load_filelist_from_log(c_time_back, c_time_now)
