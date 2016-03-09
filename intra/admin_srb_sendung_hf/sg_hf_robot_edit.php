@@ -238,7 +238,7 @@ if ( $user_rights == "yes" ) {
 	echo " Verschiebung zw. Erstsendung Lieferant und SRB: ";
 	echo "<select name='form_sg_rob_shift' class='text_2' size='1'>";
 	$i = 0;
-	while ($i <= 7) {
+	while ($i <= 30) {
 		if ( $i != rtrim($tbl_row->SG_HF_ROB_SHIFT) ) {
 			echo "<option>".$i."</option>";
 		} else {
