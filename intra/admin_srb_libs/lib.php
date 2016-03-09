@@ -364,7 +364,7 @@ function sg_build_filename_for_reg_form( $c_audio_filename, $c_keywords, $c_cont
 				"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings_paths_c_B'");
 	}
 	// if we have an stream-url, then we must build it based on keywords
-	if ( substr($c_audio_filename, 0, 5) == "http:" ) {
+	if ( substr($c_audio_filename, 0, 5) == "http:" or $c_audio_filename == "Keine_Audiodatei" ) {
 		$keyword = replace_umlaute_sonderzeichen(
 			sg_extract_stichwort_for_filename($c_keywords));
 		$filename_reg_form = $c_cont_id."_"
