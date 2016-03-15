@@ -540,3 +540,7 @@ td.text_2{
 	height: 6px;
 }
 
+.error_message {
+	color: #a44949;
+	padding-left: 5px;
+}
