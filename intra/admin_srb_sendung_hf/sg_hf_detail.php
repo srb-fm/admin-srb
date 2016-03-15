@@ -35,6 +35,7 @@ if ( isset($_POST['error_message']) ) {
 $action_ok = false;
 // check file yes/no
 $file_exist_check = "yes";
+$file_exist_in_archive = false;
 	
 // check action	
 if ( isset($_GET['action']) ) {
@@ -275,7 +276,32 @@ if ( $action_ok == true ) {
 	<script type="text/javascript" src="../parts/jquery/jquery_tools/jq_tools.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_my_tools/jq_my_tools_3.js"></script>	
 	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/jplayer/jquery.jplayer.min.js"></script>
-	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/add-on/jquery.jplayer.inspector.min.js"></script> 
+	<script type="text/javascript" src="../parts/jPlayer-2.9.2/dist/add-on/jquery.jplayer.inspector.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$( "#archiv_copy" ).click(function() {
+      	
+      	// to make the php-varies available, initiale it below
+      	//var dataString = ('action=copy' 
+			//				+ '&file_archive=' + "<?php echo $php_remotefilename_archiv ?>"
+			//				+ '&file_play_out=' + "<?php echo $php_remotefilename ?>"
+			//	);
+			document.getElementById('wait').style.display = 'block';
+     		// ajax
+			$.ajax({
+  				type: "POST",
+  				url: "sg_hf_detail_ajax.php",
+  				data: dataString,
+  				success: function(msg){
+    				//alert( "Data Saved: "  );
+ 					document.getElementById('wait').style.display = 'none';
+ 					document.getElementById('archive').style.display = 'none';
+ 					document.getElementById('archive_copy_success').style.display = 'block';
+  				}
+			});
+    	});
+	});
+	</script>
 </head>
 <body>
 <?php
@@ -464,16 +490,17 @@ if ( $user_rights == "yes" ) {
 				if ( file_exists($php_remotefilename_archiv)) {
 					$remotefilename = $remotefilename_archiv;
 					$file_exist = "yes";
+					$file_exist_in_archive = true;
 					if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" or rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
-						$error_message .= "Media-Datei befindet sich im Archiv: ".$tbl_row_config_A->USER_SP_PARAM_9.$archiv_sg_year." <br>Zum Ausspielen bitte in Play-Out kopieren.";
+						$archive_message = "Media-Datei befindet sich im Archiv! ".$tbl_row_config_A->USER_SP_PARAM_9.$archiv_sg_year;
 					} else {
-						$error_message .= "Media-Datei befindet sich im Archiv: ".$tbl_row_config_A->USER_SP_PARAM_10.$archiv_sg_year." <br>Zum Ausspielen bitte in Play-Out kopieren.";
+						$archive_message = "Media-Datei befindet sich im Archiv! ".$tbl_row_config_A->USER_SP_PARAM_10.$archiv_sg_year;
 					}
 				} else { 
-					$error_message .= "Media-Datei weder in Play-Out noch im Archiv vorhanden!"; 
+					$archive_message = "Media-Datei weder in Play-Out noch im Archiv vorhanden!"; 
 				}
 			} else { 
-				$error_message .= "Media-Datei nicht vorhanden oder im Archiv. Archiv-Suche aber deaktiviert!" ; 
+				$archive_message = "Media-Datei nicht vorhanden oder im Archiv. Archiv-Suche aber deaktiviert!" ; 
 			} 				
 		}
 	} // file_exist_check
@@ -531,6 +558,23 @@ if ( $user_rights == "yes" ) {
 	}
 
 	echo "<br>\n<span class='error_message'>".$error_message."</span>";
+	if ( $file_exist_in_archive ) {
+		echo "<div id='archive'>";
+		echo "<br>\n<span class='error_message'>".$archive_message."</span>";
+		// initale varis here for ajax
+		echo "<script>";
+		echo "var dataString = ('action=copy' 
+							+ '&file_archive=' + '$php_remotefilename_archiv'
+							+ '&file_play_out=' + '$php_remotefilename');";
+		echo '</script>';			
+		
+		echo "<input type='button' id='archiv_copy' class='button_1' title='Audio-Datei aus Archiv in Play-Out kopieren' value='In Play-Out kopieren'><br>";
+		echo "</div>";
+		echo "<div id='wait' style='display:none'><img src='../parts/pict/wait30trans.gif' width='30' height='30' border='0' alt='gleich gehts weiter'>...Datei wird kopiert...bitte dieses Fenster NICHT schließen</div>";
+		echo "<div id='archive_copy_success' style='display:none'>";
+		echo "<br>\n<span class='error_message'>Audio - Datei wurde aus Archiv in Play-Out kopiert...</span>";
+		echo "</div>";
+	}
 			
 	// Loeschen
 	if ( $action == "delete" ) { 
