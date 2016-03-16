@@ -1,6 +1,6 @@
 <?php
 /** 
-* Sendung Exchange play and download
+* Sendung Copy from Archive
 *
 * PHP version 5
 *
@@ -24,7 +24,7 @@ if ( $action_ok == true ) {
 	switch ( $action ) {
 
 		case "copy":
-		write_log_file( $_POST['file_archive'] );
+			//write_log_file( $_POST['file_archive'] );
 			echo "copy".$_POST['file_archive'];
 			$success = "no";
 			if (!copy($_POST['file_archive'], $_POST['file_play_out'])) {
@@ -41,7 +41,7 @@ if ( $action_ok == true ) {
 }
 
 /**
-* Logfile fuer Fehleranalyse schreiben  
+* Write Logfile   
 *
 * @param wert $wert Werte 
 *
@@ -50,7 +50,6 @@ if ( $action_ok == true ) {
 */
 function write_log_file( $wert ) 
 {
-	// logfile schreiben
 	$myFile = "../admin_srb_export/sg_detail.log";
 	$fh = fopen($myFile, 'w') or die("can't open file");
 	//$stringData = $wert."\n";
