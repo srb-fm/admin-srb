@@ -86,5 +86,10 @@
 		<a href="http://www.srb.fm/mobile/" target="_blank">SRB-Mobile Beta</a>
 	</div>				
 	
+	<p class="menu_head">Hilfe</p>
+	<div class="menu_body">
+		<a href="../../admin_srb_user/doc_tools_clock.html">Aktionszeiten der Admin-Tools</a>
+		<a href="https://github.com/srb-fm/admin-srb/wiki">Wiki Admin-SRB</a>
+	</div>		
 	
 </div>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<body bgcolor="black">
+<div style="margin-top:135px; color:white"></div>
+<canvas id="myCanvas" width="1280" height="720" style="border:0px solid #c3c3c3;">
+Canvas not found.
+</canvas>
+<div style="margin-top:-865px"><img src="../parts/clock/clock_admin_normal.png"></div>
+<script src="../parts/clock/clock_bt93.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+
+
+function Ziffernblatt()
+{var x,xx,i,j;
+ x=0;
+ for(i=1;i<=12;i++)
+ {farbe= WEISS; DiaPunkt(Gsin(x),Gcos(x));
+  xx=x;
+  for(j=1;j<=4;j++)
+  {xx=xx+360/60;
+   farbe=GRAU;
+   DiaLinie(Gsin(xx),Gcos(xx),0.98*Gsin(xx),0.98*Gcos(xx));
+  }
+  x=x+360/12;
+ }
+}
+
+function Zeiger(h,m,s,c)
+{var a;
+ switch(c)
+ {
+  case 'm': ctx.lineWidth=10;//SETLINESTYLE(0,0,3);
+            a=(m/60*360);
+            farbe=ORANGE;
+            DiaLinie(0,0,0.95*Gsin(a),0.95*Gcos(a));
+            a=m*360/12/60;
+            a=a+(h/24*2*360);
+            farbe=ORANGE;
+            DiaLinie(0,0,0.75*Gsin(a),0.75*Gcos(a));
+            ctx.lineWidth=3;//SETLINESTYLE(0,0,1);
+            break;
+  case "s": a=(s/60*360);
+            farbe=ROT;
+            DiaLinie(0,0,0.95*Gsin(a),0.95*Gcos(a));
+            break;
+  }
+}
+
+function Uhr()
+{var h,m,s,now=new Date();
+     Grafik(AN);markgroesse=4;ctx.lineCap="round";
+ctx.lineWidth=3;
+     hwork=ctx.canvas.height-4*markgroesse; wwork=hwork;
+     ywork=2*markgroesse;
+     xwork=ctx.canvas.width / 2 - wwork / 2;
+     farbe=SCHWARZ; Diagramm(-1,1,0,-1,1,0);
+     farbe=WEISS;   Ziffernblatt();
+     h=now.getHours(); m=now.getMinutes(); s=now.getSeconds();
+     Zeiger(h,m,s,"m"); Zeiger(h,m,s,"s"); 
+}
+ 
+window.setInterval("Uhr()", 1000)
+</script>
+
+</body>
+</html>
+ 
