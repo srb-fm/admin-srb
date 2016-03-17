@@ -225,7 +225,7 @@ def lets_rock():
         log_message = "Input " + ac.switch_input_new + " vorgesehen"
         db.write_log_to_db_a(ac, log_message, "t", "write_also_to_console")
 
-    if time_now.second == 57:
+    if time_now.second == 56:
         fade_switch(ac.switch_input_new)
 
     if datetime.datetime.now() >= ac.time_forward:
