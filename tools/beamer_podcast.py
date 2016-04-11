@@ -52,6 +52,7 @@ Param 4: ftp-Benutzer
 Param 5: ftp-PW
 Param 6: ftp-Verzeichnis
 Param 7: Pfad temporaere Dateien fuer Encoder
+Param 8: ID3-Tags in utf-8 encoden on/off
 
 Extern Parameters:
 ext_tools
@@ -73,7 +74,10 @@ import datetime
 import subprocess
 import ftplib
 import socket
-import lib_common_1 as lib_cm
+#from mutagen.mp3 import MP3
+from mutagen.id3 import ID3, TPE1, TIT2
+from mutagen.id3 import ID3NoHeaderError
+#import lib_common_1 as lib_cm
 
 
 class app_config(object):
@@ -87,7 +91,7 @@ class app_config(object):
         self.app_config = u"PC_Beamer_Config"
         self.app_config_develop = u"PC_Beamer_Config_1_e"
         # amount parameter
-        self.app_config_params_range = 8
+        self.app_config_params_range = 9
         self.app_errorfile = "error_podcast_beamer.log"
         # dev-mod
         self.app_develop = "no"
@@ -118,6 +122,7 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -340,6 +345,62 @@ def check_files_online(podcast_sendungen):
     return file_offline
 
 
+def tag_file_id3(podcast_sendung):
+    """tag files with id3"""
+    lib_cm.message_write_to_console(ac, u"tag files with id3")
+    # dest recoded file
+    path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
+    c_source_file = path_source + podcast_sendung[0]
+    lib_cm.message_write_to_console(ac, c_source_file)
+    log_message = u"Podcast mit ID3 taggen: " + c_source_file
+    db.write_log_to_db(ac, log_message, "k")
+
+    if os.path.isfile(c_source_file):
+        if ac.app_windows == "yes":
+            f = open(c_source_file, "rb")
+        else:
+            f = open(c_source_file, "r")
+
+        id3_tag_present = False
+        try:
+            audio_id3_tag = ID3(c_source_file)
+            id3_tag_present = True
+        except ID3NoHeaderError:
+            db.write_log_to_db_a(ac, u"Kein ID3 Tag vorhanden: "
+                        + podcast_sendung[0], "t", "write_also_to_console")
+
+        if id3_tag_present:
+            db.write_log_to_db_a(ac, u"ID3 Tag vorhanden: "
+                        + podcast_sendung[0], "t", "write_also_to_console")
+            audio_id3_tag.delete()
+            db.write_log_to_db_a(ac, u"ID3 Tag geloescht: "
+                        + podcast_sendung[0], "t", "write_also_to_console")
+
+        id3_author_value_uni = podcast_sendung[2] + " " + podcast_sendung[3]
+        #c_id3_author_value = id3_author_value_uni.encode("utf-8")
+        #c_id3_title_value = podcast_sendung[1].encode("utf-8")
+        #audio_id3_tag.add(TPE2(encoding=3, text=c_id3_author_value))
+        #audio_id3_tag.add(TIT2(encoding=3, text=c_id3_title_value))
+        audio_id3_tag.add(TPE1(encoding=3, text=id3_author_value_uni))
+        audio_id3_tag.add(TIT2(encoding=3, text=podcast_sendung[1]))
+        audio_id3_tag.save()
+
+        #audio = ID3(c_source_file)
+        #print "Artist: %s" % audio['TPE2'].text[0]
+        #print "Track: %s" % audio["TIT2"].text[0]
+
+        db.write_log_to_db_a(ac, u"Podcast mit ID3 getaggt: "
+                        + podcast_sendung[0], "k", "write_also_to_console")
+
+    else:
+        msg = u"temp Datei nicht vorhanden"
+        lib_cm.message_write_to_console(ac, u"tag files with id3: "
+                                        + "%r: %s" % (msg, c_source_file))
+        log_message = u"tag files with id3: " + "%r: %s" % (msg, c_source_file)
+        db.write_log_to_db(ac, log_message, "x")
+    return
+
+
 def upload_file(podcast_sendung):
     """upload files"""
     lib_cm.message_write_to_console(ac, u"upload_file")
@@ -546,6 +607,10 @@ def lets_rock():
             db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
                 "write_also_to_console")
             return
+
+    # tagging file in utf-8
+    if db.ac_config_1[8] == "on":
+        tag_file_id3(podcast_sendung)
 
     # upload whats not online
     upload_ok = upload_file(podcast_sendung)
