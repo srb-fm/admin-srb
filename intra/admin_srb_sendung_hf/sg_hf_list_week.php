@@ -315,7 +315,7 @@ if ( $user_rights == "yes" ) {
 			}
 			    
 			// Listcolors
-			// attantion of duration
+			// attention for duration
 			switch (rtrim($item['SG_HF_DURATION'])) {
 			case "00:00:00":
 				$div_class_a_1 = "<div class='content_row_a_4 blink' title='Bitte Sendedauer ueberpruefen'>";
@@ -402,7 +402,7 @@ if ( $user_rights == "yes" ) {
 					echo "<br>  Sendeanmeldung ";
 					echo "<a href='sg_hf_reg_form.php?action=print&amp;sg_id=".$item['SG_HF_ID']."&amp;ad_id=".$item['SG_HF_CONT_AD_ID']."' target='_blank'>drucken</a> ";
 					echo " - ";
-					echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$item['SG_HF_ID']."&amp;sg_file=".$item[SG_HF_CONT_FILENAME]."' target='_blank'>PDF</a> ";
+					echo "<a href='sg_hf_reg_form_pdf.php?action=pdf&amp;sg_id=".$item['SG_HF_ID']."&amp;sg_file=".$item['SG_HF_CONT_FILENAME']."' target='_blank'>PDF</a> ";
 				}
 				echo "</div>\n";
 		}
