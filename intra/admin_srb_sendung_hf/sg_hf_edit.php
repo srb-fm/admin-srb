@@ -353,7 +353,7 @@ if ( $action_ok == true ) {
 					$set_mp3gain = "no";	
 				} 				
 				//$c_audio_length = read_length_write_tag($remotefilename, $patfilename, replace_umlaute_sonderzeichen($_POST['form_ad_name']), replace_umlaute_sonderzeichen($_POST['form_sg_titel']), $c_audio_length, $set_mp3gain);
-				$c_audio_length = read_length_write_tag($remotefilename, $patfilename, $_POST['form_ad_name'], $_POST['form_sg_titel'], $c_audio_length, $set_mp3gain);
+				$c_audio_length = read_length_write_tag($remotefilename, $patfilename, $_POST['id3_artist'], $_POST['form_sg_titel'], $c_audio_length, $set_mp3gain);
 				$c_audio_length = get_time_in_hms($c_audio_length);
 				if ( $c_audio_length == "00:00:00" ) { 
 					$error_message .= "Fehler beim Hoerdauerabgleich "; 
@@ -592,6 +592,7 @@ if ( $user_rights == "yes" ) {
 	echo "<input type='hidden' name='sg_content_id' value='".$tbl_row_sg->SG_HF_CONTENT_ID."'>";	
 	echo "<input type='hidden' name='ad_id' value='".$tbl_row_ad->AD_ID."'>";
 	echo "<input type='hidden' name='ad_name' value='".trim($tbl_row_ad->AD_NAME)."'>";
+	echo "<input type='hidden' name='id3_artist' value='".trim($tbl_row_ad->AD_VORNAME)." ".trim($tbl_row_ad->AD_NAME)."'>";
 	echo "<input type='hidden' name='sg_editor_ad_id' value='".$tbl_row_sg->SG_HF_CONT_EDITOR_AD_ID."'>";
 
 	echo "<div class='content_row_a_1'>";

@@ -17,7 +17,7 @@ require_once "../../cgi-bin/admin_srb_libs/lib.php";
 // include getID3() library (can be in a different directory if full path is specified)
 require_once('../parts/get_id3/getid3/getid3.php');
 
-function read_length_write_tag ( $remotefilename, $pathfilename, $artist , $title, $audio_length, $set_mp3gain ) {
+function read_length_write_tag ($remotefilename, $pathfilename, $artist, $title, $audio_length, $set_mp3gain) {
 
 	$log_message = "start ".date('l jS \of F Y h:i:s A')."\n".$artist." - ".$title."\n";
 	// Copy remote file locally to scan with getID3()
@@ -55,6 +55,9 @@ function read_length_write_tag ( $remotefilename, $pathfilename, $artist , $titl
 	}
 
 	$log_message .= $need_change_id3."\n";
+	$rgaintags = @$ThisFileInfo['tags']['ape']['replay_gain'][0];
+	//write_log_file( $log_message, $ThisFileInfo );
+	write_log_file($log_message, $ThisFileInfo['replay_gain']);
 
 	if ( $need_change_id3 = "yes" ) {
 		// Settings
@@ -68,7 +71,8 @@ function read_length_write_tag ( $remotefilename, $pathfilename, $artist , $titl
 		require_once('../parts/get_id3/getid3/write.php');
 		$tagwriter = new getid3_writetags;
 		$tagwriter->filename       = $localtempfilename;
-		$tagwriter->tagformats     = array('id3v1', 'id3v2.3', 'ape');
+		//$tagwriter->tagformats     = array('id3v1', 'id3v2.3', 'ape');
+		$tagwriter->tagformats     = array('id3v2.3', 'ape');
 		// set various options (optional)
 		$tagwriter->overwrite_tags = true;
 		$tagwriter->tag_encoding   = $TaggingFormat;
