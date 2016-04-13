@@ -281,11 +281,6 @@ if ( $action_ok == true ) {
 	$(document).ready(function() {
 		$( "#archiv_copy" ).click(function() {
       	
-      	// to make the php-varies available, initiale it below
-      	//var dataString = ('action=copy' 
-			//				+ '&file_archive=' + "<?php echo $php_remotefilename_archiv ?>"
-			//				+ '&file_play_out=' + "<?php echo $php_remotefilename ?>"
-			//	);
 			document.getElementById('wait').style.display = 'block';
      		// ajax
 			$.ajax({
