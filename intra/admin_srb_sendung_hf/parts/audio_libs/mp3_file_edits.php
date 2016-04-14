@@ -72,18 +72,20 @@ function read_length_write_tag ($remotefilename, $pathfilename, $artist, $title,
 		$tagwriter = new getid3_writetags;
 		$tagwriter->filename       = $localtempfilename;
 		//$tagwriter->tagformats     = array('id3v1', 'id3v2.3', 'ape');
-		$tagwriter->tagformats     = array('id3v2.3', 'ape');
+		//$tagwriter->tagformats     = array('id3v2.4', 'ape');
+		$tagwriter->tagformats     = array('id3v2.4');
 		// set various options (optional)
-		$tagwriter->overwrite_tags = true;
+		//$tagwriter->overwrite_tags = true;
 		$tagwriter->tag_encoding   = $TaggingFormat;
-		$tagwriter->remove_other_tags = true;
+		//$tagwriter->remove_other_tags = true;
 
 		// populate data array
-		$TagData['title'][]   = $title;
-		$TagData['artist'][]  = $artist;
+		$TagData['title'][] = $title;
+		$TagData['artist'][] = $artist;
 		#$TagData['album'][]   = 'SRB - Das Buergerradio';
-		$TagData['album'][]   = $tbl_row_user_special->USER_SP_PARAM_3." - ".$tbl_row_user_special->USER_SP_PARAM_4;
-		$TagData['year'][]    = date("Y");
+		$TagData['album'][] = $tbl_row_user_special->USER_SP_PARAM_3." - ".$tbl_row_user_special->USER_SP_PARAM_4;
+		//$TagData['year'][]    = date("Y");
+		$TagData['release_time'][] = date("Y");
 		$tagwriter->tag_data = $TagData;
 
 		// write tags v2
