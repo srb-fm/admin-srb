@@ -351,6 +351,7 @@ function sg_extract_stichwort_for_filename( $c_stichworte )
 */
 function sg_build_filename_for_reg_form( $c_audio_filename, $c_keywords, $c_cont_id, $c_ad_name )
 {
+	$filename_reg_form = "";
 	// Paths from Settings
 	$tbl_row_config_serv = db_query_display_item_1(
 						"USER_SPECIALS", "USER_SP_SPECIAL = 'server_settings'");
