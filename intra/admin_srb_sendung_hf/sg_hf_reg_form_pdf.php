@@ -164,7 +164,7 @@ class PDF extends FPDF
   		$this->Image('../parts/pict/logo_user.jpg', 10, 8, 33);
 		$this->SetFont('Arial', 'B', 10);
 		$this->SetX(140);
-		$this->MultiCell(0, 5, $this->my_page_adress, 0, R);
+		$this->MultiCell(0, 5, $this->my_page_adress, 0, 'R');
   		$this->SetFont('Arial', 'B', 12);
   		$this->Ln(20);
   		//Title
