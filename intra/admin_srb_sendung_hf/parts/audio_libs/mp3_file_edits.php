@@ -55,14 +55,17 @@ function read_length_write_tag ($remotefilename, $pathfilename, $artist, $title,
 	}
 
 	$log_message .= $need_change_id3."\n";
-	$rgaintags = @$ThisFileInfo['tags']['ape']['replay_gain'][0];
+	//$rgaintags = @$ThisFileInfo['tags']['ape']['replay_gain'][0];
 	//write_log_file( $log_message, $ThisFileInfo );
-	write_log_file($log_message, $ThisFileInfo['replay_gain']);
+	//write_log_file($log_message, $ThisFileInfo['replay_gain']);
+	//write_log_file($log_message, $ThisFileInfo['replay_gain']['mp3gain']);
+	//write_log_file($log_message, $ThisFileInfo['replay_gain']['track']);
+	//write_log_file($log_message, $ThisFileInfo['replay_gain']['track']['peak']);
 
 	if ( $need_change_id3 = "yes" ) {
 		// Settings
 		$tbl_row_user_special = db_query_display_item_1("USER_SPECIALS", "USER_SP_SPECIAL = 'PO_Logging_Config'");
-			
+	
 		// prepare tag
 		$TaggingFormat = 'UTF-8';
 		//$TaggingFormat = 'ISO-8859-1';
