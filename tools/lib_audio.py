@@ -13,7 +13,7 @@ def add_id3(ac, db, lib_cm, sendung_data, path_file):
     lib_cm.message_write_to_console(ac, "id3-Tag in mp3-File schreiben")
 
     if os.path.isfile(path_file) is False:
-        log_message = "tag file with id3 " + "%r: %s" % (
+        log_message = "tagging file with id3 " + "%r: %s" % (
                                         "Datei nicht vorhanden: ", path_file)
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
@@ -31,12 +31,16 @@ def add_id3(ac, db, lib_cm, sendung_data, path_file):
                         + sendung_data[12], "t", "write_also_to_console")
         audio_id3_tag.delete()
         db.write_log_to_db_a(ac, "ID3 Tag geloescht: "
-                        + sendung_data[12], "t", "write_also_to_console")
+                        + sendung_data[12], "p", "write_also_to_console")
 
     id3_author_value_uni = sendung_data[15] + " " + sendung_data[16]
-    audio_id3_tag.add(TPE1(encoding=3, text=id3_author_value_uni))
-    audio_id3_tag.add(TIT2(encoding=3, text=sendung_data[11]))
-    audio_id3_tag.save()
+    try:
+        audio_id3_tag.add(TPE1(encoding=3, text=id3_author_value_uni))
+        audio_id3_tag.add(TIT2(encoding=3, text=sendung_data[11]))
+        audio_id3_tag.save()
+    except Exception, e:
+        log_message = u"ID3 Tagging Error: %s" % str(e)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
     db.write_log_to_db_a(ac, "Audiodatei mit ID3 getaggt: "
                         + sendung_data[12], "k", "write_also_to_console")

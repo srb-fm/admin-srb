@@ -64,6 +64,7 @@ import string
 import datetime
 import shutil
 import subprocess
+import lib_audio as lib_au
 import lib_common_1 as lib_cm
 
 
@@ -277,46 +278,6 @@ def audio_mp3gain(path_file_dest):
     else:
         db.write_log_to_db_a(ac, u"mp3gain offenbar nicht noetig: "
                              + c_source_file, "p", "write_also_to_console")
-
-
-def add_id3(sendung_data, path_file_dest):
-    """write id3-tag in mp3-file"""
-    lib_cm.message_write_to_console(ac, u"id3-Tag in mp3-File schreiben")
-    # use the right char-encoding for supprocesses
-    cmd = db.ac_config_etools[4].encode(ac.app_encode_out_strings)
-    #cmd = "id3v2"
-    c_author = (sendung_data[15].encode(
-            ac.app_encode_out_strings) + " "
-            + sendung_data[16].encode(ac.app_encode_out_strings))
-    c_title = sendung_data[11].encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, cmd)
-    # start subprocess
-    try:
-        p = subprocess.Popen([cmd, u"-a",
-            c_author, u"-t", c_title,
-            path_file_dest],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    except Exception, e:
-        log_message = ac.app_errorslist[7] + u": %s" % str(e)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return None
-
-    lib_cm.message_write_to_console(ac, u"returncode 0")
-    lib_cm.message_write_to_console(ac, p[0])
-    lib_cm.message_write_to_console(ac, u"returncode 1")
-    lib_cm.message_write_to_console(ac, p[1])
-
-    # error?
-    cmd_output_1 = p[1]
-    if cmd_output_1 != "":
-        lib_cm.message_write_to_console(ac, cmd_output_1)
-        db.write_log_to_db_a(ac,
-            ac.app_errorslist[7], "x", "write_also_to_console")
-        return None
-    else:
-        log_message = u"ID3-Tags in VP von extern geschrieben... "
-        db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
-        return True
 
 
 def reg_lenght(sendung_data, path_file_dest):
@@ -613,8 +574,16 @@ def check_and_work_on_files(roboting_sgs):
                     continue
 
             audio_validate(path_file_dest)
+            success_add_id3 = lib_au.add_id3(
+                                ac, db, lib_cm, sendung, path_file_dest)
+
+            if success_add_id3 is None:
+                db.write_log_to_db_a(ac, ac.app_errorslist[7],
+                                        "x", "write_also_to_console")
+
+            # mp3gain must proceed after id3-tag is written
+            # python-rgain has an error if no id3-tag is present
             audio_mp3gain(path_file_dest)
-            add_id3(sendung, path_file_dest)
             reg_lenght(sendung, path_file_dest)
 
             # filename rechts von slash extrahieren
