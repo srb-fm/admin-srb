@@ -38,7 +38,7 @@ Error 001 Fehler beim Kopieren der Protokolldatei in Play-Out
 Error 002 Fehler beim mp3-Validator
 Error 003 Fehler bei mp3gain
 Error 004 Fehler beim Loeschen der mp3validator-bak-Datei
-Error 005 Fehler bei id3tag
+Error 005 Fehler beim Schreiben von id3Tags
 
 Besonderheiten:
 Es werden nur Sendungen beruecksichtigt, die zur vollen Stunde beginnen.
@@ -54,10 +54,11 @@ Krishnamurti
 import sys
 import os
 import string
-import re
+#import re
 import datetime
 import shutil
 import subprocess
+import lib_audio as lib_au
 import lib_common_1 as lib_cm
 
 
@@ -87,7 +88,7 @@ class app_config(object):
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Loeschen der mp3validator-bak-Datei")
         self.app_errorslist.append(self.app_desc +
-            "Fehler bei id3tag: ")
+            " Fehler beim Schreiben von id3Tags")
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -156,8 +157,8 @@ def load_extended_params():
 def load_sg_repeat():
     """check if shows for repeating present"""
     lib_cm.message_write_to_console(ac, "load_podcast")
-    # wenn in Stunde 0, dann mit aktuellem Tag suchen,
-    # damit Sendungen von 23 bis 0 Uhr beruecksichtigt werden
+    # if we are in hour 0, search with current day,
+    # to find shows within 23 to 0
     if datetime.datetime.now().hour == 0:
         ac.time_target = datetime.datetime.now()
 
@@ -272,47 +273,6 @@ def audio_mp3gain(file_dest):
     else:
         db.write_log_to_db_a(ac, u"mp3gain offenbar nicht noetig: "
                              + c_source_file, "p", "write_also_to_console")
-
-
-def audio_id3tag(file_dest, id3_author, id3_title):
-    """write mp3-id3Tags"""
-    lib_cm.message_write_to_console(ac, u"mp3-id3Tag schreiben")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
-    c_id3tag = db.ac_config_etools[4].encode(ac.app_encode_out_strings)
-    c_source_file = file_dest.encode(ac.app_encode_out_strings)
-    # Unterstriche entfernen
-    c_id3_author = re.sub("_", " ", id3_author)
-    c_id3_title = re.sub("_", " ", id3_title)
-    lib_cm.message_write_to_console(ac, c_source_file)
-    # subprozess starten
-    try:
-        p = subprocess.Popen([c_id3tag, u"-2", u"-a", c_id3_author, u"-s",
-                c_id3_title, c_source_file],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    except Exception, e:
-        log_message = ac.app_errorslist[5] + str(e)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return
-    #lib_cm.message_write_to_console(ac, u"returncode 0")
-    #lib_cm.message_write_to_console(ac, p[0])
-    #lib_cm.message_write_to_console(ac, u"returncode 1")
-    #lib_cm.message_write_to_console(ac, p[1])
-
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
-    id3tag_output = string.find(p[0], "tagged")
-    #id3tag_output_1 = string.find( p[1],  "Artist" )
-    #lib_cm.message_write_to_console(ac, id3tag_output)
-    #lib_cm.message_write_to_console( ac, id3tag_output_1 )
-    # wenn gefunden, position, sonst -1
-    if id3tag_output != -1:
-        log_message = u"id3tag angepasst: " + c_source_file
-        db.write_log_to_db(ac, log_message, "k")
-        lib_cm.message_write_to_console(ac, "ok")
-    else:
-        db.write_log_to_db_a(ac,
-            u"id3tag offenbar nicht noetig oder fehlgeschlagen: "
-            + c_source_file, "p", "write_also_to_console")
 
 
 def check_and_work_on_files(repeat_sendung):
@@ -444,10 +404,16 @@ def check_and_work_on_files(repeat_sendung):
 
     # audio-fx
     audio_validate(file_dest)
+    success_add_id3 = lib_au.add_id3(
+                                ac, db, lib_cm, repeat_sendung, file_dest)
+
+    if success_add_id3 is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[5],
+                                        "x", "write_also_to_console")
     audio_mp3gain(file_dest)
-    audio_id3tag(file_dest,
-        lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[16]),
-        lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[13]))
+    #audio_id3tag(file_dest,
+        #lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[16]),
+        #lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[13]))
 
     # extract filename
     if ac.app_windows == "no":
