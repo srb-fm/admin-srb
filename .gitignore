@@ -12,6 +12,7 @@
 *.shtml~
 *.nja
 __init__.py
+*.html~
 
 # configs etc
 admin_srb_conf.php
