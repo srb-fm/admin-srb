@@ -4,6 +4,8 @@
 # lib for audio file editing
 
 import os
+import subprocess
+import string
 import mutagen
 #from mutagen.id3 import ID3, TPE1, TIT2
 #from mutagen.id3 import ID3NoHeaderError
@@ -55,5 +57,44 @@ def add_id3(ac, db, lib_cm, sendung_data, path_file):
     except Exception, e:
         log_message = u"ID3 Tagging Error: %s" % str(e)
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+    return True
 
+
+def add_replaygain(ac, db, lib_cm, path_file):
+    """mp3-Gain"""
+    lib_cm.message_write_to_console(ac, u"mp3-File Gainanpassung")
+    # use the right char-encoding for supprocesses
+    #c_mp3gain = db.ac_config_etools[5].encode(ac.app_encode_out_strings)
+    #c_source_file = path_file_dest.encode(ac.app_encode_out_strings)
+    #lib_cm.message_write_to_console(ac, c_source_file)
+    # start subprocess
+    try:
+        p = subprocess.Popen(["replaygain", path_file],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    except Exception, e:
+        log_message = u"replaygain Error: %s" % str(e)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        log_message = u"replaygain File: %s" % path_file
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return None
+
+    lib_cm.message_write_to_console(ac, u"returncode 0")
+    lib_cm.message_write_to_console(ac, p[0])
+    #lib_cm.message_write_to_console(ac, u"returncode 1")
+    #lib_cm.message_write_to_console(ac, p[1])
+
+    # search for suchess msg, if not found: -1
+    replaygain_output = string.find(p[0], "Done")
+    replaygain_output_1 = string.find(p[0], "Nothing to do")
+
+    #lib_cm.message_write_to_console(ac, replaygain_output)
+    #lib_cm.message_write_to_console(ac, replaygain_output_1)
+    # wenn gefunden, position, sonst -1
+    if replaygain_output != -1:
+        log_message = u"replaygain angepasst: " + path_file
+        db.write_log_to_db_a(ac, log_message, "k", "write_also_to_console")
+
+    if replaygain_output_1 != -1:
+        db.write_log_to_db_a(ac, u"mp3gain offenbar nicht noetig: "
+                             + path_file, "p", "write_also_to_console")
     return True
