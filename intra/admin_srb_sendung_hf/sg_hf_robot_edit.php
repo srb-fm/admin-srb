@@ -194,7 +194,7 @@ if ( $action_ok == true ) {
 <head>
 	<title>Admin-SRB-Sendung-Automatisierte Sendung</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
-	<style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
+	<style type="text/css">	@import url("../parts/style/style_srb_3.css");    </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_ui_1_8_16/jquery-ui-1.8.16.custom.min.js"></script>
@@ -235,7 +235,7 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Duplizierung </div>";
 	echo html_dropdown_from_table_1("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", "form_sg_rob_dub", "text_2", rtrim($tbl_row->SG_HF_ROB_DUB_ID));
-	echo " Verschiebung zw. Erstsendung Lieferant und SRB: ";
+	echo " Verschiebung zw. Erstsendung Lieferant u. SRB: ";
 	echo "<select name='form_sg_rob_shift' class='text_2' size='1'>";
 	$i = 0;
 	while ($i <= 30) {

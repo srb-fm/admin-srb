@@ -481,7 +481,7 @@ if ( $action_ok == true ) {
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 	<meta http-equiv="expires" content="0">
 
-	<style type="text/css">@import url("../parts/style/style_srb_2.css");    </style>
+	<style type="text/css">@import url("../parts/style/style_srb_3.css");    </style>
 	<style type="text/css">@import url("../parts/style/style_srb_jq_2.css");  </style>
 	<style type="text/css">@import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<style type="text/css">@import url("../parts/jquery/jquery_form_validator/css/validationEngine.jquery.css");    </style>
@@ -680,9 +680,9 @@ if ( $user_rights == "yes" ) {
 	}
 
 	if ( rtrim($tbl_row_sg->SG_HF_CONT_TEAMPRODUCTION) == "T") {
-		echo "<input type='checkbox' name='form_sg_teamprod' value='T' checked='checked' title='Teamproduktion'>Teamp. ";
+		echo "<input type='checkbox' name='form_sg_teamprod' value='T' checked='checked' title='Teamproduktion'>Team";
 	} else { 
-		echo "<input type='checkbox' name='form_sg_teamprod' value='T' title='Teamproduktion'>Teamp. ";
+		echo "<input type='checkbox' name='form_sg_teamprod' value='T' title='Teamproduktion'>Team";
 	}
 
 	echo "</div>";

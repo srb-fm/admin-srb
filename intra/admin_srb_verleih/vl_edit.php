@@ -18,30 +18,30 @@ $message = "";
 $action_ok = "no";
 	
 // action pruefen	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	$action = $_GET['action'];
 	$action_ok = "yes";
 }
-if ( isset( $_POST['action'] ) ) {
+if ( isset($_POST['action']) ) {
 	$action = $_POST['action'];
 	$action_ok = "yes";
 }
 			
 if ( $action_ok == "yes" ) {	
-	if ( isset( $_GET['ad_id'] ) ) {	
+	if ( isset($_GET['ad_id']) ) {	
 		$id = $_GET['ad_id'];
 	}
-	if ( isset( $_POST['ad_id'] ) ) {	
+	if ( isset($_POST['ad_id']) ) {	
 		$id = $_POST['ad_id'];
 	}
-	if ( isset( $_GET['vl_id'] ) ) {	
+	if ( isset($_GET['vl_id']) ) {	
 		$vl_id = $_GET['vl_id'];
 	}
-	if ( isset( $_POST['vl_id'] ) ) { 	
+	if ( isset($_POST['vl_id']) ) { 	
 		$vl_id = $_POST['vl_id'];
 	}
 			
-	if ( $id !="" and  $vl_id !="" ) { 
+	if ( $id !="" and $vl_id !="" ) { 
 		switch ( $action ) {
 		case "new":
 			$message = "Verleih buchen";
@@ -94,7 +94,7 @@ if ( $action_ok == "yes" ) {
 	<title>Admin-SRB-Verleih</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta http-equiv="expires" content="0">
-	<style type="text/css">@import url("../parts/style/style_srb_2.css");  </style>
+	<style type="text/css">@import url("../parts/style/style_srb_3.css");  </style>
 	<style type="text/css">@import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<style type="text/css">@import url("../parts/jquery/jquery_form_validator/css/validationEngine.jquery.css");    </style>
 
@@ -136,8 +136,8 @@ if ( $user_rights == "yes" ) {
 
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Verleih an</div>";
-	echo "<input type='text' name='form_ad_name' class='text_1' value='".$tbl_row_ad->AD_VORNAME." " .$tbl_row_ad->AD_NAME.", ".$tbl_row_ad->AD_ORT."' >";
-	echo "</div>";
+	echo "<div class='content_column_3'>".$tbl_row_ad->AD_VORNAME." " .$tbl_row_ad->AD_NAME.", ".$tbl_row_ad->AD_ORT;
+	echo "</div></div>";
 
 	echo "<div class='content_row_b_1'>";
 	echo "<div class='content_column_1'>Verleih von/ bis</div>";			
