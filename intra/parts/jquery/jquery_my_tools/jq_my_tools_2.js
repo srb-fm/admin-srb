@@ -57,10 +57,11 @@ $(document).ready(function()
 	// benoetigt jquery und:
 	// colorbox.css, jquery.colorbox.js
 	// geht nur wenns hier in dieser lib ist (nicht in der algemeinen jq_tools)
-	$(".c_box").colorbox({width:"850px", height:"630px", opacity:"0.33", overlayClose:false, iframe:true});
+	$(".c_box").colorbox({width:"850px", height:"690px", opacity:"0.33", overlayClose:false, iframe:true});
 	$(".c_box_1").colorbox({width:"1250px", height:"800px", opacity:"0.33", overlayClose:false, iframe:true});
 	$(".c_box_2").colorbox({width:"835px", height:"520px", opacity:"0.33", overlayClose:false, iframe:true});
 	$(".c_box_3").colorbox({width:"835px", height:"480px", opacity:"0.33", overlayClose:false, iframe:true});
+	$(".c_box_4").colorbox({width:"850px", height:"730px", opacity:"0.33", overlayClose:false, iframe:true});
 	
 	// colorboxes ende
 });

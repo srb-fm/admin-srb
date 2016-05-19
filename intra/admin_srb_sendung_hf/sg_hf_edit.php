@@ -636,9 +636,9 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_column_1'>Einstellungen</div>";
 	echo "<div class='content_column_2'>";
 	if ( rtrim($tbl_row_sg->SG_HF_ON_AIR) == "T" ) {
-		echo "<input type='checkbox' name='form_sg_on_air' value='T' checked='checked' title='Wird gesendet'>Auf Sendung ";
+		echo "<input type='checkbox' name='form_sg_on_air' value='T' checked='checked' title='Wird gesendet'>Sendung ";
 	} else { 
-		echo "<input type='checkbox' name='form_sg_on_air' value='T' title='Wird gesendet'>Auf Sendung ";
+		echo "<input type='checkbox' name='form_sg_on_air' value='T' title='Wird gesendet'>Sendung ";
 	}
 
 	if ( rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {

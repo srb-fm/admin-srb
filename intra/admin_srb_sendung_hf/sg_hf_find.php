@@ -85,11 +85,11 @@ if ( $user_rights == "yes" ) {
 	echo "<div><input type='hidden' name='action' value='find'></div>";
 		
 	echo "<table>";		
-	echo "<tr><td>Titel</td><td><input type='TEXT' name='sg_titel' value='' size='60' maxlength='100'></td></tr>";
-	echo "<tr><td>Untertitel</td><td><input type='TEXT' name='sg_untertitel' value='' size='60' maxlength='100'></td></tr>";
-	echo "<tr><td>Stichwort</td><td><input type='TEXT' name='sg_stichwort' value='' size='60' maxlength='100'></td></tr>";
-	echo "<tr><td>Regieanweisung </td><td><input type='TEXT' name='sg_regieanweisung' value='' size='60' maxlength='100'></td></tr>";
-	echo "<tr><td>Dateiname </td><td><input type='TEXT' name='sg_dateiname' value='' size='60' maxlength='100'></td></tr>";
+	echo "<tr><td>Titel</td><td><input type='TEXT' name='sg_titel' value='' size='58' maxlength='100'></td></tr>";
+	echo "<tr><td>Untertitel</td><td><input type='TEXT' name='sg_untertitel' value='' size='58' maxlength='100'></td></tr>";
+	echo "<tr><td>Stichwort</td><td><input type='TEXT' name='sg_stichwort' value='' size='58' maxlength='100'></td></tr>";
+	echo "<tr><td>Regieanweisung </td><td><input type='TEXT' name='sg_regieanweisung' value='' size='58' maxlength='100'></td></tr>";
+	echo "<tr><td>Dateiname </td><td><input type='TEXT' name='sg_dateiname' value='' size='58' maxlength='100'></td></tr>";
 	echo "<tr><td>Genre</td><td>".html_dropdown_from_table_1("SG_GENRE", "SG_GENRE_DESC", "sg_genre", "text_a_1", "00")."</td></tr>";
 	echo "<tr><td>Quelle</td><td>".html_dropdown_from_table_1("SG_HF_SOURCE", "SG_HF_SOURCE_DESC", "sg_quelle", "text_a_1", "00")."</td></tr>";
 	//echo "<tr><td>Quelle</td><td><select name='sg_quelle' size='01' >";
@@ -102,8 +102,8 @@ if ( $user_rights == "yes" ) {
 	//echo "</td></tr>";
 	echo "<tr><td>Magazin-Beiträge</td><td><input type='checkbox' name='sg_magazin' value='T' title='Magazin-Beträge'> </td></tr>";
 	echo "<tr><td>Livesendungen</td><td><input type='checkbox' name='sg_live' value='T' title='Livesendungen'> </td></tr>";
-	echo "<tr><td>Datum</td><td><input type='TEXT'  id='datepicker' name='sg_datum' value='' size='60' maxlength='100'></td></tr>";
-	echo "<tr><td>Content-Nr. </td><td><input type='TEXT' name='sg_cont_id' value='' size='60' maxlength='100'></td></tr>";
+	echo "<tr><td>Datum</td><td><input type='TEXT'  id='datepicker' name='sg_datum' value='' size='58' maxlength='100'></td></tr>";
+	echo "<tr><td>Content-Nr. </td><td><input type='TEXT' name='sg_cont_id' value='' size='58' maxlength='100'></td></tr>";
 	echo "<tr><td>Optionen für Suche</td><td><input type='radio' name='find_option' value='begin' checked='checked' > Anfang <input type='radio' name='find_option' value='in'> Innerhalb <input type='radio' name='find_option' value='exact'> Exakte Übereinstimmung <input type='radio' name='find_option' value='datum'> Datum<br>";		
 	echo "<br>(Es kann immer nur nach dem Inhalt EINES Formularfeldes gesucht werden. <br>Bei mehrern Einträgen zählt die Reihenfolge von oben.)</td></tr>";
 	echo "<tr><td><br>&nbsp;<br></td><td><br>&nbsp;<br><input type='SUBMIT' name='submit' value='Finden'> <input type='RESET' name='reset' value='Zurücksetzen'></td></tr>";

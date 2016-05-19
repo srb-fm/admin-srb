@@ -412,9 +412,9 @@ if ( $user_rights == "yes" ) {
 	}
 										
 	if ( rtrim($tbl_row_sg->SG_HF_CONT_TEAMPRODUCTION) == "T" ) {
-		echo "<input type='checkbox' name='form_sg_teamprod' value='T' checked='checked' title='Teamproduktion'> Teamp.";
+		echo "<input type='checkbox' name='form_sg_teamprod' value='T' checked='checked' title='Teamproduktion'> Team";
 	} else { 
-		echo "<input type='checkbox' name='form_sg_teamprod' value='T' title='Teamproduktion'> Teamp.";
+		echo "<input type='checkbox' name='form_sg_teamprod' value='T' title='Teamproduktion'> Team";
 	}
 	echo "</div></div>\n";
 			
