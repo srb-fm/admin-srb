@@ -1020,16 +1020,11 @@ def create_music_playlist():
     while (duration_minute_music < duration_minute_target):
         if ac.music_play_list_error >= 5:
             db.write_log_to_db(ac, "Musik-Playlist Erstellung abgebrochen", "x")
-            ac.music_play_list_error = 0
+            #ac.music_play_list_error = 0
             return
         file_rotation = lib_cm.read_random_file_from_dir(ac,
                                          db, path_rotation_music)
         #db.write_log_to_db(ac, str(duration_minute_music), "t")
-
-        if (file_rotation[len(file_rotation) - 3:len(file_rotation)]
-                                                        != "mp3".lower()):
-            # no mp3 file
-            continue
 
         if file_rotation is None:
             db.write_log_to_db_a(ac, ac.app_errorslist[3], "x",
@@ -1037,8 +1032,13 @@ def create_music_playlist():
             ac.music_play_list_error += 1
             continue
         else:
+            if (file_rotation[len(file_rotation) - 3:len(file_rotation)]
+                                                        != "mp3".lower()):
+                # no mp3 file
+                continue
             ac.music_play_list.append(path_rotation_music_mpd + file_rotation)
             #lib_cm.message_write_to_console(ac, ac.music_play_list)
+
         try:
             audio_rotation_music = MP3(path_rotation_music + file_rotation)
             duration_minute_music += audio_rotation_music.info.length / 60
