@@ -94,7 +94,7 @@ if ( $action_ok == true ) {
 <head>
 	<title>Admin-SRB-Sendung-Automatisierte Sendung</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
-	<style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
+	<style type="text/css">	@import url("../parts/style/style_srb_3.css");    </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
 	<script type="text/javascript" src="../parts/jquery/jquery_ui_1_8_16/jquery-ui-1.8.16.custom.min.js"></script>

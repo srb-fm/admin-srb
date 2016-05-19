@@ -289,24 +289,24 @@ if ( $user_rights == "yes" ) {
 			}
 			echo "<div class='content_column_6_a'>";
 			if ( $display_firma == true ) {
-				echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box'>".$item['AD_FIRMA']. ", ". $item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_ORT']. "</a>";
+				echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box_4'>".$item['AD_FIRMA']. ", ". $item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_ORT']. "</a>";
 			} else {
 					
 				switch ( $display_option ) {
 				case "geburt": 
-					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box'>".get_date_format_deutsch($item['AD_DATUM_GEBURT'])." - ".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_ORT']. "</a>";
+					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box_4'>".get_date_format_deutsch($item['AD_DATUM_GEBURT'])." - ".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_ORT']. "</a>";
 					break;
 				case "normal": 
-					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box'>".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_ORT']. "</a>";
+					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box_4'>".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_ORT']. "</a>";
 					break;
 				case "adress": 
-					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box'>".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_STRASSE']. ", " . $item['AD_PLZ']. ", " . $item['AD_ORT']."</a>";
+					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box_4'>".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_STRASSE']. ", " . $item['AD_PLZ']. ", " . $item['AD_ORT']."</a>";
 					break;						
 				case "email": 
-					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box'>".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_EMAIL']. "</a>";
+					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box_4'>".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_EMAIL']. "</a>";
 					break;						
 				case "telefon": 
-					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box'>".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_TEL_1']. "/ ".$item['AD_TEL_2'] ."</a>";
+					echo "<a href='adress_detail.php?action=display&amp;ad_id=".$item['AD_ID']."' class='c_box_4'>".$item['AD_NAME']. ", " . $item['AD_VORNAME']. ", " . $item['AD_TEL_1']. "/ ".$item['AD_TEL_2'] ."</a>";
 					break;							
 				//endswitch;
 				}		
