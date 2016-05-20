@@ -42,7 +42,7 @@ $a_statistik_sg = statistik_sg();
 <head>
 	<title>Admin-SRB-Sendung</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
-   <style type="text/css">	@import url("../parts/style/style_srb_2.css");    </style>
+   <style type="text/css">	@import url("../parts/style/style_srb_3.css");    </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<style type="text/css">	@import url("../parts/style/style_srb_jq_2.css");    </style>
 
@@ -55,7 +55,7 @@ $a_statistik_sg = statistik_sg();
  
 <?php 
 echo "<div class='column_right'>";
-echo "<div class='head_item_right'>";
+echo "<div class='head_item_right_1'>";
 echo $message."\n";
 echo "</div>";
 	

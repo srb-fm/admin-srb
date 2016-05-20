@@ -93,7 +93,7 @@ if ( $action_ok == true ) {
 	<title>Admin-SRB-Sendung Übernahme Detailansicht</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta http-equiv="expires" content="0">
-	<style type="text/css">	@import url("../parts/style/style_srb_2.css");</style>
+	<style type="text/css">	@import url("../parts/style/style_srb_3.css");</style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");</style>
 	<link href="../parts/jPlayer-2.9.2/dist/skin/blue.monday/css/jplayer.blue.monday.css" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="../parts/jquery/jquery_1_7_1/jquery.min.js"></script>
@@ -177,7 +177,7 @@ if ( $action_ok == true ) {
 <div class="column_large">
 	<div class="column_right">
 <?php
-echo "<div class='head_item_right'>";
+echo "<div class='head_item_right_1'>";
 echo $message; 
 echo "</div>";
 echo "<div class='content'>";
