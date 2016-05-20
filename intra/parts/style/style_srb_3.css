@@ -61,7 +61,7 @@ strong{
 	color: White;
 	position: relative;
 	left: auto;
-	width: 900px;
+	width: 1024px;
 }
 
 .column_left{
@@ -72,10 +72,14 @@ strong{
 	float: left;
 }
 
-.column_right{
+.column_right, .column_right_1{
 	margin-top: 5px;
-	width: 695px;
+	width: 819px;
 	float: left;
+}
+
+.column_right_1{
+	width: 719px;
 }
 
 .column_large{
@@ -294,7 +298,7 @@ strong{
 	padding-right: 5px;
 	border-left: solid White;
 	border-left-width: thin; 
-	height: 20px;
+	height: 24px;
 	width: 90%;
 	float: left;
 	}
