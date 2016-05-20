@@ -1,1 +1,1 @@
-<div><img src="../parts/pict/banner_srb.png" width="899" height="60" alt="Logo"></div>
+<div><img src="../parts/pict/banner.png" width="1023" height="65" alt="Logo"></div>
