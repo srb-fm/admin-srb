@@ -557,7 +557,7 @@ if ( $action_ok == true ) {
 </head>
 <body>
 <?php
-echo "<div class='column_right'>";
+echo "<div class='column_right_1'>";
 echo "<div class='head_item_right'>"; 
 echo $message; 
 if ( isset($tbl_row_sg->SG_HF_FIRST_SG )) {
