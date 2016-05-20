@@ -464,15 +464,15 @@ if ( $user_rights == "yes" ) {
 		// paths
 		if ( rtrim($tbl_row_sg->SG_HF_MAGAZINE) == "T" or rtrim($tbl_row_sg->SG_HF_INFOTIME) == "T" ) {
 			// PLAYER				
-			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_6.$tbl_row_sg->SG_HF_CONT_FILENAME;
-			$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_8.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$remotefilename = "https://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_6.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$remotefilename_archiv = "https://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_8.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			// php
 			$php_remotefilename = $tbl_row_config_A->USER_SP_PARAM_5.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			$php_remotefilename_archiv = $tbl_row_config_A->USER_SP_PARAM_9.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 		} else {
 			// PLAYER	
-			$remotefilename = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_7.$tbl_row_sg->SG_HF_CONT_FILENAME;
-			$remotefilename_archiv = "http://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_9.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$remotefilename = "https://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_7.$tbl_row_sg->SG_HF_CONT_FILENAME;
+			$remotefilename_archiv = "https://".$_SERVER['SERVER_NAME'].$tbl_row_config_B->USER_SP_PARAM_9.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			//php
 			$php_remotefilename = $tbl_row_config_A->USER_SP_PARAM_6.$tbl_row_sg->SG_HF_CONT_FILENAME;
 			$php_remotefilename_archiv = $tbl_row_config_A->USER_SP_PARAM_10.$archiv_sg_year.$tbl_row_sg->SG_HF_CONT_FILENAME;
