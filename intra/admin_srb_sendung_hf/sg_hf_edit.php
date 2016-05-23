@@ -728,7 +728,7 @@ if ( $user_rights == "yes" ) {
 	echo "</div>";
 	echo "</div>";
 	echo "</form>";
-	echo "<div id='wait' style='display:none; margin-top:-22px;'><img src='../parts/pict/wait30trans.gif' width='30' height='30' border='0' alt='gleich gehts weiter'>...gleich gehts weiter...bitte dieses Fenster NICHT schließen</div>";
+	echo "<div id='wait' style='display:none;'><img src='../parts/pict/wait30trans.gif' width='30' height='30' border='0' alt='gleich gehts weiter'>...gleich gehts weiter...bitte dieses Fenster NICHT schließen</div>";
 	echo "<br> <br>";
 
 } // user_rights			
