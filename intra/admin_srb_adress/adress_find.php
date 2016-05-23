@@ -20,7 +20,7 @@ require "../../cgi-bin/admin_srb_libs/lib_sess.php";
 <head>
 	<title>Admin-SRB-Adresse finden</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
-	<style type="text/css">	@import url("../parts/style/style_srb_2.css");   </style>
+	<style type="text/css">	@import url("../parts/style/style_srb_3.css");   </style>
 	<style type="text/css">	@import url("../parts/style/style_srb_jq_2.css");</style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<style type="text/css"> @import url("../parts/colorbox/colorbox.css");  </style>
@@ -57,7 +57,7 @@ echo "<div class='column_left'>";
 include "parts/ad_menu.inc";
 user_display();			
 echo "</div> <!--class=column_left-->";
-echo "<div class='column_right'>";
+echo "<div class='column_right_1'>";
 echo "<div class='head_item_right'>";
 echo "Adresse finden";
 echo "</div>";
