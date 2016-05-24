@@ -76,6 +76,7 @@ import string
 import subprocess
 import shutil
 import datetime
+import lib_audio as lib_au
 import lib_common_1 as lib_cm
 
 
@@ -681,9 +682,17 @@ def lets_rock():
         collect_garbage(4)
         return
 
-    id3_ok = add_id3(sendung_data[0])
-    if id3_ok is None:
-        return
+    #id3_ok = add_id3(sendung_data[0])
+    #if id3_ok is None:
+    #    return
+
+    dest_path = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
+    path_file = dest_path + sendung_data[0][12]
+    success_add_id3 = lib_au.add_id3(ac, db, lib_cm, sendung_data[0], path_file)
+
+    if success_add_id3 is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[8],
+                                        "x", "write_also_to_console")
 
     #dest_path = lib_cm.check_slashes(ac, db.ac_config_1[11])
     dest_path = lib_cm.check_slashes(ac, db.ac_config_servpath_a[1])
