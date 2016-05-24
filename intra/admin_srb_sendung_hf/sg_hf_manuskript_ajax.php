@@ -29,7 +29,19 @@ if ( $action_ok == true ) {
 		//write_log_file( $_POST['ctxt']) ;
 		$fields_params = "SG_MK_TEXT=?";
 		//$a_values = array( utf8_encode($_POST['ctxt']) );
-		$a_values = array($_POST['ctxt']);
+		// Thanx to Wayne Weibel on http://stackoverflow.com/questions/1176904/php-how-to-remove-all-non-printable-characters-in-a-string
+		
+		$txt = iconv("UTF-8", "UTF-8//IGNORE", $_POST['ctxt']); // drop all non utf-8 characters
+		// this is some bad utf-8 byte sequence that makes mysql complain - control and formatting i think
+		$txt = preg_replace('/(?>[\x00-\x1F]|\xC2[\x80-\x9F]|\xE2[\x80-\x8F]{2}|\xE2\x80[\xA4-\xA8]|\xE2\x81[\x9F-\xAF])/', ' ', $txt);
+		//write_log_file(strlen($txt));
+		if ( strlen($txt) > 8000 ) {
+			echo 'Fehler beim Speichern des Manuskriptes...zu viele Zeichen';
+			return;
+		}
+		
+		//$a_values = array($_POST['ctxt']);
+		$a_values = array($txt);
 		$db_result = db_query_update_item_b("SG_MANUSKRIPT", $fields_params, "SG_MK_ID =".$_POST['mk_id'], $a_values);
 			
 		if ($db_result == false) {
@@ -65,7 +77,7 @@ if ( $action_ok == true ) {
 function write_log_file( $wert ) 
 {
 	// logfile schreiben
-	$myFile = "../admin_srb_export/sg_mk.log";
+	$myFile = "/tmp/sg_mk.log";
 	$fh = fopen($myFile, 'w') or die("can't open file");
 	$stringData = $wert."\n";
 	fwrite($fh, $stringData);

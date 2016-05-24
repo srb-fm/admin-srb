@@ -88,6 +88,7 @@ if ( $action_ok == true ) {
 			$('#ajax_message').hide();
 			$("#submit_button").click(function() {
 				$('#ajax_message').hide();
+				$('#ajax_message').html("");
 				var action = $("#action").val();
 	 			var ctxt = CKEDITOR.instances['editor1'].getData();
 	 			var mk_id = $("#sg_mk_id").val();
@@ -101,13 +102,27 @@ if ( $action_ok == true ) {
       			url: "sg_hf_manuskript_ajax.php",
       			data: dataString,
       			success: function(response) {
-      				$('#ajax_message').fadeIn(1500, function() {  
+						if (response.substr(0, 5) == "Error" || response.substr(0, 6) == "Fehler" ) {
+      						//alert(response);
+      						$('#ajax_message').fadeIn(1000, function() {  
+      							$('#ajax_message').html(response);
+      							$('#ajax_message').animate({
+          							color: "#aa0000"
+        							}, 1000 );
+    							}
+      						);
+      				}else {
+      					
+      				
+						$('#ajax_message').fadeIn(1000, function() {  
       					$('#ajax_message').html(response); 
-    				}      			
-      			);
-      	}
-     		});
-    		return false;
+    					}
+      				);
+      				}
+      			}
+     			});      				
+      			
+    			return false;
 			});
 			
 			$("#delete_button").click(function() {
