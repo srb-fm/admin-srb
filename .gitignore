@@ -13,6 +13,7 @@
 *.nja
 __init__.py
 *.html~
+*.js~
 
 # configs etc
 admin_srb_conf.php
