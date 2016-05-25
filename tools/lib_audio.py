@@ -112,7 +112,7 @@ def add_mp3gain(ac, db, lib_cm, file_dest):
         p = subprocess.Popen([c_mp3gain, u"-r", c_source_file],
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     except Exception, e:
-        log_message = ac.app_errorslist[3] + u" %s" % str(e)
+        log_message = "Fehler bei mp3gain: " + u" %s" % str(e)
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
     #lib_cm.message_write_to_console(ac, u"returncode 0")
@@ -132,5 +132,49 @@ def add_mp3gain(ac, db, lib_cm, file_dest):
         lib_cm.message_write_to_console(ac, "ok")
     else:
         db.write_log_to_db_a(ac, u"mp3gain offenbar nicht noetig: "
+                             + c_source_file, "p", "write_also_to_console")
+    return True
+
+
+def validate_mp3(ac, db, lib_cm, file_dest):
+    """validate mp3-File"""
+    lib_cm.message_write_to_console(ac, u"mp3-File validieren")
+    # all cmds must be in the right charset
+    c_validator = db.ac_config_etools[7].encode(ac.app_encode_out_strings)
+    #c_validator = "/usr/bin/mp3val"
+    c_source_file = file_dest.encode(ac.app_encode_out_strings)
+    lib_cm.message_write_to_console(ac, c_source_file)
+    # start subprocess
+    try:
+        p = subprocess.Popen([c_validator, u"-f", c_source_file],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    except Exception, e:
+        log_message = "Fehler bei mp3Validator: " + u": %s" % str(e)
+        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+        return
+    lib_cm.message_write_to_console(ac, u"returncode 0")
+    lib_cm.message_write_to_console(ac, p[0])
+    lib_cm.message_write_to_console(ac, u"returncode 1")
+    lib_cm.message_write_to_console(ac, p[1])
+
+    # search for success msg, if not found: -1
+    validate_output = string.find(p[0], "FIXED")
+
+    # if found, position, otherwise -1
+    if validate_output != -1:
+        log_message = u"mp3-Validator fixed: " + c_source_file
+        db.write_log_to_db(ac, log_message, "k")
+        lib_cm.message_write_to_console(ac, "ok")
+        # delete bak-file
+        c_source_file = c_source_file + ".bak"
+        delete_bak_ok = lib_cm.erase_file_a(ac, db, c_source_file,
+            u"mp3validator-bak-Datei geloescht ")
+        if delete_bak_ok is None:
+            # Error 004 Fehler beim Loeschen der mp3validator-bak-Datei
+            db.write_log_to_db_a(ac,
+                " Fehler beim Loeschen der mp3validator-bak-Datei", "x",
+                "write_also_to_console")
+    else:
+        db.write_log_to_db_a(ac, u"mp3-Validator fix offenbar nicht noetig: "
                              + c_source_file, "p", "write_also_to_console")
     return True
