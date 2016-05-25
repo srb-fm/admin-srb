@@ -27,6 +27,7 @@ Fehlerliste:
 E 00 Parameter-Typ oder Inhalt stimmt nich
 E 01 bei mp3gain
 E 02 Fehler beim Kopieren der bearbeiteten Datei:
+E 03 Fehler beim Schreiben von id3Tags
 
 Parameterliste:
 Param 1:  On/Off Switch
@@ -49,7 +50,7 @@ import sys
 import os
 import string
 import shutil
-import subprocess
+import lib_audio as lib_au
 import lib_common_1 as lib_cm
 
 
@@ -74,6 +75,8 @@ class app_config(object):
             " Fehler bei mp3gain:")
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Kopieren nach mp3Gaining: ")
+        self.app_errorslist.append(self.app_desc +
+            " Fehler beim Schreiben von id3Tags")
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -99,44 +102,6 @@ def load_extended_params():
     ext_params_ok = lib_cm.params_provide_server_paths_b(ac, db,
                                                         ac.server_active)
     return ext_params_ok
-
-
-def audio_mp3gain(path_file):
-    """make mp3-gain"""
-    lib_cm.message_write_to_console(ac, u"mp3-File Gainanpassung")
-    c_mp3gain = db.ac_config_etools[5].encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, c_mp3gain)
-    c_source_file = path_file.encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, c_source_file)
-    # start subprozess
-    try:
-        p = subprocess.Popen([c_mp3gain, u"-r", c_source_file],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    except Exception, e:
-        log_message = ac.app_errorslist[1] + u": %s" % str(e)
-        db.write_log_to_db_a(ac, log_message,
-                                "x", "write_also_to_console")
-        return
-
-    lib_cm.message_write_to_console(ac, u"returncode 0")
-    lib_cm.message_write_to_console(ac, p[0])
-    lib_cm.message_write_to_console(ac, u"returncode 1")
-    lib_cm.message_write_to_console(ac, p[1])
-
-    # search for succes message, if not found: -1
-    mp3gain_output = string.find(p[1], "99%")
-    mp3gain_output_1 = string.find(p[1], "written")
-    lib_cm.message_write_to_console(ac, mp3gain_output)
-    lib_cm.message_write_to_console(ac, mp3gain_output_1)
-    # wenn gefunden, position, sonst -1
-    if mp3gain_output != -1 and mp3gain_output_1 != -1:
-        log_message = u"mp3gain angepasst: " + c_source_file.decode('cp1252')
-        db.write_log_to_db(ac, log_message, "k")
-        lib_cm.message_write_to_console(ac, "ok")
-    else:
-        db.write_log_to_db_a(ac, u"mp3gain offenbar nicht noetig: "
-                             + c_source_file.decode('cp1252'),
-                             "p", "write_also_to_console")
 
 
 def lets_rock():
@@ -170,17 +135,43 @@ def lets_rock():
             continue
         z += 1
         path_file_source = path_source + item
-        # audio_mp3gain(ac, path_file_source )
-        audio_mp3gain(path_file_source)
+        # extract filename right from slash
+        #if ac.app_windows == "no":
+        #    filename = path_file_dest[string.rfind(path_file_dest, "/") + 1:]
+        #else:
+        #    filename = path_file_dest[string.rfind(path_file_dest, "\\") + 1:]
+
+        # first add id2, while replaygain has an error if no id3 tag is present
+        sendung_data = ['0', '0', '0', '0', 'F', 'F', 'F', 'F', '0', '0', '0',
+                        'Aktuell', item, 'Keywords', '0',
+                        'Das', 'Radio']
+        success_add_id3 = lib_au.add_id3(
+                                ac, db, lib_cm, sendung_data, path_file_source)
+        if success_add_id3 is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[3],
+                                        "x", "write_also_to_console")
+            continue
+
+        c_source_file = path_file_source.encode(ac.app_encode_out_strings)
+        success_add_mp3gain = lib_au.add_mp3gain(
+                                ac, db, lib_cm, c_source_file)
+
+        if success_add_mp3gain is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[1],
+                                        "x", "write_also_to_console")
+            continue
+
+        #c_source_file = path_file_source.encode(ac.app_encode_out_strings)
+        #success_add_rgain = lib_au.add_replaygain(
+        #                        ac, db, lib_cm, c_source_file)
+
+        #if success_add_rgain is None:
+        #    db.write_log_to_db_a(ac, ac.app_errorslist[1],
+        #                                "x", "write_also_to_console")
+        #    continue
 
         # move
         path_file_dest = path_dest + item
-
-        # extract filename right from slash
-        if ac.app_windows == "no":
-            filename = path_file_dest[string.rfind(path_file_dest, "/") + 1:]
-        else:
-            filename = path_file_dest[string.rfind(path_file_dest, "\\") + 1:]
 
         try:
             shutil.move(path_file_source, path_file_dest)
@@ -188,7 +179,7 @@ def lets_rock():
             # it could be, that it will not be copy and no error will occure
             # why??
         except Exception, e:
-            db.write_log_to_db_a(ac, ac.app_errorslist[2] + filename,
+            db.write_log_to_db_a(ac, ac.app_errorslist[2] + item,
                 "x", "write_also_to_console")
             log_message = u"copy_files_to_dir_retry Error: %s" % str(e)
             lib_cm.message_write_to_console(ac, log_message)
@@ -196,7 +187,7 @@ def lets_rock():
             continue
 
         db.write_log_to_db_a(ac, u"Audio mit mp3gain bearbeitet und kopiert: "
-            + filename, "i", "write_also_to_console")
+            + item, "i", "write_also_to_console")
 
 
 if __name__ == "__main__":
