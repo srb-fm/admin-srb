@@ -76,7 +76,7 @@ class app_config(object):
         self.app_id = "005"
         self.app_desc = u"play_out_load_vp_extern"
         # debug-mod
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # key of config in db
         self.app_config = u"PO_VP_extern_Config"
         self.app_config_develop = u"PO_VP_extern_Config_3_e"
@@ -491,7 +491,7 @@ def copy_media_to_play_out(path_file_source, dest_file):
     """copy audiofile"""
     success_copy = None
     try:
-        shutil.copy(path_file_source, dest_file)
+        shutil.move(path_file_source, dest_file)
         db.write_log_to_db_a(ac, u"Audio Vorproduktion: "
                 + path_file_source.encode('ascii', 'ignore'),
                 "v", "write_also_to_console")
@@ -580,10 +580,25 @@ def check_and_work_on_files(roboting_sgs):
             if success_add_id3 is None:
                 db.write_log_to_db_a(ac, ac.app_errorslist[7],
                                         "x", "write_also_to_console")
+                continue
 
             # mp3gain must proceed after id3-tag is written
             # python-rgain has an error if no id3-tag is present
-            audio_mp3gain(path_file_dest)
+            #audio_mp3gain(path_file_dest)
+            #success_add_rgain = lib_au.add_replaygain(
+            #                    ac, db, lib_cm, path_file_dest)
+
+            #if success_add_rgain is None:
+            #    db.write_log_to_db_a(ac, ac.app_errorslist[3],
+            #                            "x", "write_also_to_console")
+
+            success_add_mp3gain = lib_au.add_mp3gain(
+                                        ac, db, lib_cm, path_file_dest)
+
+            if success_add_mp3gain is None:
+                db.write_log_to_db_a(ac, ac.app_errorslist[3],
+                                        "x", "write_also_to_console")
+
             reg_lenght(sendung, path_file_dest)
 
             # filename rechts von slash extrahieren
