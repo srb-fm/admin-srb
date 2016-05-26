@@ -110,6 +110,8 @@ class app_config(object):
             " Fehler beim Speichern in FTP-Ordner")
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Loeschen in FTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " Cloud-Ordner vllt. nicht vorhanden, siehe Einstellungen zu: ")
 
         # params-type-list, typ entsprechend der params-liste in der config
         self.app_params_type_list = []
@@ -541,7 +543,7 @@ def erase_files_prepaere(roboting_sgs):
             try:
                 files_sendung_dest = os.listdir(path_dest_cloud)
             except Exception, e:
-                log_message = ac.app_errorslist[3] + u": %s" % str(e)
+                log_message = ac.app_errorslist[12] + item[2] + ": %s" % str(e)
                 lib_cm.message_write_to_console(ac, log_message)
                 db.write_log_to_db(ac, log_message, "x")
                 return
