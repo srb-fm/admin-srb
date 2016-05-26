@@ -240,7 +240,7 @@ if ( $action_ok == "yes" ) {
 	
 </head>
 <body>
-<div class="column_right">
+<div class="column_right_1">
 <div class="head_item_right">	<?php echo $message; ?>	</div>
 <div class="content" id="jq_slide_by_click">
 <?php 
