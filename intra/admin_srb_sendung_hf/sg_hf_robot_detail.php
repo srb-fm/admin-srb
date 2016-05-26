@@ -104,7 +104,7 @@ if ( $action_ok == true ) {
 <body>
  
 <div class="column_large">
-	<div class="column_right">
+	<div class="column_right_1">
 <?php
 echo "<div class='head_item_right'>";
 echo $message; 

@@ -204,7 +204,7 @@ if ( $action_ok == true ) {
 <body>
  
 <div class="column_large">
-<div class="column_right">
+<div class="column_right_1">
 <?php
 echo "<div class='head_item_right'>";
 echo $message;
@@ -235,7 +235,7 @@ if ( $user_rights == "yes" ) {
 	echo "<div class='content_row_a_1'>";
 	echo "<div class='content_column_1'>Duplizierung </div>";
 	echo html_dropdown_from_table_1("SG_HF_ROB_DUB", "SG_HF_ROB_DUB_DESC", "form_sg_rob_dub", "text_2", rtrim($tbl_row->SG_HF_ROB_DUB_ID));
-	echo " Verschiebung zw. Erstsendung Lieferant u. SRB: ";
+	echo " Verschiebung d. Sendung in Tagen: ";
 	echo "<select name='form_sg_rob_shift' class='text_2' size='1'>";
 	$i = 0;
 	while ($i <= 30) {
