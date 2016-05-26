@@ -415,6 +415,12 @@ def check_and_work_on_files(repeat_sendung):
         #lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[16]),
         #lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[13]))
 
+    success_add_mp3gain = lib_au.add_mp3gain(ac, db, lib_cm, file_dest)
+
+    if success_add_mp3gain is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[3],
+                                        "x", "write_also_to_console")
+
     # extract filename
     if ac.app_windows == "no":
         filename = file_dest[string.rfind(file_dest, "/") + 1:]
@@ -432,7 +438,7 @@ def check_and_work_on_files(repeat_sendung):
         db.write_log_to_db(ac, u"Dateiname in Sendeanmeldung aktualisiert: "
                             + filename, "k")
 
-    db.write_log_to_db(ac, u"WH von Proto bearbeitet: " + filename, "i")
+    #db.write_log_to_db(ac, u"WH von Proto bearbeitet: " + filename, "i")
     db.write_log_to_db_a(ac, u"WH von Proto bearbeitet: " + filename, "n",
         "write_also_to_console")
 
