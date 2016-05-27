@@ -20,9 +20,9 @@ if ( isset( $_GET['message'] ) ) {
 $action_ok = "no";
 	
 // action pruefen	
-if ( isset( $_GET['action'] ) ) {
+if ( isset($_GET['action']) ) {
 	if ( $_GET['action'] == "print" ) {
-		if ( isset( $_GET['vl_id'] ) ) {	
+		if ( isset($_GET['vl_id']) ) {	
 			if ( $_GET['vl_id'] !="" ) { 
 				$action_ok = "yes";
 			}	
