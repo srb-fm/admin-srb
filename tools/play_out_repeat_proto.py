@@ -239,42 +239,6 @@ def audio_validate(file_dest):
                              + c_source_file, "p", "write_also_to_console")
 
 
-def audio_mp3gain(file_dest):
-    """mp3-gain"""
-    lib_cm.message_write_to_console(ac, u"mp3-File Gainanpassung")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
-    c_mp3gain = db.ac_config_etools[5].encode(ac.app_encode_out_strings)
-    c_source_file = file_dest.encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, c_source_file)
-    # subprozess starten
-    try:
-        p = subprocess.Popen([c_mp3gain, u"-r", c_source_file],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    except Exception, e:
-        log_message = ac.app_errorslist[3] + u" %s" % str(e)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return
-    #lib_cm.message_write_to_console(ac, u"returncode 0")
-    #lib_cm.message_write_to_console(ac, p[0])
-    #lib_cm.message_write_to_console(ac, u"returncode 1")
-    #lib_cm.message_write_to_console(ac, p[1])
-
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
-    mp3gain_output = string.find(p[1], "99%")
-    mp3gain_output_1 = string.find(p[1], "written")
-    #lib_cm.message_write_to_console(ac, mp3gain_output)
-    #lib_cm.message_write_to_console(ac, mp3gain_output_1)
-    # wenn gefunden, position, sonst -1
-    if mp3gain_output != -1 and mp3gain_output_1 != -1:
-        log_message = u"mp3gain angepasst: " + c_source_file
-        db.write_log_to_db(ac, log_message, "k")
-        lib_cm.message_write_to_console(ac, "ok")
-    else:
-        db.write_log_to_db_a(ac, u"mp3gain offenbar nicht noetig: "
-                             + c_source_file, "p", "write_also_to_console")
-
-
 def check_and_work_on_files(repeat_sendung):
     """work on files"""
     lib_cm.message_write_to_console(ac, u"check_and_work_on_files")
@@ -410,7 +374,7 @@ def check_and_work_on_files(repeat_sendung):
     if success_add_id3 is None:
         db.write_log_to_db_a(ac, ac.app_errorslist[5],
                                         "x", "write_also_to_console")
-    audio_mp3gain(file_dest)
+    #audio_mp3gain(file_dest)
     #audio_id3tag(file_dest,
         #lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[16]),
         #lib_cm.replace_uchar_sonderzeichen_with_latein(repeat_sendung[13]))
