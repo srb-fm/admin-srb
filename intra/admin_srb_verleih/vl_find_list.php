@@ -196,7 +196,7 @@ if ( $query_main_table == "VL_MAIN" ) {
 	<title>Admin-SRB-Verleih</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 	<meta http-equiv="expires" content="0">
-	<style type="text/css"> @import url("../parts/style/style_srb_2.css");    </style>
+	<style type="text/css"> @import url("../parts/style/style_srb_3.css");    </style>
 	<style type="text/css"> @import url("../parts/style/style_srb_jq_2.css");  </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<style type="text/css"> @import url("../parts/colorbox/colorbox.css");  </style>
