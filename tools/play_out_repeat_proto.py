@@ -197,48 +197,6 @@ def load_sg_first(sg_cont_nr):
     return sendung_data
 
 
-def audio_validate(file_dest):
-    """validate mp3-File"""
-    lib_cm.message_write_to_console(ac, u"mp3-File validieren")
-    # damit die uebergabe der befehle richtig klappt,
-    # muessen alle cmds im richtigen zeichensatz encoded sein
-    c_validator = db.ac_config_etools[7].encode(ac.app_encode_out_strings)
-    c_source_file = file_dest.encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, c_source_file)
-    # subprozess starten
-    try:
-        p = subprocess.Popen([c_validator, u"-f", c_source_file],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    except Exception, e:
-        log_message = ac.app_errorslist[2] + u" %s" % str(e)
-        db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
-        return
-    lib_cm.message_write_to_console(ac, u"returncode 0")
-    lib_cm.message_write_to_console(ac, p[0])
-    lib_cm.message_write_to_console(ac, u"returncode 1")
-    lib_cm.message_write_to_console(ac, p[1])
-
-    # erfolgsmeldung suchen, wenn nicht gefunden: -1
-    validate_output = string.find(p[0], "FIXED")
-
-    # wenn gefunden, position, sonst -1
-    if validate_output != -1:
-        log_message = u"mp3-Validator fixed: " + c_source_file
-        db.write_log_to_db(ac, log_message, "k")
-        lib_cm.message_write_to_console(ac, "ok")
-        #bak-Datei löschen
-        c_source_file = c_source_file + ".bak"
-        delete_bak_ok = lib_cm.erase_file_a(ac, db,
-                            c_source_file, u"mp3validator-bak-Datei geloescht ")
-        if delete_bak_ok is None:
-            # Error 004 Fehler beim Loeschen der mp3validator-bak-Datei
-            db.write_log_to_db_a(ac, ac.app_errorslist[4], "x",
-                "write_also_to_console")
-    else:
-        db.write_log_to_db_a(ac, u"mp3-Validator fix offenbar nicht noetig: "
-                             + c_source_file, "p", "write_also_to_console")
-
-
 def check_and_work_on_files(repeat_sendung):
     """work on files"""
     lib_cm.message_write_to_console(ac, u"check_and_work_on_files")
@@ -367,7 +325,14 @@ def check_and_work_on_files(repeat_sendung):
         return
 
     # audio-fx
-    audio_validate(file_dest)
+    #audio_validate(file_dest)
+    success_mp3validate = lib_au.validate_mp3(
+                                        ac, db, lib_cm, file_dest)
+
+    if success_mp3validate is None:
+        db.write_log_to_db_a(ac, ac.app_errorslist[2],
+                                    "x", "write_also_to_console")
+
     success_add_id3 = lib_au.add_id3(
                                 ac, db, lib_cm, repeat_sendung, file_dest)
 
