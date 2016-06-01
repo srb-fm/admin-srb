@@ -61,7 +61,7 @@ $(document).ready(function()
 	$(".c_box_1").colorbox({width:"1250px", height:"800px", opacity:"0.33", overlayClose:false, iframe:true});
 	$(".c_box_2").colorbox({width:"835px", height:"520px", opacity:"0.33", overlayClose:false, iframe:true});
 	$(".c_box_3").colorbox({width:"835px", height:"480px", opacity:"0.33", overlayClose:false, iframe:true});
-	$(".c_box_4").colorbox({width:"850px", height:"730px", opacity:"0.33", overlayClose:false, iframe:true});
+	$(".c_box_4").colorbox({width:"850px", height:"740px", opacity:"0.33", overlayClose:false, iframe:true});
 	
 	// colorboxes ende
 });
