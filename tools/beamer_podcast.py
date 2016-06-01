@@ -77,6 +77,7 @@ import socket
 #from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, TPE1, TIT2
 from mutagen.id3 import ID3NoHeaderError
+import lib_audio as lib_au
 import lib_common_1 as lib_cm
 
 
@@ -356,10 +357,10 @@ def tag_file_id3(podcast_sendung):
     db.write_log_to_db(ac, log_message, "k")
 
     if os.path.isfile(c_source_file):
-        if ac.app_windows == "yes":
-            f = open(c_source_file, "rb")
-        else:
-            f = open(c_source_file, "r")
+        #if ac.app_windows == "yes":
+        #    f = open(c_source_file, "rb")
+        #else:
+        #    f = open(c_source_file, "r")
 
         id3_tag_present = False
         try:
@@ -572,6 +573,9 @@ def lets_rock():
     podcast_sendung = ()
     for item in podcast_sendungen:
         if item[12] == podcast_offline:
+            # take all values for id3
+            # insert one item to shift author in the tuple
+            podcast_sendung_all = item[:14] + (" ",) + item[14:]
             # filename, titel, vorname, name, infotime, magazin
             podcast_sendung = (item[12], item[11], item[14], item[15],
                                item[4].strip(), item[5].strip())
@@ -586,6 +590,9 @@ def lets_rock():
         podcast_sendung = ()
         for item in podcast_sendungen:
             if item[12] == podcast_offline:
+                # take all values for id3
+                # insert one item to shift author in the tuple
+                podcast_sendung_all = item[:14] + (" ",) + item[14:]
                 # nicht das vorige file nochmal
                 print "podcast_sendung"
                 print podcast_sendung
@@ -610,7 +617,15 @@ def lets_rock():
 
     # tagging file in utf-8
     if db.ac_config_1[8] == "on":
-        tag_file_id3(podcast_sendung)
+        #tag_file_id3(podcast_sendung)
+        path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
+        file_dest = path_source + podcast_sendung[0]
+        success_add_id3 = lib_au.add_id3(
+                                ac, db, lib_cm, podcast_sendung_all, file_dest)
+
+        if success_add_id3 is None:
+            db.write_log_to_db_a(ac, ac.app_errorslist[5],
+                                        "x", "write_also_to_console")
 
     # upload whats not online
     upload_ok = upload_file(podcast_sendung)
