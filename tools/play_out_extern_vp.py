@@ -503,8 +503,8 @@ def check_and_work_on_files(roboting_sgs):
                 db.write_log_to_db_a(ac, ac.app_errorslist[4],
                                         "x", "write_also_to_console")
 
-            success_add_id3 = lib_au.add_mp3gain(
-                                ac, db, lib_cm, path_file_dest)
+            success_add_id3 = lib_au.add_id3(
+                                ac, db, lib_cm, sendung, path_file_dest)
 
             if success_add_id3 is None:
                 db.write_log_to_db_a(ac, ac.app_errorslist[7],
