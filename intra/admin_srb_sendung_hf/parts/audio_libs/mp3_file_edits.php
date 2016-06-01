@@ -78,7 +78,7 @@ function read_length_write_tag ($remotefilename, $pathfilename, $artist, $title,
 		//$tagwriter->tagformats     = array('id3v2.4', 'ape');
 		$tagwriter->tagformats     = array('id3v2.4');
 		// set various options (optional)
-		//$tagwriter->overwrite_tags = false;
+		$tagwriter->overwrite_tags = true;
 		$tagwriter->tag_encoding   = $TaggingFormat;
 		//$tagwriter->remove_other_tags = true;
 
