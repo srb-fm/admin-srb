@@ -96,7 +96,7 @@ if ( $action_ok == true ) {
 			}
 				
 			// Wert auf Inhalt pruefen, Komma in Punkt wandlen
-			if ( isset( $_POST['form_iv_wert'] )) {
+			if ( isset($_POST['form_iv_wert'])) {
 				if ( $_POST['form_iv_wert'] != "" ) {
 					$value_wert = str_replace(",", ".", $_POST['form_iv_wert']);
 				} else { 
@@ -107,17 +107,17 @@ if ( $action_ok == true ) {
 			}				
 												
 			// checkboxen
-			if ( isset( $_POST['form_iv_verliehen'] ) ) { 
+			if ( isset($_POST['form_iv_verliehen']) ) { 
 				$value_verliehen = "T"; 
 			} else { 
 				$value_verliehen = "F" ;
 			}				
-			if ( isset( $_POST['form_iv_defekt'] ) ) { 
+			if ( isset($_POST['form_iv_defekt']) ) { 
 				$value_defekt = "T"; 
 			} else { 
 				$value_defekt = "F" ;
 			}				
-			if ( isset( $_POST['form_iv_ausgemustert'] ) ) { 
+			if ( isset($_POST['form_iv_ausgemustert']) ) { 
 				$value_ausgemustert ="T"; 
 			} else { 
 				$value_ausgemustert = "F" ;
@@ -132,6 +132,7 @@ if ( $action_ok == true ) {
 			$insert_ok = db_query_add_item_b("IV_MAIN", $tbl_fields, "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", $a_values);
 				
 			header("Location: iv_detail.php?action=display&iv_id=".$main_id);
+			exit;
 			break;
 				
 		case "edit":
@@ -174,7 +175,7 @@ if ( $action_ok == true ) {
 			}
 				
 			// Wert auf Inhalt pruefen, Komma in Punkt wandlen
-			if ( isset( $_POST['form_iv_wert'] )) {
+			if ( isset($_POST['form_iv_wert'])) {
 				if ( $_POST['form_iv_wert'] != "" ) {
 					$value_wert = str_replace(",", ".", $_POST['form_iv_wert']);
 				} else { 
@@ -184,17 +185,17 @@ if ( $action_ok == true ) {
 				$value_wert = "0.0";
 			}
 
-			if ( isset( $_POST['form_iv_verliehen'] ) ) { 
+			if ( isset($_POST['form_iv_verliehen']) ) { 
 				$value_verliehen = "T"; 
 			} else { 
 				$value_verliehen = "F" ;
 			}							
-			if ( isset( $_POST['form_iv_defekt'] ) ) { 
+			if ( isset($_POST['form_iv_defekt']) ) { 
 				$value_defekt = "T"; 
 			} else { 
 				$value_defekt = "F" ;
 			}
-			if ( isset( $_POST['form_iv_ausgemustert'] ) )	{ 
+			if ( isset($_POST['form_iv_ausgemustert']) )	{ 
 				$value_ausgemustert = "T"; 
 			} else { 
 				$value_ausgemustert = "F" ;
@@ -209,6 +210,7 @@ if ( $action_ok == true ) {
 			$update_ok = db_query_update_item_b("IV_MAIN", $fields_params, "IV_ID =".$id, $a_values);
 								
 			header("Location: iv_detail.php?action=display&iv_id=".$id);
+			exit;
 			break;
 			//	endswitch;
 		}
@@ -225,7 +227,7 @@ if ( $action_ok == true ) {
 	<title>Admin-SRB-Inventar</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 	<meta http-equiv="expires" content="0">
-	<style type="text/css"> @import url("../parts/style/style_srb_2.css");    </style>
+	<style type="text/css"> @import url("../parts/style/style_srb_3.css");    </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_form_validator/css/validationEngine.jquery.css");    </style>
 
@@ -246,7 +248,7 @@ if ( $action_ok == true ) {
  
 
 <?php 
-echo "<div class='column_right'>";
+echo "<div class='column_right_1'>";
 echo "<div class='head_item_right'>";
 echo $message;
 echo "</div>";	

@@ -59,35 +59,35 @@ if ( isset($_GET['find_limit_skip']) ) {
 if ( $condition_delivery != "yes" ) {
 	// Felder pruefen, in einem Feld muss was sein, sonst kann find-form nicht abgeschickt werden, 
 	// also hier nur pruefen in welchem feld was ist
-	if ( isset( $_POST['iv_objekt'] ) ) {
+	if ( isset($_POST['iv_objekt']) ) {
 		if ( $_POST['iv_objekt'] !="") { 
 			$c_field_desc = "IV_OBJEKT";
 			$c_field_value = $_POST['iv_objekt']; 
 		}
 	}
 
-	if ( isset( $_POST['iv_typ'] ) ) {
+	if ( isset($_POST['iv_typ']) ) {
 		if ( $_POST['iv_typ'] !="") { 
 			$c_field_desc = "IV_TYP";
 			$c_field_value = $_POST['iv_typ']; 
 		}
 	}
 
-	if ( isset( $_POST['iv_hersteller'] ) ) {
+	if ( isset($_POST['iv_hersteller']) ) {
 		if ( $_POST['iv_hersteller'] !="") { 
 			$c_field_desc = "IV_HERSTELLER";
 			$c_field_value = $_POST['iv_hersteller']; 
 		}
 	}
 
-	if ( isset( $_POST['iv_rechnung'] ) ) {
+	if ( isset($_POST['iv_rechnung']) ) {
 		if ( $_POST['iv_rechnung'] !="") { 
 			$c_field_desc = "IV_RECHNUNG_NR";
 			$c_field_value = $_POST['iv_rechnung']; 
 		}
 	}
 	
-	if ( isset( $_POST['iv_eigentuemer'] ) ) {
+	if ( isset($_POST['iv_eigentuemer']) ) {
 		if ( $_POST['iv_eigentuemer'] !="") { 
 			$c_field_desc = "IV_EIGENTUEMER_ID";
 			$c_field_value = db_query_load_id_by_value("IV_EIGENTUEMER", "IV_EIG_DESC", $_POST['iv_eigentuemer']);
@@ -98,7 +98,7 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 
-	if ( isset( $_POST['iv_kategorie'] ) ) {
+	if ( isset($_POST['iv_kategorie']) ) {
 		if ( $_POST['iv_kategorie'] !="") { 
 			$c_field_desc = "IV_KATEGORIE_ID";
 			$c_field_value = db_query_load_id_by_value("IV_KATEGORIE", "IV_KAT_DESC", $_POST['iv_kategorie']);
@@ -109,7 +109,7 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 	
-	if ( isset( $_POST['iv_ort'] ) ) {
+	if ( isset($_POST['iv_ort']) ) {
 		if ( $_POST['iv_ort'] !="") { 
 			$c_field_desc = "IV_ORT_ID";
 			$c_field_value = db_query_load_id_by_value("IV_ORT", "IV_ORT_DESC", $_POST['iv_ort']);
@@ -120,7 +120,7 @@ if ( $condition_delivery != "yes" ) {
 		}
 	}
 	
-	if ( isset( $_POST['iv_id'] ) ) {
+	if ( isset($_POST['iv_id']) ) {
 		if ( $_POST['iv_id'] !="") { 
 			$c_field_desc = "IV_ID";
 			$c_field_value = $_POST['iv_id']; 
@@ -129,11 +129,11 @@ if ( $condition_delivery != "yes" ) {
 		
 
 	// check condition
-	if ( isset( $_GET['find_option'] ) ) { 
+	if ( isset($_GET['find_option']) ) { 
 		$find_option = $_GET['find_option'];
 		$find_option_ok = true;
 	}
-	if ( isset( $_POST['find_option'] ) ) {
+	if ( isset($_POST['find_option']) ) {
 		$find_option = $_POST['find_option'];	
 		$find_option_ok = true;
 	}		
@@ -221,7 +221,7 @@ if ( 	$find_limit_skip == "no" ) {
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" >
 	<meta http-equiv="expires" content="0">
 
-	<style type="text/css"> @import url("../parts/style/style_srb_2.css");    </style>
+	<style type="text/css"> @import url("../parts/style/style_srb_3.css");    </style>
 	<style type="text/css"> @import url("../parts/style/style_srb_jq_2.css");  </style>
 	<style type="text/css"> @import url("../parts/jquery/jquery_ui_1_8_16/css/jquery-ui-1.8.16.custom.css");    </style>
 	<style type="text/css"> @import url("../parts/colorbox/colorbox.css");  </style>

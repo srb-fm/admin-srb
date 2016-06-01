@@ -59,7 +59,7 @@ $(document).ready(function()
 	// geht nur wenns hier in dieser lib ist (nicht in der algemeinen jq_tools)
 	$(".c_box").colorbox({width:"850px", height:"690px", opacity:"0.33", overlayClose:false, iframe:true});
 	$(".c_box_1").colorbox({width:"1250px", height:"800px", opacity:"0.33", overlayClose:false, iframe:true});
-	$(".c_box_2").colorbox({width:"835px", height:"520px", opacity:"0.33", overlayClose:false, iframe:true});
+	$(".c_box_2").colorbox({width:"835px", height:"550px", opacity:"0.33", overlayClose:false, iframe:true});
 	$(".c_box_3").colorbox({width:"835px", height:"480px", opacity:"0.33", overlayClose:false, iframe:true});
 	$(".c_box_4").colorbox({width:"850px", height:"740px", opacity:"0.33", overlayClose:false, iframe:true});
 	
