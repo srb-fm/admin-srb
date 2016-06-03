@@ -105,7 +105,7 @@ class app_config(object):
         self.app_errorslist.append(self.app_desc +
             " Fehler beim Verbinden zum ftp-Server")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Recodieren der mp3-Datei")
+            " Fehler beim Recodieren der mp3-Datei ")
         self.app_errorslist.append(self.app_desc +
             " Recodierte Podcast-mp3-Datei nicht gefunden")
         self.app_errorslist.append(self.app_desc +
@@ -289,10 +289,10 @@ def encode_file(podcast_sendung):
     if c_complete == "yes":
         log_message = u"recoded_file: " + c_source_file
         db.write_log_to_db(ac, log_message, "k")
-        lib_cm.message_write_to_console(ac, "ok")
+        #lib_cm.message_write_to_console(ac, "ok")
         return c_dest_file
     else:
-        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+        db.write_log_to_db_a(ac, ac.app_errorslist[2] + c_source_file, "x",
             "write_also_to_console")
         return None
 
