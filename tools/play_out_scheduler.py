@@ -794,7 +794,7 @@ def prepare_mpd_magazine(time_now, minute_start, mg_number):
             if mg_number == 1:
                 del ac.music_play_list[:5]
             if mg_number == 2:
-                del ac.music_play_list[:4]
+                del ac.music_play_list[:5]
             if mg_number == 3:
                 del ac.music_play_list[:4]
             push_music_playlist()
