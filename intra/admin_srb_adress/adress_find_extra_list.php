@@ -203,7 +203,7 @@ if ( 	$find_limit_skip == "no" ) {
  
 <div class="main">
 <?php	
-echo "<div class='column_right'>";
+echo "<div class='column_right_1'>";
 echo "<div class='head_item_right'>";
 echo $message_find_string."\n";
 echo "</div>";
@@ -261,7 +261,7 @@ if ( $user_rights == "yes" ) {
 				echo "Sendeverantwortlichen durch Klick auf Symbol ändern.";
 			}
 			if ( $sg_editor == "new" ) {
-				echo "Redaktuer durch Klick auf Symbol ändern.";
+				echo "Redakteur durch Klick auf Symbol ändern.";
 			}
 			
 		}
