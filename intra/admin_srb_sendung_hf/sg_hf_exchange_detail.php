@@ -177,7 +177,7 @@ if ( $action_ok == true ) {
 <div class="column_large">
 	<div class="column_right_1">
 <?php
-echo "<div class='head_item_right_1'>";
+echo "<div class='head_item_right'>";
 echo $message; 
 echo "</div>";
 echo "<div class='content'>";

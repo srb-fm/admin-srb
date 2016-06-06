@@ -54,8 +54,8 @@ $a_statistik_sg = statistik_sg();
 <body>
  
 <?php 
-echo "<div class='column_right'>";
-echo "<div class='head_item_right_1'>";
+echo "<div class='column_right_1'>";
+echo "<div class='head_item_right'>";
 echo $message."\n";
 echo "</div>";
 	
