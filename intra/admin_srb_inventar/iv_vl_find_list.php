@@ -208,7 +208,7 @@ if ( $action_ok = true ) {
 <body>
  
 <?php 
-echo "<div class='column_right'>";
+echo "<div class='column_right_1'>";
 echo "<div class='head_item_right'>";
 echo $message_find_string."\n"; 
 echo "	</div>";
