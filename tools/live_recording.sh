@@ -74,7 +74,8 @@ function f_start_jack_capture () {
 	#export DISPLAY=:0 && gnome-terminal -x
 	#gnome-terminal -x jack_capture --port jamin:out_L --port jamin:out_R -d $r_duration -fn $r_filename
 	#su srb-stream -c jack_capture --port jamin:out_L --port jamin:out_R -d $r_duration -fn $r_filename -dc
-	jack_capture --port jamin:out_L --port jamin:out_R -d $duration -fn $filename -dc 
+	#jack_capture --port jamin:out_L --port jamin:out_R -d $duration -fn $filename -dc
+	jack_capture --port "Calf Studio Gear:multibandlimiter Out #1" --port "Calf Studio Gear:multibandlimiter Out #2" -d $duration -fn $filename -dc  
 }
 
 

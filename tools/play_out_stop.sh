@@ -12,14 +12,18 @@
 # config:
 
 ## do not edit below this line
-source $stream_config
-echo "Play-Out Jack-Apps-stopping..."
+
+echo "Play-Out Apps-stopping..."
 
 (	echo "10"
 
 	echo "# Jamin stop.."
 	sleep 1	
 	killall jamin &
+
+	echo "# Calfjackhost stop.."
+	sleep 1	
+	killall calfjackhost &
 	
 	echo "# EBU Meter stop.."
 	sleep 1
@@ -29,7 +33,13 @@ echo "Play-Out Jack-Apps-stopping..."
 	sleep 1
 	killall mpd &
 
-	zenity --info --text="Please close scheduler and logger manually!" 
+	echo "# Logging stop.."
+	sleep 1
+	pkill -1 -f play_out_logging.py &
+
+	echo "# Scheduling stop.."
+	sleep 1
+	pkill -1 -f play_out_scheduler.py &
 
 	sleep 2
 	echo "100"

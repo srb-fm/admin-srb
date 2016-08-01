@@ -19,6 +19,7 @@ jack_source_mpd_2='Music Player Daemon:right'
 ebumeter="j"
 meterbridge="n"
 jamin="n"
+calffx="j"
 
 ## do not edit below this line
 
@@ -31,6 +32,16 @@ function f_check_package () {
 		./stream-stop.sh &
                 exit
         fi
+}
+
+function f_check_fx () {
+	if [ "$jamin" != "n" ] && [ "$calffx" != "n" ]; 
+	then
+		message="# Pleas choose either Jamin OR Calf as FX-Module in teh conffigfile!\n Let's let down..."
+		echo $message
+		sleep 5
+		exit
+	fi
 }
 
 function f_start_play_out () {
@@ -139,6 +150,19 @@ function f_connect_ebumeter_jamin () {
 	jack_connect jamin:out_R ebumeter:in.R &
 }
 
+function f_start_calfjackhost () {
+	message="$message Starting Calf..\n"
+	echo $message
+	#f_check_package "calfjackhost"
+	# its not installed via deb
+	if [ -e /usr/bin/calfjackhost ]; then
+		sleep 1
+		calfjackhost ! multibandcompressor:Standard ! multibandlimiter:Standard ! &
+	else
+		zenity --error --text="Package:\nCalf\nnot installed, please install it first!"
+		exit
+	fi
+}
 
 
 echo "Starting Play-Out and Jack-Apps..."
@@ -146,6 +170,8 @@ echo "Starting Play-Out and Jack-Apps..."
 (	echo "10"
 	message="# Starting Tools..\n"
 	f_check_jack
+	f_check_fx
+
 	if [ "$jamin" != "n" ]; then
 		f_check_jamin
 	fi
@@ -167,13 +193,14 @@ echo "Starting Play-Out and Jack-Apps..."
 	fi
 
 	if [ "$jamin" != "n" ]; then
-		f_connect_darkice_jamin
-	fi
-
-	if [ "$jamin" != "n" ]; then
 		if [ "$ebumeter" != "n" ]; then
 			f_connect_ebumeter_jamin
 		fi
+	fi
+
+	if [ "$calffx" != "n" ]; then
+		f_start_calfjackhost
+		#f_connect_jamin
 	fi
 
 	f_start_scheduler
