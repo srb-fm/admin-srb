@@ -12,7 +12,9 @@
 fb_db_user=""
 fb_db_pw=""
 fb_db_active=""
-fb_db_backup=""
+# taking the day of week into the filename, so we have a weekly rotation of backupfiles
+dow="$(date +'%A')"
+fb_db_backup="/my_path/my_backup_db_filename_${dow}.fbk"
 fb_db_backup_log=""
 fb_db_location="/var/lib/firebird/2.5/data/"
 
@@ -70,7 +72,7 @@ if [ $mount_available == "Y" ]; then
 	gbak -b -v -user $fb_db_user -pass $fb_db_pw $fb_db_location$fb_db_active $fb_db_backup -y $fb_db_backup_log
 
 	echo "finish backup_db_daily.sh"
-	echo "finish backup_db_daily.sh" >> $fb_db_backup_log
+	echo "$running finish backup_db_daily.sh" >> $fb_db_backup_log
 
 else
 	echo "No backup possible" >> $fb_db_backup_log
