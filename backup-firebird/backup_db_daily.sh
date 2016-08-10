@@ -15,7 +15,7 @@ fb_db_active=""
 # taking the day of week into the filename, so we have a weekly rotation of backupfiles
 dow="$(date +'%A')"
 fb_db_backup="/my_path/my_backup_db_filename_${dow}.fbk"
-fb_db_backup_log=""
+fb_db_backup_log="/my_path/log/backup_db_daily_${dow}.log"
 fb_db_location="/var/lib/firebird/2.5/data/"
 
 # mountz
