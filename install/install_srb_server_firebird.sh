@@ -4,7 +4,7 @@
 # Some of them must be configured later.
 # Testet with ubuntu-server 14.04 in 2015
 #
-# Dieses kleine Script uebernimmt die Installation 
+# Dieses kleine Script uebernimmt die Installation
 # des Firebird-Servers Admin-SRB auf dem Server
 # Bei einigen ist eine spaetere Configuration noetig
 # Author: Joerg Sorge
@@ -24,7 +24,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	sudo apt-get update
 	echo "Install..."
 	sudo apt-get install \
-	firebird2.5-super firebird2.5-examples firebird2.5-dev \ 
+	firebird2.5-super firebird2.5-examples firebird2.5-dev \
 	php5-interbase libapache2-mod-php5 python-kinterbasdb
 
 	echo "Configuration"
