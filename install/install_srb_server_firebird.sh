@@ -2,7 +2,8 @@
 
 # This script is for installing server-packages.
 # Some of them must be configured later.
-# Testet with ubuntu-server 14.04 in 2015
+# Testet with ubuntu-server 14.04 in 2016
+# It's referring to https://help.ubuntu.com/community/Firebird2.5
 #
 # Dieses kleine Script uebernimmt die Installation
 # des Firebird-Servers Admin-SRB auf dem Server
