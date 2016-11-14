@@ -27,11 +27,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	echo "Configuration"
 	sudo dpkg-reconfigure firebird2.5-super
 
-	echo "SetUp Backup-Path"
-	sudo mkdir ~/srb-backup-firebird
-	sudo chown -R firebird:firebird ~/srb-backup-firebird
-
-
 	echo "Restart Apache ..."
 	sudo service apache2 restart
 	echo "...finish"
