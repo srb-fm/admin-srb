@@ -16,7 +16,6 @@
 
 echo "Admin-SRB-Firebird Installation..."
 echo "Use this script only for a fresh firebird-install!"
-echo "It will change the aliases.conf only for using with admin-srb!"
 read -p "Are you sure to install? (y/n) " -n 1
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -33,11 +32,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	sudo chown -R firebird:firebird ~/srb-backup-firebird
 
 
-	echo "Customize Aliases ..."
-	sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
-	sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"" >> /etc/firebird/2.5/aliases.conf"
-	sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
-
+	echo "Restart Apache ..."
+	sudo service apache2 restart
 	echo "...finish"
 else
 	echo ""
