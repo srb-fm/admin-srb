@@ -14,8 +14,10 @@
 #
 
 echo "Admin-SRB Installation..."
-echo "Load Admin-SRB from git..."
+echo "Installing git..."
+sudo apt-get install git
 
+echo "Load Admin-SRB from git..."
 git clone https://github.com/srb-fm/admin-srb.git
 
 echo "Make path ~/srb-tools"
