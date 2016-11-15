@@ -59,7 +59,7 @@ echo "Make path ~/srb-backup"
 mkdir ~/srb-backup
 mkdir ~/srb-backup/log
 echo "Copy backupscripts"
-cp "$(pwd)"/admin-srb/tools/*.sh ~/srb-tools
+cp "$(pwd)"/admin-srb/backup/*.sh ~/srb-backup
 
 echo "Folder admin-srb will continue stay for later use of install-scripts..."
 echo "To complete intra-webserver-config check your webserver-config, especially the doc-root-definition etc"
