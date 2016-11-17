@@ -4,7 +4,7 @@
 #
 # Testet with ubuntu-server 14.04 in 2016
 #
-# Dieses kleine Script uebernimmt die Configuration 
+# Dieses kleine Script uebernimmt die Configuration
 # des Firebird-Servers Admin-SRB auf dem Server
 # Die Einrichtung der DBs muss separat manuell vorgenommen werden
 # Author: Joerg Sorge
@@ -20,18 +20,25 @@ echo "It will change the aliases.conf only for using with admin-srb!"
 read -p "Are you sure to install? (y/n) " -n 1
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "Configuration..."
+	echo "Configuration..."
 	sudo dpkg-reconfigure firebird2.5-super
 
-	echo "Customize Aliases ..."
+	echo "Customize Aliases..."
 	sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
 	sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"" >> /etc/firebird/2.5/aliases.conf"
 	sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
 
-  echo "To allow access the firebird server from the network, edit:"
-  echo "sudo nano /etc/firebird/2.5/firebird.conf"
-  echo "and change RemoteBindAddress = localhost to RemoteBindAddress = "
-  echo ""
+	echo "Add Firebird-User:"
+	read -p 'Firebird Username for Admin-SRB: ' fb_user
+	read -sp 'Firebird Password for Admin-SRB: ' fb_pw
+	read -sp 'To add the new user, type in the firebird-master-password: ' fb_pw_master
+	sudo gsec -user sysdba -pass $fb_pw_master -add $fb_user -pw $fb_pw
+
+	echo ""
+ 	echo "To allow access the firebird server from the network, edit:"
+	echo "sudo nano /etc/firebird/2.5/firebird.conf"
+	echo "and change RemoteBindAddress = localhost to RemoteBindAddress = "
+	echo ""
 	echo "...finish"
 else
 	echo ""
