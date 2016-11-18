@@ -35,25 +35,25 @@ echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Customizing Aliases aborted"
+else
+	echo "Customize Aliases..."
+	sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
+	sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"" >> /etc/firebird/2.5/aliases.conf"
+	sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
 fi
-
-echo "Customize Aliases..."
-sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
-sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"" >> /etc/firebird/2.5/aliases.conf"
-sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
 
 read -p "Are you sure to add firebird database user for admin-srb? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Adding User aborted"
+else
+	echo "Add Firebird-User:"
+	read -p 'Firebird Username for Admin-SRB: ' fb_user
+	read -sp 'Firebird Password for Admin-SRB: ' fb_pw
+	read -sp 'To add the new user, type in the firebird-master-password: ' fb_pw_master
+	sudo gsec -user sysdba -pass $fb_pw_master -add $fb_user -pw $fb_pw
 fi
-
-echo "Add Firebird-User:"
-read -p 'Firebird Username for Admin-SRB: ' fb_user
-read -sp 'Firebird Password for Admin-SRB: ' fb_pw
-read -sp 'To add the new user, type in the firebird-master-password: ' fb_pw_master
-sudo gsec -user sysdba -pass $fb_pw_master -add $fb_user -pw $fb_pw
 
 echo ""
 echo "To allow access the firebird server from the network, edit:"
