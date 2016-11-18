@@ -35,7 +35,6 @@ echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Customizing Aliases aborted"
-	exit
 fi
 
 echo "Customize Aliases..."
@@ -48,7 +47,6 @@ echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Adding User aborted"
-	exit
 fi
 
 echo "Add Firebird-User:"
