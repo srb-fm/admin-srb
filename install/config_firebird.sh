@@ -53,6 +53,7 @@ else
 	read -sp 'Firebird Password for Admin-SRB: ' fb_pw
 	read -sp 'To add the new user, type in the firebird-master-password: ' fb_pw_master
 	sudo gsec -user sysdba -pass $fb_pw_master -add $fb_user -pw $fb_pw
+	echo ""
 fi
 
 echo ""
