@@ -41,10 +41,13 @@ else
 	echo "1 - new empty db"
 	echo "2 - use existing db"
 	echo "any other input for aborting"
-	echo -n "Enter number 1 or 2, other character for aborting"
+	echo -n "Enter number 1 or 2, other character for aborting: "
 	read character
 	case $character in
-    		1 ) echo "You entered one."
+    		1 ) echo "Create empty db"
+			read -sp 'To create the new db, type in the firebird-master-password: ' fb_pw_master
+			gfix -user SYSDBA -password $fb_pw -shut full -tran 60 Admin_SRB_db
+			gfix -user SYSDBA -password $fb_pw -shut full -tran 60 Admin_SRB_db_log
         	;;
     		2 ) echo "You entered two."
         	;;
