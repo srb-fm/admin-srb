@@ -49,7 +49,11 @@ else
     cp "$(pwd)"/admin-srb/tools/*.sh ~/srb-tools
     cp "$(pwd)"/admin-srb/tools/*.template ~/srb-tools
     echo "Make Tools executable"
-    chmod u+x ~/srb-tools/*.py
+    echo "This scripts makes only tools executable"
+    echo "that are necessary for running on the main admin server"
+    find /srb-tools -type f ! -name "lib_*.py" -exec chmod u+x {} +
+    chmod o+x ~/srb-tools/play_out_loader*.py
+    chmod o+x ~/srb-tools/audio_switch_controller.py
 fi
 
 read -p "Are you sure to install srb-intra? (y/n) " -n 1
