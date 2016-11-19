@@ -51,7 +51,7 @@ else
     echo "Make Tools executable"
     echo "This scripts makes only tools executable"
     echo "that are necessary for running on the main admin server"
-    find srb-tools -type f ! -name "lib_*.py" ! -name "*.sh" ! -name "*.template" -exec chmod u+x {} +
+    find srb-tools -type f ! -name "lib_*.py" ! -name "*.sh" ! -name "*.py.template" -exec chmod u+x {} +
     chmod o+x ~/srb-tools/play_out_loader*.py
     chmod o+x ~/srb-tools/audio_switch_controller.py
 fi
