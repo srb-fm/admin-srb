@@ -16,9 +16,11 @@
 
 echo "Admin-SRB-Firebird Configuration..."
 echo "Use this script carefully!"
-echo "You can change the aliases.conf only for using with admin-srb"
-echo "You can add a database user"
-echo "You can create a empty database"
+echo "It provides following steps:"
+echo "- Reconfiguring firebird server"
+echo "- Creating database"
+echo "- Define aliases for using with admin-srb"
+echo "- Add a database user"
 read -p "Are you sure to config firebird database server? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -29,6 +31,26 @@ fi
 
 echo "Configuration..."
 sudo dpkg-reconfigure firebird2.5-super
+
+read -p "Are you sure to create a database? (y/n) " -n 1
+echo ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo ""
+	echo "Creating of database aborted"
+else
+	echo "1 - new empty db"
+	echo "2 - use existing db"
+	echo "any other input for aborting"
+	echo -n "Enter number 1 or 2, other character for aborting"
+	read character
+	case $character in
+    		1 ) echo "You entered one."
+        	;;
+    		2 ) echo "You entered two."
+        	;;
+    		* ) echo "You did not enter 1 or 2"
+	esac
+fi
 
 read -p "Are you sure to customize aliases for admin-srb? (y/n) " -n 1
 echo ""
