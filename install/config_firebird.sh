@@ -107,14 +107,14 @@ else
 		text="Admin_SRB_db"
 		if grep -Fn "$text" /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf; then
 			line_nr=$(grep -Fn "$text" /etc/firebird/2.5/aliases.conf | sed 's/^\([0-9]\+\):.*$/\1/')
-			sed -i "${line_nr}d" /etc/firebird/2.5/aliases.conf
+			sudo sed -i "${line_nr}d" /etc/firebird/2.5/aliases.conf
 		fi
 		sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"" >> /etc/firebird/2.5/aliases.conf"
 		
 		text="Admin_SRB_db_log"
 		if grep -Fn "$text" /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf; then
 			line_nr=$(grep -Fn "$text" /etc/firebird/2.5/aliases.conf | sed 's/^\([0-9]\+\):.*$/\1/')
-			sed -i "${line_nr}d" /etc/firebird/2.5/aliases.conf
+			sudo sed -i "${line_nr}d" /etc/firebird/2.5/aliases.conf
 		fi
 		sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
 	fi
