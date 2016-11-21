@@ -77,8 +77,8 @@ else
 			fi
 			sudo chown -R firebird:firebird ~/srb-backup-firebird
 			sudo service firebird2.5-super start
-			gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name".fbk" /var/lib/firebird/2.5/data/$fb_db_name".fbd"
-			gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name"_log.fbk" /var/lib/firebird/2.5/data/$fb_db_name_log".fbd"
+			gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name".fbk" /var/lib/firebird/2.5/data/$fb_db_name".fdb"
+			gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name_log".fbk" /var/lib/firebird/2.5/data/$fb_db_name_log".fdb"
         	;;
     		* ) echo "You did not enter 1 or 2"
 	esac
