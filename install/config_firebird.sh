@@ -105,11 +105,11 @@ else
 	if [ $db_option == "create" ]; then
 		sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
 		text="Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"
-		if ! grep -Fxn "$text" aliases.conf; then
+		if ! grep -Fxn "$text" /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf; then
 			sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"" >> /etc/firebird/2.5/aliases.conf"
 		fi
 		text="Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"
-		if ! grep -Fxn "$text" aliases.conf; then
+		if ! grep -Fxn "$text" /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf; then
 			sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
 		fi
 	fi
