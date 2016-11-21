@@ -29,6 +29,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	exit
 fi
 
+db_option=""
 echo "Configuration..."
 sudo dpkg-reconfigure firebird2.5-super
 
@@ -45,6 +46,7 @@ else
 	read character
 	case $character in
     		1 ) echo "Create empty db"
+			db_option="create"
 			read -sp 'To create the new db, type in the firebird-master-password: ' fb_pw_master
 			sudo service firebird2.5-super stop
 			if sudo test -f /var/lib/firebird/2.5/data/admin_srb_db.fdb ; then
@@ -63,6 +65,7 @@ else
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_log_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db_log.fdb -meta_data
         	;;
     		2 ) echo "Restore existing db"
+			db_option="restore"
 			read -sp 'To restore existing db, type in the firebird-master-password: ' fb_pw_master
 			echo "This action will restore both, db and db_log"
 			echo "db will taken from ~/srb-backup-firebird"
@@ -99,9 +102,17 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo "Customizing Aliases aborted"
 else
 	echo "Customize Aliases..."
-	sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
-	sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"" >> /etc/firebird/2.5/aliases.conf"
-	sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
+	if db_option eq "create"; then
+		sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
+		text="Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"
+		if ! grep -Fxn "$text" aliases.conf; then
+			sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"" >> /etc/firebird/2.5/aliases.conf"
+		fi
+		text="Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"
+		if ! grep -Fxn "$text" aliases.conf; then
+			sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
+		fi
+	fi
 fi
 
 read -p "Are you sure to add firebird database user for admin-srb? (y/n) " -n 1
