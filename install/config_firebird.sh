@@ -46,8 +46,10 @@ else
 	case $character in
     		1 ) echo "Create empty db"
 			read -sp 'To create the new db, type in the firebird-master-password: ' fb_pw_master
-			gfix -user SYSDBA -password $fb_pw_master -shut full -tran 60 Admin_SRB_db
-			gfix -user SYSDBA -password $fb_pw_master -shut full -tran 60 Admin_SRB_db_log
+			gfix -user SYSDBA -password $fb_pw_master -online Admin_SRB_db
+			gfix -user SYSDBA -password $fb_pw_master -shut full -tran 0 Admin_SRB_db
+			gfix -user SYSDBA -password $fb_pw_master -online Admin_SRB_db_log
+			gfix -user SYSDBA -password $fb_pw_master -shut full -tran 0 Admin_SRB_db_log
 			sudo chown -R firebird:firebird "$(pwd)"/db
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db.fdb -meta_data
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_log_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db_log.fdb -meta_data
