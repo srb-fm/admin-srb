@@ -75,7 +75,7 @@ else
 			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" ; then
 				sudo mv /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" /var/lib/firebird/2.5/data/$fb_db_name_log_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
 			fi
-			sudo chown -R firebird:firebird "$(pwd)"/srb-backup-firebird
+			sudo chown -R firebird:firebird ~/srb-backup-firebird
 			sudo service firebird2.5-super start
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/srb-backup-firebird/$fb_db_name".fbk" /var/lib/firebird/2.5/data/$fb_db_name".fbd"
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/srb-backup-firebird/$fb_db_name"_log.fbk" /var/lib/firebird/2.5/data/$fb_db_name_log".fbd"
