@@ -67,18 +67,26 @@ else
 			echo "This action will restore both, db and db_log"
 			echo "db will taken from ~/srb-backup-firebird"
 			read -p 'input db-name without extention: ' fb_db_name
+			echo "logging-db can restore as empty db"
+			echo "therefore, leave the input blank"
 			read -p 'input log-db-name without extention: ' fb_db_name_log
 			sudo service firebird2.5-super stop
 			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name".fdb" ; then
 				sudo mv /var/lib/firebird/2.5/data/$fb_db_name".fdb" /var/lib/firebird/2.5/data/$fb_db_name_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
 			fi
-			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" ; then
-				sudo mv /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" /var/lib/firebird/2.5/data/$fb_db_name_log_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
+			if ! [ -z "$fb_db_name_log" ]; then
+				if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" ; then
+					sudo mv /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" /var/lib/firebird/2.5/data/$fb_db_name_log_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
+				fi
 			fi
 			sudo chown -R firebird:firebird ~/srb-backup-firebird
 			sudo service firebird2.5-super start
 			gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name".fbk" /var/lib/firebird/2.5/data/$fb_db_name".fdb"
-			gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name_log".fbk" /var/lib/firebird/2.5/data/$fb_db_name_log".fdb"
+			if [ -z "$fb_db_name_log" ]; then
+				gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_log_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db_log.fdb -meta_data
+			else
+				gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name_log".fbk" /var/lib/firebird/2.5/data/$fb_db_name_log".fdb"
+			fi
         	;;
     		* ) echo "You did not enter 1 or 2"
 	esac
