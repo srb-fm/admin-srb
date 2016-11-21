@@ -46,12 +46,11 @@ else
 	case $character in
     		1 ) echo "Create empty db"
 			read -sp 'To create the new db, type in the firebird-master-password: ' fb_pw_master
+			sudo service firebird2.5-super stop
 			if sudo test -f /var/lib/firebird/2.5/data/admin_srb_db.fdb ; then
-				sudo service firebird2.5-super stop
 				sudo mv /var/lib/firebird/2.5/data/admin_srb_db.fdb /var/lib/firebird/2.5/data/admin_srb_db_$(date +'%y-%m-%d-%H-%M-%S').fdb
 			fi
 			if sudo test -f /var/lib/firebird/2.5/data/admin_srb_db_log.fdb ; then
-				sudo service firebird2.5-super stop
 				sudo mv /var/lib/firebird/2.5/data/admin_srb_db_log.fdb /var/lib/firebird/2.5/data/admin_srb_db_log_$(date +'%y-%m-%d-%H-%M-%S').fdb
 			fi
 			#gfix -user SYSDBA -password $fb_pw_master -online Admin_SRB_db
@@ -63,7 +62,21 @@ else
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db.fdb -meta_data
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_log_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db_log.fdb -meta_data
         	;;
-    		2 ) echo "You entered two."
+    		2 ) echo "Restore existing db"
+			read -sp 'To restore existing db, type in the firebird-master-password: ' fb_pw_master
+			echo "This action will restore both, db and db_log"
+			read -sp 'db will taken from ~/srb-backup-firebird), input db-name without extention: ' fb_db_name
+			sudo service firebird2.5-super stop
+			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name".fdb" ; then
+				sudo mv /var/lib/firebird/2.5/data/$fb_db_name".fdb" /var/lib/firebird/2.5/data/$fb_db_name_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
+			fi
+			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name"_log.fdb" ; then
+				sudo mv /var/lib/firebird/2.5/data/$fb_db_name"_log.fdb" /var/lib/firebird/2.5/data/$fb_db_name"log_"$(date +'%y-%m-%d-%H-%M-%S')".fdb"
+			fi
+			sudo chown -R firebird:firebird "$(pwd)"/db
+			sudo service firebird2.5-super start
+			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/srb-backup-firebird/$fb_db_name".fbk" /var/lib/firebird/2.5/data/$fb_db_name".fbd"
+			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/srb-backup-firebird/$fb_db_name"_log.fbk" /var/lib/firebird/2.5/data/$fb_db_name"_log.fbd"
         	;;
     		* ) echo "You did not enter 1 or 2"
 	esac
