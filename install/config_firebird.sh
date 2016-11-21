@@ -66,19 +66,19 @@ else
 			read -sp 'To restore existing db, type in the firebird-master-password: ' fb_pw_master
 			echo "This action will restore both, db and db_log"
 			echo "db will taken from ~/srb-backup-firebird"
-			read -sp 'input db-name without extention: ' fb_db_name
-			read -sp 'input log-db-name without extention: ' fb_db_name_log
+			read -p 'input db-name without extention: ' fb_db_name
+			read -p 'input log-db-name without extention: ' fb_db_name_log
 			sudo service firebird2.5-super stop
 			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name".fdb" ; then
 				sudo mv /var/lib/firebird/2.5/data/$fb_db_name".fdb" /var/lib/firebird/2.5/data/$fb_db_name_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
 			fi
 			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" ; then
-				sudo mv /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" /var/lib/firebird/2.5/data/$fb_db_name_log_"$(date +'%y-%m-%d-%H-%M-%S')".fdb"
+				sudo mv /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" /var/lib/firebird/2.5/data/$fb_db_name_log_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
 			fi
 			sudo chown -R firebird:firebird "$(pwd)"/db
 			sudo service firebird2.5-super start
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/srb-backup-firebird/$fb_db_name".fbk" /var/lib/firebird/2.5/data/$fb_db_name".fbd"
-			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/srb-backup-firebird/$fb_db_name"_log.fbk" /var/lib/firebird/2.5/data/$fb_db_name"_log.fbd"
+			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/srb-backup-firebird/$fb_db_name"_log.fbk" /var/lib/firebird/2.5/data/$fb_db_name_log".fbd"
         	;;
     		* ) echo "You did not enter 1 or 2"
 	esac
