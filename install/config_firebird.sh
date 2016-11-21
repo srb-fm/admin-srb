@@ -50,6 +50,7 @@ else
 			gfix -user SYSDBA -password $fb_pw_master -shut full -tran 60 Admin_SRB_db_log
 			sudo chown -R firebird:firebird "$(pwd)"/db
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db.fdb -meta_data
+			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_log_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db_log.fdb -meta_data
         	;;
     		2 ) echo "You entered two."
         	;;
