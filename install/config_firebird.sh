@@ -48,6 +48,7 @@ else
 			read -sp 'To create the new db, type in the firebird-master-password: ' fb_pw_master
 			gfix -user SYSDBA -password $fb_pw_master -shut full -tran 60 Admin_SRB_db
 			gfix -user SYSDBA -password $fb_pw_master -shut full -tran 60 Admin_SRB_db_log
+			sudo chown -R firebird:firebird "$(pwd)"/admin-srb/db
         	;;
     		2 ) echo "You entered two."
         	;;
