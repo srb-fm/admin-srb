@@ -46,18 +46,22 @@ else
 	case $character in
     		1 ) echo "Create empty db"
 			read -sp 'To create the new db, type in the firebird-master-password: ' fb_pw_master
-			if [ -f /var/lib/firebird/2.5/data/admin_srb_db.fdb ]
-  				then
+			if sudo test -f /var/lib/firebird/2.5/data/admin_srb_db.fdb ; then
 				sudo service firebird2.5-super stop
 				sudo mv /var/lib/firebird/2.5/data/admin_srb_db.fdb /var/lib/firebird/2.5/data/admin_srb_db_$(date +'%y-%m-%d-%H-%M-%S').fdb
+			fi
+			if sudo test -f /var/lib/firebird/2.5/data/admin_srb_db_log.fdb ; then
+				sudo service firebird2.5-super stop
+				sudo mv /var/lib/firebird/2.5/data/admin_srb_db_log.fdb /var/lib/firebird/2.5/data/admin_srb_db_log_$(date +'%y-%m-%d-%H-%M-%S').fdb
 			fi
 			#gfix -user SYSDBA -password $fb_pw_master -online Admin_SRB_db
 			#gfix -user SYSDBA -password $fb_pw_master -shut full -tran 0 Admin_SRB_db
 			#gfix -user SYSDBA -password $fb_pw_master -online Admin_SRB_db_log
 			#gfix -user SYSDBA -password $fb_pw_master -shut full -tran 0 Admin_SRB_db_log
 			sudo chown -R firebird:firebird "$(pwd)"/db
+			sudo service firebird2.5-super start
 			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db.fdb -meta_data
-			#gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_log_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db_log.fdb -meta_data
+			gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_log_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db_log.fdb -meta_data
         	;;
     		2 ) echo "You entered two."
         	;;
