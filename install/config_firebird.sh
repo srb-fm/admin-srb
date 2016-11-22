@@ -162,10 +162,18 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo "Adding config for tools aborted"
 else
 	echo "Add db-config for admin-srb tools:"
+	if ! [ -z "$fb_user" ]; then
+		echo "firebird user data:"
+		read -p 'Firebird Username for Admin-SRB: ' fb_user
+		read -sp 'Firebird Password for Admin-SRB: ' fb_pw
+	fi
 	config_filename=~/srb-tools/db_config.py
-	bash -c "echo ""#!/usr/bin/env python"" > $config_filename"
-	bash -c "echo ""# -*- coding: utf-8 -*-"" >> $config_filename"
-	bash -c "echo ""# db-config"" >> $config_filename"
+	bash -c "echo ""\#!/usr/bin/env python"" > $config_filename"
+	bash -c "echo ""\# -*- coding: utf-8 -*-"" >> $config_filename"
+	bash -c "echo ""\# db-config"" >> $config_filename"
+	bash -c "echo ""db_name = \'Admin_SRB_db\'"" >> $config_filename"
+	bash -c "echo ""db_user = \'$fb_user\'"" >> $config_filename"
+	bash -c "echo ""db_pw = \'$fb_pw\'"" >> $config_filename"
 	echo ""
 fi
 
