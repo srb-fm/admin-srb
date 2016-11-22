@@ -6,7 +6,7 @@
 #
 # Dieses kleine Script uebernimmt die Configuration
 # des Firebird-Servers Admin-SRB auf dem Server
-# Die Einrichtung der DBs muss separat manuell vorgenommen werden
+# 
 # Author: Joerg Sorge
 # Distributed under the terms of GNU GPL version 2 or later
 # Copyright (C) Joerg Sorge joergsorge@gmail.com
@@ -20,7 +20,9 @@ echo "It provides following steps:"
 echo "- Reconfiguring firebird server"
 echo "- Creating database"
 echo "- Define aliases for using with admin-srb"
-echo "- Add a database user"
+echo "- Add database user"
+echo "- Config db credential for tools"
+echo "- Config db credential for intra"
 read -p "Are you sure to config firebird database server? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -99,9 +101,9 @@ read -p "Are you sure to customize aliases for admin-srb? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
-	echo "Customizing Aliases aborted"
+	echo "Customizing aliases aborted"
 else
-	echo "Customize Aliases..."
+	echo "Customize aliases..."
 	case $db_option in
     		create ) 
 		sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
@@ -148,11 +150,11 @@ read -p "Are you sure to add firebird database user for admin-srb? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
-	echo "Adding User aborted"
+	echo "Adding user aborted"
 else
 	echo "Add Firebird-User:"
-	read -p 'Firebird Username for Admin-SRB: ' fb_user
-	read -sp 'Firebird Password for Admin-SRB: ' fb_pw
+	read -p 'Firebird username for Admin-SRB: ' fb_user
+	read -sp 'Firebird password for Admin-SRB: ' fb_pw
 	read -sp 'To add the new user, type in the firebird-master-password: ' fb_pw_master
 	sudo gsec -user sysdba -pass $fb_pw_master -add $fb_user -pw $fb_pw
 	echo ""
