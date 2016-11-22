@@ -14,16 +14,15 @@
 /**
 * db_connect
 * data-db
-*
+* this file may be edited thru /install/config_firebird.sh
 * @return db-connect
 *
 */	
 function db_connect()
 {
-	$db_host = "";// FB-SQL-Host angeben
-	$db_user = "";// FB-User angeben
-	$db_pwd  = "";// Passwort angeben
-	$db_name = "";// Gewuenschte Datenbank angeben
+	$db_host_db = "";// FB-SQL-Host like localhost:mydb
+	$db_user = "";// FB-User
+	$db_pwd  = "";// Passwort
    
 	$db_connect = ibase_connect($db_host, $db_user, $db_pwd, "UTF8");
 	if ( ! $db_connect ) { 
@@ -42,12 +41,11 @@ function db_connect()
 */	
 function db_log_connect()
 {
-	$db_host = "";// FB-SQL-Host angeben
-	$db_user = "";// FB-User angeben
-	$db_pwd  = "";// Passwort angeben
-	$db_name = "";// Gewuenschte Datenbank angeben
+	$db_log_host_db = "";// FB-SQL-Host
+	$db_log_user = "";// FB-User
+	$db_log_pwd  = "";// Passwort
    
-	$db_connect = ibase_connect($db_host, $db_user, $db_pwd, "UTF8");
+	$db_connect = ibase_connect($db_log_host_db, $db_log_user, $db_log_pwd, "UTF8");
 	if ( ! $db_connect ) { 
 		echo "Keine Verbindung zu Firebird-SQL";
 		exit; 
