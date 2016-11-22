@@ -193,9 +193,12 @@ else
 		read -sp 'Firebird Password for Admin-SRB: ' fb_pw
 	fi
 	config_filename=~/srb-intra/cgi-bin/admin_srb_libs/admin_srb_conf.php
-	sed -i "s/\$db_host_db = \"\"/\$db_host = \"localhost:Admin_SRB_db\"/" $config_filename
+	sed -i "s/\$db_host_db = \"\"/\$db_host_db = \"localhost:Admin_SRB_db\"/" $config_filename
 	sed -i "s/\$db_user = \"\"/\$db_user = \"$fb_user\"/" $config_filename
-	sed -i "s/\$db_pwd = \"\"/\$db_pwd = \"$fb_pw\"/" $config_filename
+	sed -i "s/\$db_pwd  = \"\"/\$db_pwd = \"$fb_pw\"/" $config_filename
+	sed -i "s/\$db_log_host_db = \"\"/\$db_log_host_db = \"localhost:Admin_SRB_db_log\"/" $config_filename
+	sed -i "s/\$db_log_user = \"\"/\$db_log_user = \"$fb_user\"/" $config_filename
+	sed -i "s/\$db_log_pwd  = \"\"/\$db_log_pwd = \"$fb_pw\"/" $config_filename
 	echo ""
 fi
 
