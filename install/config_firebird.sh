@@ -162,7 +162,10 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo "Adding config for tools aborted"
 else
 	echo "Add db-config for admin-srb tools:"
-	
+	config_filename=~/srb-tools/db_config.py
+	bash -c "echo ""#!/usr/bin/env python"" > $config_filename"
+	bash -c "echo ""# -*- coding: utf-8 -*-"" >> $config_filename"
+	bash -c "echo ""# db-config"" >> $config_filename"
 	echo ""
 fi
 
