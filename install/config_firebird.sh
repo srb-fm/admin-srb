@@ -155,6 +155,17 @@ else
 	echo ""
 fi
 
+read -p "Are you sure to add db-config for admin-srb tools? (y/n) " -n 1
+echo ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo ""
+	echo "Adding config for tools aborted"
+else
+	echo "Add db-config for admin-srb tools:"
+	
+	echo ""
+fi
+
 echo ""
 echo "To allow access the firebird server from the network, edit:"
 echo "sudo nano /etc/firebird/2.5/firebird.conf"
