@@ -38,8 +38,9 @@ cd "$(pwd)"/tweepy
 sudo python setup.py install
 
 echo "Clean up Tweepy-Temp"
+cd ..
 sudo rm -R "$(pwd)"/tweepy
-sudo rm "$(pwd)"/setuptools-14.0.zip
+sudo rm "$(pwd)"/setuptools*.zip
 
 echo "...finish"
 exit
