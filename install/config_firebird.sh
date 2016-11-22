@@ -180,6 +180,25 @@ else
 	echo ""
 fi
 
+read -p "Are you sure to add db-config for admin-srb intra? (y/n) " -n 1
+echo ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo ""
+	echo "Adding config for intra aborted"
+else
+	echo "Add db-config for admin-srb intra:"
+	if [ -z "$fb_user" ]; then
+		echo "firebird user data:"
+		read -p 'Firebird Username for Admin-SRB: ' fb_user
+		read -sp 'Firebird Password for Admin-SRB: ' fb_pw
+	fi
+	config_filename=~/srb-intra/cgi-bin/admin_srb_libs/admin_srb_conf.php
+	sed -i "s/\$db_host_db = \"\"/\$db_host = \"localhost:Admin_SRB_db\"/" $config_filename
+	sed -i "s/\$db_user = \"\"/\$db_user = \"$fb_user\"/" $config_filename
+	sed -i "s/\$db_pwd = \"\"/\$db_pwd = \"$fb_pw\"/" $config_filename
+	echo ""
+fi
+
 echo ""
 echo "To allow access the firebird server from the network, edit:"
 echo "sudo nano /etc/firebird/2.5/firebird.conf"
