@@ -162,7 +162,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo "Adding config for tools aborted"
 else
 	echo "Add db-config for admin-srb tools:"
-	if ! [ -z "$fb_user" ]; then
+	if [ -z "$fb_user" ]; then
 		echo "firebird user data:"
 		read -p 'Firebird Username for Admin-SRB: ' fb_user
 		read -sp 'Firebird Password for Admin-SRB: ' fb_pw
@@ -174,6 +174,9 @@ else
 	bash -c "echo ""db_name = \'Admin_SRB_db\'"" >> $config_filename"
 	bash -c "echo ""db_user = \'$fb_user\'"" >> $config_filename"
 	bash -c "echo ""db_pw = \'$fb_pw\'"" >> $config_filename"
+	bash -c "echo ""db_log_name = \'Admin_SRB_db_log\'"" >> $config_filename"
+	bash -c "echo ""db_log_user = \'$fb_user\'"" >> $config_filename"
+	bash -c "echo ""db_log_pw = \'$fb_pw\'"" >> $config_filename"
 	echo ""
 fi
 
