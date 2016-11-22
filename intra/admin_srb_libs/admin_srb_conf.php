@@ -1,6 +1,6 @@
 <?php
-/** 
-* library for db-functions 
+/**
+* library for db-functions
 *
 * PHP version 5
 *
@@ -23,12 +23,12 @@ function db_connect()
 	$db_host_db = "";// FB-SQL-Host like localhost:mydb
 	$db_user = "";// FB-User
 	$db_pwd  = "";// Passwort
-   
+
 	$db_connect = ibase_connect($db_host, $db_user, $db_pwd, "UTF8");
-	if ( ! $db_connect ) { 
+	if ( ! $db_connect ) {
 		echo "Keine Verbindung zu Firebird-SQL";
-		exit; 
-	} 
+		exit;
+	}
 	return $db_connect;
 }
 
@@ -38,18 +38,18 @@ function db_connect()
 *
 * @return db-connect
 *
-*/	
+*/
 function db_log_connect()
 {
 	$db_log_host_db = "";// FB-SQL-Host
 	$db_log_user = "";// FB-User
 	$db_log_pwd  = "";// Passwort
-   
+
 	$db_connect = ibase_connect($db_log_host_db, $db_log_user, $db_log_pwd, "UTF8");
-	if ( ! $db_connect ) { 
+	if ( ! $db_connect ) {
 		echo "Keine Verbindung zu Firebird-SQL";
-		exit; 
-	} 
+		exit;
+	}
 	return $db_connect;
 }
 
