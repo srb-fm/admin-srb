@@ -228,11 +228,8 @@ else
 	echo ""
 fi
 
-echo ""
-echo "To allow access the firebird server from the network, edit:"
-echo "sudo nano /etc/firebird/2.5/firebird.conf"
-echo "and change RemoteBindAddress = localhost to RemoteBindAddress = "
-echo ""
+echo "Congratiulations!"
+echo "Now you can take a cup of coffee...and wipe away your sweat..."
 echo "...finish"
 
 exit
