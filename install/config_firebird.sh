@@ -6,7 +6,7 @@
 #
 # Dieses kleine Script uebernimmt die Configuration
 # des Firebird-Servers Admin-SRB auf dem Server
-# Die Einrichtung der DBs muss separat manuell vorgenommen werden
+# 
 # Author: Joerg Sorge
 # Distributed under the terms of GNU GPL version 2 or later
 # Copyright (C) Joerg Sorge joergsorge@gmail.com
@@ -20,7 +20,9 @@ echo "It provides following steps:"
 echo "- Reconfiguring firebird server"
 echo "- Creating database"
 echo "- Define aliases for using with admin-srb"
-echo "- Add a database user"
+echo "- Add database user"
+echo "- Config db credential for tools"
+echo "- Config db credential for intra"
 read -p "Are you sure to config firebird database server? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -29,9 +31,30 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	exit
 fi
 
+read -p "Are you sure to config the firebird server in general? (y/n) " -n 1
+echo ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo ""
+	echo "Configuration of the firebird server aborted"
+else
+	sudo dpkg-reconfigure firebird2.5-super
+	read -p "Are you sure to allow firebird access from the network? (y/n) " -n 1
+	echo ""
+	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+		echo ""
+		echo "Access from the network aborted"
+	else
+		echo "Allow firebird access from the network:"
+		sudo service firebird2.5-super stop
+		sudo cp /etc/firebird/2.5/firebird.conf /etc/firebird/2.5/firebird.conf.$(date +'%y-%m-%d-%H-%M-%S')
+		sudo sed -i "s/#RemoteBindAddress =/RemoteBindAddress =/" /etc/firebird/2.5/firebird.conf
+		sudo sed -i "s/RemoteBindAddress = localhost/#RemoteBindAddress = localhost/" /etc/firebird/2.5/firebird.conf
+		sudo service firebird2.5-super start
+		echo ""
+	fi
+fi
+
 db_option=""
-echo "Configuration..."
-sudo dpkg-reconfigure firebird2.5-super
 
 read -p "Are you sure to create a database? (y/n) " -n 1
 echo ""
@@ -99,37 +122,38 @@ read -p "Are you sure to customize aliases for admin-srb? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
-	echo "Customizing Aliases aborted"
+	echo "Customizing aliases aborted"
 else
-	echo "Customize Aliases..."
-	if [ $db_option == "create" ]; then
+	echo "Customize aliases..."
+	case $db_option in
+    		create ) 
 		sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
 		text="Admin_SRB_db ="
-		if grep -Fwn "$text" /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf; then
+		if grep -Fwn "$text" /etc/firebird/2.5/aliases.conf; then
 			line_nr=$(grep -Fwn "$text" /etc/firebird/2.5/aliases.conf | sed 's/^\([0-9]\+\):.*$/\1/')
 			sudo sed -i "${line_nr}d" /etc/firebird/2.5/aliases.conf
 		fi
 		sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/admin_srb_db.fdb"" >> /etc/firebird/2.5/aliases.conf"
 		
 		text="Admin_SRB_db_log ="
-		if grep -Fwn "$text" /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf; then
+		if grep -Fwn "$text" /etc/firebird/2.5/aliases.conf; then
 			line_nr=$(grep -Fwn "$text" /etc/firebird/2.5/aliases.conf | sed 's/^\([0-9]\+\):.*$/\1/')
 			sudo sed -i "${line_nr}d" /etc/firebird/2.5/aliases.conf
 		fi
 		sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/admin_srb_db_log.fdb"" >> /etc/firebird/2.5/aliases.conf"
-	fi
+		;;
 	
-	if [ $db_option == "restore" ]; then
+		restore )
 		sudo cp /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf.$(date +'%y-%m-%d-%H-%M-%S')
 		text="Admin_SRB_db ="
-		if grep -Fwn "$text" /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf; then
+		if grep -Fwn "$text" /etc/firebird/2.5/aliases.conf; then
 			line_nr=$(grep -Fwn "$text" /etc/firebird/2.5/aliases.conf | sed 's/^\([0-9]\+\):.*$/\1/')
 			sudo sed -i "${line_nr}d" /etc/firebird/2.5/aliases.conf
 		fi
 		sudo bash -c "echo ""Admin_SRB_db = /var/lib/firebird/2.5/data/$fb_db_name.fdb"" >> /etc/firebird/2.5/aliases.conf"
 		
 		text="Admin_SRB_db_log ="
-		if grep -Fwn "$text" /etc/firebird/2.5/aliases.conf /etc/firebird/2.5/aliases.conf; then
+		if grep -Fwn "$text" /etc/firebird/2.5/aliases.conf; then
 			line_nr=$(grep -Fwn "$text" /etc/firebird/2.5/aliases.conf | sed 's/^\([0-9]\+\):.*$/\1/')
 			sudo sed -i "${line_nr}d" /etc/firebird/2.5/aliases.conf
 		fi
@@ -138,28 +162,74 @@ else
 		else
 			sudo bash -c "echo ""Admin_SRB_db_log = /var/lib/firebird/2.5/data/$fb_db_name_log"" >> /etc/firebird/2.5/aliases.conf"
 		fi
-	fi
+		;;
+		* ) echo "No database created or restored, customize alias aborted"
+	esac
 fi
 
 read -p "Are you sure to add firebird database user for admin-srb? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
-	echo "Adding User aborted"
+	echo "Adding user aborted"
 else
 	echo "Add Firebird-User:"
-	read -p 'Firebird Username for Admin-SRB: ' fb_user
-	read -sp 'Firebird Password for Admin-SRB: ' fb_pw
+	read -p 'Firebird username for Admin-SRB: ' fb_user
+	read -sp 'Firebird password for Admin-SRB: ' fb_pw
 	read -sp 'To add the new user, type in the firebird-master-password: ' fb_pw_master
 	sudo gsec -user sysdba -pass $fb_pw_master -add $fb_user -pw $fb_pw
 	echo ""
 fi
 
+read -p "Are you sure to add db-config for admin-srb tools? (y/n) " -n 1
 echo ""
-echo "To allow access the firebird server from the network, edit:"
-echo "sudo nano /etc/firebird/2.5/firebird.conf"
-echo "and change RemoteBindAddress = localhost to RemoteBindAddress = "
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo ""
+	echo "Adding config for tools aborted"
+else
+	echo "Add db-config for admin-srb tools:"
+	if [ -z "$fb_user" ]; then
+		echo "firebird user data:"
+		read -p 'Firebird Username for Admin-SRB: ' fb_user
+		read -sp 'Firebird Password for Admin-SRB: ' fb_pw
+	fi
+	config_filename=~/srb-tools/db_config.py
+	bash -c "echo ""\#!/usr/bin/env python"" > $config_filename"
+	bash -c "echo ""\# -*- coding: utf-8 -*-"" >> $config_filename"
+	bash -c "echo ""\# db-config"" >> $config_filename"
+	bash -c "echo ""db_name = \'Admin_SRB_db\'"" >> $config_filename"
+	bash -c "echo ""db_user = \'$fb_user\'"" >> $config_filename"
+	bash -c "echo ""db_pw = \'$fb_pw\'"" >> $config_filename"
+	bash -c "echo ""db_log_name = \'Admin_SRB_db_log\'"" >> $config_filename"
+	bash -c "echo ""db_log_user = \'$fb_user\'"" >> $config_filename"
+	bash -c "echo ""db_log_pw = \'$fb_pw\'"" >> $config_filename"
+	echo ""
+fi
+
+read -p "Are you sure to add db-config for admin-srb intra? (y/n) " -n 1
 echo ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo ""
+	echo "Adding config for intra aborted"
+else
+	echo "Add db-config for admin-srb intra:"
+	if [ -z "$fb_user" ]; then
+		echo "firebird user data:"
+		read -p 'Firebird Username for Admin-SRB: ' fb_user
+		read -sp 'Firebird Password for Admin-SRB: ' fb_pw
+	fi
+	config_filename=~/srb-intra/cgi-bin/admin_srb_libs/admin_srb_conf.php
+	sed -i "s/\$db_host_db = \"\"/\$db_host_db = \"localhost:Admin_SRB_db\"/" $config_filename
+	sed -i "s/\$db_user = \"\"/\$db_user = \"$fb_user\"/" $config_filename
+	sed -i "s/\$db_pwd  = \"\"/\$db_pwd = \"$fb_pw\"/" $config_filename
+	sed -i "s/\$db_log_host_db = \"\"/\$db_log_host_db = \"localhost:Admin_SRB_db_log\"/" $config_filename
+	sed -i "s/\$db_log_user = \"\"/\$db_log_user = \"$fb_user\"/" $config_filename
+	sed -i "s/\$db_log_pwd  = \"\"/\$db_log_pwd = \"$fb_pw\"/" $config_filename
+	echo ""
+fi
+
+echo "Congratiulations!"
+echo "Now you can take a cup of coffee...and wipe away your sweat..."
 echo "...finish"
 
 exit
