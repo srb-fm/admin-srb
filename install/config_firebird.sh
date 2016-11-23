@@ -47,8 +47,8 @@ else
 		echo "Allow firebird access from the network:"
 		sudo service firebird2.5-super stop
 		sudo cp /etc/firebird/2.5/firebird.conf /etc/firebird/2.5/firebird.conf.$(date +'%y-%m-%d-%H-%M-%S')
-		sudo sed -i "s/RemoteBindAddress =/#RemoteBindAddress =/" /etc/firebird/2.5/firebird.conf
-		sudo sed -i "s/#RemoteBindAddress = localhost/RemoteBindAddress = localhost/" /etc/firebird/2.5/firebird.conf
+		sudo sed -i "s/#RemoteBindAddress =/RemoteBindAddress =/" /etc/firebird/2.5/firebird.conf
+		sudo sed -i "s/RemoteBindAddress = localhost/#RemoteBindAddress = localhost/" /etc/firebird/2.5/firebird.conf
 		sudo service firebird2.5-super start
 		echo ""
 	fi
