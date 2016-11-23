@@ -31,9 +31,16 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	exit
 fi
 
+read -p "Are you sure to config the firebird server in general? (y/n) " -n 1
+echo ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo ""
+	echo "Configuration of the firebird server aborted"
+else
+	sudo dpkg-reconfigure firebird2.5-super
+fi
+
 db_option=""
-echo "Configuration..."
-sudo dpkg-reconfigure firebird2.5-super
 
 read -p "Are you sure to create a database? (y/n) " -n 1
 echo ""
