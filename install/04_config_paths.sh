@@ -14,6 +14,7 @@
 #
 echo "Admin-SRB-Firebird Configuration..."
 echo "Use this script only for a fresh install!"
+echo "Run this script not with sudo!"
 echo "Main path must exist (mount point of data hd)"
 echo "It provides following steps:"
 echo "- Set permissions for main path"
@@ -50,7 +51,6 @@ mkdir $path_media/Play_Out_Server/Play_Out_Infotime
 mkdir $path_media/Play_Out_Server/Play_Out_Layout
 mkdir $path_media/Play_Out_Server/Play_Out_Rotation
 mkdir $path_media/Play_Out_Server/Play_Out_Sendung
-mkdir $path_media/Data_Produktion
 
 echo "Congratiulations!"
 echo "Now you can take off your shoes and sitting down in a chair..."
