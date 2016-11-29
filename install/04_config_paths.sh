@@ -31,7 +31,7 @@ echo "The standard path is: /mnt/data_server"
 echo "Leave the input blank if you using this path"
 echo "Otherwise type in a new path:"
 read -p 'input data path for media files: ' path_media
-if ! [ -z "$path_media" ]; then
+if [ -z "$path_media" ]; then
   path_media=/mnt/data_server
 fi
 
