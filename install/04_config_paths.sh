@@ -12,7 +12,7 @@
 # Copyright (C) Joerg Sorge joergsorge@gmail.com
 # 2016-11-29
 #
-echo "Admin-SRB-Firebird Configuration..."
+echo "Admin-SRB Data Path Configuration..."
 echo "Use this script only for a fresh install!"
 echo "Run this script not with sudo!"
 echo "Main path must exist (mount point of data hd)"
