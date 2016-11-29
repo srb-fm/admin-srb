@@ -14,8 +14,8 @@
 #
 echo "Admin-SRB-Firebird Configuration..."
 echo "Use this script only for a fresh install!"
+echo "Main path must exist (mount point of data hd)"
 echo "It provides following steps:"
-echo "- Making main path"
 echo "- Set permissions for main path"
 echo "- Making sub paths"
 
@@ -35,8 +35,6 @@ if ! [ -z "$path_media" ]; then
   path_media=/mnt/data_server
 fi
 
-echo "Making main path $path_media"
-sudo mkdir $path_media
 echo "Set permissions..."
 sudo chmod o+rwx $path_media
 sudo chgrp users $path_media
