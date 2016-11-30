@@ -12,12 +12,16 @@
 # Copyright (C) Joerg Sorge joergsorge@gmail.com
 # 2016-11-29
 #
+echo ""
 echo "Admin-SRB Apache Configuration..."
 echo "Use this script only for a fresh install!"
 echo "Run this script not with sudo!"
 echo "It provides following steps:"
 echo "- Set permissions for main path"
-echo "- Making sub paths"
+echo "- Add www-data to group users for apache fileaccess of media files"
+echo "- Activate some additionally mods"
+echo "- Install and activate php5-mcrypt"
+echo "- Creating of htaccess files"
 
 read -p "Are you sure to config apache? (y/n) " -n 1
 echo ""
@@ -42,12 +46,12 @@ sudo chmod -R 755 /var/www
 echo "Add www-data to group users for apache fileaccess of media files..."
 sudo usermod -aG users www-data
 
-echo "activate some additionally mods..."
+echo "Activate some additionally mods..."
 sudo a2enmod expires
 sudo a2enmod include
 sudo a2enmod ssl
 
-echo "install and activate php5-mcrypt..."
+echo "Install and activate php5-mcrypt..."
 sudo apt-get install php5-mcrypt
 sudo php5enmod mcrypt
 
