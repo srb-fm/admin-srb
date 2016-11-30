@@ -33,6 +33,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	exit
 fi
 
+echo ""
 echo "The standard path for media files is: /mnt/data_server"
 echo "Leave the input blank if you using this path"
 echo "Otherwise type in a new path"
@@ -43,21 +44,26 @@ if [ -z "$path_media" ]; then
   path_media=/mnt/data_server
 fi
 
+echo ""
 echo "Change permissions of document root..."
 sudo chmod -R 755 /var/www
 
+echo ""
 echo "Add www-data to group users for apache fileaccess of media files..."
 sudo usermod -aG users www-data
 
+echo ""
 echo "Activate some additionally mods..."
 sudo a2enmod expires
 sudo a2enmod include
 sudo a2enmod ssl
 
+echo ""
 echo "Install and activate php5-mcrypt..."
 sudo apt-get install php5-mcrypt
 sudo php5enmod mcrypt
 
+echo ""
 read -p "Are you sure to create htaccess files in the media path? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
