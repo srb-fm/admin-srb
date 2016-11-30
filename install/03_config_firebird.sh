@@ -23,6 +23,7 @@ echo "- Define aliases for using with admin-srb"
 echo "- Add database user"
 echo "- Config db credential for tools"
 echo "- Config db credential for intra"
+echo ""
 read -p "Are you sure to config firebird database server? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -59,6 +60,7 @@ fi
 
 db_option=""
 
+echo ""
 read -p "Are you sure to create a database? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
