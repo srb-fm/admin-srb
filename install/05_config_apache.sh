@@ -28,6 +28,7 @@ echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Configuration aborted"
+	echo ""
 	exit
 fi
 
@@ -76,4 +77,5 @@ echo "and:"
 echo "/etc/apache2/sites-available/default-ssl.conf"
 echo "and restart apache"
 echo "...finish"
+echo ""
 exit
