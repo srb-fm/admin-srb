@@ -65,8 +65,8 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo "Creating of htaccess files aborted"
 	echo ""
 else
-  sudo bash -c "echo ""Options -Indexes"" > ${path_media}/play_out_archiv/.htaccess"
-  sudo bash -c "echo ""Options -Indexes"" > ${path_media}/play_out_server/.htaccess"
+  sudo bash -c "echo ""Options -Indexes"" > ${path_media}/Play_Out_Archiv/.htaccess"
+  sudo bash -c "echo ""Options -Indexes"" > ${path_media}/Play_Out_Server/.htaccess"
 fi
 
 sudo service apache2 restart
