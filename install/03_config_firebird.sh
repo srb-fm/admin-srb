@@ -31,11 +31,13 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	exit
 fi
 
+echo ""
 read -p "Are you sure to config the firebird server in general? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Configuration of the firebird server aborted"
+	echo ""
 else
 	sudo dpkg-reconfigure firebird2.5-super
 	read -p "Are you sure to allow firebird access from the network? (y/n) " -n 1
@@ -43,6 +45,7 @@ else
 	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 		echo ""
 		echo "Access from the network aborted"
+		echo ""
 	else
 		echo "Allow firebird access from the network:"
 		sudo service firebird2.5-super stop
@@ -61,10 +64,12 @@ echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Creating of database aborted"
+	echo ""
 else
 	echo "1 - new empty db"
 	echo "2 - use existing db"
 	echo "any other input for aborting"
+	echo ""
 	echo -n "Enter number 1 or 2, other character for aborting: "
 	read character
 	case $character in
@@ -118,11 +123,13 @@ else
 	esac
 fi
 
+echo ""
 read -p "Are you sure to customize aliases for admin-srb? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Customizing aliases aborted"
+	echo ""
 else
 	echo "Customize aliases..."
 	case $db_option in
@@ -167,11 +174,13 @@ else
 	esac
 fi
 
+echo ""
 read -p "Are you sure to add firebird database user for admin-srb? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Adding user aborted"
+	echo ""
 else
 	echo "Add Firebird-User:"
 	read -p 'Firebird username for Admin-SRB: ' fb_user
@@ -181,11 +190,13 @@ else
 	echo ""
 fi
 
+echo ""
 read -p "Are you sure to add db-config for admin-srb tools? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Adding config for tools aborted"
+	echo ""
 else
 	echo "Add db-config for admin-srb tools:"
 	if [ -z "$fb_user" ]; then
@@ -206,11 +217,13 @@ else
 	echo ""
 fi
 
+echo ""
 read -p "Are you sure to add db-config for admin-srb intra? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Adding config for intra aborted"
+	echo ""
 else
 	echo "Add db-config for admin-srb intra:"
 	if [ -z "$fb_user" ]; then
@@ -231,5 +244,5 @@ fi
 echo "Congratiulations!"
 echo "Now you can take a cup of coffee...and wipe away your sweat..."
 echo "...finish"
-
+echo ""
 exit
