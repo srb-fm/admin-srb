@@ -22,6 +22,7 @@ echo "- Add www-data to group users for apache fileaccess of media files"
 echo "- Activate some additionally mods"
 echo "- Install and activate php5-mcrypt"
 echo "- Creating of htaccess files"
+echo ""
 
 read -p "Are you sure to config apache? (y/n) " -n 1
 echo ""
@@ -36,6 +37,7 @@ echo "The standard path for media files is: /mnt/data_server"
 echo "Leave the input blank if you using this path"
 echo "Otherwise type in a new path"
 echo "It must be the same as used in 04_config_paths.sh"
+echo ""
 read -p 'input data path for media files: ' path_media
 if [ -z "$path_media" ]; then
   path_media=/mnt/data_server
@@ -61,6 +63,7 @@ echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Creating of htaccess files aborted"
+	echo ""
 else
   sudo bash -c "echo ""Options -Indexes"" > ${path_media}/play_out_archiv/.htaccess"
   sudo bash -c "echo ""Options -Indexes"" > ${path_media}/play_out_server/.htaccess"
@@ -69,11 +72,11 @@ fi
 sudo service apache2 restart
 sudo service apache2 force-reload
 
+echo ""
 echo "To finalize apache config, you have a few tasks manually to do:"
 echo "Create a ssl key"
 echo "Edit this files:"
 echo "/etc/apache2/sites-available/000-default.conf"
-echo "and:"
 echo "/etc/apache2/sites-available/default-ssl.conf"
 echo "and restart apache"
 echo "...finish"
