@@ -24,7 +24,7 @@ function db_connect()
 	$db_user = "";// FB-User
 	$db_pwd  = "";// Passwort
 
-	$db_connect = ibase_connect($db_host, $db_user, $db_pwd, "UTF8");
+	$db_connect = ibase_connect($db_host_db, $db_user, $db_pwd, "UTF8");
 	if ( ! $db_connect ) {
 		echo "Keine Verbindung zu Firebird-SQL";
 		exit;
