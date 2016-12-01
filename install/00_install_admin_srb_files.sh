@@ -12,7 +12,7 @@
 # Copyright (C) Joerg Sorge joergsorge@gmail.com
 # 2016-11-15
 #
-
+echo ""
 echo "Admin-SRB Installation..."
 echo "Use this script carefully!"
 echo "This script is for installing the admin-srb files for a fresh install!"
@@ -21,6 +21,7 @@ echo "srb-tools"
 echo "srb-intra"
 echo "srb-backup"
 echo "srb-backup-firebird"
+echo ""
 read -p "Are you sure to install admin-srb files? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -32,9 +33,11 @@ fi
 echo "Installing git..."
 sudo apt-get install git
 
+echo ""
 echo "Load Admin-SRB from git..."
 git clone https://github.com/srb-fm/admin-srb.git
 
+echo ""
 read -p "Are you sure to install srb-tools? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -56,6 +59,7 @@ else
     chmod o+x ~/srb-tools/audio_switch_controller.py
 fi
 
+echo ""
 read -p "Are you sure to install srb-intra? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -78,8 +82,15 @@ else
 
     echo "Change user:group for srb-export"
     sudo chown -R www-data:www-data ~/srb-intra/public_html/admin_srb_export
+    echo "Be sure to habe correct permissions"
+    cd ~/srb-intra/public_html
+    find . -type f -exec chmod o-x {} +
+    cd
+    cd ~/srb-intra/cgi-bin/admin_srb_libs
+    find . -type f -exec chmod o-x {} +
 fi
 
+echo ""
 read -p "Are you sure to install srb-backup? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -93,6 +104,7 @@ else
     cp "$(pwd)"/admin-srb/backup/*.sh ~/srb-backup
 fi
 
+echo ""
 read -p "Are you sure to install srb-backup-firebird? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -107,10 +119,11 @@ else
     sudo cp "$(pwd)"/admin-srb/backup-firebird/*.sh ~/srb-backup-firebird
 fi
 
+echo ""
 echo "Folder admin-srb will continue stay for later use of install-scripts..."
-echo "To complete intra-webserver-config check your webserver-config, especially the doc-root-definition etc"
+echo "To complete admin-srb setup continue with installscripts in admin-srb/install..."
 echo "...finish"
-read -p "Press Enter to close..."
+echo ""
 exit
 
 
