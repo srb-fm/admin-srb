@@ -12,6 +12,19 @@
 # Copyright (C) Joerg Sorge joergsorge@gmail.com
 # 2016-05-17
 echo ""
+echo "Admin-SRB Installation..."
+echo "Use this script carefully!"
+echo "This script is for installing server packges, needed for admin-srb files for a fresh install!"
+echo ""
+read -p "Are you sure to install admin-srb files? (y/n) " -n 1
+echo ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo ""
+	echo "Installation aborted"
+	exit
+fi
+
+echo ""
 echo "Admin-SRB-Server Packageinstall prepaere..."
 echo ""
 echo "PPA for mp3gain ..."
