@@ -66,28 +66,29 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo ""
 	  echo "Install srb-intra aborted"
 else
-    echo "Make path ~/srb-intra"
+    echo "Make path ~/srb-intra..."
     sudo mkdir /var/www/srb-intra
-    echo "Change User:Group for srb-intra"
+    echo "Change User:Group for srb-intra..."
     sudo chown $USER:www-data /var/www/srb-intra
-    echo "Make symbolic link from /var/www/srb-intra to home"
+    echo "Make symbolic link from /var/www/srb-intra to home..."
     ln -s /var/www/srb-intra ~/
     mkdir ~/srb-intra/public_html
     mkdir ~/srb-intra/cgi-bin
     mkdir ~/srb-intra/cgi-bin/admin_srb_libs
 
-    echo "Copy intra" 
+    echo "Copy intra..." 
     cp -R "$(pwd)"/admin-srb/intra/* ~/srb-intra/public_html
     cp -R "$(pwd)"/admin-srb/intra/admin_srb_libs/ ~/srb-intra/cgi-bin/
 
-    echo "Change user:group for srb-export"
+    echo "Change user:group for srb-export..."
     sudo chown -R www-data:www-data ~/srb-intra/public_html/admin_srb_export
-    echo "Be sure to habe correct permissions"
+    echo "Be sure to have correct permissions..."
     cd ~/srb-intra/public_html
     find . -type f -exec chmod o-x {} +
     cd
     cd ~/srb-intra/cgi-bin/admin_srb_libs
     find . -type f -exec chmod o-x {} +
+    cd
 fi
 
 echo ""
@@ -97,10 +98,10 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo ""
 	  echo "Install srb-backup aborted"
 else
-    echo "Make path ~/srb-backup"
+    echo "Make path ~/srb-backup..."
     mkdir ~/srb-backup
     mkdir ~/srb-backup/log
-    echo "Copy backupscripts"
+    echo "Copy backupscripts..."
     cp "$(pwd)"/admin-srb/backup/*.sh ~/srb-backup
 fi
 
@@ -111,11 +112,11 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo ""
 	  echo "Install srb-backup-firebird aborted"
 else
-    echo "Make path ~/srb-backup-firebird"
+    echo "Make path ~/srb-backup-firebird..."
     sudo mkdir ~/srb-backup-firebird
     sudo mkdir ~/srb-backup-firebird/log
     sudo chown -R firebird:firebird ~/srb-backup-firebird
-    echo "Copy firebird backupscripts"
+    echo "Copy firebird backupscripts..."
     sudo cp "$(pwd)"/admin-srb/backup-firebird/*.sh ~/srb-backup-firebird
 fi
 
