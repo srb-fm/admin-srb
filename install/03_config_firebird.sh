@@ -2,7 +2,7 @@
 
 # This script is for configuration firebird-sql-server.
 #
-# Testet with ubuntu-server 14.04 in 2016
+# Testet with ubuntu-server 14.04 and 16.04 in 2016
 #
 # Dieses kleine Script uebernimmt die Configuration
 # des Firebird-Servers Admin-SRB auf dem Server
