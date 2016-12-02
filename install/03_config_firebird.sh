@@ -13,7 +13,7 @@
 # 2016-11-16
 #
 
-
+echo ""
 echo "Admin-SRB-Firebird Configuration..."
 echo "Use this script carefully!"
 echo "It provides following steps:"
@@ -48,7 +48,7 @@ else
 		echo "Access from the network aborted"
 		echo ""
 	else
-		echo "Allow firebird access from the network:"
+		echo "Allow firebird access from the network..."
 		sudo service firebird2.5-super stop
 		sudo cp /etc/firebird/2.5/firebird.conf /etc/firebird/2.5/firebird.conf.$(date +'%y-%m-%d-%H-%M-%S')
 		sudo sed -i "s/#RemoteBindAddress =/RemoteBindAddress =/" /etc/firebird/2.5/firebird.conf
@@ -99,9 +99,11 @@ else
 			read -sp 'To restore existing db, type in the firebird-master-password: ' fb_pw_master
 			echo "This action will restore both, db and db_log"
 			echo "db will taken from ~/srb-backup-firebird"
+			echo ""
 			read -p 'input db-name without extention: ' fb_db_name
 			echo "logging-db can restore as empty db"
 			echo "therefore, leave the input blank"
+			echo ""
 			read -p 'input log-db-name without extention: ' fb_db_name_log
 			sudo service firebird2.5-super stop
 			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name".fdb" ; then
@@ -185,6 +187,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 else
 	echo "Add Firebird-User:"
+	echo ""
 	read -p 'Firebird username for Admin-SRB: ' fb_user
 	read -sp 'Firebird password for Admin-SRB: ' fb_pw
 	read -sp 'To add the new user, type in the firebird-master-password: ' fb_pw_master
@@ -203,6 +206,7 @@ else
 	echo "Add db-config for admin-srb tools:"
 	if [ -z "$fb_user" ]; then
 		echo "firebird user data:"
+		echo ""
 		read -p 'Firebird Username for Admin-SRB: ' fb_user
 		read -sp 'Firebird Password for Admin-SRB: ' fb_pw
 	fi
