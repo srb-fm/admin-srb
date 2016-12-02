@@ -31,8 +31,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
 	echo "Configuration..."
 	sudo dpkg-reconfigure firebird2.5-super
-  #TODO change to php7:
-	sudo php5enmod interbase
+  #TODO check working on php7:
+	sudo phpenmod interbase
   #
 	echo "Restart Apache ..."
 	sudo service apache2 restart
