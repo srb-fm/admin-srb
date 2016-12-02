@@ -99,6 +99,7 @@ else
 			create_new_log_db=""
 			echo ""
 			read -sp 'To restore existing db, type in the firebird-master-password: ' fb_pw_master
+			echo ""
 			echo "This action will restore both, db and db_log"
 			echo "db will taken from ~/srb-backup-firebird"
 			echo ""
@@ -110,7 +111,7 @@ else
 			read -p 'input log-db-name without extention: ' fb_db_name_log
 			sudo service firebird2.5-super stop
 			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name".fdb" ; then
-				sudo mv /var/lib/firebird/2.5/data/$fb_db_name".fdb" /var/lib/firebird/2.5/data/$fb_db_name_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
+				sudo mv /var/lib/firebird/2.5/data/$fb_db_name".fdb" /var/lib/firebird/2.5/data/${fb_db_name_}$(date +'%y-%m-%d-%H-%M-%S')".fdb"
 			fi
 			if ! [ -z "$fb_db_name_log" ]; then
 				if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" ; then
