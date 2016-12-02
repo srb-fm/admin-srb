@@ -96,11 +96,14 @@ else
         	;;
     		2 ) echo "Restore existing db"
 			db_option="restore"
+			create_new_log_db=""
+			echo ""
 			read -sp 'To restore existing db, type in the firebird-master-password: ' fb_pw_master
 			echo "This action will restore both, db and db_log"
 			echo "db will taken from ~/srb-backup-firebird"
 			echo ""
 			read -p 'input db-name without extention: ' fb_db_name
+			echo ""
 			echo "logging-db can restore as empty db"
 			echo "therefore, leave the input blank"
 			echo ""
@@ -113,11 +116,13 @@ else
 				if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" ; then
 					sudo mv /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" /var/lib/firebird/2.5/data/$fb_db_name_log_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
 				fi
+			else
+				create_new_log_db="Y"
 			fi
 			sudo chown -R firebird:firebird ~/srb-backup-firebird
 			sudo service firebird2.5-super start
 			gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name".fbk" /var/lib/firebird/2.5/data/$fb_db_name".fdb"
-			if [ -z "$fb_db_name_log" ]; then
+			if [ "$create_new_log_db" == "Y" ]; then
 				gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_log_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db_log.fdb -meta_data
 			else
 				gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name_log".fbk" /var/lib/firebird/2.5/data/$fb_db_name_log".fdb"
