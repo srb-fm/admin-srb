@@ -55,6 +55,11 @@ mkdir $path_media/Play_Out_Server/Play_Out_Layout
 mkdir $path_media/Play_Out_Server/Play_Out_Rotation
 mkdir $path_media/Play_Out_Server/Play_Out_Sendung
 
+echo "Making media path for samba/fstab access..."
+mkdir "$(pwd)"/srb-net
+mkdir "$(pwd)"/srb-net/play_out_server
+
+echo ""
 echo "Congratiulations!"
 echo "Now you can take off your shoes and sitting down in a chair..."
 echo "...finish"
