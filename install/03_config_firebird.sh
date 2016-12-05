@@ -2,7 +2,7 @@
 
 # This script is for configuration firebird-sql-server.
 #
-# Testet with ubuntu-server 14.04 in 2016
+# Testet with ubuntu-server 14.04 and 16.04 in 2016
 #
 # Dieses kleine Script uebernimmt die Configuration
 # des Firebird-Servers Admin-SRB auf dem Server
@@ -13,7 +13,7 @@
 # 2016-11-16
 #
 
-
+echo ""
 echo "Admin-SRB-Firebird Configuration..."
 echo "Use this script carefully!"
 echo "It provides following steps:"
@@ -23,6 +23,7 @@ echo "- Define aliases for using with admin-srb"
 echo "- Add database user"
 echo "- Config db credential for tools"
 echo "- Config db credential for intra"
+echo ""
 read -p "Are you sure to config firebird database server? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -31,11 +32,13 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	exit
 fi
 
+echo ""
 read -p "Are you sure to config the firebird server in general? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Configuration of the firebird server aborted"
+	echo ""
 else
 	sudo dpkg-reconfigure firebird2.5-super
 	read -p "Are you sure to allow firebird access from the network? (y/n) " -n 1
@@ -43,8 +46,9 @@ else
 	if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 		echo ""
 		echo "Access from the network aborted"
+		echo ""
 	else
-		echo "Allow firebird access from the network:"
+		echo "Allow firebird access from the network..."
 		sudo service firebird2.5-super stop
 		sudo cp /etc/firebird/2.5/firebird.conf /etc/firebird/2.5/firebird.conf.$(date +'%y-%m-%d-%H-%M-%S')
 		sudo sed -i "s/#RemoteBindAddress =/RemoteBindAddress =/" /etc/firebird/2.5/firebird.conf
@@ -56,15 +60,18 @@ fi
 
 db_option=""
 
+echo ""
 read -p "Are you sure to create a database? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Creating of database aborted"
+	echo ""
 else
 	echo "1 - new empty db"
 	echo "2 - use existing db"
 	echo "any other input for aborting"
+	echo ""
 	echo -n "Enter number 1 or 2, other character for aborting: "
 	read character
 	case $character in
@@ -89,26 +96,34 @@ else
         	;;
     		2 ) echo "Restore existing db"
 			db_option="restore"
+			create_new_log_db=""
+			echo ""
 			read -sp 'To restore existing db, type in the firebird-master-password: ' fb_pw_master
+			echo ""
 			echo "This action will restore both, db and db_log"
 			echo "db will taken from ~/srb-backup-firebird"
+			echo ""
 			read -p 'input db-name without extention: ' fb_db_name
+			echo ""
 			echo "logging-db can restore as empty db"
 			echo "therefore, leave the input blank"
+			echo ""
 			read -p 'input log-db-name without extention: ' fb_db_name_log
 			sudo service firebird2.5-super stop
 			if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name".fdb" ; then
-				sudo mv /var/lib/firebird/2.5/data/$fb_db_name".fdb" /var/lib/firebird/2.5/data/$fb_db_name_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
+				sudo mv /var/lib/firebird/2.5/data/$fb_db_name".fdb" /var/lib/firebird/2.5/data/$fb_db_name"_"$(date +'%y-%m-%d-%H-%M-%S')".fdb"
 			fi
 			if ! [ -z "$fb_db_name_log" ]; then
 				if sudo test -f /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" ; then
-					sudo mv /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" /var/lib/firebird/2.5/data/$fb_db_name_log_$(date +'%y-%m-%d-%H-%M-%S')".fdb"
+					sudo mv /var/lib/firebird/2.5/data/$fb_db_name_log".fdb" /var/lib/firebird/2.5/data/$fb_db_name_log"_"$(date +'%y-%m-%d-%H-%M-%S')".fdb"
 				fi
+			else
+				create_new_log_db="Y"
 			fi
 			sudo chown -R firebird:firebird ~/srb-backup-firebird
 			sudo service firebird2.5-super start
 			gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name".fbk" /var/lib/firebird/2.5/data/$fb_db_name".fdb"
-			if [ -z "$fb_db_name_log" ]; then
+			if [ "$create_new_log_db" == "Y" ]; then
 				gbak -user SYSDBA -password $fb_pw_master -rep "$(pwd)"/db/admin_srb_db_log_meta.fbk /var/lib/firebird/2.5/data/admin_srb_db_log.fdb -meta_data
 			else
 				gbak -user SYSDBA -password $fb_pw_master -rep ~/srb-backup-firebird/$fb_db_name_log".fbk" /var/lib/firebird/2.5/data/$fb_db_name_log".fdb"
@@ -118,11 +133,13 @@ else
 	esac
 fi
 
+echo ""
 read -p "Are you sure to customize aliases for admin-srb? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Customizing aliases aborted"
+	echo ""
 else
 	echo "Customize aliases..."
 	case $db_option in
@@ -167,29 +184,36 @@ else
 	esac
 fi
 
+echo ""
 read -p "Are you sure to add firebird database user for admin-srb? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Adding user aborted"
+	echo ""
 else
 	echo "Add Firebird-User:"
+	echo ""
 	read -p 'Firebird username for Admin-SRB: ' fb_user
 	read -sp 'Firebird password for Admin-SRB: ' fb_pw
+	echo ""
 	read -sp 'To add the new user, type in the firebird-master-password: ' fb_pw_master
 	sudo gsec -user sysdba -pass $fb_pw_master -add $fb_user -pw $fb_pw
 	echo ""
 fi
 
+echo ""
 read -p "Are you sure to add db-config for admin-srb tools? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Adding config for tools aborted"
+	echo ""
 else
 	echo "Add db-config for admin-srb tools:"
 	if [ -z "$fb_user" ]; then
 		echo "firebird user data:"
+		echo ""
 		read -p 'Firebird Username for Admin-SRB: ' fb_user
 		read -sp 'Firebird Password for Admin-SRB: ' fb_pw
 	fi
@@ -206,11 +230,13 @@ else
 	echo ""
 fi
 
+echo ""
 read -p "Are you sure to add db-config for admin-srb intra? (y/n) " -n 1
 echo ""
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 	echo ""
 	echo "Adding config for intra aborted"
+	echo ""
 else
 	echo "Add db-config for admin-srb intra:"
 	if [ -z "$fb_user" ]; then
@@ -231,5 +257,5 @@ fi
 echo "Congratiulations!"
 echo "Now you can take a cup of coffee...and wipe away your sweat..."
 echo "...finish"
-
+echo ""
 exit
