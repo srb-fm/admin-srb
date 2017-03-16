@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # db-config
+# teh config file may be created thru /install/config_firebird.sh
 
 db_name = ""
 db_user = ""
