@@ -74,11 +74,14 @@ import datetime
 import subprocess
 import ftplib
 import socket
-#from mutagen.mp3 import MP3
+import paramiko
 from mutagen.id3 import ID3, TPE1, TIT2
 from mutagen.id3 import ID3NoHeaderError
 import lib_audio as lib_au
 import lib_common_1 as lib_cm
+
+# paramiko logging
+paramiko.util.log_to_file("log/paramiko_podcast_beamer.log")
 
 
 class app_config(object):
