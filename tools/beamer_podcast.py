@@ -35,14 +35,14 @@ Auf dem Webserver sorgt ein weiteres Script fuer die Generierung des RSS-Feeds.
 
 Fehlerliste:
 E 0 Parameter-Typ oder Inhalt stimmt nicht
-E 1 Fehler beim Verbinden zum Podcast-ftp-Server
-E 2 Fehler beim Recodieren der Podcast-mp3-Datei
+E 1 Fehler beim Verbinden zum Podcast-FTP-Server
+E 2 Fehler beim Recodieren der mp3-Datei fuer Podcast
 E 3 Recodierte Podcast-mp3-Datei nicht gefunden
 E 4 Fehler beim Loeschen der Temp-Podcast-Datei
-E 5 Podcast-mp3-Datei in Play-Out nicht gefunden:
-E 6 Fehler beim LogIn zu FTP-Server
-E 7 Fehler beim FTP-Ordnerwechsel
-E 8 Fehler beim Zugriff auf FTP-Ordner
+E 5 mp3-Datei fuer Podcast in Play-Out nicht gefunden:
+E 6 Fehler beim LogIn zu Podcast-FTP-Server
+E 7 Fehler beim Podcast-FTP-Ordnerwechsel
+E 8 Fehler beim Zugriff auf Podcast-FTP-Ordner
 
 Parameterliste:
 Param 1: On/Off Switch
@@ -103,21 +103,21 @@ class app_config(object):
         self.app_errorslist.append(self.app_desc +
             " Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Verbinden zum ftp-Server")
+            " Fehler beim Verbinden zum Podcast-FTP-Server")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Recodieren der mp3-Datei ")
+            " Fehler beim Recodieren der mp3-Datei fuer Podcast ")
         self.app_errorslist.append(self.app_desc +
             " Recodierte Podcast-mp3-Datei nicht gefunden")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Loeschen der Temp-Datei")
+            " Fehler beim Loeschen der Temp-Podcast-Datei")
         self.app_errorslist.append(self.app_desc +
-             " mp3-Datei in Play-Out nicht gefunden:")
+             " mp3-Datei fuer Podcast in Play-Out nicht gefunden:")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim LogIn zu FTP-Server")
+            " Fehler beim LogIn zu Podcast-FTP-Server")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden")
+            " Fehler beim Podcast-FTP-Ordnerwechsel - viellt. nicht vorhanden")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Zugriff auf FTP-Ordner")
+            " Fehler beim Zugriff auf Podcast-FTP-Ordner")
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
