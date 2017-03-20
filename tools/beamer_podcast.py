@@ -556,6 +556,20 @@ def ftp_connect_and_dir():
     return ftp
 
 
+def sftp_connect():
+    """connect to sftp, login"""
+    try:
+        # Open a transport
+        transport = paramiko.Transport((db.ac_config_1[5], db.ac_config_1[6]))
+        # Auth
+        transport.connect(username=db.ac_config_1[7], password=db.ac_config_1[8])
+        # Go!
+        sftp = paramiko.SFTPClient.from_transport(transport)
+    except Exception as e:
+        print e
+    return sftp
+
+
 def lets_rock():
     """Mainfunction """
     print "lets_rock "
