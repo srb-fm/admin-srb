@@ -102,7 +102,7 @@ class app_config(object):
         # dev-mod
         self.app_develop = "no"
         # show messages on console
-        self.app_debug_mod = "no"
+        self.app_debug_mod = "yes"
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(self.app_desc +
@@ -523,7 +523,8 @@ def delete_files_online():
 def ftp_connect_and_dir():
     """connect to ftp, login and change dir"""
     try:
-        ftp = ftplib.FTP(db.ac_config_1[5])
+        ftp = ftplib.FTP()
+        ftp.connect(db.ac_config_1[5], db.ac_config_1[6])
     except (socket.error, socket.gaierror):
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
                                         + db.ac_config_1[5])
