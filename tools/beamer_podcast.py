@@ -45,14 +45,16 @@ E 7 Fehler beim Podcast-FTP-Ordnerwechsel
 E 8 Fehler beim Zugriff auf Podcast-FTP-Ordner
 
 Parameterliste:
-Param 1: On/Off Switch
-Param 2: Anzahl Dateien, die max auf dem Podcast-Server bleiben
-Param 3: ftp-Host
-Param 4: ftp-Benutzer
-Param 5: ftp-PW
-Param 6: ftp-Verzeichnis
-Param 7: Pfad temporaere Dateien fuer Encoder
-Param 8: ID3-Tags in utf-8 encoden on/off
+Param  1: On/Off Switch
+Param  2: Anzahl Dateien, die max auf dem Podcast-Server bleiben
+Param  3: ID3-Tags in utf-8 encoden on/off
+Param  4: protokoll (SFTP oder FTP)
+Param  5: sftp/ftp-Host
+Param  6: sftp/ftp-Port
+Param  7: sftp/ftp-Benutzer
+Param  8: sftp/ftp-PW
+Param  9: sftp/ftp-Verzeichnis
+Param 10: Pfad temporaere Dateien fuer Encoder
 
 Extern Parameters:
 ext_tools
@@ -95,7 +97,7 @@ class app_config(object):
         self.app_config = u"PC_Beamer_Config"
         self.app_config_develop = u"PC_Beamer_Config_1_e"
         # amount parameter
-        self.app_config_params_range = 9
+        self.app_config_params_range = 11
         self.app_errorfile = "error_podcast_beamer.log"
         # dev-mod
         self.app_develop = "no"
@@ -126,6 +128,8 @@ class app_config(object):
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_int")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -243,7 +247,7 @@ def encode_file(podcast_sendung):
         return None
 
     # dest recoded file
-    path_dest = lib_cm.check_slashes(ac, db.ac_config_1[7])
+    path_dest = lib_cm.check_slashes(ac, db.ac_config_1[10])
 
     c_dest_file = (path_dest.encode(ac.app_encode_out_strings)
                    + podcast_sendung[0].encode(ac.app_encode_out_strings))
@@ -353,7 +357,7 @@ def tag_file_id3(podcast_sendung):
     """tag files with id3"""
     lib_cm.message_write_to_console(ac, u"tag files with id3")
     # dest recoded file
-    path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
+    path_source = lib_cm.check_slashes(ac, db.ac_config_1[10])
     c_source_file = path_source + podcast_sendung[0]
     lib_cm.message_write_to_console(ac, c_source_file)
     log_message = u"Podcast mit ID3 taggen: " + c_source_file
@@ -409,7 +413,7 @@ def upload_file(podcast_sendung):
     """upload files"""
     lib_cm.message_write_to_console(ac, u"upload_file")
     # dest recoded file
-    path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
+    path_source = lib_cm.check_slashes(ac, db.ac_config_1[10])
     c_source_file = path_source + podcast_sendung[0]
     lib_cm.message_write_to_console(ac, c_source_file)
 
@@ -519,29 +523,29 @@ def delete_files_online():
 def ftp_connect_and_dir():
     """connect to ftp, login and change dir"""
     try:
-        ftp = ftplib.FTP(db.ac_config_1[3])
+        ftp = ftplib.FTP(db.ac_config_1[5])
     except (socket.error, socket.gaierror):
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[3])
+                                        + db.ac_config_1[5])
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
                                         "write_also_to_console")
         return None
 
     try:
-        ftp.login(db.ac_config_1[4], db.ac_config_1[5])
+        ftp.login(db.ac_config_1[7], db.ac_config_1[8])
     except ftplib.error_perm, resp:
         lib_cm.message_write_to_console(ac, "ftp: no login to: "
-                                        + db.ac_config_1[3])
-        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[3])
+                                        + db.ac_config_1[5])
+        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[5])
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
 
     try:
-        ftp.cwd(db.ac_config_1[6])
+        ftp.cwd(db.ac_config_1[9])
     except ftplib.error_perm, resp:
         lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
-                                        + db.ac_config_1[3] + str(resp))
-        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[6])
+                                        + db.ac_config_1[9] + str(resp))
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[9])
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
     return ftp
@@ -619,9 +623,9 @@ def lets_rock():
             return
 
     # tagging file in utf-8
-    if db.ac_config_1[8] == "on":
+    if db.ac_config_1[3] == "on":
         #tag_file_id3(podcast_sendung)
-        path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
+        path_source = lib_cm.check_slashes(ac, db.ac_config_1[10])
         file_dest = path_source + podcast_sendung[0]
         success_add_id3 = lib_au.add_id3(
                                 ac, db, lib_cm, podcast_sendung_all, file_dest)
