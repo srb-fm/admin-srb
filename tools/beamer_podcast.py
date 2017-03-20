@@ -310,7 +310,7 @@ def check_files_online(podcast_sendungen):
     files_online = []
 
     # switch protocol
-    if db.ac_config_1[10] == "FTP":
+    if db.ac_config_1[4] == "FTP":
         ftp = ftp_connect_and_dir()
         if ftp is None:
             return None
@@ -323,7 +323,8 @@ def check_files_online(podcast_sendungen):
                 u"ftp: no files in this directory")
             else:
                 log_message = (ac.app_errorslist[8] + " - " + str(resp))
-                db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+                db.write_log_to_db_a(ac, log_message, "x",
+                                                "write_also_to_console")
 
         ftp.quit()
         lib_cm.message_write_to_console(ac, files_online)
@@ -662,8 +663,8 @@ def lets_rock():
 
     # delete old online-files
     # switch protocol
-    if db.ac_config_1[10] == "FTP":
-        delete_ok = delete_files_online(
+    if db.ac_config_1[4] == "FTP":
+        delete_ok = delete_files_online_ftp(
     )
     if delete_ok is None:
         # Error 1
