@@ -329,6 +329,16 @@ def check_files_online(podcast_sendungen):
         ftp.quit()
         lib_cm.message_write_to_console(ac, files_online)
 
+    if db.ac_config_1[4] == "SFTP":
+        sftp, transport = sftp_connect()
+        if sftp is None:
+            return None
+        # Get list
+        files_online = sftp.listdir(db.ac_config_1[9])
+        # Close
+        sftp.close()
+        transport.close()
+
     # list of all online-files,
     # filter out admin-srb audio-files (numbers in the beginning)
     files_online_1 = []
@@ -426,28 +436,42 @@ def upload_file(podcast_sendung):
                                         + "%r: %s" % (msg, c_source_file))
         log_message = u"upload_files: " + "%r: %s" % (msg, c_source_file)
         db.write_log_to_db(ac, log_message, "x")
-        return msg
+        return None
 
-    if ac.app_windows == "yes":
-        f = open(c_source_file, "rb")
-    else:
-        f = open(c_source_file, "r")
+    log_message = u"upload_file: " + c_source_file
+    db.write_log_to_db(ac, log_message, "k")
 
     # switch protocol
-    if db.ac_config_1[10] == "FTP":
+    if db.ac_config_1[4] == "FTP":
+        if ac.app_windows == "yes":
+            f = open(c_source_file, "rb")
+        else:
+            f = open(c_source_file, "r")
+
         ftp = ftp_connect_and_dir()
         if ftp is None:
             return None
 
-        log_message = u"upload_file: " + c_source_file
-        db.write_log_to_db(ac, log_message, "k")
         c_ftp_cmd = "STOR " + podcast_sendung[0]
         ftp.storbinary(c_ftp_cmd, f)
         ftp.quit()
+        f.close()
+
+    if db.ac_config_1[4] == "SFTP":
+        sftp, transport = sftp_connect()
+        if sftp is None:
+            return None
+
+        path_remote = lib_cm.check_slashes(ac, db.ac_config_1[9])
+        file_remote = path_remote + podcast_sendung[0]
+        # upload
+        sftp.put(c_source_file, file_remote)
+        # Close
+        sftp.close()
+        transport.close()
+
         db.write_log_to_db_a(ac, u"Podcast hochgeladen: "
                         + podcast_sendung[0], "i", "write_also_to_console")
-
-    f.close()
     return log_message
 
 
@@ -560,14 +584,16 @@ def sftp_connect():
     """connect to sftp, login"""
     try:
         # Open a transport
-        transport = paramiko.Transport((db.ac_config_1[5], db.ac_config_1[6]))
+        transport = paramiko.Transport((db.ac_config_1[5], int(db.ac_config_1[6])))
         # Auth
         transport.connect(username=db.ac_config_1[7], password=db.ac_config_1[8])
         # Go!
         sftp = paramiko.SFTPClient.from_transport(transport)
+        return sftp, transport
     except Exception as e:
         print e
-    return sftp
+        return None
+    return None
 
 
 def lets_rock():
@@ -674,12 +700,12 @@ def lets_rock():
         # Error 4
         db.write_log_to_db_a(ac, ac.app_errorslist[4], "x",
             "write_also_to_console")
-
+    return
     # delete old online-files
     # switch protocol
     if db.ac_config_1[4] == "FTP":
-        delete_ok = delete_files_online_ftp(
-    )
+        delete_ok = delete_files_online_ftp()
+
     if delete_ok is None:
         # Error 1
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
