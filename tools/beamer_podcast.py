@@ -307,24 +307,26 @@ def encode_file(podcast_sendung):
 def check_files_online(podcast_sendungen):
     """check what's online"""
     lib_cm.message_write_to_console(ac, u"check_files_online")
-
-    ftp = ftp_connect_and_dir()
-    if ftp is None:
-        return None
-
     files_online = []
-    try:
-        files_online = ftp.nlst()
-    except ftplib.error_perm, resp:
-        if str(resp) == "550 No files found":
-            lib_cm.message_write_to_console(ac,
-            u"ftp: no files in this directory")
-        else:
-            log_message = (ac.app_errorslist[8] + " - " + str(resp))
-            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
-    ftp.quit()
-    lib_cm.message_write_to_console(ac, files_online)
+    # switch protocol
+    if db.ac_config_1[10] == "FTP":
+        ftp = ftp_connect_and_dir()
+        if ftp is None:
+            return None
+
+        try:
+            files_online = ftp.nlst()
+        except ftplib.error_perm, resp:
+            if str(resp) == "550 No files found":
+                lib_cm.message_write_to_console(ac,
+                u"ftp: no files in this directory")
+            else:
+                log_message = (ac.app_errorslist[8] + " - " + str(resp))
+                db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
+
+        ftp.quit()
+        lib_cm.message_write_to_console(ac, files_online)
 
     # list of all online-files,
     # filter out admin-srb audio-files (numbers in the beginning)
@@ -417,12 +419,21 @@ def upload_file(podcast_sendung):
     c_source_file = path_source + podcast_sendung[0]
     lib_cm.message_write_to_console(ac, c_source_file)
 
-    if os.path.isfile(c_source_file):
-        if ac.app_windows == "yes":
-            f = open(c_source_file, "rb")
-        else:
-            f = open(c_source_file, "r")
+    if not os.path.isfile(c_source_file):
+        msg = u"temporaere Datei nicht vorhanden"
+        lib_cm.message_write_to_console(ac, u"upload_files: "
+                                        + "%r: %s" % (msg, c_source_file))
+        log_message = u"upload_files: " + "%r: %s" % (msg, c_source_file)
+        db.write_log_to_db(ac, log_message, "x")
+        return msg
 
+    if ac.app_windows == "yes":
+        f = open(c_source_file, "rb")
+    else:
+        f = open(c_source_file, "r")
+
+    # switch protocol
+    if db.ac_config_1[10] == "FTP":
         ftp = ftp_connect_and_dir()
         if ftp is None:
             return None
@@ -432,24 +443,16 @@ def upload_file(podcast_sendung):
         c_ftp_cmd = "STOR " + podcast_sendung[0]
         ftp.storbinary(c_ftp_cmd, f)
         ftp.quit()
-        f.close()
         db.write_log_to_db_a(ac, u"Podcast hochgeladen: "
                         + podcast_sendung[0], "i", "write_also_to_console")
 
-    else:
-        msg = u"temporaere Datei nicht vorhanden"
-        lib_cm.message_write_to_console(ac, u"upload_files: "
-                                        + "%r: %s" % (msg, c_source_file))
-        log_message = u"upload_files: " + "%r: %s" % (msg, c_source_file)
-        db.write_log_to_db(ac, log_message, "x")
-        return msg
-
+    f.close()
     return log_message
 
 
-def delete_files_online():
+def delete_files_online_ftp():
     """delete old files at Webspace"""
-    lib_cm.message_write_to_console(ac, u"delete_files_online")
+    lib_cm.message_write_to_console(ac, u"delete_files_online ftp")
     ftp = ftp_connect_and_dir()
     if ftp is None:
         return None
@@ -658,7 +661,10 @@ def lets_rock():
             "write_also_to_console")
 
     # delete old online-files
-    delete_ok = delete_files_online()
+    # switch protocol
+    if db.ac_config_1[10] == "FTP":
+        delete_ok = delete_files_online(
+    )
     if delete_ok is None:
         # Error 1
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
