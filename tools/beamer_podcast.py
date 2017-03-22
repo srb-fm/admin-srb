@@ -190,36 +190,36 @@ def encode_file(podcast_sendung):
     lib_cm.message_write_to_console(ac, u"encode_file")
     # all cmds must be in the right charset
     c_lame_encoder = db.ac_config_etools[6].encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type c_lame_encoder")
-    lib_cm.message_write_to_console(ac, type(c_lame_encoder))
-    lib_cm.message_write_to_console(ac, u"type podcast_sendung[1]")
-    lib_cm.message_write_to_console(ac, type(podcast_sendung[1]))
+    #lib_cm.message_write_to_console(ac, u"type c_lame_encoder")
+    #lib_cm.message_write_to_console(ac, type(c_lame_encoder))
+    #lib_cm.message_write_to_console(ac, u"type podcast_sendung[1]")
+    #lib_cm.message_write_to_console(ac, type(podcast_sendung[1]))
 
     c_id3_title = u"--tt".encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type( c_id3_title )")
-    lib_cm.message_write_to_console(ac, type(c_id3_title))
+    #lib_cm.message_write_to_console(ac, u"type( c_id3_title )")
+    #lib_cm.message_write_to_console(ac, type(c_id3_title))
     #c_id3_title_value = podcast_sendung[1].encode( ac.app_encode_out_strings )
     c_id3_title_value_uni = (lib_cm.replace_sonderzeichen_with_latein(
                                                     podcast_sendung[1]))
     c_id3_title_value = c_id3_title_value_uni.encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type( c_id3_title_value )")
-    lib_cm.message_write_to_console(ac, type(c_id3_title_value))
+    #lib_cm.message_write_to_console(ac, u"type( c_id3_title_value )")
+    #lib_cm.message_write_to_console(ac, type(c_id3_title_value))
 
     c_id3_author = u"--ta".encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type( c_id3_author )")
-    lib_cm.message_write_to_console(ac, type(c_id3_author))
+    #lib_cm.message_write_to_console(ac, u"type( c_id3_author )")
+    #lib_cm.message_write_to_console(ac, type(c_id3_author))
     id3_author_value_uni = (lib_cm.replace_sonderzeichen_with_latein(
             podcast_sendung[2]) + " "
             + lib_cm.replace_sonderzeichen_with_latein(podcast_sendung[3]))
     c_id3_author_value = id3_author_value_uni.encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type(c_id3_author_value )")
-    lib_cm.message_write_to_console(ac, type(c_id3_author_value))
+    #lib_cm.message_write_to_console(ac, u"type(c_id3_author_value )")
+    #lib_cm.message_write_to_console(ac, type(c_id3_author_value))
 
     # source sendung
     path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_servpath_a[6])
     c_source_file = (path_sendung_source.encode(ac.app_encode_out_strings)
                      + podcast_sendung[0].encode(ac.app_encode_out_strings))
-    lib_cm.message_write_to_console(ac, c_source_file)
+    #lib_cm.message_write_to_console(ac, c_source_file)
 
     # source infotime und mag
     path_it_mg_source = lib_cm.check_slashes(ac, db.ac_config_servpath_a[5])
@@ -236,9 +236,9 @@ def encode_file(podcast_sendung):
         c_source_file = (path_it_mg_source.encode(ac.app_encode_out_strings)
                     + podcast_sendung[0].encode(ac.app_encode_out_strings))
 
-    lib_cm.message_write_to_console(ac, c_source_file)
-    lib_cm.message_write_to_console(ac, u"type(c_source_file)")
-    lib_cm.message_write_to_console(ac, type(c_source_file))
+    #lib_cm.message_write_to_console(ac, c_source_file)
+    #lib_cm.message_write_to_console(ac, u"type(c_source_file)")
+    #lib_cm.message_write_to_console(ac, type(c_source_file))
 
     if not os.path.isfile(c_source_file):
         db.write_log_to_db_a(ac, ac.app_errorslist[5] + " "
@@ -251,9 +251,9 @@ def encode_file(podcast_sendung):
 
     c_dest_file = (path_dest.encode(ac.app_encode_out_strings)
                    + podcast_sendung[0].encode(ac.app_encode_out_strings))
-    lib_cm.message_write_to_console(ac, c_dest_file)
-    lib_cm.message_write_to_console(ac, u"type(c_dest_file)")
-    lib_cm.message_write_to_console(ac, type(c_dest_file))
+    #lib_cm.message_write_to_console(ac, c_dest_file)
+    #lib_cm.message_write_to_console(ac, u"type(c_dest_file)")
+    #lib_cm.message_write_to_console(ac, type(c_dest_file))
 
     # das geht auch
     #p = subprocess.Popen([c_lame_encoder, "--add-id3v2",  c_id3_title,
@@ -284,7 +284,7 @@ def encode_file(podcast_sendung):
     c_complete = "no"
 
     # by short files 100% will not be reached,
-    # therfor also 99%
+    # therefor also let's take 99%
     if n_encode_percent == -1:
         # 100% not reached
         if n_encode_percent_1 != -1:
@@ -548,6 +548,71 @@ def delete_files_online_ftp():
     return n_anzahl_files_to_delete
 
 
+def delete_files_online_sftp():
+    """delete old files at Webspace"""
+    lib_cm.message_write_to_console(ac, u"delete_files_online sftp")
+
+    sftp, transport = sftp_connect()
+    if sftp is None:
+        return None
+    # Get list
+    files_online = sftp.listdir_attr(db.ac_config_1[9])
+    # Close
+    sftp.close()
+    transport.close()
+
+    if len(files_online) < int(db.ac_config_1[2]):
+        db.write_log_to_db_a(ac,
+                u"Loeschen von Podcasts nicht noetig, zu wenige Dateien...",
+                "c", "write_also_to_console")
+        return "Nothing to do"
+    else:
+        number_of_files_to_delete = len(files_online) - int(db.ac_config_1[2])
+        #print "nothing"
+    #number_of_files_to_delete = 7
+
+    # new list with modtime, filename
+    files_online_1 = []
+    for item in files_online:
+        # only play-out-files starting with numbers
+        if (re.match("[0-9]{7}", item.filename) is not None):
+            files_online_1.append((item.st_mtime, item.filename))
+    files_online_1.sort()
+
+    db.write_log_to_db_a(ac,
+                u"Podcasts auf Server vorhanden: " + str(len(files_online_1)),
+                "t", "write_also_to_console")
+
+    db.write_log_to_db_a(ac,
+                u"Alte Podcasts auf Server loeschen...",
+                "c", "write_also_to_console")
+
+    sftp, transport = sftp_connect()
+    if sftp is None:
+        return None
+
+    z = 0
+    for item in files_online_1:
+        # delete
+        try:
+            sftp.remove(config.pict_path_remote_1 + item[1])
+            db.write_log_to_db_a(ac,
+                u"Podcast online geloescht: " + item[1],
+                "c", "write_also_to_console")
+            z += 1
+        except Exception as e:
+            print e
+            break
+
+        if number_of_files_to_delete == z:
+            break
+    print z
+
+    sftp.close()
+    transport.close()
+    return number_of_files_to_delete
+
+
 def ftp_connect_and_dir():
     """connect to ftp, login and change dir"""
     try:
@@ -584,9 +649,11 @@ def sftp_connect():
     """connect to sftp, login"""
     try:
         # Open a transport
-        transport = paramiko.Transport((db.ac_config_1[5], int(db.ac_config_1[6])))
+        transport = paramiko.Transport(
+            (db.ac_config_1[5], int(db.ac_config_1[6])))
         # Auth
-        transport.connect(username=db.ac_config_1[7], password=db.ac_config_1[8])
+        transport.connect(
+            username=db.ac_config_1[7], password=db.ac_config_1[8])
         # Go!
         sftp = paramiko.SFTPClient.from_transport(transport)
         return sftp, transport
@@ -607,7 +674,8 @@ def lets_rock():
     # load from db
     podcast_sendungen = load_podcast()
     if podcast_sendungen is None:
-        db.write_log_to_db(ac, u"Zur Zeit kein neuer Podcast vorgesehen", "t")
+        db.write_log_to_db_a(ac, u"Zur Zeit kein neuer Podcast vorgesehen", "k",
+            "write_also_to_console")
         return
 
     # check whats not online
@@ -700,12 +768,13 @@ def lets_rock():
         # Error 4
         db.write_log_to_db_a(ac, ac.app_errorslist[4], "x",
             "write_also_to_console")
-    return
+
     # delete old online-files
     # switch protocol
     if db.ac_config_1[4] == "FTP":
         delete_ok = delete_files_online_ftp()
-
+    if db.ac_config_1[4] == "SFTP":
+        delete_ok = delete_files_online_sftp()
     if delete_ok is None:
         # Error 1
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
