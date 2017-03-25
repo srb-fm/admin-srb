@@ -27,8 +27,10 @@ Script auf Webspace (RSS-Fedd-Generierung): dircaster.php
 Dieses Script uebertraegt Sendungen (mp3-Dateien),
 die in der Datenbank als Podcast markiert wurden,
 in der Reihenfolge der vorgesehenen Sendezeit, auf den Web-Server.
-Vorher werden sie in geringerer Aufloesung recodiert (mp3).
-Bei jedem Aufruf wird zudem ueberprueft, ob die maximale Anzahl
+Sie werden erst als Podcast zur Verfuegung getellt, wenn sie gesnedet wurden.
+
+Vor dem upload werden sie in geringerer Aufloesung recodiert (mp3).
+Bei jedem upload wird zudem ueberprueft, ob die maximale Anzahl
 Podcasts (siehe Einstellungen) auf dem Webspace ueberschritten wurde.
 Ueberzaehlige alte Podcasts werden auf vom Webspace geloescht.
 Auf dem Webserver sorgt ein weiteres Script fuer die Generierung des RSS-Feeds.
@@ -65,7 +67,8 @@ server_settings
 server_settings_paths_a_A
 
 Das Script wird zeitgesteuert zwischen 6 und 20 Uhr
-jeweils zu Minute 15 ausgefuehrt.
+jeweils zu Minute 15 und 40 ausgefuehrt. Weitere Ausfuehrungzeiten
+koennen in der crontab eingestellt werden.
 
 Die beste und sicherste Tarnung ist immer noch die blanke und nackte Wahrheit.
 Die glaubt niemand! Max Frisch
