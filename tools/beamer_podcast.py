@@ -120,9 +120,15 @@ class app_config(object):
         self.app_errorslist.append(self.app_desc +
             " E 06 Fehler beim LogIn zu Podcast-FTP-Server")
         self.app_errorslist.append(self.app_desc +
-            " E 07 Fehler beim Podcast-FTP-Ordnerwechsel - viellt. nicht vorhanden")
+            " E 07 Fehler b. Podcast-FTP-Ordnerwechsel - nicht vorhanden?")
         self.app_errorslist.append(self.app_desc +
             " E 08 Fehler beim Zugriff auf Podcast-FTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " E 09 Fehler beim Zugriff auf Podcast-SFTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " E 10 Fehler beim Upload auf Podcast-SFTP-Server")
+        self.app_errorslist.append(self.app_desc +
+            " E 11 Fehler beim Delete auf Podcast-SFTP-Server")
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -461,7 +467,7 @@ def upload_file(podcast_sendung):
 
         db.write_log_to_db_a(ac, u"Podcast hochgeladen: "
                         + podcast_sendung[0], "i", "write_also_to_console")
-    return
+    return "OK"
 
 
 def delete_files_online_ftp():
@@ -580,17 +586,21 @@ def delete_files_online_sftp():
     if sftp is None:
         return None
 
+    path_remote = lib_cm.check_slashes(ac, db.ac_config_1[9])
+
     z = 0
     for item in files_online_1:
         # delete
         try:
-            sftp.remove(config.pict_path_remote_1 + item[1])
+            sftp.remove(path_remote + item[1])
             db.write_log_to_db_a(ac,
                 u"Podcast online geloescht: " + item[1],
                 "c", "write_also_to_console")
             z += 1
         except Exception as e:
-            print e
+            lib_cm.message_write_to_console(ac, e)
+            db.write_log_to_db_a(ac, ac.app_errorslist[11], "x",
+                                        "write_also_to_console")
             break
 
         if number_of_files_to_delete == z:
