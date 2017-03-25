@@ -83,7 +83,7 @@ import lib_audio as lib_au
 import lib_common_1 as lib_cm
 
 # paramiko logging
-paramiko.util.log_to_file("log/paramiko_podcast_beamer.log")
+paramiko.util.log_to_file("/var/log/admin-srb/beamer_podcast_paramiko.log")
 
 
 class app_config(object):
