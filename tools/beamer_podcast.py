@@ -340,7 +340,12 @@ def check_files_online(podcast_sendungen):
         if sftp is None:
             return None
         # Get list
-        files_online = sftp.listdir(db.ac_config_1[9])
+        try:
+            files_online = sftp.listdir(db.ac_config_1[9])
+        except Exception as e:
+            lib_cm.message_write_to_console(ac, e)
+            db.write_log_to_db_a(ac, ac.app_errorslist[9], "x",
+                                        "write_also_to_console")
         # Close
         sftp.close()
         transport.close()
@@ -460,7 +465,12 @@ def upload_file(podcast_sendung):
         path_remote = lib_cm.check_slashes(ac, db.ac_config_1[9])
         file_remote = path_remote + podcast_sendung[0]
         # upload
-        sftp.put(c_source_file, file_remote)
+        try:
+            sftp.put(c_source_file, file_remote)
+        except Exception as e:
+            lib_cm.message_write_to_console(ac, e)
+            db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
+                                        "write_also_to_console")
         # Close
         sftp.close()
         transport.close()
@@ -551,7 +561,12 @@ def delete_files_online_sftp():
     if sftp is None:
         return None
     # Get list
-    files_online = sftp.listdir_attr(db.ac_config_1[9])
+    try:
+        files_online = sftp.listdir_attr(db.ac_config_1[9])
+    except Exception as e:
+        lib_cm.message_write_to_console(ac, e)
+        db.write_log_to_db_a(ac, ac.app_errorslist[9], "x",
+                                        "write_also_to_console")
     # Close
     sftp.close()
     transport.close()
