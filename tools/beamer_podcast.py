@@ -51,7 +51,7 @@ Parameterliste:
 Param  1: On/Off Switch
 Param  2: Anzahl Dateien, die max auf dem Podcast-Server bleiben
 Param  3: ID3-Tags in utf-8 encoden on/off
-Param  4: protokoll (SFTP oder FTP)
+Param  4: Protokolleinstellung (SFTP oder FTP)
 Param  5: sftp/ftp-Host
 Param  6: sftp/ftp-Port
 Param  7: sftp/ftp-Benutzer
