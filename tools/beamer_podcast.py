@@ -372,15 +372,10 @@ def tag_file_id3(podcast_sendung):
     # dest recoded file
     path_source = lib_cm.check_slashes(ac, db.ac_config_1[10])
     c_source_file = path_source + podcast_sendung[0]
-    lib_cm.message_write_to_console(ac, c_source_file)
-    log_message = u"Podcast mit ID3 taggen: " + c_source_file
-    db.write_log_to_db(ac, log_message, "k")
+    db.write_log_to_db_a(ac, u"Podcast mit ID3 taggen: " + c_source_file,
+                                "k", "write_also_to_console")
 
     if os.path.isfile(c_source_file):
-        #if ac.app_windows == "yes":
-        #    f = open(c_source_file, "rb")
-        #else:
-        #    f = open(c_source_file, "r")
 
         id3_tag_present = False
         try:
@@ -414,11 +409,9 @@ def tag_file_id3(podcast_sendung):
                         + podcast_sendung[0], "k", "write_also_to_console")
 
     else:
-        msg = u"temp Datei nicht vorhanden"
-        lib_cm.message_write_to_console(ac, u"tag files with id3: "
-                                        + "%r: %s" % (msg, c_source_file))
-        log_message = u"tag files with id3: " + "%r: %s" % (msg, c_source_file)
-        db.write_log_to_db(ac, log_message, "x")
+        db.write_log_to_db_a(ac,
+                u"Podcast temp-Datei fuer ID3 tagging nicht vorhanden: "
+                        + c_source_file, "x", "write_also_to_console")
     return
 
 
@@ -431,11 +424,9 @@ def upload_file(podcast_sendung):
     lib_cm.message_write_to_console(ac, c_source_file)
 
     if not os.path.isfile(c_source_file):
-        msg = u"temporaere Datei nicht vorhanden"
-        lib_cm.message_write_to_console(ac, u"upload_files: "
-                                        + "%r: %s" % (msg, c_source_file))
-        log_message = u"upload_files: " + "%r: %s" % (msg, c_source_file)
-        db.write_log_to_db(ac, log_message, "x")
+        db.write_log_to_db_a(ac,
+                u"Podcast temp-Datei fuer upload nicht vorhanden: "
+                        + c_source_file, "x", "write_also_to_console")
         return None
 
     log_message = u"upload_file: " + c_source_file
