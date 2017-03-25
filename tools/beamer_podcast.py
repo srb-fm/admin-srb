@@ -106,23 +106,23 @@ class app_config(object):
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(self.app_desc +
-            " Parameter-Typ oder Inhalt stimmt nicht ")
+            " E 00: Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Verbinden zum Podcast-FTP-Server")
+            " E 01 Fehler beim Verbinden zum Podcast-SFTP/FTP-Server")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Recodieren der mp3-Datei fuer Podcast ")
+            " E 02 Fehler beim Recodieren der mp3-Datei fuer Podcast ")
         self.app_errorslist.append(self.app_desc +
-            " Recodierte Podcast-mp3-Datei nicht gefunden")
+            " E 03 Recodierte Podcast-Temp-mp3-Datei nicht gefunden ")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Loeschen der Temp-Podcast-Datei")
+            " E 04 Fehler beim Loeschen der Temp-Podcast-Datei")
         self.app_errorslist.append(self.app_desc +
-             " mp3-Datei fuer Podcast in Play-Out nicht gefunden:")
+             " E 05 mp3-Datei fuer Podcast in Play-Out nicht gefunden:")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim LogIn zu Podcast-FTP-Server")
+            " E 06 Fehler beim LogIn zu Podcast-FTP-Server")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Podcast-FTP-Ordnerwechsel - viellt. nicht vorhanden")
+            " E 07 Fehler beim Podcast-FTP-Ordnerwechsel - viellt. nicht vorhanden")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Zugriff auf Podcast-FTP-Ordner")
+            " E 08 Fehler beim Zugriff auf Podcast-FTP-Ordner")
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -409,9 +409,8 @@ def tag_file_id3(podcast_sendung):
                         + podcast_sendung[0], "k", "write_also_to_console")
 
     else:
-        db.write_log_to_db_a(ac,
-                u"Podcast temp-Datei fuer ID3 tagging nicht vorhanden: "
-                        + c_source_file, "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, ac.app_errorslist[3] + c_source_file, "x",
+            "write_also_to_console")
     return
 
 
@@ -424,9 +423,8 @@ def upload_file(podcast_sendung):
     lib_cm.message_write_to_console(ac, c_source_file)
 
     if not os.path.isfile(c_source_file):
-        db.write_log_to_db_a(ac,
-                u"Podcast temp-Datei fuer upload nicht vorhanden: "
-                        + c_source_file, "x", "write_also_to_console")
+        db.write_log_to_db_a(ac, ac.app_errorslist[3] + c_source_file, "x",
+            "write_also_to_console")
         return None
 
     log_message = u"upload_file: " + c_source_file
@@ -463,7 +461,7 @@ def upload_file(podcast_sendung):
 
         db.write_log_to_db_a(ac, u"Podcast hochgeladen: "
                         + podcast_sendung[0], "i", "write_also_to_console")
-    return log_message
+    return
 
 
 def delete_files_online_ftp():
@@ -649,7 +647,9 @@ def sftp_connect():
         sftp = paramiko.SFTPClient.from_transport(transport)
         return sftp, transport
     except Exception as e:
-        print e
+        lib_cm.message_write_to_console(ac, e)
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+                                        "write_also_to_console")
         return None
     return None
 
@@ -735,7 +735,7 @@ def lets_rock():
                                 ac, db, lib_cm, podcast_sendung_all, file_dest)
 
         if success_add_id3 is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[5],
+            db.write_log_to_db_a(ac, ac.app_errorslist[3],
                                         "x", "write_also_to_console")
 
     # upload whats not online
@@ -743,12 +743,6 @@ def lets_rock():
     if upload_ok is None:
         # Error 1
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-            "write_also_to_console")
-        return
-
-    if upload_ok == "temporaere Datei nicht vorhanden":
-        # Error 3
-        db.write_log_to_db_a(ac, ac.app_errorslist[3], "x",
             "write_also_to_console")
         return
 
