@@ -105,7 +105,7 @@ class app_config(object):
         # dev-mod
         self.app_develop = "no"
         # show messages on console
-        self.app_debug_mod = "yes"
+        self.app_debug_mod = "no"
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(self.app_desc +
