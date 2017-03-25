@@ -34,15 +34,18 @@ Ueberzaehlige alte Podcasts werden auf vom Webspace geloescht.
 Auf dem Webserver sorgt ein weiteres Script fuer die Generierung des RSS-Feeds.
 
 Fehlerliste:
-E 0 Parameter-Typ oder Inhalt stimmt nicht
-E 1 Fehler beim Verbinden zum Podcast-FTP-Server
-E 2 Fehler beim Recodieren der mp3-Datei fuer Podcast
-E 3 Recodierte Podcast-mp3-Datei nicht gefunden
-E 4 Fehler beim Loeschen der Temp-Podcast-Datei
-E 5 mp3-Datei fuer Podcast in Play-Out nicht gefunden:
-E 6 Fehler beim LogIn zu Podcast-FTP-Server
-E 7 Fehler beim Podcast-FTP-Ordnerwechsel
-E 8 Fehler beim Zugriff auf Podcast-FTP-Ordner
+E 00: Parameter-Typ oder Inhalt stimmt nicht
+E 01 Fehler beim Verbinden zum Podcast-SFTP/FTP-Server
+E 02 Fehler beim Recodieren der mp3-Datei fuer Podcast
+E 03 Recodierte Podcast-Temp-mp3-Datei nicht gefunden
+E 04 Fehler beim Loeschen der Temp-Podcast-Datei
+E 05 mp3-Datei fuer Podcast in Play-Out nicht gefunden
+E 06 Fehler beim LogIn zu Podcast-FTP-Server
+E 07 Fehler b. Podcast-FTP-Ordnerwechsel - nicht vorhanden?
+E 08 Fehler beim Zugriff auf Podcast-FTP-Ordner
+E 09 Fehler beim Zugriff auf Podcast-SFTP-Ordner
+E 10 Fehler beim Upload auf Podcast-SFTP-Server
+E 11 Fehler beim Delete auf Podcast-SFTP-Server
 
 Parameterliste:
 Param  1: On/Off Switch
