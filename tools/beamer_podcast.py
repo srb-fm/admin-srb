@@ -577,7 +577,7 @@ def delete_files_online_sftp():
     sftp.close()
     transport.close()
 
-    if len(files_online) < int(db.ac_config_1[2]):
+    if len(files_online) <= int(db.ac_config_1[2]):
         db.write_log_to_db_a(ac,
                 u"Loeschen von Podcasts nicht noetig, zu wenige Dateien...",
                 "c", "write_also_to_console")
@@ -601,7 +601,7 @@ def delete_files_online_sftp():
 
     db.write_log_to_db_a(ac,
                 u"Alte Podcasts auf Server loeschen...",
-                "c", "write_also_to_console")
+                "t", "write_also_to_console")
 
     sftp, transport = sftp_connect()
     if sftp is None:
@@ -626,10 +626,13 @@ def delete_files_online_sftp():
 
         if number_of_files_to_delete == z:
             break
-    print z
 
     sftp.close()
     transport.close()
+
+    db.write_log_to_db_a(ac,
+                u"Podcasts online geloescht: " + str(z),
+                "t", "write_also_to_console")
     return number_of_files_to_delete
 
 
