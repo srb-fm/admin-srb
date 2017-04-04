@@ -579,13 +579,12 @@ def delete_files_online_sftp():
 
     if len(files_online) <= int(db.ac_config_1[2]):
         db.write_log_to_db_a(ac,
-                u"Loeschen von Podcasts nicht noetig, zu wenige Dateien...",
+                u"Loeschen von Podcasts nicht noetig, zu wenige Dateien: "
+                + str(len(files_online)),
                 "c", "write_also_to_console")
         return "Nothing to do"
     else:
         number_of_files_to_delete = len(files_online) - int(db.ac_config_1[2])
-        #print "nothing"
-    #number_of_files_to_delete = 7
 
     # new list with modtime, filename
     files_online_1 = []
