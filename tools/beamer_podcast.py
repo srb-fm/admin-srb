@@ -27,32 +27,39 @@ Script auf Webspace (RSS-Fedd-Generierung): dircaster.php
 Dieses Script uebertraegt Sendungen (mp3-Dateien),
 die in der Datenbank als Podcast markiert wurden,
 in der Reihenfolge der vorgesehenen Sendezeit, auf den Web-Server.
-Vorher werden sie in geringerer Aufloesung recodiert (mp3).
-Bei jedem Aufruf wird zudem ueberprueft, ob die maximale Anzahl
+Sie werden erst als Podcast zur Verfuegung getellt, wenn sie gesnedet wurden.
+
+Vor dem upload werden sie in geringerer Aufloesung recodiert (mp3).
+Bei jedem upload wird zudem ueberprueft, ob die maximale Anzahl
 Podcasts (siehe Einstellungen) auf dem Webspace ueberschritten wurde.
 Ueberzaehlige alte Podcasts werden auf vom Webspace geloescht.
 Auf dem Webserver sorgt ein weiteres Script fuer die Generierung des RSS-Feeds.
 
 Fehlerliste:
-E 0 Parameter-Typ oder Inhalt stimmt nicht
-E 1 Fehler beim Verbinden zum Podcast-ftp-Server
-E 2 Fehler beim Recodieren der Podcast-mp3-Datei
-E 3 Recodierte Podcast-mp3-Datei nicht gefunden
-E 4 Fehler beim Loeschen der Temp-Podcast-Datei
-E 5 Podcast-mp3-Datei in Play-Out nicht gefunden:
-E 6 Fehler beim LogIn zu FTP-Server
-E 7 Fehler beim FTP-Ordnerwechsel
-E 8 Fehler beim Zugriff auf FTP-Ordner
+E 00: Parameter-Typ oder Inhalt stimmt nicht
+E 01 Fehler beim Verbinden zum Podcast-SFTP/FTP-Server
+E 02 Fehler beim Recodieren der mp3-Datei fuer Podcast
+E 03 Recodierte Podcast-Temp-mp3-Datei nicht gefunden
+E 04 Fehler beim Loeschen der Temp-Podcast-Datei
+E 05 mp3-Datei fuer Podcast in Play-Out nicht gefunden
+E 06 Fehler beim LogIn zu Podcast-FTP-Server
+E 07 Fehler b. Podcast-FTP-Ordnerwechsel - nicht vorhanden?
+E 08 Fehler beim Zugriff auf Podcast-FTP-Ordner
+E 09 Fehler beim Zugriff auf Podcast-SFTP-Ordner
+E 10 Fehler beim Upload auf Podcast-SFTP-Server
+E 11 Fehler beim Delete auf Podcast-SFTP-Server
 
 Parameterliste:
-Param 1: On/Off Switch
-Param 2: Anzahl Dateien, die max auf dem Podcast-Server bleiben
-Param 3: ftp-Host
-Param 4: ftp-Benutzer
-Param 5: ftp-PW
-Param 6: ftp-Verzeichnis
-Param 7: Pfad temporaere Dateien fuer Encoder
-Param 8: ID3-Tags in utf-8 encoden on/off
+Param  1: On/Off Switch
+Param  2: Anzahl Dateien, die max auf dem Podcast-Server bleiben
+Param  3: ID3-Tags in utf-8 encoden on/off
+Param  4: Protokolleinstellung (SFTP oder FTP)
+Param  5: sftp/ftp-Host
+Param  6: sftp/ftp-Port
+Param  7: sftp/ftp-Benutzer
+Param  8: sftp/ftp-PW
+Param  9: sftp/ftp-Verzeichnis
+Param 10: Pfad temporaere Dateien fuer Encoder
 
 Extern Parameters:
 ext_tools
@@ -60,7 +67,8 @@ server_settings
 server_settings_paths_a_A
 
 Das Script wird zeitgesteuert zwischen 6 und 20 Uhr
-jeweils zu Minute 15 ausgefuehrt.
+jeweils zu Minute 15 und 40 ausgefuehrt. Weitere Ausfuehrungzeiten
+koennen in der crontab eingestellt werden.
 
 Die beste und sicherste Tarnung ist immer noch die blanke und nackte Wahrheit.
 Die glaubt niemand! Max Frisch
@@ -74,11 +82,14 @@ import datetime
 import subprocess
 import ftplib
 import socket
-#from mutagen.mp3 import MP3
+import paramiko
 from mutagen.id3 import ID3, TPE1, TIT2
 from mutagen.id3 import ID3NoHeaderError
 import lib_audio as lib_au
 import lib_common_1 as lib_cm
+
+# paramiko logging
+paramiko.util.log_to_file("/var/log/admin-srb/beamer_podcast_paramiko.log")
 
 
 class app_config(object):
@@ -92,7 +103,7 @@ class app_config(object):
         self.app_config = u"PC_Beamer_Config"
         self.app_config_develop = u"PC_Beamer_Config_1_e"
         # amount parameter
-        self.app_config_params_range = 9
+        self.app_config_params_range = 11
         self.app_errorfile = "error_podcast_beamer.log"
         # dev-mod
         self.app_develop = "no"
@@ -101,23 +112,29 @@ class app_config(object):
         # errorlist
         self.app_errorslist = []
         self.app_errorslist.append(self.app_desc +
-            " Parameter-Typ oder Inhalt stimmt nicht ")
+            " E 00: Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Verbinden zum ftp-Server")
+            " E 01 Fehler beim Verbinden zum Podcast-SFTP/FTP-Server")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Recodieren der mp3-Datei ")
+            " E 02 Fehler beim Recodieren der mp3-Datei fuer Podcast ")
         self.app_errorslist.append(self.app_desc +
-            " Recodierte Podcast-mp3-Datei nicht gefunden")
+            " E 03 Recodierte Podcast-Temp-mp3-Datei nicht gefunden ")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Loeschen der Temp-Datei")
+            " E 04 Fehler beim Loeschen der Temp-Podcast-Datei")
         self.app_errorslist.append(self.app_desc +
-             " mp3-Datei in Play-Out nicht gefunden:")
+             " E 05 mp3-Datei fuer Podcast in Play-Out nicht gefunden:")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim LogIn zu FTP-Server")
+            " E 06 Fehler beim LogIn zu Podcast-FTP-Server")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim FTP-Ordnerwechsel - viellt. nicht vorhanden")
+            " E 07 Fehler b. Podcast-FTP-Ordnerwechsel - nicht vorhanden?")
         self.app_errorslist.append(self.app_desc +
-            " Fehler beim Zugriff auf FTP-Ordner")
+            " E 08 Fehler beim Zugriff auf Podcast-FTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " E 09 Fehler beim Zugriff auf Podcast-SFTP-Ordner")
+        self.app_errorslist.append(self.app_desc +
+            " E 10 Fehler beim Upload auf Podcast-SFTP-Server")
+        self.app_errorslist.append(self.app_desc +
+            " E 11 Fehler beim Delete auf Podcast-SFTP-Server")
         # params-type-list
         self.app_params_type_list = []
         self.app_params_type_list.append("p_string")
@@ -125,6 +142,8 @@ class app_config(object):
         self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_string")
+        self.app_params_type_list.append("p_int")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
         self.app_params_type_list.append("p_string")
@@ -183,36 +202,36 @@ def encode_file(podcast_sendung):
     lib_cm.message_write_to_console(ac, u"encode_file")
     # all cmds must be in the right charset
     c_lame_encoder = db.ac_config_etools[6].encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type c_lame_encoder")
-    lib_cm.message_write_to_console(ac, type(c_lame_encoder))
-    lib_cm.message_write_to_console(ac, u"type podcast_sendung[1]")
-    lib_cm.message_write_to_console(ac, type(podcast_sendung[1]))
+    #lib_cm.message_write_to_console(ac, u"type c_lame_encoder")
+    #lib_cm.message_write_to_console(ac, type(c_lame_encoder))
+    #lib_cm.message_write_to_console(ac, u"type podcast_sendung[1]")
+    #lib_cm.message_write_to_console(ac, type(podcast_sendung[1]))
 
     c_id3_title = u"--tt".encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type( c_id3_title )")
-    lib_cm.message_write_to_console(ac, type(c_id3_title))
+    #lib_cm.message_write_to_console(ac, u"type( c_id3_title )")
+    #lib_cm.message_write_to_console(ac, type(c_id3_title))
     #c_id3_title_value = podcast_sendung[1].encode( ac.app_encode_out_strings )
     c_id3_title_value_uni = (lib_cm.replace_sonderzeichen_with_latein(
                                                     podcast_sendung[1]))
     c_id3_title_value = c_id3_title_value_uni.encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type( c_id3_title_value )")
-    lib_cm.message_write_to_console(ac, type(c_id3_title_value))
+    #lib_cm.message_write_to_console(ac, u"type( c_id3_title_value )")
+    #lib_cm.message_write_to_console(ac, type(c_id3_title_value))
 
     c_id3_author = u"--ta".encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type( c_id3_author )")
-    lib_cm.message_write_to_console(ac, type(c_id3_author))
+    #lib_cm.message_write_to_console(ac, u"type( c_id3_author )")
+    #lib_cm.message_write_to_console(ac, type(c_id3_author))
     id3_author_value_uni = (lib_cm.replace_sonderzeichen_with_latein(
             podcast_sendung[2]) + " "
             + lib_cm.replace_sonderzeichen_with_latein(podcast_sendung[3]))
     c_id3_author_value = id3_author_value_uni.encode(ac.app_encode_out_strings)
-    lib_cm.message_write_to_console(ac, u"type(c_id3_author_value )")
-    lib_cm.message_write_to_console(ac, type(c_id3_author_value))
+    #lib_cm.message_write_to_console(ac, u"type(c_id3_author_value )")
+    #lib_cm.message_write_to_console(ac, type(c_id3_author_value))
 
     # source sendung
     path_sendung_source = lib_cm.check_slashes(ac, db.ac_config_servpath_a[6])
     c_source_file = (path_sendung_source.encode(ac.app_encode_out_strings)
                      + podcast_sendung[0].encode(ac.app_encode_out_strings))
-    lib_cm.message_write_to_console(ac, c_source_file)
+    #lib_cm.message_write_to_console(ac, c_source_file)
 
     # source infotime und mag
     path_it_mg_source = lib_cm.check_slashes(ac, db.ac_config_servpath_a[5])
@@ -229,9 +248,9 @@ def encode_file(podcast_sendung):
         c_source_file = (path_it_mg_source.encode(ac.app_encode_out_strings)
                     + podcast_sendung[0].encode(ac.app_encode_out_strings))
 
-    lib_cm.message_write_to_console(ac, c_source_file)
-    lib_cm.message_write_to_console(ac, u"type(c_source_file)")
-    lib_cm.message_write_to_console(ac, type(c_source_file))
+    #lib_cm.message_write_to_console(ac, c_source_file)
+    #lib_cm.message_write_to_console(ac, u"type(c_source_file)")
+    #lib_cm.message_write_to_console(ac, type(c_source_file))
 
     if not os.path.isfile(c_source_file):
         db.write_log_to_db_a(ac, ac.app_errorslist[5] + " "
@@ -240,13 +259,13 @@ def encode_file(podcast_sendung):
         return None
 
     # dest recoded file
-    path_dest = lib_cm.check_slashes(ac, db.ac_config_1[7])
+    path_dest = lib_cm.check_slashes(ac, db.ac_config_1[10])
 
     c_dest_file = (path_dest.encode(ac.app_encode_out_strings)
                    + podcast_sendung[0].encode(ac.app_encode_out_strings))
-    lib_cm.message_write_to_console(ac, c_dest_file)
-    lib_cm.message_write_to_console(ac, u"type(c_dest_file)")
-    lib_cm.message_write_to_console(ac, type(c_dest_file))
+    #lib_cm.message_write_to_console(ac, c_dest_file)
+    #lib_cm.message_write_to_console(ac, u"type(c_dest_file)")
+    #lib_cm.message_write_to_console(ac, type(c_dest_file))
 
     # das geht auch
     #p = subprocess.Popen([c_lame_encoder, "--add-id3v2",  c_id3_title,
@@ -277,7 +296,7 @@ def encode_file(podcast_sendung):
     c_complete = "no"
 
     # by short files 100% will not be reached,
-    # therfor also 99%
+    # therefor also let's take 99%
     if n_encode_percent == -1:
         # 100% not reached
         if n_encode_percent_1 != -1:
@@ -300,24 +319,42 @@ def encode_file(podcast_sendung):
 def check_files_online(podcast_sendungen):
     """check what's online"""
     lib_cm.message_write_to_console(ac, u"check_files_online")
-
-    ftp = ftp_connect_and_dir()
-    if ftp is None:
-        return None
-
     files_online = []
-    try:
-        files_online = ftp.nlst()
-    except ftplib.error_perm, resp:
-        if str(resp) == "550 No files found":
-            lib_cm.message_write_to_console(ac,
-            u"ftp: no files in this directory")
-        else:
-            log_message = (ac.app_errorslist[8] + " - " + str(resp))
-            db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
 
-    ftp.quit()
-    lib_cm.message_write_to_console(ac, files_online)
+    # switch protocol
+    if db.ac_config_1[4] == "FTP":
+        ftp = ftp_connect_and_dir()
+        if ftp is None:
+            return None
+
+        try:
+            files_online = ftp.nlst()
+        except ftplib.error_perm, resp:
+            if str(resp) == "550 No files found":
+                lib_cm.message_write_to_console(ac,
+                u"ftp: no files in this directory")
+            else:
+                log_message = (ac.app_errorslist[8] + " - " + str(resp))
+                db.write_log_to_db_a(ac, log_message, "x",
+                                                "write_also_to_console")
+
+        ftp.quit()
+        lib_cm.message_write_to_console(ac, files_online)
+
+    if db.ac_config_1[4] == "SFTP":
+        sftp, transport = sftp_connect()
+        if sftp is None:
+            return None
+        # Get list
+        try:
+            files_online = sftp.listdir(db.ac_config_1[9])
+        except Exception as e:
+            lib_cm.message_write_to_console(ac, e)
+            db.write_log_to_db_a(ac, ac.app_errorslist[9], "x",
+                                        "write_also_to_console")
+        # Close
+        sftp.close()
+        transport.close()
 
     # list of all online-files,
     # filter out admin-srb audio-files (numbers in the beginning)
@@ -350,17 +387,12 @@ def tag_file_id3(podcast_sendung):
     """tag files with id3"""
     lib_cm.message_write_to_console(ac, u"tag files with id3")
     # dest recoded file
-    path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
+    path_source = lib_cm.check_slashes(ac, db.ac_config_1[10])
     c_source_file = path_source + podcast_sendung[0]
-    lib_cm.message_write_to_console(ac, c_source_file)
-    log_message = u"Podcast mit ID3 taggen: " + c_source_file
-    db.write_log_to_db(ac, log_message, "k")
+    db.write_log_to_db_a(ac, u"Podcast mit ID3 taggen: " + c_source_file,
+                                "k", "write_also_to_console")
 
     if os.path.isfile(c_source_file):
-        #if ac.app_windows == "yes":
-        #    f = open(c_source_file, "rb")
-        #else:
-        #    f = open(c_source_file, "r")
 
         id3_tag_present = False
         try:
@@ -394,11 +426,8 @@ def tag_file_id3(podcast_sendung):
                         + podcast_sendung[0], "k", "write_also_to_console")
 
     else:
-        msg = u"temp Datei nicht vorhanden"
-        lib_cm.message_write_to_console(ac, u"tag files with id3: "
-                                        + "%r: %s" % (msg, c_source_file))
-        log_message = u"tag files with id3: " + "%r: %s" % (msg, c_source_file)
-        db.write_log_to_db(ac, log_message, "x")
+        db.write_log_to_db_a(ac, ac.app_errorslist[3] + c_source_file, "x",
+            "write_also_to_console")
     return
 
 
@@ -406,11 +435,20 @@ def upload_file(podcast_sendung):
     """upload files"""
     lib_cm.message_write_to_console(ac, u"upload_file")
     # dest recoded file
-    path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
+    path_source = lib_cm.check_slashes(ac, db.ac_config_1[10])
     c_source_file = path_source + podcast_sendung[0]
     lib_cm.message_write_to_console(ac, c_source_file)
 
-    if os.path.isfile(c_source_file):
+    if not os.path.isfile(c_source_file):
+        db.write_log_to_db_a(ac, ac.app_errorslist[3] + c_source_file, "x",
+            "write_also_to_console")
+        return None
+
+    log_message = u"upload_file: " + c_source_file
+    db.write_log_to_db(ac, log_message, "k")
+
+    # switch protocol
+    if db.ac_config_1[4] == "FTP":
         if ac.app_windows == "yes":
             f = open(c_source_file, "rb")
         else:
@@ -420,29 +458,37 @@ def upload_file(podcast_sendung):
         if ftp is None:
             return None
 
-        log_message = u"upload_file: " + c_source_file
-        db.write_log_to_db(ac, log_message, "k")
         c_ftp_cmd = "STOR " + podcast_sendung[0]
         ftp.storbinary(c_ftp_cmd, f)
         ftp.quit()
         f.close()
+
+    if db.ac_config_1[4] == "SFTP":
+        sftp, transport = sftp_connect()
+        if sftp is None:
+            return None
+
+        path_remote = lib_cm.check_slashes(ac, db.ac_config_1[9])
+        file_remote = path_remote + podcast_sendung[0]
+        # upload
+        try:
+            sftp.put(c_source_file, file_remote)
+        except Exception as e:
+            lib_cm.message_write_to_console(ac, e)
+            db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
+                                        "write_also_to_console")
+        # Close
+        sftp.close()
+        transport.close()
+
         db.write_log_to_db_a(ac, u"Podcast hochgeladen: "
                         + podcast_sendung[0], "i", "write_also_to_console")
-
-    else:
-        msg = u"temporaere Datei nicht vorhanden"
-        lib_cm.message_write_to_console(ac, u"upload_files: "
-                                        + "%r: %s" % (msg, c_source_file))
-        log_message = u"upload_files: " + "%r: %s" % (msg, c_source_file)
-        db.write_log_to_db(ac, log_message, "x")
-        return msg
-
-    return log_message
+    return "OK"
 
 
-def delete_files_online():
+def delete_files_online_ftp():
     """delete old files at Webspace"""
-    lib_cm.message_write_to_console(ac, u"delete_files_online")
+    lib_cm.message_write_to_console(ac, u"delete_files_online ftp")
     ftp = ftp_connect_and_dir()
     if ftp is None:
         return None
@@ -513,35 +559,132 @@ def delete_files_online():
     return n_anzahl_files_to_delete
 
 
+def delete_files_online_sftp():
+    """delete old files at Webspace"""
+    lib_cm.message_write_to_console(ac, u"delete_files_online sftp")
+
+    sftp, transport = sftp_connect()
+    if sftp is None:
+        return None
+    # Get list
+    try:
+        files_online = sftp.listdir_attr(db.ac_config_1[9])
+    except Exception as e:
+        lib_cm.message_write_to_console(ac, e)
+        db.write_log_to_db_a(ac, ac.app_errorslist[9], "x",
+                                        "write_also_to_console")
+    # Close
+    sftp.close()
+    transport.close()
+
+    if len(files_online) <= int(db.ac_config_1[2]):
+        db.write_log_to_db_a(ac,
+                u"Loeschen von Podcasts nicht noetig, zu wenige Dateien: "
+                + str(len(files_online)),
+                "c", "write_also_to_console")
+        return "Nothing to do"
+    else:
+        number_of_files_to_delete = len(files_online) - int(db.ac_config_1[2])
+
+    # new list with modtime, filename
+    files_online_1 = []
+    for item in files_online:
+        # only play-out-files starting with numbers
+        if (re.match("[0-9]{7}", item.filename) is not None):
+            files_online_1.append((item.st_mtime, item.filename))
+    files_online_1.sort()
+
+    db.write_log_to_db_a(ac,
+                u"Podcasts auf Server vorhanden: " + str(len(files_online_1)),
+                "t", "write_also_to_console")
+
+    db.write_log_to_db_a(ac,
+                u"Alte Podcasts auf Server loeschen...",
+                "t", "write_also_to_console")
+
+    sftp, transport = sftp_connect()
+    if sftp is None:
+        return None
+
+    path_remote = lib_cm.check_slashes(ac, db.ac_config_1[9])
+
+    z = 0
+    for item in files_online_1:
+        # delete
+        try:
+            sftp.remove(path_remote + item[1])
+            db.write_log_to_db_a(ac,
+                u"Podcast online geloescht: " + item[1],
+                "c", "write_also_to_console")
+            z += 1
+        except Exception as e:
+            lib_cm.message_write_to_console(ac, e)
+            db.write_log_to_db_a(ac, ac.app_errorslist[11], "x",
+                                        "write_also_to_console")
+            break
+
+        if number_of_files_to_delete == z:
+            break
+
+    sftp.close()
+    transport.close()
+
+    db.write_log_to_db_a(ac,
+                u"Podcasts online geloescht: " + str(z),
+                "t", "write_also_to_console")
+    return number_of_files_to_delete
+
+
 def ftp_connect_and_dir():
     """connect to ftp, login and change dir"""
     try:
-        ftp = ftplib.FTP(db.ac_config_1[3])
+        ftp = ftplib.FTP()
+        ftp.connect(db.ac_config_1[5], db.ac_config_1[6])
     except (socket.error, socket.gaierror):
         lib_cm.message_write_to_console(ac, u"ftp: no connect to: "
-                                        + db.ac_config_1[3])
+                                        + db.ac_config_1[5])
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
                                         "write_also_to_console")
         return None
 
     try:
-        ftp.login(db.ac_config_1[4], db.ac_config_1[5])
+        ftp.login(db.ac_config_1[7], db.ac_config_1[8])
     except ftplib.error_perm, resp:
         lib_cm.message_write_to_console(ac, "ftp: no login to: "
-                                        + db.ac_config_1[3])
-        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[3])
+                                        + db.ac_config_1[5])
+        log_message = (ac.app_errorslist[6] + " - " + db.ac_config_1[5])
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
 
     try:
-        ftp.cwd(db.ac_config_1[6])
+        ftp.cwd(db.ac_config_1[9])
     except ftplib.error_perm, resp:
         lib_cm.message_write_to_console(ac, "ftp: no dirchange possible: "
-                                        + db.ac_config_1[3] + str(resp))
-        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[6])
+                                        + db.ac_config_1[9] + str(resp))
+        log_message = (ac.app_errorslist[7] + " - " + db.ac_config_1[9])
         db.write_log_to_db_a(ac, log_message, "x", "write_also_to_console")
         return None
     return ftp
+
+
+def sftp_connect():
+    """connect to sftp, login"""
+    try:
+        # Open a transport
+        transport = paramiko.Transport(
+            (db.ac_config_1[5], int(db.ac_config_1[6])))
+        # Auth
+        transport.connect(
+            username=db.ac_config_1[7], password=db.ac_config_1[8])
+        # Go!
+        sftp = paramiko.SFTPClient.from_transport(transport)
+        return sftp, transport
+    except Exception as e:
+        lib_cm.message_write_to_console(ac, e)
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
+                                        "write_also_to_console")
+        return None
+    return None
 
 
 def lets_rock():
@@ -555,7 +698,8 @@ def lets_rock():
     # load from db
     podcast_sendungen = load_podcast()
     if podcast_sendungen is None:
-        db.write_log_to_db(ac, u"Zur Zeit kein neuer Podcast vorgesehen", "t")
+        db.write_log_to_db_a(ac, u"Zur Zeit kein neuer Podcast vorgesehen", "k",
+            "write_also_to_console")
         return
 
     # check whats not online
@@ -616,15 +760,15 @@ def lets_rock():
             return
 
     # tagging file in utf-8
-    if db.ac_config_1[8] == "on":
+    if db.ac_config_1[3] == "on":
         #tag_file_id3(podcast_sendung)
-        path_source = lib_cm.check_slashes(ac, db.ac_config_1[7])
+        path_source = lib_cm.check_slashes(ac, db.ac_config_1[10])
         file_dest = path_source + podcast_sendung[0]
         success_add_id3 = lib_au.add_id3(
                                 ac, db, lib_cm, podcast_sendung_all, file_dest)
 
         if success_add_id3 is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[5],
+            db.write_log_to_db_a(ac, ac.app_errorslist[3],
                                         "x", "write_also_to_console")
 
     # upload whats not online
@@ -632,12 +776,6 @@ def lets_rock():
     if upload_ok is None:
         # Error 1
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-            "write_also_to_console")
-        return
-
-    if upload_ok == "temporaere Datei nicht vorhanden":
-        # Error 3
-        db.write_log_to_db_a(ac, ac.app_errorslist[3], "x",
             "write_also_to_console")
         return
 
@@ -650,7 +788,11 @@ def lets_rock():
             "write_also_to_console")
 
     # delete old online-files
-    delete_ok = delete_files_online()
+    # switch protocol
+    if db.ac_config_1[4] == "FTP":
+        delete_ok = delete_files_online_ftp()
+    if db.ac_config_1[4] == "SFTP":
+        delete_ok = delete_files_online_sftp()
     if delete_ok is None:
         # Error 1
         db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
