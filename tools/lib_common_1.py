@@ -1274,13 +1274,13 @@ def message_write_to_console(ac, debug_message):
 def replace_uchar_with_html(unistr):
     """ replace unicode-chars with html-entities"""
     # noetig: import htmlentitydefs
-    #return "&%s;" % htmlentitydefs.codepoint2name[ord(character)]
+    # return "&%s;" % htmlentitydefs.codepoint2name[ord(character)]
     escaped = ""
     for char in unistr:
         if ord(char) in htmlentitydefs.codepoint2name:
             name = htmlentitydefs.codepoint2name.get(ord(char))
             entity = htmlentitydefs.name2codepoint.get(name)
-            escaped += "&#" + str(entity)
+            escaped += "&#" + str(entity) + ";"
         else:
             escaped += char
     return escaped
