@@ -1243,6 +1243,9 @@ def params_check_type(ac, db, param_typ, param_value):
             pm = None
     elif param_typ == "p_url":
         pm = re.match(r"http://", param_value)
+        # no http check for https
+        if pm is None:
+            pm = re.match(r"https://", param_value)
     return pm
 
 
