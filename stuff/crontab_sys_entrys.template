@@ -3,5 +3,5 @@
 #05 20	* * *	root /home/my-server/srb-firebird-backup/./backup_db_daily.sh
 #10 20	* * 5	root /home/my-server/srb-firebird-backup/./backup_db_weekly.sh
 #20 20	* * 1	root /home/my-server/srb-firebird-backup/./backup_db_log_weekly.sh
-#15 5   * * 1-5   root /home/srb-server-4/srb-backup-firebird/./sync_db_daily.sh
-#30 5   * * 1-5   root /home/srb-server-4/srb-backup/sync_media_play_out_from_old_server.sh
+#15 5   * * *   root /home/srb-server-4/srb-backup-firebird/./sync_db_daily.sh
+#30 5   * * *   root /home/srb-server-4/srb-backup/sync_media_play_out_from_old_server.sh
