@@ -31,7 +31,8 @@ Param 1: server_main
 Param 2: server_play_out
 Param 3: server_stream
 
-Dieses Script wird zeitgesteuert nach dem Sync der DB vom Hauptserver ausgefuehrt.
+Dieses Script wird zeitgesteuert
+nach dem Sync der DB vom Hauptserver ausgefuehrt.
 
 """
 
@@ -73,52 +74,31 @@ class app_config(object):
         self.app_debug_mod = "no"
 
 
-def load_extended_params():
-    """load extended params"""
-    ext_params_ok = True
-    # server_active
-    db.ac_param_server_active = db.params_load_1a(ac, db, "server_active")
-    if db.ac_param_server_active is not None:
-        # create extended Paramslist
-        app_params_type_list_server_active = []
-        # Types of extended-List
-        app_params_type_list_server_active.append("p_string")
-        app_params_type_list_server_active.append("p_string")
-        app_params_type_list_server_active.append("p_string")
-        # check extended Params
-        param_check_server_active = lib_cm.params_check_a(
-                        ac, db, 4,
-                        app_params_type_list_server_active,
-                        db.ac_param_server_active)
-        if param_check_server_active is None:
-            db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
-            "write_also_to_console")
-            ext_params_ok = None
-    else:
-        ext_params_ok = None
-
-    if ext_params_ok is None:
-        return ext_params_ok
-
-
 def lets_rock():
     """mainfunktion """
     print "lets_rock "
 
+    db_tbl = "USER_SPECIALS A "
+    db_tbl_fields = ("A.USER_SP_PARAM_1, A.USER_SP_PARAM_2, A.USER_SP_PARAM_3")
+    db_tbl_condition = ("USER_SP_SPECIAL='server_active'")
+
+    server_active = db.read_tbl_row_with_cond(ac,
+                db, db_tbl, db_tbl_fields, db_tbl_condition)
+
     # write param server_redundant in param server_active
     print "server_active"
-    print "1" + db.ac_param_server_active[1]
-    print "2" + db.ac_param_server_active[2]
-    print "3" + db.ac_param_server_active[3]
+    print "1" + server_active[1]
+    print "2" + server_active[2]
+    print "3" + server_active[3]
     print "server_redundant_active"
     print "1" + db.ac_config_1[2]
     print "2" + db.ac_config_1[3]
     print "3" + db.ac_config_1[4]
     return
     sql_command = ("UPDATE USER_SPECIALS "
-        "SET USER_SP_PARAM_1='" + db.ac_param_server_active[1] + "', "
-        "USER_SP_PARAM_2='" + db.ac_param_server_active[2] + "', "
-        "USER_SP_PARAM_3='" + db.ac_param_server_active[3] + "' "
+        "SET USER_SP_PARAM_1='" + db.ac_config_1[2] + "', "
+        "USER_SP_PARAM_2='" + db.ac_config_1[3] + "', "
+        "USER_SP_PARAM_3='" + db.ac_config_1[4] + "' "
         "where USER_SP_SPECIAL='server_active'")
     db_ok = db.exec_sql(ac, db, sql_command)
     if db_ok is None:
@@ -140,12 +120,10 @@ if __name__ == "__main__":
         param_check = lib_cm.params_check_1(ac, db)
         # alles ok: weiter
         if param_check is not None:
-            load_extended_params_ok = load_extended_params()
-            if load_extended_params_ok is not None:
-                if db.ac_config_1[1].strip() == "on":
-                    lets_rock()
-                else:
-                    db.write_log_to_db_a(ac, ac.app_desc
+            if db.ac_config_1[1].strip() == "on":
+                lets_rock()
+            else:
+                db.write_log_to_db_a(ac, ac.app_desc
                                     + " ausgeschaltet", "e",
                                     "write_also_to_console")
 
