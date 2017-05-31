@@ -87,9 +87,9 @@ def lets_rock():
 
     # write param server_redundant in param server_active
     print "server_active"
-    print "1" + server_active[1]
-    print "2" + server_active[2]
-    print "3" + server_active[3]
+    print "1" + server_active[0]
+    print "2" + server_active[1]
+    print "3" + server_active[2]
     print "server_redundant_active"
     print "1" + db.ac_config_1[2]
     print "2" + db.ac_config_1[3]
