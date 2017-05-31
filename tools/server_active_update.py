@@ -86,14 +86,20 @@ def lets_rock():
                 db, db_tbl, db_tbl_fields, db_tbl_condition)
 
     # write param server_redundant in param server_active
-    print "server_active"
-    print "1" + server_active[0]
-    print "2" + server_active[1]
-    print "3" + server_active[2]
-    print "server_redundant_active"
-    print "1" + db.ac_config_1[2]
-    print "2" + db.ac_config_1[3]
-    print "3" + db.ac_config_1[4]
+    # server_active
+    db.write_log_to_db_a(ac, u"Server active old: "
+                        + server_active[0]
+                        + server_active[1]
+                        + server_active[2],
+                         "t", "write_also_to_console")
+
+    # server_redundant_active
+    db.write_log_to_db_a(ac, u"Server active new: "
+                        + db.ac_config_1[2]
+                        + db.ac_config_1[3]
+                        + db.ac_config_1[4],
+                         "t", "write_also_to_console")
+
     #return
     sql_command = ("UPDATE USER_SPECIALS "
         "SET USER_SP_PARAM_1='" + db.ac_config_1[2].strip() + "', "
