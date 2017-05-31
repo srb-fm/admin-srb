@@ -32,7 +32,7 @@ Param 2: server_play_out
 Param 3: server_stream
 
 Dieses Script wird zeitgesteuert
-nach dem Sync der DB vom Hauptserver ausgefuehrt.
+nach dem Sync der DB!!! vom Hauptserver ausgefuehrt.
 
 """
 
@@ -100,12 +100,12 @@ def lets_rock():
                         + db.ac_config_1[4],
                          "t", "write_also_to_console")
 
-    #return
     sql_command = ("UPDATE USER_SPECIALS "
         "SET USER_SP_PARAM_1='" + db.ac_config_1[2].strip() + "', "
         "USER_SP_PARAM_2='" + db.ac_config_1[3].strip() + "', "
         "USER_SP_PARAM_3='" + db.ac_config_1[4].strip() + "' "
         "where USER_SP_SPECIAL='server_active'")
+
     db_ok = db.exec_sql(ac, db, sql_command)
     if db_ok is None:
         # Error 003 update
