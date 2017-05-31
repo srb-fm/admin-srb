@@ -94,11 +94,11 @@ def lets_rock():
     print "1" + db.ac_config_1[2]
     print "2" + db.ac_config_1[3]
     print "3" + db.ac_config_1[4]
-    return
+    #return
     sql_command = ("UPDATE USER_SPECIALS "
-        "SET USER_SP_PARAM_1='" + db.ac_config_1[2] + "', "
-        "USER_SP_PARAM_2='" + db.ac_config_1[3] + "', "
-        "USER_SP_PARAM_3='" + db.ac_config_1[4] + "' "
+        "SET USER_SP_PARAM_1='" + db.ac_config_1[2].strip() + "', "
+        "USER_SP_PARAM_2='" + db.ac_config_1[3].strip() + "', "
+        "USER_SP_PARAM_3='" + db.ac_config_1[4].strip() + "' "
         "where USER_SP_SPECIAL='server_active'")
     db_ok = db.exec_sql(ac, db, sql_command)
     if db_ok is None:
