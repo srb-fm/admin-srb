@@ -24,3 +24,4 @@
 #29 * * * * /home/my-server/srb-tools/audio_switch_timer.py && exit
 #20 4 * * 6 /home/my-server/srb-tools/backup_media_archiv.sh && exit
 #20 3 * * * /home/my-server/srb-tools/backup_media_play_out.sh && exit
+#22 22 * * * /home/my-server/srb-tools/server_active_update.py && exit
