@@ -14,7 +14,7 @@ Copyright (C) Joerg Sorge joergsorge at guugel
 
 Dieses Script aktualisiert die Einstellung
 der aktiven Serverlinie. Es laeuft auf dem redundanten Server.
-Wird der red. Server zum Hauptserver, muss diese Script deaktiviert werden!!!!
+Wird der red. Server zum Hauptserver, muss dieses Script deaktiviert werden!!!!
 
 Dateiname Script: server_active_update.py
 Schluesselwort fuer Einstellungen:
@@ -23,13 +23,14 @@ Benoetigt: lib_common.py im gleichen Verzeichnis
 Bezieht Daten aus: Firebird-Datenbank
 
 Fehlerliste:
-Error 000 Parameter-Typ oder Inhalt stimmt nich
-Error 001 Fehler beim Uebertragen zum Web-Server
+Error 000 Parameter-Typ oder Inhalt stimmt nicht
+Error 001 Fehler beim update der Einstellung active-server
 
 Parameterliste:
-Param 1: server_main
-Param 2: server_play_out
-Param 3: server_stream
+Param 1: on/off
+Param 2: server_main
+Param 3: server_play_out
+Param 4: server_stream
 
 Dieses Script wird zeitgesteuert
 nach dem Sync der DB!!! vom Hauptserver ausgefuehrt.
@@ -56,9 +57,7 @@ class app_config(object):
         self.app_errorslist.append(u"Error 000 "
             "Parameter-Typ oder Inhalt stimmt nicht ")
         self.app_errorslist.append(u"Error 001 "
-            "Ext. Parameter-Typ oder Inhalt stimmt nicht ")
-        self.app_errorslist.append(u"Error 002 "
-            "Fehler beim update Einstellung active-server ")
+            "Fehler beim update der Einstellung active-server ")
         # amount parameters
         self.app_config_params_range = 3
         # params-type-list
@@ -109,7 +108,7 @@ def lets_rock():
     db_ok = db.exec_sql(ac, db, sql_command)
     if db_ok is None:
         # Error 003 update
-        db.write_log_to_db_a(ac, ac.app_errorslist[2], "x",
+        db.write_log_to_db_a(ac, ac.app_errorslist[1], "x",
             "write_also_to_console")
         return
     return
