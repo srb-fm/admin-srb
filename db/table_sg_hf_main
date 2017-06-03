@@ -1,0 +1,20 @@
+SG_HF_ID                        BIGINT Not Null 
+SG_HF_CONT_ID                   BIGINT Not Null 
+SG_HF_CONTENT_ID                BIGINT Not Null 
+SG_HF_TIME                      TIMESTAMP Not Null 
+SG_HF_DURATION                  CHAR(8) Not Null 
+SG_HF_INFOTIME                  CHAR(1) Not Null 
+SG_HF_SOURCE_ID                 CHAR(2) Not Null 
+SG_HF_FIRST_SG                  CHAR(1) Not Null 
+SG_HF_ON_AIR                    CHAR(1) Not Null 
+SG_HF_TIME_INSERT               TIMESTAMP Not Null 
+SG_HF_MAGAZINE                  CHAR(1) Not Null 
+SG_HF_PODCAST                   CHAR(1) Not Null 
+SG_HF_REPEAT_PROTO              CHAR(1) Not Null 
+SG_HF_VP_OUT                    CHAR(1) Not Null 
+SG_HF_LIVE                      CHAR(1) Not Null 
+CONSTRAINT INTEG_250:
+  Primary key (SG_HF_ID)
+
+Triggers on Table SG_HF_MAIN:
+SG_HF_MAIN_BI_0, Sequence: 0, Type: BEFORE INSERT, Active
