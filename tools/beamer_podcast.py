@@ -342,19 +342,28 @@ def check_files_online(podcast_sendungen):
         lib_cm.message_write_to_console(ac, files_online)
 
     if db.ac_config_1[4] == "SFTP":
-        sftp, transport = sftp_connect()
+        try:
+            sftp, transport = sftp_connect()
+        except Exception as e:
+            lib_cm.message_write_to_console(ac, e)
+            return None
+
         if sftp is None:
             return None
         # Get list
         try:
             files_online = sftp.listdir(db.ac_config_1[9])
         except Exception as e:
+            files_online = None
             lib_cm.message_write_to_console(ac, e)
             db.write_log_to_db_a(ac, ac.app_errorslist[9], "x",
                                         "write_also_to_console")
         # Close
         sftp.close()
         transport.close()
+
+        if files_online is None:
+            return None
 
     # list of all online-files,
     # filter out admin-srb audio-files (numbers in the beginning)
@@ -473,6 +482,8 @@ def upload_file(podcast_sendung):
         # upload
         try:
             sftp.put(c_source_file, file_remote)
+            db.write_log_to_db_a(ac, u"Podcast hochgeladen: "
+                        + podcast_sendung[0], "i", "write_also_to_console")
         except Exception as e:
             lib_cm.message_write_to_console(ac, e)
             db.write_log_to_db_a(ac, ac.app_errorslist[10], "x",
@@ -480,9 +491,6 @@ def upload_file(podcast_sendung):
         # Close
         sftp.close()
         transport.close()
-
-        db.write_log_to_db_a(ac, u"Podcast hochgeladen: "
-                        + podcast_sendung[0], "i", "write_also_to_console")
     return "OK"
 
 
@@ -570,12 +578,15 @@ def delete_files_online_sftp():
     try:
         files_online = sftp.listdir_attr(db.ac_config_1[9])
     except Exception as e:
+        files_online = None
         lib_cm.message_write_to_console(ac, e)
         db.write_log_to_db_a(ac, ac.app_errorslist[9], "x",
                                         "write_also_to_console")
     # Close
     sftp.close()
     transport.close()
+    if files_online is None:
+        return None
 
     if len(files_online) <= int(db.ac_config_1[2]):
         db.write_log_to_db_a(ac,

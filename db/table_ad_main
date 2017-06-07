@@ -1,0 +1,56 @@
+AD_ID                           BIGINT Not Null 
+AD_NR                           CHAR(10) Not Null 
+AD_FIRMA                        VARCHAR(60) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_ANREDE_ID                    CHAR(2) Not Null 
+AD_TITEL_ID                     CHAR(2) Not Null 
+AD_VORNAME                      VARCHAR(20) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_NAME                         VARCHAR(40) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_PF                           VARCHAR(20) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_STRASSE                      VARCHAR(40) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_PLZ                          CHAR(6) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_ORT                          VARCHAR(30) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_LAND_ID                      CHAR(3) Not Null 
+AD_TEL_1                        VARCHAR(20) Not Null 
+AD_TEL_2                        VARCHAR(20) Not Null 
+AD_FAX                          VARCHAR(20) Not Null 
+AD_EMAIL                        VARCHAR(100) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_WEB                          VARCHAR(100) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_STICHWORT                    VARCHAR(40) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_VEREIN                       CHAR(1) Not Null 
+AD_VEREINSNAH                   CHAR(1) Not Null 
+AD_USER_OK_HF                   CHAR(1) Not Null 
+AD_USER_OK_TV                   CHAR(1) Not Null 
+AD_USER_OK_AKTIV                CHAR(1) Not Null 
+AD_USER_OK_ORG                  CHAR(1) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_USER_OK_PRAKTIKANT           CHAR(1) Not Null 
+AD_USER_OK_PRIVAT               CHAR(1) Not Null 
+AD_DATUM_GEBURT                 DATE Not Null 
+AD_BILDUNG                      CHAR(20) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_BERUF                        VARCHAR(40) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_NR_PA                        CHAR(10) Not Null 
+AD_NR_PASS                      CHAR(31) Not Null 
+AD_INFO                         CHAR(1) Not Null 
+AD_TIME_AUFNAHME                TIMESTAMP Not Null 
+AD_TIME_UPDATE                  TIMESTAMP Not Null 
+AD_ACTIVE                       CHAR(1) Not Null 
+AD_TEXT                         VARCHAR(3000) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+AD_AUTOR                        CHAR(1) Not Null 
+CONSTRAINT INTEG_176:
+  Primary key (AD_ID)
+
+Triggers on Table AD_MAIN:
+AD_MAIN_BI_0, Sequence: 0, Type: BEFORE INSERT, Active

@@ -1,0 +1,24 @@
+SG_HF_CONT_ID                   BIGINT Not Null 
+SG_HF_CONT_SG_ID                BIGINT Not Null 
+SG_HF_CONT_AD_ID                BIGINT Not Null 
+SG_HF_CONT_GENRE_ID             CHAR(2) Not Null 
+SG_HF_CONT_SPEECH_ID            CHAR(2) Not Null 
+SG_HF_CONT_TITEL                VARCHAR(100) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+SG_HF_CONT_UNTERTITEL           VARCHAR(100) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+SG_HF_CONT_STICHWORTE           VARCHAR(40) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+SG_HF_CONT_REGIEANWEISUNG       VARCHAR(100) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+SG_HF_CONT_FILENAME             VARCHAR(100) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+SG_HF_CONT_TEAMPRODUCTION       CHAR(1) Not Null 
+SG_HF_CONT_WEB                  VARCHAR(100) CHARACTER SET WIN1252 Not Null 
+                                 COLLATE PXW_INTL850
+SG_HF_CONT_EDITOR_AD_ID         BIGINT Not Null 
+CONSTRAINT INTEG_240:
+  Primary key (SG_HF_CONT_ID)
+
+Triggers on Table SG_HF_CONTENT:
+SG_HF_CONTENT_BI_0, Sequence: 0, Type: BEFORE INSERT, Active

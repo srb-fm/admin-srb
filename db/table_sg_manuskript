@@ -1,0 +1,9 @@
+SG_MK_ID                        BIGINT Not Null 
+SG_MK_SG_CONT_ID                BIGINT Not Null 
+SG_MK_TEXT                      VARCHAR(10000) CHARACTER SET WIN1252 Nullable 
+                                 COLLATE PXW_INTL850
+CONSTRAINT PK_SG_MANUSKRIPT_0:
+  Primary key (SG_MK_ID)
+
+Triggers on Table SG_MANUSKRIPT:
+SG_MANUSKRIPT_BI_0, Sequence: 0, Type: BEFORE INSERT OR UPDATE, Active
