@@ -6,7 +6,7 @@
 #10 0 1 7 * /home/my-server/srb-tools/statistik_user_active.py && exit 
 #10 0 1 10 * /home/my-server/srb-tools/statistik_user_active.py && exit 
 #50 * * * * /home/my-server/srb-tools/play_out_preview.py && exit 
-#15 6-20 * * * /home/my-server/srb-tools/beamer_podcast.py && exit 
+#15,40 6-20 * * * /home/my-server/srb-tools/beamer_podcast.py && exit 
 #30 * * * * /home/my-server/srb-tools/play_out_repeat_proto.py && exit 
 #45 * * * * /home/my-server/srb-tools/play_out_extern_vp.py && exit 
 #*/2 * * * * /home/my-server/srb-tools/log_tweeter_v3.py && exit
@@ -24,3 +24,4 @@
 #29 * * * * /home/my-server/srb-tools/audio_switch_timer.py && exit
 #20 4 * * 6 /home/my-server/srb-tools/backup_media_archiv.sh && exit
 #20 3 * * * /home/my-server/srb-tools/backup_media_play_out.sh && exit
+#22 22 * * * /home/my-server/srb-tools/server_active_update.py && exit
